@@ -1,4 +1,6 @@
 
+need delete
+
 generalize pkv layer, change db cache to just last N result sets < some size
   array of arrays, < size keep going and persist
 fully multiuser
@@ -124,16 +126,6 @@ adjust to this, keep linking et all, drop gw
 current menu is "options"
 default is "transfer" view (listing)
 
-remote stores
-  local fs (for bkup)
-  gappeng, azure site, host where you like
-  s3/azure
-  ?local with bcast et all?
-  ?gw?
-  consumer cloud (dbox, etc)
-  imap
-  (eventually, maybe) gw/sharing thing
-
 remote !== local, distinct types
 
 stores
@@ -178,11 +170,8 @@ manual conflict res
 categories on left, list on right, an "all"
 form has subject, category, content
 
-imap
 azure free web tier, cleardb http://www.johnpapa.net/azurecleardbmysql/
 google app engine
-
-ads on listing, not on login or entry
 
 separate out bcastle/web from ui
 could use duck for dns for web ver
@@ -216,7 +205,6 @@ ui
   ui basic types
   local store/save
   ?local sync? (direct to/from server?)
-  ?imap, s3, etc?
   ?over the net (upnp, devices, etc)?
    
   ? once pw changed, only new gets you in
@@ -255,14 +243,9 @@ online ver
 system dbs - s_
 user dbs - u_
 
-?imap? yes..., just logs of db changes, which have to be brought in to be used (not
-  a direct store)
-"logs" as a general sync option.  Occasional compact. (lastest compact + changes)
-
 dl + run, no install (portable)
 
 crypted notes, password locker
-imap sync
 
 draft
   local
@@ -306,9 +289,7 @@ node-webkit, cordova for mac + ios
 sync
   between devices on local net (ui, cross-enter, sync) (remember, assoc with network, central for ip / bcast?)
 
-  imap
 own web
-s3 et all
 
 
 
@@ -317,17 +298,13 @@ contacts
 pics
 syncing & such - doc types, pattern/location automatically become nodes, are updated (with versioning)
 
-could put web ver all in browser :-) almost, imap? no, but could do crome app, firefox os app, firefox extension, etc
-all but imap could be in browser, only that go to server
-  ad after login, between pages, on occasion
-http://www.bumblead.com/ - extension ads (but all over :-(
+ could do crome app, firefox os app, firefox extension, etc
 
 node-webkit + phonegap
 java for output
 node for web
 
 macgap, **node-webkit, chromium embedded
-there are imap things for js, emailjs.org, incl node-webkit
 
 -node-webkit for mac, win (or cs for win), phonegap for ios, android
 
@@ -335,7 +312,6 @@ DATA BAG
 
 break into pieces - note app open source, just local
 transfer app no encryption, an/or only for authentication (which is ok)
-((both android and ios options for transferring data allow lockdown to developer account - so ads possible in the open source :-))
 -also custom url https://developer.apple.com/library/ios/documentation/uikit/reference/UIPasteboard_Class/Reference.html
 
 do c# and java together (android) and js (?extension)
@@ -348,23 +324,15 @@ notes back and forth from local
 fs
 simple folder navigation
 optional encrypt
-imap sync (just walk the tree, bg thread, or search since x)  at first, manual sync (maybe last update prompt?) (last modified secs in subj/message?)
 
 ajoteno.com (thing holder) aoteno.com yoteno.com
 
 kaverno.com malneto.com fendeto.com kukulo.com 
 
 Plain old note app/attachments/links
-Ads
-noad-pay
-drafts - save/load from gmail imap, checkout cloud apis
 hold locally also
 contacts, sms, etc (only for paid??)
-
-imap remote, local fs local
-
 simple tree view -
---each config/location is a top level (bucket? folder?) with connection info (imap, g/1drive, etc)
 --built in editor of some kinds (text, at least - form?) with encryption
 --multiple connections for a base (top level folder), things like size settings (total, per-message)
 
@@ -435,9 +403,6 @@ do jv too, testing, ready for android
 
 name of file /subject of msg (item id) has all the info
 
-local file (same as rest)
-imap
-gdrive
-(own/on premise)
+
 
 
