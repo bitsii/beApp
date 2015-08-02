@@ -1,0 +1,1460 @@
+        <html>
+        <head>
+            <meta charset="UTF-8">
+        <style>
+        
+        label.luiForm {
+            width: 120px; float: left;margin:0;padding:0;
+        }
+        
+        input.luiFormField {
+            width: 140px;margin:0;padding:0;clear: right;
+        }
+        
+        input.luiForm {
+            width: 260px;margin:0;padding:0;
+        }
+        
+        p.luiForm {
+            width: 260px;margin:0;padding:0;
+        }
+        
+        h5.luiForm {
+            width: 260px;margin:0;padding:0;
+        }
+        
+        #alertDiv {
+            top:0;
+            left:0;
+            width:100%;
+            height:150%;
+            display:none;
+        }
+        
+        </style>
+        <script type="text/javascript">
+            
+ /*
+    json2.js
+    2014-02-04
+
+    Public Domain.
+
+    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
+
+    See http://www.JSON.org/js.html
+
+
+    This code should be minified before deployment.
+    See http://javascript.crockford.com/jsmin.html
+
+    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
+    NOT CONTROL.
+
+
+    This file creates a global JSON object containing two methods: stringify
+    and parse.
+
+        JSON.stringify(value, replacer, space)
+            value       any JavaScript value, usually an object or array.
+
+            replacer    an optional parameter that determines how object
+                        values are stringified for objects. It can be a
+                        function or an array of strings.
+
+            space       an optional parameter that specifies the indentation
+                        of nested structures. If it is omitted, the text will
+                        be packed without extra whitespace. If it is a number,
+                        it will specify the number of spaces to indent at each
+                        level. If it is a string (such as '\t' or '&nbsp;'),
+                        it contains the characters used to indent at each level.
+
+            This method produces a JSON text from a JavaScript value.
+
+            When an object value is found, if the object contains a toJSON
+            method, its toJSON method will be called and the result will be
+            stringified. A toJSON method does not serialize: it returns the
+            value represented by the name/value pair that should be serialized,
+            or undefined if nothing should be serialized. The toJSON method
+            will be passed the key associated with the value, and this will be
+            bound to the value
+
+            For example, this would serialize Dates as ISO strings.
+
+                Date.prototype.toJSON = function (key) {
+                    function f(n) {
+                        // Format integers to have at least two digits.
+                        return n < 10 ? '0' + n : n;
+                    }
+
+                    return this.getUTCFullYear()   + '-' +
+                         f(this.getUTCMonth() + 1) + '-' +
+                         f(this.getUTCDate())      + 'T' +
+                         f(this.getUTCHours())     + ':' +
+                         f(this.getUTCMinutes())   + ':' +
+                         f(this.getUTCSeconds())   + 'Z';
+                };
+
+            You can provide an optional replacer method. It will be passed the
+            key and value of each member, with this bound to the containing
+            object. The value that is returned from your method will be
+            serialized. If your method returns undefined, then the member will
+            be excluded from the serialization.
+
+            If the replacer parameter is an array of strings, then it will be
+            used to select the members to be serialized. It filters the results
+            such that only members with keys listed in the replacer array are
+            stringified.
+
+            Values that do not have JSON representations, such as undefined or
+            functions, will not be serialized. Such values in objects will be
+            dropped; in arrays they will be replaced with null. You can use
+            a replacer function to replace those with JSON values.
+            JSON.stringify(undefined) returns undefined.
+
+            The optional space parameter produces a stringification of the
+            value that is filled with line breaks and indentation to make it
+            easier to read.
+
+            If the space parameter is a non-empty string, then that string will
+            be used for indentation. If the space parameter is a number, then
+            the indentation will be that many spaces.
+
+            Example:
+
+            text = JSON.stringify(['e', {pluribus: 'unum'}]);
+            // text is '["e",{"pluribus":"unum"}]'
+
+
+            text = JSON.stringify(['e', {pluribus: 'unum'}], null, '\t');
+            // text is '[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]'
+
+            text = JSON.stringify([new Date()], function (key, value) {
+                return this[key] instanceof Date ?
+                    'Date(' + this[key] + ')' : value;
+            });
+            // text is '["Date(---current time---)"]'
+
+
+        JSON.parse(text, reviver)
+            This method parses a JSON text to produce an object or array.
+            It can throw a SyntaxError exception.
+
+            The optional reviver parameter is a function that can filter and
+            transform the results. It receives each of the keys and values,
+            and its return value is used instead of the original value.
+            If it returns what it received, then the structure is not modified.
+            If it returns undefined then the member is deleted.
+
+            Example:
+
+            // Parse the text. Values that look like ISO date strings will
+            // be converted to Date objects.
+
+            myData = JSON.parse(text, function (key, value) {
+                var a;
+                if (typeof value === 'string') {
+                    a =
+/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
+                    if (a) {
+                        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4],
+                            +a[5], +a[6]));
+                    }
+                }
+                return value;
+            });
+
+            myData = JSON.parse('["Date(09/09/2001)"]', function (key, value) {
+                var d;
+                if (typeof value === 'string' &&
+                        value.slice(0, 5) === 'Date(' &&
+                        value.slice(-1) === ')') {
+                    d = new Date(value.slice(5, -1));
+                    if (d) {
+                        return d;
+                    }
+                }
+                return value;
+            });
+
+
+    This is a reference implementation. You are free to copy, modify, or
+    redistribute.
+*/
+
+/*jslint evil: true, regexp: true */
+
+/*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
+    call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
+    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
+    lastIndex, length, parse, prototype, push, replace, slice, stringify,
+    test, toJSON, toString, valueOf
+*/
+
+
+// Create a JSON object only if one does not already exist. We create the
+// methods in a closure to avoid creating global variables.
+
+if (typeof JSON !== 'object') {
+    JSON = {};
+}
+
+(function () {
+    'use strict';
+
+    function f(n) {
+        // Format integers to have at least two digits.
+        return n < 10 ? '0' + n : n;
+    }
+
+    if (typeof Date.prototype.toJSON !== 'function') {
+
+        Date.prototype.toJSON = function () {
+
+            return isFinite(this.valueOf())
+                ? this.getUTCFullYear()     + '-' +
+                    f(this.getUTCMonth() + 1) + '-' +
+                    f(this.getUTCDate())      + 'T' +
+                    f(this.getUTCHours())     + ':' +
+                    f(this.getUTCMinutes())   + ':' +
+                    f(this.getUTCSeconds())   + 'Z'
+                : null;
+        };
+
+        String.prototype.toJSON      =
+            Number.prototype.toJSON  =
+            Boolean.prototype.toJSON = function () {
+                return this.valueOf();
+            };
+    }
+
+    var cx,
+        escapable,
+        gap,
+        indent,
+        meta,
+        rep;
+
+
+    function quote(string) {
+
+// If the string contains no control characters, no quote characters, and no
+// backslash characters, then we can safely slap some quotes around it.
+// Otherwise we must also replace the offending characters with safe escape
+// sequences.
+
+        escapable.lastIndex = 0;
+        return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
+            var c = meta[a];
+            return typeof c === 'string'
+                ? c
+                : '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+        }) + '"' : '"' + string + '"';
+    }
+
+
+    function str(key, holder) {
+
+// Produce a string from holder[key].
+
+        var i,          // The loop counter.
+            k,          // The member key.
+            v,          // The member value.
+            length,
+            mind = gap,
+            partial,
+            value = holder[key];
+
+// If the value has a toJSON method, call it to obtain a replacement value.
+
+        if (value && typeof value === 'object' &&
+                typeof value.toJSON === 'function') {
+            value = value.toJSON(key);
+        }
+
+// If we were called with a replacer function, then call the replacer to
+// obtain a replacement value.
+
+        if (typeof rep === 'function') {
+            value = rep.call(holder, key, value);
+        }
+
+// What happens next depends on the value's type.
+
+        switch (typeof value) {
+        case 'string':
+            return quote(value);
+
+        case 'number':
+
+// JSON numbers must be finite. Encode non-finite numbers as null.
+
+            return isFinite(value) ? String(value) : 'null';
+
+        case 'boolean':
+        case 'null':
+
+// If the value is a boolean or null, convert it to a string. Note:
+// typeof null does not produce 'null'. The case is included here in
+// the remote chance that this gets fixed someday.
+
+            return String(value);
+
+// If the type is 'object', we might be dealing with an object or an array or
+// null.
+
+        case 'object':
+
+// Due to a specification blunder in ECMAScript, typeof null is 'object',
+// so watch out for that case.
+
+            if (!value) {
+                return 'null';
+            }
+
+// Make an array to hold the partial results of stringifying this object value.
+
+            gap += indent;
+            partial = [];
+
+// Is the value an array?
+
+            if (Object.prototype.toString.apply(value) === '[object Array]') {
+
+// The value is an array. Stringify every element. Use null as a placeholder
+// for non-JSON values.
+
+                length = value.length;
+                for (i = 0; i < length; i += 1) {
+                    partial[i] = str(i, value) || 'null';
+                }
+
+// Join all of the elements together, separated with commas, and wrap them in
+// brackets.
+
+                v = partial.length === 0
+                    ? '[]'
+                    : gap
+                    ? '[\n' + gap + partial.join(',\n' + gap) + '\n' + mind + ']'
+                    : '[' + partial.join(',') + ']';
+                gap = mind;
+                return v;
+            }
+
+// If the replacer is an array, use it to select the members to be stringified.
+
+            if (rep && typeof rep === 'object') {
+                length = rep.length;
+                for (i = 0; i < length; i += 1) {
+                    if (typeof rep[i] === 'string') {
+                        k = rep[i];
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                        }
+                    }
+                }
+            } else {
+
+// Otherwise, iterate through all of the keys in the object.
+
+                for (k in value) {
+                    if (Object.prototype.hasOwnProperty.call(value, k)) {
+                        v = str(k, value);
+                        if (v) {
+                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
+                        }
+                    }
+                }
+            }
+
+// Join all of the member texts together, separated with commas,
+// and wrap them in braces.
+
+            v = partial.length === 0
+                ? '{}'
+                : gap
+                ? '{\n' + gap + partial.join(',\n' + gap) + '\n' + mind + '}'
+                : '{' + partial.join(',') + '}';
+            gap = mind;
+            return v;
+        }
+    }
+
+// If the JSON object does not yet have a stringify method, give it one.
+
+    if (typeof JSON.stringify !== 'function') {
+        escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+        meta = {    // table of character substitutions
+            '\b': '\\b',
+            '\t': '\\t',
+            '\n': '\\n',
+            '\f': '\\f',
+            '\r': '\\r',
+            '"' : '\\"',
+            '\\': '\\\\'
+        };
+        JSON.stringify = function (value, replacer, space) {
+
+// The stringify method takes a value and an optional replacer, and an optional
+// space parameter, and returns a JSON text. The replacer can be a function
+// that can replace values, or an array of strings that will select the keys.
+// A default replacer method can be provided. Use of the space parameter can
+// produce text that is more easily readable.
+
+            var i;
+            gap = '';
+            indent = '';
+
+// If the space parameter is a number, make an indent string containing that
+// many spaces.
+
+            if (typeof space === 'number') {
+                for (i = 0; i < space; i += 1) {
+                    indent += ' ';
+                }
+
+// If the space parameter is a string, it will be used as the indent string.
+
+            } else if (typeof space === 'string') {
+                indent = space;
+            }
+
+// If there is a replacer, it must be a function or an array.
+// Otherwise, throw an error.
+
+            rep = replacer;
+            if (replacer && typeof replacer !== 'function' &&
+                    (typeof replacer !== 'object' ||
+                    typeof replacer.length !== 'number')) {
+                throw new Error('JSON.stringify');
+            }
+
+// Make a fake root object containing our value under the key of ''.
+// Return the result of stringifying the value.
+
+            return str('', {'': value});
+        };
+    }
+
+
+// If the JSON object does not yet have a parse method, give it one.
+
+    if (typeof JSON.parse !== 'function') {
+        cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g;
+        JSON.parse = function (text, reviver) {
+
+// The parse method takes a text and an optional reviver function, and returns
+// a JavaScript value if the text is a valid JSON text.
+
+            var j;
+
+            function walk(holder, key) {
+
+// The walk method is used to recursively walk the resulting structure so
+// that modifications can be made.
+
+                var k, v, value = holder[key];
+                if (value && typeof value === 'object') {
+                    for (k in value) {
+                        if (Object.prototype.hasOwnProperty.call(value, k)) {
+                            v = walk(value, k);
+                            if (v !== undefined) {
+                                value[k] = v;
+                            } else {
+                                delete value[k];
+                            }
+                        }
+                    }
+                }
+                return reviver.call(holder, key, value);
+            }
+
+
+// Parsing happens in four stages. In the first stage, we replace certain
+// Unicode characters with escape sequences. JavaScript handles many characters
+// incorrectly, either silently deleting them, or treating them as line endings.
+
+            text = String(text);
+            cx.lastIndex = 0;
+            if (cx.test(text)) {
+                text = text.replace(cx, function (a) {
+                    return '\\u' +
+                        ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
+                });
+            }
+
+// In the second stage, we run the text against regular expressions that look
+// for non-JSON patterns. We are especially concerned with '()' and 'new'
+// because they can cause invocation, and '=' because it can cause mutation.
+// But just to be safe, we want to reject all unexpected forms.
+
+// We split the second stage into 4 regexp operations in order to work around
+// crippling inefficiencies in IE's and Safari's regexp engines. First we
+// replace the JSON backslash pairs with '@' (a non-JSON character). Second, we
+// replace all simple value tokens with ']' characters. Third, we delete all
+// open brackets that follow a colon or comma or that begin the text. Finally,
+// we look to see that the remaining characters are only whitespace or ']' or
+// ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
+
+            if (/^[\],:{}\s]*$/
+                    .test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
+                        .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
+                        .replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+
+// In the third stage we use the eval function to compile the text into a
+// JavaScript structure. The '{' operator is subject to a syntactic ambiguity
+// in JavaScript: it can begin a block or an object literal. We wrap the text
+// in parens to eliminate the ambiguity.
+
+                j = eval('(' + text + ')');
+
+// In the optional fourth stage, we recursively walk the new structure, passing
+// each name/value pair to a reviver function for possible transformation.
+
+                return typeof reviver === 'function'
+                    ? walk({'': j}, '')
+                    : j;
+            }
+
+// If the text is not JSON parseable, then a SyntaxError is thrown.
+
+            throw new SyntaxError('JSON.parse');
+        };
+    }
+}());
+        
+      var handleCallback = function(res) {
+            if (res != null) {
+                var evjs = JSON.parse(res);
+                if (evjs && evjs.action) {
+                    var afunc = eval(evjs.action);
+                    var args = new Array(1);
+                    args[0] = evjs;
+                    afunc.apply(null, args);
+                }
+            } 
+        }
+        
+        var callApp = function(arg) {
+          if (typeof(window.external) !== 'undefined'
+            && typeof(window.external.HandleCall) !== 'undefined') {
+            callAppEmb(arg);
+          } else {
+            callAppWeb(arg);
+          }
+        }
+        
+        var callAppEmb = function(arg) {
+            var res = window.external.HandleCall(JSON.stringify(arg));
+            //alert(res);
+            if (res != null) {
+                var evjs = JSON.parse(res);
+                //alert(evjs.action);
+                if (evjs && evjs.action) {
+                    var afunc = eval(evjs.action);
+                    var args = new Array(1);
+                    args[0] = evjs;
+                    afunc.apply(null, args);
+                }
+            }
+        }
+        
+        var callAppWeb = function(arg) {
+            var data = JSON.stringify(arg);
+            req = getRequestor();
+            req.open('POST', 'Vk', true);
+            req.setRequestHeader("Content-type", "application/json");
+            //req.setRequestHeader("Connection", "close");
+            req.onreadystatechange = function(){
+                if (req.readyState != 4) return;
+                if (req.status != 200 && req.status != 304) {
+                    logmsg('HTTP error ' + req.status);
+                    return;
+                }
+                logmsg(req.responseText);
+                handleCallback(req.responseText);
+            }
+            req.send(data);
+        }
+        
+        var logmsg = function(msg) {
+            if(typeof window.console != 'undefined') {
+                console.log(msg);
+            }
+        }
+        
+        var getRequestor = function() {
+            var httpRequest;
+            if (window.XMLHttpRequest) {
+              httpRequest = new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+              try {
+                httpRequest = new ActiveXObject("Msxml2.XMLHTTP");
+              } 
+              catch (e) {
+                try {
+                  httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+                } 
+                catch (e) {}
+              }
+            }
+            return httpRequest;
+        }
+        
+        var logoutRequest = function() {
+          var o = new Object();
+          o.action = "logoutRequest";
+          callApp(o);
+        }
+        
+        var updateStateRequest = function() {
+          var o = new Object();
+          o.action = "updateStateRequest";
+          callApp(o);
+        }
+        
+        var loadStateRequest = function() {
+          var o = new Object();
+          o.action = "loadStateRequest";
+          callApp(o);
+        }
+        
+        var clearRepeaters = function() {
+          keepDiscovering = false;
+          keepLinkingTo = false;
+          document.getElementById("discoverDevicesSubmit").value = "Discover Devices";
+          keepCheckingGateway = false;
+          document.getElementById("checkGatewaySubmit").value = "Check Network Support";
+          keepGoToLink = false;
+          document.getElementById("linkGoToDiv").style.display = "block";
+          document.getElementById("cancelLinkGoToDiv").style.display = "none";
+        }
+        
+        var clearForms = function() {
+          document.getElementById("subAccountName").value = "";
+          document.getElementById("subAccountPass").value = "";
+          document.getElementById("subAccountPass2").value = "";
+          document.getElementById("draftCategory").value = "";
+          document.getElementById("draftName").value = "";
+          document.getElementById("draftContent").value = "";
+          clearJotMessage();
+        }
+        
+        var allHide = function() {
+          clearRepeaters();
+          clearForms();
+          
+          //reset menu buttons
+          document.getElementById("accountSubmit").style.display = "block";
+          document.getElementById("linkSubmit").style.display = "block";
+          
+          //document.getElementById("gatewaySubmit").style.display = "block";
+          //document.getElementById("sendFileSubmit").style.display = "block";
+          //document.getElementById("shutdownSubmit").style.display = "block";
+          
+          document.getElementById("menuDiv").style.display = "none";
+          document.getElementById("authDiv").style.display = "none";
+          document.getElementById("setupDiv").style.display = "none";
+          document.getElementById("gatewayDiv").style.display = "none";
+          document.getElementById("draftDiv").style.display = "none";
+          document.getElementById("manageAccountDiv").style.display = "none";
+          document.getElementById("myAccountDiv").style.display = "none";
+          document.getElementById("accountDiv").style.display = "none";
+          document.getElementById("gatewayMsgDiv").style.display = "none";
+          document.getElementById("utilsDiv").style.display = "none";
+          document.getElementById("linkIdDiv").style.display = "none";
+          document.getElementById("linkStartDiv").style.display = "none";
+          document.getElementById("linkOfferDiv").style.display = "none";
+          document.getElementById("linkAcceptDiv").style.display = "none";
+          document.getElementById("linksDiv").style.display = "none";
+          document.getElementById("discoverListDiv").style.display = "none";
+          document.getElementById("linkListDiv").style.display = "none";
+          document.getElementById("openLinkDiv").style.display = "none";
+          document.getElementById("linkWakeDiv").style.display = "none";
+          document.getElementById("linkGoToDiv").style.display = "none";
+          document.getElementById("cancelLinkGoToDiv").style.display = "none";
+          document.getElementById("localBrowseListDiv").style.display = "none";
+          document.getElementById("categoryListDiv").style.display = "none";
+          document.getElementById("uploadDiv").style.display = "none";
+          document.getElementById("alertDiv").style.display = "none";
+        }
+        
+        var openMenu = function() {
+          allHide();
+          document.getElementById("devMenuDiv").style.display = "block";
+          document.getElementById("menuDiv").style.display = "block";
+          //document.getElementById("sendFileSubmit").style.display = "block";
+          if (document.getElementById("hasLinksId").value !== "false") {
+            document.getElementById("linkListDiv").style.display = "block";
+          }
+          if (document.getElementById("deviceName").value !== "") {
+            document.getElementById("linkSubmit").style.display = "block";
+          } else {
+            document.getElementById("linkSubmit").style.display = "none";
+          }
+        }
+        
+        var updateStateResponse = function(arg) {
+          document.getElementById("deviceName").value = arg.deviceName;
+          document.getElementById("devicePort").value = arg.devicePort;
+          document.getElementById("linkListDiv").innerHTML = arg.linkListHtml;
+          document.getElementById("hasLinksId").value = arg.hasLinks;
+          document.getElementById("accountListDiv").innerHTML = arg.accountsHtml;
+          if (arg.gatewayEnabled == "true") {
+            document.getElementById("gatewayEnabled").checked = true;
+          } else {
+            document.getElementById("gatewayEnabled").checked = false;
+          }
+          if (arg.inetListenEnabled == "true") {
+            document.getElementById("inetListenEnabled").checked = true;
+          } else {
+            document.getElementById("inetListenEnabled").checked = false;
+          }
+          if (arg.gnsEnabled == "true") {
+            document.getElementById("gnsEnabled").checked = true;
+          } else {
+            document.getElementById("gnsEnabled").checked = false;
+          }
+          document.getElementById("gnsEnabled2").checked = false
+          document.getElementById("gnsUrl").value = arg.gnsUrl;
+        }
+        
+        var hideNonSetupMenu = function() {
+          //document.getElementById("gatewaySubmit").style.display = "none";
+          document.getElementById("accountSubmit").style.display = "none";
+          //document.getElementById("utilsSubmit").style.display = "none";
+          document.getElementById("linkSubmit").style.display = "none";
+          //document.getElementById("sendFileSubmit").style.display = "none";
+          //document.getElementById("shutdownSubmit").style.display = "none";
+        }
+        
+        var postLoad = function(arg) {
+          if (arg && arg.postLoadAction) {
+              var afunc = eval(arg.postLoadAction);
+              var args = new Array(1);
+              args[0] = arg;
+              afunc.apply(null, args);
+          }
+        }
+        
+        var openMenuNamesResponse = function(arg) {
+          document.getElementById("devMenuDiv").innerHTML = arg.devMenuHtml;
+          updateStateResponse(arg);
+          openMenu();
+          postLoad(arg);
+        }
+        
+        var openSetup = function() {
+          allHide();
+          document.getElementById("setupDiv").style.display = "block";
+          updateStateRequest();
+        }
+        
+        var openJot = function() {
+          allHide();
+          document.getElementById("draftDiv").style.display = "block";
+        }
+        
+        var openGateway = function() {
+          allHide();
+          document.getElementById("gatewayDiv").style.display = "block";
+        }
+        
+        var openAccountsResponse = function(arg) {
+          openAccount();
+        }
+        
+        var openAccount = function() {
+          allHide();
+          document.getElementById("accountDiv").style.display = "block";
+          document.getElementById("accountListDiv").style.display = "block";
+        }
+        
+        var openUtils = function() {
+          allHide();
+          document.getElementById("utilsDiv").style.display = "block";
+        }
+        
+        var createLink = function() {
+          allHide();
+          document.getElementById("linkStartDiv").style.display = "block";
+        }
+        
+        var openLinkRequest = function(linkId) {
+          var arg = new Object();
+          arg.action = "openLinkRequest";
+          arg.linkId = linkId;
+          callApp(arg);
+        }
+        
+        var openLinkResponse = function (arg) {
+          allHide();
+          document.getElementById("linkWakeDiv").innerHTML = arg.linkWakeHtml;
+          document.getElementById("linkWakeDiv").style.display = "block";
+          document.getElementById("linkGoToDiv").innerHTML = arg.linkGoToHtml;
+          document.getElementById("cancelLinkGoToDiv").innerHTML = arg.cancelLinkGoToHtml;
+          document.getElementById("linkGoToDiv").style.display = "block";
+          document.getElementById("linkNameId").value = arg.linkName;
+          document.getElementById("linkIdId").value = arg.linkId;
+          document.getElementById("openLinkDiv").style.display = "block";
+        }
+        
+        var openAccountRequest = function(accountName) {
+          var arg = new Object();
+          arg.action = "openAccountRequest";
+          arg.accountName = accountName;
+          callApp(arg);
+        }
+        
+        var openAccountResponse = function (arg) {
+          allHide();
+          document.getElementById("accountNameDiv").innerHTML = arg.accountNameHtml;
+          document.getElementById("accountNameDiv").style.display = "block";
+          document.getElementById("manageAccountDiv").style.display = "block";
+          document.getElementById("manageAccountName").value = arg.accountName;
+          if (arg.isAdmin == "true") {
+            document.getElementById("isAdminEnabled").checked = true;
+          } else {
+            document.getElementById("isAdminEnabled").checked = false;
+          }
+        }
+        
+        var myAccount = function() {
+          allHide();
+          document.getElementById("myAccountDiv").style.display = "block";
+        }
+        
+        var myAccountUpdate = function() {
+          var arg = new Object();
+          arg.oldAccountPass = document.getElementById("myOldAccountPass").value;
+          arg.accountPass = document.getElementById("myAccountPass").value;
+          arg.accountPass2 = document.getElementById("myAccountPass2").value;
+          arg.action = "updateMyAccountRequest";
+          document.getElementById("myOldAccountPass").value = "";
+          document.getElementById("myAccountPass").value = "";
+          document.getElementById("myAccountPass2").value = "";
+          callApp(arg);
+        }
+        
+        var deleteLinkRequest = function() {
+          var arg = new Object();
+          arg.action = "deleteLinkRequest";
+          arg.linkName = document.getElementById("linkNameId").value;
+          arg.linkId = document.getElementById("linkIdId").value;
+          callApp(arg);
+        }
+        
+        var setupTriggers = function() {
+        }
+        
+        var startup = function() {
+            //alert("startup was called");
+            loadStateRequest();
+            setupTriggers();
+        }
+        
+        window.onload = startup;
+        
+        var failResponse = function(arg) {
+            clearRepeaters();
+            document.getElementById("alertMsgDiv").innerHTML = arg.reason;
+            document.getElementById("alertDiv").style.display = "block";
+            document.getElementById("alertMsgDiv").style.display = "block";
+            //alert(arg.reason);
+        }
+        
+        var draftMessageResponse = function(arg) {
+            document.getElementById("draftMsgDiv").innerHTML = arg.message;
+            document.getElementById("draftMsgDiv").style.display = "block";
+        }
+        
+        var clearJotMessage = function() {
+            document.getElementById("draftMsgDiv").style.display = "none";
+            document.getElementById("draftMsgDiv").innerHTML = "";
+        }
+        
+        var closeAlert = function() {
+           document.getElementById("alertMsgDiv").style.display = "none";
+           document.getElementById("alertDiv").style.display = "none";
+        }
+        
+        var setupRequest = function() {
+          var arg = new Object();
+          arg.deviceName = document.getElementById("deviceName").value;
+          arg.devicePort = document.getElementById("devicePort").value;
+          arg.action = "setupRequest";
+          callApp(arg);
+        }
+        
+        var saveJotRequest = function() {
+          var arg = new Object();
+          arg.draftCategory = document.getElementById("draftCategory").value;
+          arg.draftName = document.getElementById("draftName").value;
+          arg.draftContent = document.getElementById("draftContent").value;
+          arg.action = "saveJotRequest";
+          callApp(arg);
+        }
+        
+        var jotRequest = function(c, n) {
+          var arg = new Object();
+          arg.action = "loadJotECRequest";
+          arg.draftCategory = c;
+          arg.draftName = n;
+          callApp(arg);
+          return false;
+        }
+        
+        var loadJotRequest = function() {
+          var arg = new Object();
+          arg.draftCategory = document.getElementById("draftCategory").value;
+          arg.draftName = document.getElementById("draftName").value;
+          arg.action = "loadJotRequest";
+          callApp(arg);
+        }
+        
+        var loadJotResponse = function(arg) {
+          openJot();
+          document.getElementById("draftCategory").value = arg.draftCategory;
+          document.getElementById("draftName").value = arg.draftName;
+          document.getElementById("draftContent").value = arg.draftContent;
+          draftMessageResponse(arg);
+        }
+        
+        var createSubAccount = function() {
+          var arg = new Object();
+          arg.accountName = document.getElementById("subAccountName").value;
+          arg.accountPass = document.getElementById("subAccountPass").value;
+          arg.accountPass2 = document.getElementById("subAccountPass2").value;
+          arg.action = "createSubAccountRequest";
+          callApp(arg);
+        }
+        
+        var updateSubAccount = function() {
+          var arg = new Object();
+          arg.accountName = document.getElementById("manageAccountName").value;
+          arg.accountPass = document.getElementById("subAccountPassChange").value;
+          arg.accountPass2 = document.getElementById("subAccountPassChange2").value;
+          if (document.getElementById("isAdminEnabled").checked) {
+            arg.isAdmin = "true";
+          } else {
+            arg.isAdmin = "false";
+          }
+          arg.action = "updateSubAccountRequest";
+          document.getElementById("subAccountPassChange").value = "";
+          document.getElementById("subAccountPassChange2").value = "";
+          callApp(arg);
+        }
+        
+        var deleteSubAccount = function() {
+          var arg = new Object();
+          if (document.getElementById("confirmAccountDeletionEnabled").checked) {
+            arg.confirmDelete = "true";
+          } else {
+            arg.confirmDelete = "false";
+          }
+          document.getElementById("confirmAccountDeletionEnabled").checked = false;
+          arg.accountName = document.getElementById("manageAccountName").value;
+          arg.action = "deleteSubAccountRequest";
+          callApp(arg);
+        }
+        
+        var takeSubAccounts = function() {
+          var arg = new Object();
+          arg.accountName = document.getElementById("manageAccountName").value;
+          arg.action = "takeSubAccountsRequest";
+          callApp(arg);
+        }
+        
+        var shutdownRequest = function() {
+          var arg = new Object();
+          arg.action = "shutdownRequest";
+          callApp(arg);
+        }
+        
+        var gatewayRequest = function() {
+          var arg = new Object();
+          if (document.getElementById("gatewayEnabled").checked) {
+            arg.gatewayEnabled = "true";
+          } else {
+            arg.gatewayEnabled = "false";
+          }
+          if (document.getElementById("inetListenEnabled").checked) {
+            arg.inetListenEnabled = "true";
+          } else {
+            arg.inetListenEnabled = "false";
+          }
+          arg.gnsUrl = document.getElementById("gnsUrl").value;
+          arg.gnsName = document.getElementById("gnsName").value;
+          arg.gnsPassword = document.getElementById("gnsPassword").value;
+          document.getElementById("gnsName").value = "";
+          document.getElementById("gnsPassword").value = "";
+          arg.action = "gatewayRequest";
+          callApp(arg);
+        }
+        
+        var gnsRequest = function() {
+          var arg = new Object();
+          if (document.getElementById("gnsEnabled").checked) {
+            arg.gnsEnabled = "true";
+          } else {
+            arg.gnsEnabled = "false";
+          }
+          if (document.getElementById("gnsEnabled2").checked) {
+            arg.gnsEnabled2 = "true";
+          } else {
+            arg.gnsEnabled2 = "false";
+          }
+          arg.action = "gnsRequest";
+          callApp(arg);
+        }
+        
+        var keepDiscovering = false;
+        var repeatDiscover = function() {
+          try {
+            var arg = new Object();
+            arg.action = "discoverRequest";
+            arg.showLongIds = showLongIds;
+            callApp(arg);
+          } finally {
+            if (keepDiscovering) {
+              setTimeout(repeatDiscover, 2000);
+            }
+          }
+        }
+        
+        var beginLink = function() {
+          keepLinkingTo = false;
+          if (!keepDiscovering) {
+            keepDiscovering = true;
+            document.getElementById("discoverDevicesSubmit").value = "Cancel Device Discovery";
+            repeatDiscover();
+          } else {
+            document.getElementById("discoverDevicesSubmit").value = "Discover Devices";
+            keepDiscovering = false;
+          }
+        }
+        
+        var linkToHash = "";
+        var keepLinkingTo = false;
+        var linkToTries = 0;
+        var repeatLinkTo = function() {
+          try {
+            if (keepLinkingTo) {
+              var arg = new Object();
+              arg.action = "linkToRequest";
+              arg.linkHash = linkToHash;
+              arg.linkToTries = linkToTries;
+              linkToTries = linkToTries + 1;
+              callApp(arg);
+            }
+          } finally {
+            if (keepLinkingTo) {
+              setTimeout(repeatLinkTo, 1000);
+            }
+          }
+        }
+        
+        var keepCheckingGateway = false;
+        var checkGatewayTries = 0;
+        var repeatCheckGateway = function() {
+          try {
+            if (keepCheckingGateway) {
+              var arg = new Object();
+              arg.action = "checkGatewayRequest";
+              arg.checkGatewayTries = checkGatewayTries;
+              checkGatewayTries = checkGatewayTries + 1;
+              callApp(arg);
+            }
+          } finally {
+            if (keepCheckingGateway) {
+              setTimeout(repeatCheckGateway, 5000);
+            }
+          }
+        }
+        
+        var checkGateway = function() {
+          if (!keepCheckingGateway) {
+            keepCheckingGateway = true;
+            document.getElementById("checkGatewaySubmit").value = "Cancel Check Network";
+            checkGatewayTries = 0;
+            repeatCheckGateway();
+          } else {
+            document.getElementById("checkGatewaySubmit").value = "Check Network Support";
+            keepCheckingGateway = false;
+          }
+        }
+        
+        var linkTo = function(lh) {
+          keepDiscovering = false;
+          if (!keepLinkingTo) {
+            keepLinkingTo = true;
+            linkToHash = lh;
+            document.getElementById("discoverDevicesSubmit").value = "Cancel Link Attempt";
+            linkToTries = 0;
+            repeatLinkTo();
+          } else {
+            document.getElementById("discoverDevicesSubmit").value = "Discover Devices";
+            keepLinkingTo = false;
+          }
+        }
+        
+        var showLongIds = false;
+        var longIds = function() {
+          if (showLongIds) {
+            showLongIds = false;
+            document.getElementById("longIdsLink").innerText = "(Show long ids)";
+            document.getElementById("linkIdDiv").innerHTML = shortLinkIdHtml;
+          } else {
+            showLongIds = true;
+            document.getElementById("longIdsLink").innerText = "(Show short ids)";
+            document.getElementById("linkIdDiv").innerHTML = longLinkIdHtml;
+          }
+        }
+        
+        var shortLinkIdHtml = "";
+        var longLinkIdHtml = "";
+        var linksResponse = function(arg) {
+          shortLinkIdHtml = arg.shortLinkIdHtml;
+          longLinkIdHtml = arg.longLinkIdHtml;
+          if (showLongIds) {
+            document.getElementById("linkIdDiv").innerHTML = longLinkIdHtml;
+          } else {
+            document.getElementById("linkIdDiv").innerHTML = shortLinkIdHtml;
+          }
+          document.getElementById("linkIdDiv").style.display = "block";
+          beginLink();
+        }
+        
+        var doSetupResponse = function(arg) {
+          openSetup();//give a message here
+        }
+        
+        var lastDiscoverHtml;
+        var discoverResponse = function(arg) {
+          if (keepDiscovering) {
+            if (arg.discoverHtml !== lastDiscoverHtml || 
+            document.getElementById("discoverListDiv").style.display !== "block") {
+            document.getElementById("discoverListDiv").innerHTML = arg.discoverHtml;
+            lastDiscoverHtml = arg.discoverHtml;
+            }
+            document.getElementById("discoverListDiv").style.display = "block";
+          }
+        }
+        
+        var setPathToSend = function(arg) {
+          return true;
+        }
+        
+        var categoryRequest = function(arg) {
+          var req = new Object();
+          req.action = "categoryRequest";
+          req.path = arg;
+          callApp(req);
+          return false;
+        }
+        
+        var categoryResponse = function(arg) {
+          allHide();
+          document.getElementById("categoryListDiv").innerHTML = arg.categoryListHtml;
+          document.getElementById("categoryListDiv").style.display = "block";
+        }
+        
+        var localBrowseRequest = function(arg) {
+          var req = new Object();
+          req.action = "localBrowseRequest";
+          req.path = arg;
+          callApp(req);
+          return false;
+        }
+        
+        var localBrowseResponse = function(arg) {
+          allHide();
+          //document.getElementById("sendFileSubmit").style.display = "none";
+          document.getElementById("localBrowseListDiv").innerHTML = arg.dirListHtml;
+          document.getElementById("localBrowseListDiv").style.display = "block";
+          //document.getElementById("uploadDiv").style.display = "block";
+        }
+        
+        var checkGatewayResponse = function(arg) {
+          clearRepeaters();
+          document.getElementById("gatewayMsgDiv").innerHTML = arg.gatewayMessage;
+          document.getElementById("gatewayMsgDiv").style.display = "block";
+        }
+        
+        var openAuthResponse = function(arg) {
+          allHide();
+          document.getElementById("authAccountName").value = "";
+          document.getElementById("authAccountPass").value = "";
+          document.getElementById("authDiv").style.display = "block";
+          document.getElementById("devMenuDiv").style.display = "block";
+          document.getElementById("devMenuDiv").innerHTML = arg.devMenuHtml;
+        }
+        
+        var authRequest = function() {
+          var req = new Object();
+          req.action = "authRequest";
+          req.accountName = document.getElementById("authAccountName").value;
+          req.accountPass = document.getElementById("authAccountPass").value;
+          callApp(req);
+        }
+        
+        var wakeAddrRequest = function () {
+          var req = new Object();
+          req.action = "wakeAddrRequest";
+          req.wakeAddr = document.getElementById("wakeAddr").value;
+          callApp(req);
+        }
+        
+        var openOfferLink = function () {
+          document.getElementById("linkAcceptDiv").style.display = "none";
+          document.getElementById("linkOfferDiv").style.display = "block";
+        }
+        
+        var openAcceptLink = function () {
+          document.getElementById("linkOfferDiv").style.display = "none";
+          document.getElementById("linkAcceptDiv").style.display = "block";
+        }
+        
+        var offerLink = function () {
+          var req = new Object();
+          req.action = "offerLinkRequest";
+          req.offerName = document.getElementById("offerName").value;
+          req.offerPassword = document.getElementById("offerPassword").value;
+          req.offerPassword2 = document.getElementById("offerPassword2").value;
+          callApp(req);
+        }
+        
+        var offerLinkResponse = function(arg) {
+          document.getElementById("offerText").value = arg.linkOffer;
+        }
+        
+        var acceptLink = function() {
+          var req = new Object();
+          req.action = "acceptLinkRequest";
+          req.acceptText = document.getElementById("acceptText").value;
+          req.acceptPassword = document.getElementById("acceptPassword").value;
+          callApp(req);
+        }
+        
+        var wakeMac = function (mac) {
+          var req = new Object();
+          req.action = "wakeAddrRequest";
+          req.wakeAddr = mac;
+          callApp(req);
+        }
+        
+        var keepGoToLink = false;
+        var goToLinkTries = 0;
+        var repeatGoToLink = function() {
+          try {
+            if (keepGoToLink) {
+              var arg = new Object();
+              arg.action = "goToLinkRequest";
+              arg.goToLinkTries = goToLinkTries;
+              arg.linkId = goToLinkId;
+              goToLinkTries = goToLinkTries + 1;
+              callApp(arg);
+            }
+          } finally {
+            if (keepGoToLink) {
+              setTimeout(repeatGoToLink, 3000);
+            }
+          }
+        }
+        
+        var goToLinkId;
+        var goToLink = function(linkId) {
+          if (!keepGoToLink) {
+            keepGoToLink = true;
+            goToLinkId = linkId;
+            document.getElementById("linkGoToDiv").style.display = "none";
+            document.getElementById("cancelLinkGoToDiv").style.display = "block";
+            goToLinkTries = 0;
+            repeatGoToLink();
+          } else {
+            document.getElementById("linkGoToDiv").style.display = "block";
+            document.getElementById("cancelLinkGoToDiv").style.display = "none";
+            keepGoToLink = false;
+          }
+        }
+        
+        var redirectResponse = function(arg) {
+          clearRepeaters();
+          window.location.href = arg.url;
+        }
+        
+        var proxyStartResponse = function(arg) {
+          clearRepeaters();
+          document.getElementById("proxyDiv").style.display = "block";
+          loadStateRequest();
+        }
+        
+        var proxyEndRequest = function(arg) {
+          var arg = new Object();
+          arg.action = "proxyEndRequest";
+          callApp(arg);
+        }
+        
+        var proxyEndResponse = function(arg) {
+          document.getElementById("proxyDiv").style.display = "none";
+          loadStateRequest();
+        }
+        
+        </script>
+        </head>
+        <body>
+        <div id="alertDiv" style="display: none;">
+        <div id="alertMsgDiv" style="display: none;"></div>
+        <p><input id="alertSubmit" class="luiForm" type="submit" value="Close" onclick="closeAlert();return false;"></p>
+        </div>
+        <div id="devMenuDiv" style="display: none;"></div>
+        <div id="proxyDiv" style="display: none;">
+        <a href="#" onclick="proxyEndRequest();return false;">Disconnect</a>
+        </div>
+        <div id="menuDiv" style="display: none;">
+            <form action="#" id="menuForm" onsubmit="openMenu();return false;">
+            <p><input id="newSubmit" class="luiForm" type="submit" value="Create" onclick="openJot();return false;"></p>
+            <p><input id="categoriesSubmit" class="luiForm" type="submit" value="List" onclick="categoryRequest('');return false;"></p>
+            <p><input id="linkSubmit" class="luiForm" type="submit" value="Connect" onclick="createLink();return false;"></p>
+            <p><input id="accountSubmit" class="luiForm" type="submit" value="Accounts" onclick="openAccount();return false;"></p>
+            <p><input id="setupSubmit" class="luiForm" type="submit" value="Configure" onclick="openSetup();return false;"></p>
+            <!--
+            <p><input id="gatewaySubmit" class="luiForm" type="submit" value="Gateway" onclick="openGateway();return false;"></p>
+            <p><input id="utilsSubmit" class="luiForm" type="submit" value="Utilities" onclick="openUtils();return false;"></p>
+            <p><input id="sendFileSubmit" class="luiForm" type="submit" value="Transfer" onclick="localBrowseRequest('');return false;"></p>
+            <p><input id="shutdownSubmit" class="luiForm" type="submit" value="Shutdown" onclick="shutdownRequest();return false;"></p>
+            -->
+        </div>
+        <div id="setupDiv" style="display: none;">
+        <form action="#" id="setupForm" onsubmit="setupRequest();return false;">
+        <p><label class="luiForm">System Name</label><input class="luiFormField" type="text" id="deviceName" size="20" value=""></p>
+        <p><label class="luiForm">System Port</label><input class="luiFormField" type="text" id="devicePort" size="20" value=""></p>
+        <p><input id="setupSubmit" class="luiForm" type="submit" value="Ok" onclick="setupRequest();return false;"></p>
+        </div>
+        <div id="gatewayMsgDiv" style="display: none;"></div>
+        <div id="gatewayDiv" style="display: none;">
+        <form action="#" id="checkGatewayForm" onsubmit="checkGateway();return false;">
+        <p><input id="checkGatewaySubmit" class="luiForm" type="submit" value="Check Network Support" onclick="checkGateway();return false;"></p>
+        </form>
+        <p><label class="luiForm">Make this system directly reachable from internet.</label><input class="luiFormField" type="checkbox" name="enableInetListen" id="inetListenEnabled" value="inetListenEnabled"></p>
+        <br/><br/>
+        <p><label class="luiForm">Make this system a gateway for others.</label><input class="luiFormField" type="checkbox" name="enableGatewayName" id="gatewayEnabled" value="gatewayEnabled"></p>
+        <br><p>Provide address and login information to register with a gateway naming service</p>
+        <p><label class="luiForm">GNS URL</label><input class="luiFormField" type="text" id="gnsUrl" size="20" value=""></p>
+        <p><label class="luiForm">Name</label><input class="luiFormField" type="text" id="gnsName" size="20" value=""></p>
+        <p><label class="luiForm">Password</label><input class="luiFormField" type="password" id="gnsPassword" size="40" value=""></p>
+        <p><input id="okgwSubmit" class="luiForm" type="submit" value="Ok" onclick="gatewayRequest();return false;"></p>
+        <p>Enable this system to function as a Gateway Naming Service</p>
+        <p>(This is not necessary to function as a gateway, typically a gateway will be a client to a different gateway naming service. This is for when you want to use your own gateway naming service running on this system, it will need to have a name on the internet and be internet accessible.  If in doubt, leave disabled)</p>
+        <p><label class="luiForm">Enable GNS</label><input class="luiFormField" type="checkbox" name="enableGNS" id="gnsEnabled" value="gnsEnabled"></p>
+        <p><label class="luiForm">Confirm Enable GNS</label><input class="luiFormField" type="checkbox" name="enableGNS2" id="gnsEnabled2" value="gnsEnabled2"></p>
+        <p><input id="gnsSubmit" class="luiForm" type="submit" value="Enable or Disable GNS" onclick="gnsRequest();return false;"></p>
+        </div>
+        <div id="draftDiv" style="display: none;">
+        <p><label class="luiForm">Category</label><input class="luiFormField" type="text" id="draftCategory" size="20" value="" onchange="clearJotMessage();return false;"></p>
+        <p><label class="luiForm">Name</label><input class="luiFormField" type="text" id="draftName" size="20" value="" onchange="clearJotMessage();return false;"></p>
+        <p><textarea name="textarea" id="draftContent" rows="3" cols="28" onchange="clearJotMessage();return false;"></textarea></p>
+        <p><input id="saveJotSubmit" class="luiForm" type="submit" value="Save" onclick="saveJotRequest();return false;"></p>
+        <p><input id="loadJotSubmit" class="luiForm" type="submit" value="Load" onclick="loadJotRequest();return false;"></p>
+        <p><div id="draftMsgDiv" style="display: none;"></div></p>
+        </div>
+        <div id="utilsDiv" style="display: none;">
+        <p><label class="luiForm">Wake by MacAddress</label><input class="luiFormField" type="text" id="wakeAddr" size="20" value=""></p>
+        <p><input id="wakeSubmit" class="luiForm" type="submit" value="Wake" onclick="wakeAddrRequest();return false;"></p>
+        </div>
+        <div id="accountDiv" style="display: none;">
+        <div id="accountListDiv" style="display: none;"></div>
+        <p>Create a new account</p>
+        <p><label class="luiForm">Name</label><input class="luiFormField" type="text" id="subAccountName" size="20" value=""></p>
+        <p><label class="luiForm">Password</label><input class="luiFormField" type="password" id="subAccountPass" size="20" value=""></p>
+        <p><label class="luiForm">Confirm Password</label><input class="luiFormField" type="password" id="subAccountPass2" size="20" value=""></p>
+        <p><input id="subAccountSubmit" class="luiForm" type="submit" value="Create" onclick="createSubAccount();return false;"></p>
+        </div>
+        <div id="manageAccountDiv" style="display: none;">
+        <div id="accountNameDiv" style="display: none;"></div>
+        <input type="hidden" id="manageAccountName" value=""/>
+        <p>Update Account</p>
+        <p><label class="luiForm">Administrator</label><input class="luiFormField" type="checkbox" name="isAdmin" id="isAdminEnabled" value="isAdminEnabled"></p>
+        <p>Administrators can create new accounts and change system configuration.</p>
+        <p><label class="luiForm">Password</label><input class="luiFormField" type="password" id="subAccountPassChange" size="20" value=""></p>
+        <p><label class="luiForm">Confirm Password</label><input class="luiFormField" type="password" id="subAccountPassChange2" size="20" value=""></p>
+        <p><input id="updateSubAccountSubmit" class="luiForm" type="submit" value="Save" onclick="updateSubAccount();return false;"></p>
+        <p>Delete this account</p>
+        <p><label class="luiForm">Confirm Delete</label><input class="luiFormField" type="checkbox" name="confirmAccountDeletion" id="confirmAccountDeletionEnabled" value="confirmAccountDeletionEnabled"></p>
+        <p><input id="deleteSubAccountSubmit" class="luiForm" type="submit" value="Delete" onclick="deleteSubAccount();return false;"></p>
+        <p><input id="cancelModifySubAccountSubmit" class="luiForm" type="submit" value="Cancel" onclick="openAccount();return false;"></p>
+        <p>Take this account's subaccounts</p>
+        <p><input id="takeSubAccountsSubmit" class="luiForm" type="submit" value="Take" onclick="takeSubAccounts();return false;"></p>
+        </div>
+        <div id="myAccountDiv" style="display: none;">
+        <p>Change your password.</p>
+        <p><label class="luiForm">Current Password</label><input class="luiFormField" type="password" id="myOldAccountPass" size="20" value=""></p>
+        <p><label class="luiForm">Password</label><input class="luiFormField" type="password" id="myAccountPass" size="20" value=""></p>
+        <p><label class="luiForm">Confirm Password</label><input class="luiFormField" type="password" id="myAccountPass2" size="20" value=""></p>
+        <p><input id="myAccountSubmit" class="luiForm" type="submit" value="Save" onclick="myAccountUpdate();return false;"></p>
+        </div>
+        <div id="authDiv" style="display: none;">
+        <form action="#" id="authForm" onsubmit="authRequest();return false;">
+        <p>Please authenticate to continue</p>
+        <p><label class="luiForm">Name</label><input class="luiFormField" type="text" id="authAccountName" size="20" value=""></p>
+        <p><label class="luiForm">Password</label><input class="luiFormField" type="password" id="authAccountPass" size="20" value=""></p>
+        <p><input id="authSubmit" class="luiForm" type="submit" value="Ok" onclick="authRequest();return false;"></p>
+        </div>
+        <div id="linkListDiv" style="display: none;"></div>
+        <div id="linkIdDiv" style="display: none;"></div>
+        <div id="linkStartDiv" style="display: none;">
+        <form action="#" id="linkOfferForm" onsubmit="openOfferLink();return false;">
+        <p><input id="offerLinkSubmit" class="luiForm" type="submit" value="Offer to Link" onclick="openOfferLink();return false;"></p>
+        </form>
+        <form action="#" id="linkAcceptForm" onsubmit="openAcceptLink();return false;">
+        <p><input id="acceptLinkSubmit" class="luiForm" type="submit" value="Accept an Offer to Link" onclick="openAcceptLink();return false;"></p>
+        </form>
+        </div>
+        <div id="linkOfferDiv" style="display: none;">
+        <p><label class="luiForm">Link Name</label><input class="luiFormField" type="text" id="offerName" size="20" value=""></p>
+        <p><label class="luiForm">Link Password</label><input class="luiFormField" type="password" id="offerPassword" size="20" value=""></p>
+        <p><label class="luiForm">Confirm Link Password</label><input class="luiFormField" type="password" id="offerPassword2" size="20" value=""></p>
+        <form action="#" id="linkOfferForm" onsubmit="offerLink();return false;">
+        <p><input id="offerLinkSubmit" class="luiForm" type="submit" value="Create Offer" onclick="offerLink();return false;"></p>
+        </form>
+        <textarea name="textarea" id="offerText" rows="3" cols="28"></textarea>
+        </div>
+        <div id="linkAcceptDiv" style="display: none;">
+        <textarea name="textarea" id="acceptText" rows="3" cols="28"></textarea>
+        <form action="#" id="linkAcceptForm" onsubmit="acceptLink();return false;">
+        <p><label class="luiForm">Link Password</label><input class="luiFormField" type="password" id="acceptPassword" size="20" value=""></p>
+        <p><input id="acceptLinkSubmit" class="luiForm" type="submit" value="Accept Offer" onclick="acceptLink();return false;"></p>
+        </form>
+        </div>
+        <div id="linksDiv" style="display: none;">
+        <a href="#" id="longIdsLink" onclick="longIds();return false;">(Show long ids)</a>
+        <form action="#" id="linkForm" onsubmit="createLink();return false;">
+        <p><input id="discoverDevicesSubmit" class="luiForm" type="submit" value="Discover Devices" onclick="beginLink();return false;"></p>
+        </form>
+        </div>
+        <div id="discoverListDiv" style="display: none;"></div>
+        <div id="linkGoToDiv" style="display: none;"></div>
+        <div id="cancelLinkGoToDiv" style="display: none;"></div>
+        <div id="linkWakeDiv" style="display: none;"></div>
+        <div id="openLinkDiv" style="display: none;">
+        <form action="#" id="openLinkForm" onsubmit="openLink();return false;">
+        <input id="linkNameId" name="linkName" type="hidden" value=""/>
+        <input id="linkIdId" name="linkId" type="hidden" value=""/>
+        <input id="hasLinksId" name="hasLinks" type="hidden" value=""/>
+        <p><input id="deleteLinkSubmit" class="luiForm" type="submit" value="Delete Link" onclick="deleteLinkRequest();return false;"></p>
+        </form>
+        </div>
+        <div id="uploadDiv" style="display: none;">
+        <form action="upload" method="post" enctype="multipart/form-data">
+            <p class="luiForm">Upload file to this directory:</p>
+            <input type="file" name="fileToUpload" id="fileToUpload">
+            <input type="submit" value="Upload" name="submit">
+        </form>
+        </div>
+        <div id="localBrowseListDiv" style="display: none;"></div>
+        <div id="categoryListDiv" style="display: none;"></div>
+        </body>
+        </html>
+
+
