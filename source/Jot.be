@@ -59,272 +59,134 @@ use System:Thread:Lock;
 use System:Thread:ContainerLocker as CLocker;
 use System:Thread:ObjectLocker as OLocker;
 
-use Container:RandomEvictionCache as RECache;
-
-class RECache {
-  
-  new() self {
-    new(99);
-  }
-  
-  new(Int _max) self {
-    vars {
-      Map cache = Map.new(_max.copy());
-      Int max = _max;
-    }
-  }
-  
-  get(key) {
-    return(cache.get(key));
-  }
-  
-  putReturn(key) {
-    var r = checkEvict();
-    cache.put(key);
-    return(r);
-  }
-  
-  put(key) {
-    checkEvict();
-    cache.put(key);
-  }
-  
-  putReturn(key, value) {
-    var r = checkEvict();
-    cache.put(key, value);
-    return(r);
-  }
-  
-  put(key, value) {
-    checkEvict();
-    cache.put(key, value);
-  }
-  
-  checkEvict() {
-    if (cache.size >= max) {
-      var r = evict(System:Random.getInt(Int.new(), cache.size));
-      if (def(r)) {
-        return(r);
-      }
-      return(evict(0));
-    }
-    return(null);
-  }
-  
-  evict(Int rstart) {
-    Array slots = cache.slots;
-    Int size = slots.size;
-    while (rstart < size) {
-      var node = slots[rstart];
-      if (def(node) && def(node.key)) {
-        cache.delete(node.key);
-        return(node);
-      }
-    }
-    return(null);
-  }
-  
-  sizeGet() Int {
-    return(cache.size);
-  }
-  
-}
-
-use Container:PrefixMap as PM;
-
-class PM {
-
-  new() self {
-    vars {
-      Map inner = Map.new();
-    }
-  }
-  
-  put(fkey, Map mapval) {
-    Map current = inner.get(fkey);
-    if (undef(current)) {
-      current = Map.new();
-      inner.put(fkey, current);
-    }
-    current.addValue(mapval);
-  }
-  
-  get(fkey) Map {
-    Map current = inner.get(fkey);
-    if (undef(current)) {
-      return(current);
-    }
-    Map res = Map.new();
-    res.addValue(current);
-    return(res);
-  }
-  
-  put(fkey, skey, val) {
-    Map current = inner.get(fkey);
-    if (undef(current)) {
-      current = Map.new();
-      inner.put(fkey, current);
-    }
-    current.put(skey, val);
-  }
-  
-  get(fkey, skey) {
-    Map current = inner.get(fkey);
-    if (def(current)) {
-      return(current.get(skey));
-    }
-    return(null);
-  }
-  
-  delete(fkey) {
-    inner.delete(fkey);
-  }
-  
-  delete(fkey, skey) {
-    Map current = inner.get(fkey);
-    if (def(current)) {
-      current.delete(skey);
-    }
-  }
-  
-  has(fkey) Bool {
-    return(inner.has(fkey));
-  }
-  
-  has(fkey, skey) Bool {
-    Map current = inner.get(fkey);
-    if (def(current)) {
-      return(current.has(skey));
-    }
-    return(false);
-  }
-  
-  clear() {
-    inner.clear();
-  }
-
-}
-
-use Db:PrefixKeyValueStore as PKV;
-class PKV {
+use Db:RowStore as RS;
+class RS {
 
   //needs a notion of timeout/staleness for non-embedded cases
   //(keep a "last used" time for all ops)
-
-  new(_db) self {
-    new(_db, "PKV");
-  }
-
-  new(_db, String _tableName) self {
+  
+  new(_db, String _tableName, Array _cols) self {
     vars {
       var db = _db;
       String tableName = _tableName;
+      Array cols = _cols;
     }
   }
-
-  //add a replaceMap to in trans delete based on prefix then puts
-  //could have "insert" which doesn't do delete for keys
-  put(String p, Map kv) {
-      db.begin();
+  
+  putMany(Array lvals) {
+    db.begin();
+    foreach (Array vals in lvals) {
       try {
-        foreach (var kve in kv) {
-          putInner(p, kve.key, kve.value);
+        putInner(vals);
+      } catch (var e) {
+        db.rollback();
+        throw(e);
+      }
+    }
+    db.commit();
+  }
+  
+  putOne(Array vals) {
+    db.begin();
+    try {
+      putInner(vals);
+    } catch (var e) {
+      db.rollback();
+      throw(e);
+    }
+    db.commit();
+  }
+  
+  putInner(Array vals) {
+    Int csize = cols.size;
+    if (vals.size != csize) {
+      throw(Exception.new("putInner failed, vals size " + vals.size + " not equal cols size " + cols.size));
+    }
+    
+    Int dwsize = csize - 1;
+    String dw = String.new();
+    String ic = String.new();
+    String iv = String.new();
+    
+    for (Int i = 0;i < csize;i++=) {
+      if (i < dwsize) {
+        if (i > 0) {
+          dw += " AND ";
         }
+        dw += cols[i] += "='" += vals[i] += "'";
+      }
+      if (i > 0) {
+        ic += ",";
+        iv += ",";
+      }
+      ic += cols[i];
+      iv += "'" += vals[i] += "'";
+    }
+    String delst = "DELETE FROM " + tableName + " WHERE " + dw;
+    String insst = "INSERT INTO " + tableName + "( " + ic + " ) VALUES ( " + iv + " )";
+    //("delst " + delst).print();
+    //("insst " + insst).print();
+    db.execute(delst);
+    db.execute(insst);
+  }
+    
+  getMany(Array vals) Array {
+      db.begin();
+      try {
+        Array res = getInner(vals);
       } catch (var e) {
         db.rollback();
         throw(e);
       }
       db.commit();
+      return(res);
+    }
+  
+  getInner(Array vals) Array {
+    Int vsize = vals.size;
+    Int csize = cols.size;
+    if (vsize > csize) {
+      throw(Exception.new("getInner failed, vals size " + vals.size + " greater than cols size " + cols.size));
     }
     
-    put(String p, String k, String v) {
-      db.begin();
-      try {
-        putInner(p, k, v);
-      } catch (var e) {
-        db.rollback();
-        throw(e);
-      }
-      db.commit();
-    }
+    String sw = String.new();
+    String sc = String.new();
     
-    putInner(String p, String k, String v) {
-      //("PKV putInner").print();
-      if (TS.notEmpty(p) && TS.notEmpty(k)) {
-        db.execute("DELETE FROM " + tableName + " WHERE P='" + p + "' AND K='" + k + "'");
-        db.execute("INSERT INTO " + tableName + "( P, K, V ) VALUES ('" + p + "', '" + k + "', '" +
-          v + "')");
-      }
-    }
-    
-    get() Map {
-     //("PKV get 0").print();
-      Map pkv = Map.new();
-      db.begin();
-      try {
-        foreach (var row in db.executeQuery("SELECT P,K,V FROM " + tableName)) {
-          var p = row.getString(0);
-          var k = row.getString(1);
-          var v = row.getString(2);
-          Map kv = pkv.get(p);
-          if (undef(kv)) {
-            kv = Map.new();
-            pkv.put(p, kv);
-          }
-          kv[k] = v;
+    for (Int i = 0;i < csize;i++=) {
+      if (i < vsize) {
+        if (i > 0) {
+          sw += " AND ";
         }
-      } catch (var e) {
-        db.rollback();
-        throw(e);
-      }
-      db.commit();
-      return(pkv);
-    }
-    
-    get(String p) Map {
-      //("PKV get 1").print();
-      if (TS.isEmpty(p)) {
-        return(null);
-      }
-      Map kv = Map.new();
-      db.begin();
-      try {
-        foreach (var row in db.executeQuery("SELECT K,V FROM " + tableName + " WHERE P='" + p + "'")) {
-          var k = row.getString(0);
-          var v = row.getString(1);
-          kv[k] = v;
+        sw += cols[i] += "='" += vals[i] += "'";
+      } else {
+        if (i > vsize) {
+          sc += ",";
         }
-      } catch (var e) {
-        db.rollback();
-        throw(e);
+        sc += cols[i];
       }
-      db.commit();
-      return(kv);
     }
-    
-    get(String p, String k) String {
-      db.begin();
-      try {
-        String v = getInner(p, k);
-      } catch (var e) {
-        db.rollback();
-        throw(e);
+    String selst = "SELECT " + sc + " FROM " + tableName;
+    if (TS.notEmpty(sw)) {
+      selst += " WHERE " += sw;
+    }
+    ("selst " + selst).print();
+    Array res = Array.new();
+    Int rcount = 0;
+    foreach (var row in db.executeQuery(selst)) {
+      Array rrow = Array.new(csize);
+      for (i = 0;i < csize;i++=) {
+        if (i < vsize) {
+          rrow[i] = vals[i];
+        } else {
+          rrow[i] = row.getString(i - vsize);
+        }
       }
-      db.commit();
-      return(v);
+      res[rcount] = rrow;
+      rcount++=;
     }
-    
-    getInner(String p, String k) String {
-      //("PKV getInner p: " + p + " k: " + k).print();
-      if (TS.notEmpty(p) && TS.notEmpty(k)) {
-        foreach (var row in db.executeQuery("SELECT V FROM " + tableName + " WHERE P='" + p + "' AND K='" + k + "'")) {
-            String v = row.getString(0);
-          }
-        return(v);
-      }
-      return(null);
-    }
-    
+    return(res);
+  }
+  
     delete() {
       db.begin();
       try {
@@ -337,7 +199,6 @@ class PKV {
     }
     
     deleteInner() {
-      //("PKV deleteInner 0").print();
       db.execute("DELETE FROM " + tableName);
     }
     
@@ -353,7 +214,6 @@ class PKV {
     }
     
     deleteInner(String p) {
-      //("PKV deleteInner 1").print();
       if (TS.notEmpty(p)) {
         db.execute("DELETE FROM " + tableName + " WHERE P='" + p + "'");
       }
@@ -371,7 +231,6 @@ class PKV {
     }
     
     deleteInner(String p, String k) {
-      //("PKV deleteInner 2").print();
       if (TS.notEmpty(p)) {
         db.execute("DELETE FROM " + tableName + " WHERE P='" + p + "' AND K='" + k + "'");
       }
@@ -1386,6 +1245,10 @@ private static void wakeOnLan(String hex) throws Exception
     }
   
   new() self {
+    Array _cols = Array.new(3);
+    _cols.put(0, "P");
+    _cols.put(1, "K");
+    _cols.put(2, "V");
     vars {
       OLocker webLuiL = OLocker.new();
       OLocker luiL = OLocker.new();
@@ -1398,11 +1261,11 @@ private static void wakeOnLan(String hex) throws Exception
       String linkSecret;
       Bool linkSecretReturned = false;
       Bool prod = false;              
-      CCPKV configs = CCPKV.new(self, "CONFIGS");
-      CCPKV drafts = CCPKV.new(self, "DRAFTS");
-      CCPKV accounts = CCPKV.new(self, "ACCOUNTS");
-      CCPKV links = CCPKV.new(self, "LINKS");
-      CCPKV gateways = CCPKV.new(self, "GATEWAYS");
+      CRS configs = CRS.new(self, "CONFIGS", _cols);
+      CRS drafts = CRS.new(self, "DRAFTS", _cols);
+      CRS accounts = CRS.new(self, "ACCOUNTS", _cols);
+      CRS links = CRS.new(self, "LINKS", _cols);
+      CRS gateways = CRS.new(self, "GATEWAYS", _cols);
       OLocker clearExternalIpUpdate = OLocker.new(false);
       OLocker webStarted = OLocker.new(false);
       OLocker webStartChecked = OLocker.new(false);
@@ -1868,133 +1731,32 @@ private static void wakeOnLan(String hex) throws Exception
   }
 }
 
-use Db:ConcurrentCachedPrefixKeyValueStore as CCPKV;
+use Db:ConcurrentRowStore as CRS;
 
-class CCPKV {
+class CRS {
 
   new() self {
     vars {
       var dbProvider;
       String tableName;
-      CLocker cache = CLocker.new(PM.new());
+      Array cols;
       OLocker storeLocker = OLocker.new();
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
-      Bool noCache = false;
     }
   }
   
-  new(_dbProvider, String _tableName) self {
+  new(_dbProvider, String _tableName, Array _cols) self {
     new();
     dbProvider = _dbProvider;
     tableName = _tableName;
-  }
-  
-  put(String fkey, String skey, String value) {
-    var e;
-    
-    unless (noCache) {
-      String val = cache.get(fkey, skey);
-      if (def(val) && def(value) && val == value) {
-        return(self); //set to same val, noop
-      }
-    }
-    
-    try {
-      PKV store = self.store;
-      store.put(fkey, skey, value);
-      self.store = store;
-      store = null;
-    } catch (e) {
-      if (def(store)) {
-        store.close();
-        store = null;
-      }
-      throw(e);
-    }
-    unless (noCache) {
-      cache.put(fkey, skey, value);
-    }
-  }
-  
-  clearCache() {
-    cache.clear();
-  }
-  
-  get() Map {
-    //why is there no caching here?  there should be
-    var e;
-    try {
-      PKV store = self.store;
-      Map val = store.get();
-      self.store = store;
-      store = null;
-    } catch (e) {
-      if (def(store)) {
-        store.close();
-        store = null;
-      }
-      throw(e);
-    }
-    return(val);
-  }
-  
-  get(String fkey, String skey) String {
-    var e;
-    unless (noCache) {
-      val = cache.get(fkey, skey);
-      if (def(val) || cache.has(fkey, skey)) {
-        return(val);
-      }
-    }
-    try {
-      PKV store = self.store;
-      String val = store.get(fkey, skey);
-      self.store = store;
-      store = null;
-    } catch (e) {
-      if (def(store)) {
-        store.close();
-        store = null;
-      }
-      throw(e);
-    }
-    unless (noCache) {
-      cache.put(fkey, skey, val);
-    }
-    return(val);
-  }
-  
-  get(String fkey) Map {
-    var e;
-    unless (noCache) {
-      val = cache.get(fkey);
-      if (def(val) || cache.has(fkey)) {
-        return(val);
-      }
-    }
-    try {
-      PKV store = self.store;
-      Map val = store.get(fkey);
-      self.store = store;
-      store = null;
-    } catch (e) {
-      if (def(store)) {
-        store.close();
-        store = null;
-      }
-      throw(e);
-    }
-    unless (noCache) {
-      cache.put(fkey, val);
-    }
-    return(val);
+    cols = _cols;
   }
   
   delete(String fkey, String skey) {
     var e;
     try {
-      PKV store = self.store;
+      RS store = self.store;
       store.delete(fkey, skey);
       self.store = store;
       store = null;
@@ -2005,15 +1767,12 @@ class CCPKV {
       }
       throw(e);
     }
-    unless (noCache) {
-      cache.delete(fkey, skey);
-    }
   }
   
   delete(String fkey) {
     var e;
     try {
-      PKV store = self.store;
+      RS store = self.store;
       store.delete(fkey);
       self.store = store;
       store = null;
@@ -2024,24 +1783,37 @@ class CCPKV {
       }
       throw(e);
     }
-    unless (noCache) {
-      cache.delete(fkey);
+  }
+  
+  close() {
+    RS store = storeLocker.getAndClear();
+    if (def(store)) {
+      store.close();
+    }
+  }
+    
+  storeGet() RS {
+    log.log(lvl, "Getting store");
+    RS store = storeLocker.getAndClear();
+    if (undef(store)) {
+      store = RS.new(dbProvider.db, tableName, cols);
+    }
+    return (store);
+  }
+  
+  storeSet(RS store) {
+    unless (storeLocker.setIfClear(store)) {
+      store.close();
     }
   }
   
-  put(String fkey, Map value) {
+  //COUNT SPECIFIC
+  
+  get() Map {
     var e;
-    
-    unless (noCache) {
-      Map val = cache.get(fkey);
-      if (def(val) && def(value) && val.contentsEqual(value)) {
-        return(self); //set to same val, noop
-      }
-    }
-    
     try {
-      PKV store = self.store;
-      store.put(fkey, value);
+      RS store = self.store;
+      Map val = getFromStore(store);
       self.store = store;
       store = null;
     } catch (e) {
@@ -2051,31 +1823,131 @@ class CCPKV {
       }
       throw(e);
     }
-    unless (noCache) {
-      cache.put(fkey, value);
-    }
+    return(val);
   }
   
-  close() {
-    PKV store = storeLocker.getAndClear();
-    if (def(store)) {
-      store.close();
+  getFromStore(RS store) Map {
+    Array vals = Array.new(0);
+    Array res = store.getMany(vals);
+    Map pkv = Map.new();
+    foreach (Array row in res) {
+      Map kv = pkv.get(row.get(0));
+      if (undef(kv)) {
+        kv = Map.new();
+        pkv.put(row.get(0), kv);
+      }
+      kv.put(row.get(1), row.get(2));
     }
-    cache.clear();
+    return(pkv);
   }
+  
+  get(String fkey) Map {
+    var e;
+    try {
+      RS store = self.store;
+      Map val = getFromStore(store, fkey);
+      self.store = store;
+      store = null;
+    } catch (e) {
+      if (def(store)) {
+        store.close();
+        store = null;
+      }
+      throw(e);
+    }
+    return(val);
+  }
+  
+  getFromStore(RS store, String p) Map {
+    Array vals = Array.new(1);
+    vals[0] = p;
+    Array res = store.getMany(vals);
+    Map kv = Map.new();
+    foreach (Array row in res) {
+      kv.put(row.get(1), row.get(2));
+    }
+    return(kv);
+  }
+  
+  get(String fkey, String skey) String {
+    var e;
+    try {
+      RS store = self.store;
+      String val = getFromStore(store, fkey, skey);
+      self.store = store;
+      store = null;
+    } catch (e) {
+      if (def(store)) {
+        store.close();
+        store = null;
+      }
+      throw(e);
+    }
+    return(val);
+  }
+  
+  getFromStore(RS store, String p, String k) String {
+    Array vals = Array.new(2);
+    vals[0] = p;
+    vals[1] = k;
+    Array res = store.getMany(vals);
+    Array v;
+    if (res.size > 0) {
+      v = res[0];
+      return(v[2]);
+    }
+    return(null);
+  }
+  
+  put(String fkey, Map value) {
+    var e;
     
-  storeGet() PKV {
-    log.log(lvl, "Getting store");
-    PKV store = storeLocker.getAndClear();
-    if (undef(store)) {
-      store = PKV.new(dbProvider.db, tableName);
+    try {
+      
+      Array lvals = Array.new(value.size);
+      Int pos = 0;
+      foreach (var kve in value) {
+        Array vals = Array.new(3);
+        vals[0] = fkey;
+        vals[1] = kve.key;
+        vals[2] = kve.value;
+        lvals.put(pos, vals);
+        pos++=;
+      }
+      
+      RS store = self.store;
+      store.putMany(lvals);
+      self.store = store;
+      store = null;
+    } catch (e) {
+      if (def(store)) {
+        store.close();
+        store = null;
+      }
+      throw(e);
     }
-    return (store);
   }
   
-  storeSet(PKV store) {
-    unless (storeLocker.setIfClear(store)) {
-      store.close();
+  put(String fkey, String skey, String value) {
+    var e;
+    
+    try {
+      Array vals = Array.new(3);
+      vals[0] = fkey;
+      vals[1] = skey;
+      vals[2] = value;
+      
+      RS store = self.store;
+      store.putOne(vals);
+      self.store = store;
+      store = null;
+      
+    } catch (e) {
+      if (def(store)) {
+        store.close();
+        store = null;
+      }
+      throw(e);
     }
   }
   
@@ -2449,10 +2321,10 @@ use class Ve:WebLui {
       if (TS.notEmpty(deviceCode) && deviceCode == arg["deviceCode"]) {
         action = "deviceCodeSuccessResponse";
         if (TS.notEmpty(arg["clearCaches"]) && arg["clearCaches"] == "true") {
-          app.configs.clearCache();
-          app.accounts.clearCache();
-          app.links.clearCache();
-          app.gateways.clearCache();
+          //app.configs.clearCache();
+          //app.accounts.clearCache();
+          //app.links.clearCache();
+          //app.gateways.clearCache();
         }
       }
     }
@@ -5079,28 +4951,6 @@ class Ve:LuiTest(Test:Assertions) {
   }
   }
   
-  cacheTest() {
-    cacheTestInner(RECache.new(3));
-  }
-  
-  mtcacheTest() {
-    cacheTestInner(CLocker.new(RECache.new(3)));
-  }
-  
-  cacheTestInner(c) {
-    ("start cache test inner " + c.className).print();
-    c.put("a", 1);
-    c.put("b", 2);
-    c.put("c", 3);
-    assertEqual(c.get("a"), 1);
-    assertEqual(c.get("b"), 2);
-    assertEqual(c.get("c"), 3);
-    assertNotNull(c.put("d", 4));
-    assertEqual(c.get("d"), 4);
-    assertEqual(c.size, 3);
-    ("end cache test inner " + c.className).print();
-  }
-  
   ifaceTest() {
     Net:Interface ni = Net:Interface.new();
     foreach (Interface i in ni.localInterfaces) {
@@ -5138,12 +4988,12 @@ class Ve:LuiTest(Test:Assertions) {
       return(db);
   }
   
-  pkvTest() {
+  /*pkvTest() {
     ("start pkvtest").print();
     DbDb db = self.db;
-    db.execute("CREATE TABLE PKV( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
+    db.execute("CREATE TABLE RS( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
              + " constraint pk_k primary key (P,K) )");
-    PKV pkv = PKV.new(db, "PKV");
+    RS pkv = RS.new(db, "RS");
     pkv.put("hi", "there", "bob");
     assertEqual(pkv.get("hi", "there"), "bob");
     Map put = Map.new();
@@ -5154,7 +5004,7 @@ class Ve:LuiTest(Test:Assertions) {
     assertEqual(got["yo"], "dawg");
     assertEqual(got["hasta"], "lavista");
     ("end pkvtest").print();
-  }
+  }*/
   
   fdbTest() {
       ("begin At:Test:fdbTest").print();

@@ -1,9 +1,23 @@
 
+generalize cckpkv/pkv layer to any num columns translation
+
+  RS general put(done) get (done) delete
+    get and delete OK with fewer cols
+  
+  RS Row Store
+  CRS Concurrent Row Store
+  
+  move multi sig support into CRS at each stage
+  test it all, configs, etc
+  
+  no cache, monitor what's going on, move those into members
+  
+  CC3KV (later, CC4KV) ? inherit or compose?
+
+fully multiuser, > cols in table(s) (?what for config? it too?)
+
 need delete
 
-generalize pkv layer, change db cache to just last N result sets < some size
-  array of arrays, < size keep going and persist
-fully multiuser
 password stuff
 
 linking - account must have same user pw on both devices
@@ -127,6 +141,8 @@ current menu is "options"
 default is "transfer" view (listing)
 
 remote !== local, distinct types
+
+safe escape sql in pkv, this is done in Jot but not in pkv as such, ' has to be handled per sql standards in statements
 
 stores
   remote
