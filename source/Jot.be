@@ -1994,7 +1994,7 @@ use class Ve:WebLui {
       IO:Log log = app.log;
       Int lvl = app.shlvl;
     }
-    //startWeb();
+    startWeb();
   }
   
   offerLinkRequest(Map arg, request) {
@@ -2739,11 +2739,16 @@ use class Ve:WebLui {
       /*String sessval = request.getSession("testsess");
       request.putSession("testsess", "testsessval");*/
       String accountName = request.getSession("account.name");
-      String mname = arg.get("action");
+      Map arg = request.scriptArg;
+      if (def(arg)) {
+        String mname = arg.get("action");
+      }
       if (TS.isEmpty(accountName)) {
         unless (def(mname) && (mname == "linkRequest" || mname == "linkSecretsRequest" || mname == "macRequest" || mname == "primeRequest" || mname == "gnsRegisterRequest" || mname == "gnsUpdateRequest" || mname == "gnsGetRequest" || mname == "deviceCodeRequest")) {
-          request.scriptReturn = authRequest(arg, request);
-          return(null);
+          if (def(arg)) {
+            request.scriptReturn = authRequest(arg, request);
+            return(null);
+          }
         }
       }
       //if (def(accountName)) {
@@ -2782,9 +2787,10 @@ use class Ve:WebLui {
           }
         }
       }
-      Map arg = request.scriptArg;
       if (undef(arg)) {
+        log.log(lvl, "Going to read jotui");
         request.outputContent = app.readHtml("JotUi.html");
+        log.log(lvl, "read jotui");
         return(null);
       }
       if (undef(mname) || mname.ends("Request")!) {
@@ -2805,8 +2811,10 @@ use class Ve:WebLui {
     } catch (var e) {
       arg = Map.new();
       unless (app.prod) {
-        log.log(lvl, "Caught exception during handleWeb");
-        if (def(e) && log.will(lvl)) {
+        log.log(lvl, "Caught exception during handleWeb A");
+        if (def(e)) {
+          //("e error ").print();
+          //e.print();
           log.log(lvl, "Error was " + e);
         }
       }
@@ -3859,7 +3867,7 @@ use class Ve:Lui {
         } catch (var e) {
            arg = Map.new(); 
            unless (app.prod) {
-              log.log(lvl, "Caught exception during handleWeb");
+              log.log(lvl, "Caught exception during handleWeb B");
               if (def(e)) {
                 log.log(lvl, "Error was " + e);
               }

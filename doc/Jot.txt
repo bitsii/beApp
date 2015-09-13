@@ -1,24 +1,45 @@
 
-generalize cckpkv/pkv layer to any num columns translation
+authenticated login and wake, save macs and names, see about android
 
-  RS general put(done) get (done) delete
+? put raspi between router and modem ? have it do dns et all ?
+? use raspi as router ?
+-- http://jacobsalmela.com/raspberry-pi-and-routing-turning-a-pi-into-a-router/
+-- http://raspberrypihq.com/how-to-turn-a-raspberry-pi-into-a-wifi-router/
+(edimax works!)
+
+do discover, have to do upnp et all anyway
+
+get good finalized linking based on login and token
+get ui to ui stepping working
+wakeup directly
+wakeup across box hops
+
+c#/win working webui
+external inclusions for web ui
+
+power saving and connecting up
+  works with the automation tool shed approach
+moving data around
+opening ports/tunnels
+
+hrs - hierarchical row store (consolidate crs as sensible - 1 level at hrs level) - then ?2rs, 3rs, 4rs from inheritance
+generalize crs/rs layer to any num columns translation
+  RS general put(done) get (done) delete (not done)
     get and delete OK with fewer cols
-  
   RS Row Store
   CRS Concurrent Row Store
-  
   move multi sig support into CRS at each stage
-  test it all, configs, etc
-  
-  no cache, monitor what's going on, move those into members
-  
+  then pull out CRS Map to cc3kv
   CC3KV (later, CC4KV) ? inherit or compose?
 
-fully multiuser, > cols in table(s) (?what for config? it too?)
-
-need delete
-
-password stuff
+tool shed / personal data thing
+  automation/scheduling
+  auth/run
+  access to apps, exiting, ui links
+  file access
+  a platform, etc
+  
+sync and share
 
 linking - account must have same user pw on both devices
 
@@ -43,22 +64,9 @@ discover
   send clear action and link id crypted with random secret own ip and secret + y   
     rounds (y from secret) and url and test value
   return same (other ip) (incremented test value), ssl signature
-  
-have "security" with device compromised, change password, confirm link, etc (?my account?)
-send to from service, sync
 
-separate web and lui versions, just the web part, web extends lui instead of other way around
-  remember to check originUI and creating account when empty logic
-  
-add real machine name getter
-  scutil --get ComputerName
-
-cleanup unused
-diff types of notes with defaults
-js to be
-
-ready to go
-
+automaton
+DOITZER.COM DOEZER.COM
 friending - accounts on same server can be friends
   share things, chat
   to become friends, both ask for other
@@ -69,52 +77,18 @@ friending - accounts on same server can be friends
 
 duckdns + startssl should work
 
-category
-name
-version
-type (note, login, ccard, ...)
-type specific (note text, login, pass, etc)
-store in db, json for data
-
-category nested
-
-changes all log oriented
-svc all logs
-
-searching
-
-all db, service for storing, sync abstraction
-home/raspi service option
-> some size goes to external file, else in db
-
-each item gets a version > than
-current in one table, old in a different
-
-create templates of your own, incl fields
-password list (n + m -> n hash crypted with current password (n))
-depot has entries for clients (rand val is id)
-clients have placemarks for
-depot position, these have changed item paths in them
-rolling forward timestamp + id
-client removes all of it's own prior entries when creating a new one
+for connections which can't listen, etc, hosting
 
 free hosting
   azure, looks to have everything, default ssl, db? local?
     looks like local ok for db,
     http://stackoverflow.com/questions/14113665/sqlite-on-azure-website
+    azure free web tier, cleardb http://www.johnpapa.net/azurecleardbmysql/
   so does gae, confused about db but we'll see. local?
-
-store/gw (rasberry)
-wakeup option
   
-show versions
+  https://neocities.org/
 
-for service - changes since X, externalize large items, paging
-drop no longer relevant log items
-
-searching with like (where)
-  
-password handling
+  password handling
   n cycles of password is the key, n + m cycles is what is stored to confirm
   prior password n cycles are encrypted with new password on change, unlocked
     when password entered (actually, just do for current password always on setting it)
@@ -140,94 +114,7 @@ adjust to this, keep linking et all, drop gw
 current menu is "options"
 default is "transfer" view (listing)
 
-remote !== local, distinct types
-
 safe escape sql in pkv, this is done in Jot but not in pkv as such, ' has to be handled per sql standards in statements
-
-stores
-  remote
-   flat - but prefix based/hierarchical (use dir len counts in name, esc sp and dir slashes)
-   name incl ts/ver
-   latest newest
-   "vers to keep"
-   ??have a shared config??
-  local
-   db - track change, etc
-   files on fs
-   
-local to remote
-  put changed unsynced (db tracked) to remote, just writing files
-  list, rm as needed (sort order, old to new, at end of set for a file will know what to delete)
-  
-remote to local
-  list remote
-  pull any newer/not present
-  global "last update" for quick sync need check
-  
-remote stuff
-  nested dirs
-  config dir with config(s) in json
-    num versions to keep
-  name
-     encoded path (code(t- txt, w-spc, s-separator)) so t2-bb-w3-s1-t3ccc ...
-     ?json or bin encode-decode text?  bin en-decode stays ordered... (same json - try json)
-     count post encode
-  
-pass safe + notes
-  lock symbol shows password protection or no
-    note (ns), credentials (s), ccard/payment (s), contact (?s)
-  own web svc (azure/appeng/whatnot) - from ve
-    working web ui
-
-db for local conf
-file/storage apis for data (flat list, details encoded in name)
-manual conflict res
-
-categories on left, list on right, an "all"
-form has subject, category, content
-
-azure free web tier, cleardb http://www.johnpapa.net/azurecleardbmysql/
-google app engine
-
-separate out bcastle/web from ui
-could use duck for dns for web ver
-
-types:
-passphrase (fform)
-username password
-ccard
-...
-
-contacts
-encrypt in transit
-
-ui
-  db, field for directory, field for name, field for content, field for type,
-   field for attachment id, version
-  ui directory navigation
-    dir you're in
-    dropdown of dirs (or just part of links/list for files?)
-    up link
-    root link?
-    ?someday, bookmarks?
-    for file, no distinction view/edit? need to be able to copy w/out see...
-      show directory your in, have a return to directory (close?) option (if edited
-        and unsaved, confirm, yadda)
-      could have view/edit/copy links on file, though not so good for multi value
-      so...
-      just a link to enter the item (type indicator, incl for dirs)
-      view/copy/edit next to each, view all option (view and edit the same)
-      ("show-edit", "show-edit all")
-  ui basic types
-  local store/save
-  ?local sync? (direct to/from server?)
-  ?over the net (upnp, devices, etc)?
-   
-  ? once pw changed, only new gets you in
-  ? time limit before erasing old versions? or, just require one old password ?
-
-individual
-shared
 
 mac - cc webview, (?jv to start? both download options, w/wout jdk)
 win - c# webview
@@ -241,184 +128,14 @@ ios - cc ios view, js cordova to start?
 sqlite for data
 later, storage abstraction
 (postgres/mysql to start... or even just svc in front of sqlite (is threadsafe) doesn't need to be web scale :-) if dependency dept light, can migrate to webscale later)
-
-no crypt iface + tests
-  
-  firebird
-  crypt
   
 firebird stuff
   http://silent-code.blogspot.com/2011/12/firebird-isql-create-database-file.html
   http://blog.cincura.net/224165-firebird-embedded-and-net/
   
-ui, store save, no pass
-add pass
-add self sync
-online ver
-
-system dbs - s_
-user dbs - u_
-
-dl + run, no install (portable)
-
-crypted notes, password locker
-
-draft
-  local
-  local db for storage (blobs store externally) - 
-    
-  password
-    crypt
-      n rounds pw->key
-      n + m rounds key->verify
-        both need salt, ? might as well be same ?
-    change password
-      new version of all
-      pw history, ver on item
-  
-  notes
-  ccard
-  pics
-  contacts
-  music
-  others
-  
-  + sync
-
-  db
-    prefix query for dir entry
-
-pnacl/chrome app?    
-android + win, android jv + chromium thing
-
-test crypt for all, core test set for all
-
-svc-
-  node or jv
-  rdb + s3
-  
 softpedia, download.com, etc, downloads
 
 node-webkit, cordova for mac + ios
 ?could do same for win, or, c#chromiumembedded /cordova with c# plugin (maybe later)
-  
-sync
-  between devices on local net (ui, cross-enter, sync) (remember, assoc with network, central for ip / bcast?)
 
-own web
-
-
-
-attachments
-contacts
-pics
-syncing & such - doc types, pattern/location automatically become nodes, are updated (with versioning)
-
- could do crome app, firefox os app, firefox extension, etc
-
-node-webkit + phonegap
-java for output
-node for web
-
-macgap, **node-webkit, chromium embedded
-
--node-webkit for mac, win (or cs for win), phonegap for ios, android
-
-DATA BAG
-
-break into pieces - note app open source, just local
-transfer app no encryption, an/or only for authentication (which is ok)
--also custom url https://developer.apple.com/library/ios/documentation/uikit/reference/UIPasteboard_Class/Reference.html
-
-do c# and java together (android) and js (?extension)
-android - shared storage, content provider http://developer.android.com/guide/topics/providers/content-providers.html
-ios - http://enharmonichq.com/sharing-data-locally-between-ios-apps/
-
-background app access pasteboard
-
-notes back and forth from local
-fs
-simple folder navigation
-optional encrypt
-
-ajoteno.com (thing holder) aoteno.com yoteno.com
-
-kaverno.com malneto.com fendeto.com kukulo.com 
-
-Plain old note app/attachments/links
-hold locally also
-contacts, sms, etc (only for paid??)
-simple tree view -
---built in editor of some kinds (text, at least - form?) with encryption
---multiple connections for a base (top level folder), things like size settings (total, per-message)
-
-editor
-http://quilljs.com/
-http://ckeditor.com/
-http://www.themaninblue.com/experiment/widgEditor/
-http://xing.github.io/wysihtml5/
-
-+/- vs power - 
-no infra
-no web
-no linking
-totally "silent"
-
-imap:
-seem to be decent libs for java/android, ios, c#
-c#
-https://imapx.codeplex.com/
-https://github.com/smiley22/S22.Imap
-https://github.com/andyedinborough/aenetmail
--attachment as stream
-http://stackoverflow.com/questions/527214/how-do-i-add-an-attachment-to-an-email-using-system-net-mail
-jv
-https://code.google.com/p/javamail-android/
-https://java.net/projects/javamail/pages/Home
-http://stackoverflow.com/questions/5297770/android-javamail-api-imap-over-ssl
-
-how listings work:
-top level is a link, one active at a time (or none)
-tree area active after entering
-just a flat dir (whatever) of entries
-item and data
--for filestores, two files per item - .itm for item def (json marshall), actual extension? (or .dta) for the actual (have to copy to decrypt anyway...)
--for imap, body is .itm, attachment is .dta (would be good to have both crypted and unencrypted parts of itm)
--filename/subject sufficient to detect change, differentiate - 
---id (random unique, not path, always begins with initially creating clientid, can leverage local fs create for unique), vern + verc
--salt per, in item.  
-
--for imap, is subject = type/path, attachment = json (or encr json) (application/octet-stream mimetype)
--for files, b16encode name = type/path, contents = json (or encr json)
-list, arrange into tree
-types:
-tjson (text json)
-ejson (encrypted json)
-
-export/encrypt
-http://stackoverflow.com/questions/8736298/encryption-app-approval-from-apple
-http://tigelane.blogspot.com/2011/01/apple-itunes-export-restrictions-on.html
-http://stackoverflow.com/questions/2135081/does-my-application-contain-encryption
-
-backlog:
-all testing
-basic file store for config
---change path to be random generated value for id (construct is both text of item and id of item)
----secure and not secure part of item
-store configs & notes
--unsecure item (key index, -1 is none), secure item (remainder - path)
---separate config in store for keys, etc, from connect config which is local
--save/load notes from local file
--basic encrypt/decrypt, for config and notes
---list of keys in config (ids random like client?)
---config is a type of thing in the folder
---key versions/list - 0 means no crypt
-node for building display tree (path stuff) (?path tree?)
-(in storage is a flat single-level dir, logically, is multilevel tree)
-do jv too, testing, ready for android 
-
-name of file /subject of msg (item id) has all the info
-
-
-
-
+app fully multiuser, > cols in table(s) (?what for config? it too?)
