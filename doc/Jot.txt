@@ -1,5 +1,8 @@
 
-authenticated login and wake, save macs and names, see about android
+get building and running on windows
+put on box, start to use (pi backup)
+
+, save macs and names, see about android
 
 ? put raspi between router and modem ? have it do dns et all ?
 ? use raspi as router ?
@@ -8,6 +11,10 @@ authenticated login and wake, save macs and names, see about android
 (edimax works!)
 
 do discover, have to do upnp et all anyway
+general nameservice
+  dns repl or dyn?
+
+cross site script protection
 
 get good finalized linking based on login and token
 get ui to ui stepping working

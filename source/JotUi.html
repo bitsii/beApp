@@ -647,7 +647,7 @@ if (typeof JSON !== 'object') {
           
           //reset menu buttons
           document.getElementById("accountSubmit").style.display = "block";
-          document.getElementById("linkSubmit").style.display = "block";
+          //document.getElementById("linkSubmit").style.display = "block";
           
           //document.getElementById("gatewaySubmit").style.display = "block";
           //document.getElementById("sendFileSubmit").style.display = "block";
@@ -1314,14 +1314,15 @@ if (typeof JSON !== 'object') {
         </div>
         <div id="menuDiv" style="display: none;">
             <form action="#" id="menuForm" onsubmit="openMenu();return false;">
+            
+            <p><input id="accountSubmit" class="luiForm" type="submit" value="Accounts" onclick="openAccount();return false;"></p>
+            <p><input id="setupSubmit" class="luiForm" type="submit" value="Configure" onclick="openSetup();return false;"></p>
+            <p><input id="utilsSubmit" class="luiForm" type="submit" value="Utilities" onclick="openUtils();return false;"></p>
+            <!--
             <p><input id="newSubmit" class="luiForm" type="submit" value="Create" onclick="openJot();return false;"></p>
             <p><input id="categoriesSubmit" class="luiForm" type="submit" value="List" onclick="categoryRequest('');return false;"></p>
             <p><input id="linkSubmit" class="luiForm" type="submit" value="Connect" onclick="createLink();return false;"></p>
-            <p><input id="accountSubmit" class="luiForm" type="submit" value="Accounts" onclick="openAccount();return false;"></p>
-            <p><input id="setupSubmit" class="luiForm" type="submit" value="Configure" onclick="openSetup();return false;"></p>
-            <!--
             <p><input id="gatewaySubmit" class="luiForm" type="submit" value="Gateway" onclick="openGateway();return false;"></p>
-            <p><input id="utilsSubmit" class="luiForm" type="submit" value="Utilities" onclick="openUtils();return false;"></p>
             <p><input id="sendFileSubmit" class="luiForm" type="submit" value="Transfer" onclick="localBrowseRequest('');return false;"></p>
             <p><input id="shutdownSubmit" class="luiForm" type="submit" value="Shutdown" onclick="shutdownRequest();return false;"></p>
             -->

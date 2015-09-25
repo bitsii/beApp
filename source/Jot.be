@@ -935,6 +935,8 @@ private static void wakeOnLan(String hex) throws Exception
   wakeMacAddr(String addr) {
     addr = addr.swap(":", "");
     addr = addr.swap("-", "");
+    addr = addr.strip();
+    log.log(lvl, "Waking " + addr);
     emit(cs) {
     """
     WakeOnLan(beva_addr.bems_toCsString());
