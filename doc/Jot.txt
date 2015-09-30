@@ -1,5 +1,10 @@
 
 get building and running on windows
+get on pis(?node it? nothread?)
+android
+
+try from git only
+
 put on box, start to use (pi backup)
 
 , save macs and names, see about android
