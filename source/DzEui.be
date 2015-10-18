@@ -26,6 +26,7 @@ var startup = function() {
   mc1.bem_new_0();
   mc1.bem_main_0();
 }
+window.onload = startup;
 """
 }
 
@@ -37,10 +38,52 @@ use class Dz:Eui {
     }
 
     main() {
+      String val = "<h2>boo</h2>";
       emit(js) {
       """
-        document.getElementById("msgdiv").innerHTML = "<h2>boo</h2>";
+        document.getElementById("msgdiv").innerHTML = this.bems_stringToJsString_1(bevl_val);
       """
       }
+      //Map arg = Map.new();
+      //arg["boo"] = 1;
+      //arg["action"] = "sayHelloRequest";
+      //UI:CallWebHandler.new().call(arg);
    }
 }
+
+use UI:CallWebHandler {
+
+  default() self {
+    vars {
+      //Json:Marshaller mar = Json:Marshaller.new();
+      //Json:Unmarshaller unmar = Json:Unmarshaller.new();
+    }
+  }
+
+  call(Map arg) {
+    //String argjs = mar.marshall(arg);
+    emit(js) {
+    """
+    //var res = window.external.HandleCall(this.bems_stringToJsString_1(bev_argjs));
+    """
+    }
+  }
+
+}
+
+/*
+var callAppEmb = function(arg) {
+    var res = window.external.HandleCall(JSON.stringify(arg));
+    //alert(res);
+    if (res != null) {
+        var evjs = JSON.parse(res);
+        //alert(evjs.action);
+        if (evjs && evjs.action) {
+            var afunc = eval(evjs.action);
+            var args = new Array(1);
+            args[0] = evjs;
+            afunc.apply(null, args);
+        }
+    }
+}
+*/

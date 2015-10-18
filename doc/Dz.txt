@@ -1,7 +1,7 @@
 
-split to base and extended (extended using base), js using base
-split out a file for browser controlling classes (document/browser element, getting by id, setting style, value, innerhtml, etc)
-serialization b/f, string serialization changes?  js check serialization test?
+use be json?
+global native line offset for exceptions, or put at top of script
+browser controlling classes (document/browser element, getting by id, setting style, value, innerhtml, etc)
 
 separate lui, webui, etc
 basic comm
@@ -61,6 +61,7 @@ wakeup across box hops
 c#/win working webui
 external inclusions for web ui
 
+
 power saving and connecting up
   works with the automation tool shed approach
 moving data around
@@ -100,14 +101,6 @@ discover
   return same (other ip) (incremented test value), ssl signature
 
 automaton
-DOITZER.COM DOEZER.COM DOEZET.COM
-friending - accounts on same server can be friends
-  share things, chat
-  to become friends, both ask for other
-  (?discoverable on server? done by admin?)
-  once done, can be directly discovered even without server
-    same as linking, secrets shared, permissions on link are limited to
-      chat and sharing and whatever they setup
 
 duckdns + startssl should work
 

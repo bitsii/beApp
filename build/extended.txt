@@ -1,0 +1,26 @@
+#../be/source/extended/Json.be
+--jv_source
+../be/source/base/EcProcess.be
+--cs_source
+../be/source/base/EcProcess.be
+--js_source
+../be/source/base/EcProcess.be
+--jv_source
+../be/source/extended/EcPlat.be
+--cs_source
+../be/source/extended/EcPlat.be
+--js_source
+../be/source/extended/EcPlat.be
+#below for build
+../be/source/extended/Serialize.be
+../be/source/extended/FilePath.be
+../be/source/extended/FileReadWrite.be
+../be/source/extended/Startup.be
+../be/source/extended/Command.be
+#below for apps
+../be/source/extended/Log.be
+../be/source/extended/Template.be
+../be/source/extended/Properties.be
+#source/extended/SubProcess.be
+#source/extended/FileFind.be
+../be/source/extended/Xml.be

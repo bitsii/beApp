@@ -67,6 +67,13 @@ use class Dz:Lui {
 
    }
 
+   sayHelloRequest(Map arg, request) {
+      Map res = Map.new();
+      res["action"] = "sayHelloResponse";
+      res["msg"] = "hello";
+      return(res);
+   }
+
     handleWeb(request) {
         try {
             Map arg = request.scriptArg;
