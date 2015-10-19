@@ -68,6 +68,8 @@ use class Dz:Lui {
    }
 
    sayHelloRequest(Map arg, request) {
+      "in say hello".print();
+      log.log(lvl, "In say hello");
       Map res = Map.new();
       res["action"] = "sayHelloResponse";
       res["msg"] = "hello";

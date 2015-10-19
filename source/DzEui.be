@@ -44,46 +44,55 @@ use class Dz:Eui {
         document.getElementById("msgdiv").innerHTML = this.bems_stringToJsString_1(bevl_val);
       """
       }
-      //Map arg = Map.new();
-      //arg["boo"] = 1;
-      //arg["action"] = "sayHelloRequest";
-      //UI:CallWebHandler.new().call(arg);
+      Map arg = Map.new();
+      arg["action"] = "sayHelloRequest";
+      CH.new(self).call(arg);
+   }
+   
+   sayHelloResponse(Map arg) {
+     String msg = arg["msg"];
+     emit(js) {
+     """
+     document.getElementById("infotxt").value = bevl_msg.bems_toJsString();
+     """
+     }
    }
 }
 
-use UI:CallWebHandler {
+use UI:CallWebHandler as CH;
 
-  default() self {
+class CH {
+
+  new(_callback) self {
     vars {
-      //Json:Marshaller mar = Json:Marshaller.new();
-      //Json:Unmarshaller unmar = Json:Unmarshaller.new();
+      Json:Marshaller mar = Json:Marshaller.new();
+      Json:Unmarshaller unmar = Json:Unmarshaller.new();
+      var callback = _callback;
     }
   }
 
   call(Map arg) {
-    //String argjs = mar.marshall(arg);
+    String argjs = mar.marshall(arg);
+    String resjs;
     emit(js) {
     """
-    //var res = window.external.HandleCall(this.bems_stringToJsString_1(bev_argjs));
+    var res = window.external.HandleCall(bevl_argjs.bems_toJsString());
+    //document.getElementById("infotxt").value = res;
+    if (res !== null) {
+      bevl_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
+      //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
+    }
     """
     }
-  }
-
-}
-
-/*
-var callAppEmb = function(arg) {
-    var res = window.external.HandleCall(JSON.stringify(arg));
-    //alert(res);
-    if (res != null) {
-        var evjs = JSON.parse(res);
-        //alert(evjs.action);
-        if (evjs && evjs.action) {
-            var afunc = eval(evjs.action);
-            var args = new Array(1);
-            args[0] = evjs;
-            afunc.apply(null, args);
-        }
+    if (def(resjs)) {
+      Map resm = unmar.unmarshall(resjs);
+      String mname = resm["action"];
+      Array rargs = Array.new(1);
+      rargs[0] = resm;
+      if (callback.can(mname, rargs.length)) {
+        callback.invoke(mname, rargs);
+      }
     }
+  }
 }
-*/
+
