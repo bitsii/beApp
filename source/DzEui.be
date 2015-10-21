@@ -38,30 +38,63 @@ use class Dz:Eui {
     }
 
     main() {
-      String val = "<h2>boo</h2>";
-      emit(js) {
-      """
-        document.getElementById("msgdiv").innerHTML = this.bems_stringToJsString_1(bevl_val);
-      """
-      }
+      HD.getElementById("msgdiv").innerHTML = "<h2>boo</h2>";
       Map arg = Map.new();
       arg["action"] = "sayHelloRequest";
-      CH.new(self).call(arg);
+      HC.new(self).call(arg);
    }
    
    sayHelloResponse(Map arg) {
-     String msg = arg["msg"];
-     emit(js) {
-     """
-     document.getElementById("infotxt").value = bevl_msg.bems_toJsString();
-     """
-     }
+     HD.getElementById("infotxt").value = arg["msg"];
    }
 }
 
-use UI:CallWebHandler as CH;
+//UI:HtmlDom:Document :Element .getElementById
 
-class CH {
+use UI:HtmlDom:Document as HD;
+
+class HD {
+  default() self {
+    
+  }
+  
+  getElementById(String id) {
+    return(HE.new(id));
+  }
+}
+
+use UI:HtmlDom:Element as HE;
+
+class HE {
+  new(String id) self {
+    emit(js) {
+    """
+    this.bevi_element = document.getElementById(beva_id.bems_toJsString());
+    """
+    }
+  }
+  
+  valueSet(String val) self {
+    emit(js) {
+    """
+    this.bevi_element.value = beva_val.bems_toJsString();
+    """
+    }
+  }
+  
+  innerHTMLSet(String val) self {
+    emit(js) {
+    """
+    this.bevi_element.innerHTML = beva_val.bems_toJsString();
+    """
+    }
+  }
+  
+}
+
+use UI:HtmlDom:Call as HC;
+
+class HC {
 
   new(_callback) self {
     vars {
