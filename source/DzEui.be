@@ -49,8 +49,6 @@ use class Dz:Eui {
    }
 }
 
-//UI:HtmlDom:Document :Element .getElementById
-
 use UI:HtmlDom:Document as HD;
 
 class HD {

@@ -1,11 +1,14 @@
 
 basics - getting in waking up boxes (save macs etc)
-  just use db directly
-  login
+  use rowstore, put crs around it without the map stuff (just for concurrency)
+    test
+    db with test, csc too
+    rs with test...
+    crs
+  login (test)
   wake
   save name/mac
   windows / csc
-  vnc in browser / novnc https://github.com/kanaka/noVNC
   support port forward for ssh (manual to hub, hub may need to double-forward locally) or over novnc
   hub/app need to do internal discovery and auto port forward (ok dynamic ip, needs to be plug and play)
   dynamic updates/passthrough for other machines - info on open port (link to box)

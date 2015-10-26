@@ -18,6 +18,7 @@ use IO:File;
 use System:Random;
 use Text:Strings as TS;
 use UI:WebBrowser as WeBr;
+use Test:Assertions as Assert;
 
 use class Dz:Lui {
 
@@ -60,6 +61,8 @@ use class Dz:Lui {
         webr.content = content;
         //webr.content = IO:File.new("Dz.html").reader.open().readString();
         webr.setup();
+      } elif (mode == "test") {
+        Dz:Test.new().main();
       }
    }
 
@@ -116,6 +119,20 @@ use class Dz:Lui {
       webr.close();
       webr.exit();
     }
+
+}
+
+use class Dz:Test(Assert) {
+
+  testTest() {
+  
+  }
+ 
+  main() {
+    "Begin Test".print();
+    testTest();
+    "End Test".print();
+  }
 
 }
 
