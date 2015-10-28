@@ -7,7 +7,7 @@
 use Text:String;
 use Logic:Bool;
 use Math:Int;
-use System:Exception as Exc;
+use System:Exception;
 use Container:Array;
 use Container:Map;
 use Container:Set;
@@ -84,7 +84,7 @@ use class Dz:Lui {
             Map arg = request.scriptArg;
             String mname = arg.get("action");
             if (undef(mname) || mname.ends("Request")!) {
-              throw(Exc.new("Invalid request"));
+              throw(Exception.new("Invalid request"));
             }
             String accountName = request.getSession("account.name");
             Array args = Array.new(2);
@@ -122,6 +122,414 @@ use class Dz:Lui {
 
 }
 
+use class Dz:App {
+
+  dbPathGet() IO:File:Path {
+    String dbp = "TDB";
+    ifEmit(jv) {
+      dbp += "JV";
+    }
+    ifEmit(cs) {
+      dbp += "CS";
+    }
+    return(IO:File:Path.new(dbp));
+  }
+  
+  dbGet() DbDb {
+        DbDb db;
+        IO:File:Path dbfp = self.dbPath;
+        if (dbfp.file.exists!) {
+          Bool createDb = true;
+          if (dbfp.parent.file.exists!) {
+            dbfp.parent.file.makeDirs();
+          }
+        } else {
+          createDb = false;
+        }
+        String dbAddr;
+        ifEmit(cs) {
+          dbAddr = "ServerType=1;User=SYSDBA;" + 
+          "Password=masterkey;Dialect=3;Database=" + dbfp.toString("\\");
+          //log.log(lvl, "new db dbAddr " + dbAddr);
+          db = FbDb.new(dbAddr);
+          if (createDb) {
+            db.createDatabase();
+          }
+          db.open();
+        }
+        ifEmit(jv) {
+          //dbAddr = "jdbc:derby:" + dbfp.toString() + ";create=true";
+          //db = DbDb.new(dbAddr);
+          //db.driverOpen("org.apache.derby.jdbc.EmbeddedDriver");
+          
+          dbAddr = "jdbc:sqlite:" + dbfp.toString();
+          db = DbDb.new(dbAddr);
+          db.driverOpen("org.sqlite.JDBC");
+        }
+        if (createDb) {
+          db.begin();
+          db.execute("CREATE TABLE CONFIGS( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
+         + " constraint CONFIGS_k primary key (P,K) )");
+          db.execute("CREATE TABLE DRAFTS( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
+         + " constraint DRAFTS_k primary key (P,K) )");
+          db.execute("CREATE TABLE ACCOUNTS( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
+         + " constraint ACCOUNTS_k primary key (P,K) )");
+         db.execute("CREATE TABLE LINKS( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
+         + " constraint LINKS_k primary key (P,K) )");
+         db.execute("CREATE TABLE GATEWAYS( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
+         + " constraint GATEWAYS_k primary key (P,K) )");
+          db.commit();
+        }
+        return(db);
+    }
+
+}
+
+emit(jv) {
+"""
+import java.sql.*;
+"""
+}
+use Db:Relational:Database as DbDb;
+class Db:Relational:Database {
+
+emit(cs) {
+"""
+public DbConnection bevi_conn = null;
+public DbTransaction bevi_trans = null;
+"""
+}
+emit(jv) {
+"""
+public Connection bevi_conn = null;
+public Connection bevi_trans = null;
+"""
+}
+
+  new(String _db) self {
+    properties {
+      String db = _db;
+    }
+  }
+  
+  createDatabase() self {
+    if (true) {
+      throw(Exception.new("No Capability to create database"));
+    }
+    return(self);
+  }
+  
+  open() self {
+    emit(cs) {
+    """
+      bevi_conn.Open();
+    """
+    }
+    emit(jv) {
+    """
+      bevi_conn = DriverManager.getConnection(
+        bevp_db.bems_toJvString()
+        );
+    """
+    }
+  }
+  
+  driverOpen(String driver) self {
+    ifEmit(cs) {
+      open();
+    }
+    emit(jv) {
+    """
+      Class.forName(beva_driver.bems_toJvString());
+      bevi_conn = DriverManager.getConnection(
+        bevp_db.bems_toJvString()
+        );
+    """
+    }
+  }
+
+  begin() self {
+    emit(cs) {
+    """
+    if (bevi_trans != null) {
+    """
+    }
+    emit(jv) {
+    """
+    if (bevi_trans != null) {
+    """
+    }
+    ifEmit(cs) {
+    throw(Exception.new("Transaction in progress, cannot begin until " +
+      "existing transaction is committed or rolled back"));
+    }
+    ifEmit(jv) {
+    throw(Exception.new("Transaction in progress, cannot begin until " +
+      "existing transaction is committed or rolled back"));
+    }
+    emit(cs) {
+    """
+    }
+    bevi_trans = bevi_conn.BeginTransaction();
+    """
+    }
+    emit(jv) {
+    """
+    }
+    bevi_conn.setAutoCommit(false);
+    bevi_trans = bevi_conn;
+    """
+    }
+    }
+    
+    commit() self {
+      emit(cs) {
+      """
+      try {
+      bevi_trans.Commit();
+      } finally {
+      bevi_trans = null;
+      }
+      """
+      }
+      emit(jv) {
+      """
+      try {
+      bevi_conn.commit();
+      } finally {
+      bevi_trans = null;
+      bevi_conn.setAutoCommit(false);
+      }
+      """
+      }
+    }
+    
+    rollback() self {
+      emit(cs) {
+      """
+      try {
+      bevi_trans.Rollback();
+      } finally {
+      bevi_trans = null;
+      }
+      """
+      }
+      emit(jv) {
+      """
+      try {
+      bevi_conn.rollback();
+      } finally {
+      bevi_trans = null;
+      }
+      """
+      }
+    }
+  
+  close() self {
+    emit(cs) {
+    """
+      bevi_conn.Close();
+    """
+    }
+    emit(jv) {
+    """
+      bevi_conn.close();
+    """
+    }
+  }
+  
+  getStatement(String _stmt) DbSt {
+    DbSt st = DbSt.new(_stmt, self);
+    emit(jv) {
+    """
+    bevl_st.bevi_stmt = bevi_conn.createStatement();
+    """
+    }
+    return(st);
+  }
+  
+  execute(String stmt) DbSt {
+    DbSt fbstmt = getStatement(stmt);
+    return(fbstmt.execute());
+  }
+  
+  executeQuery(String stmt) DbSt {
+    DbSt fbstmt = getStatement(stmt);
+    return(fbstmt.executeQuery());
+  }
+
+}
+
+use Db:Relational:Statement as DbSt;
+class Db:Relational:Statement {
+
+emit(cs) {
+"""
+public DbCommand bevi_cmd = null;
+public DbDataReader bevi_reader = null;
+"""
+}
+
+emit(jv) {
+"""
+public Statement bevi_stmt = null;
+public ResultSet bevi_res = null;
+"""
+}
+  
+   new(String _stmt, DbDb _db) self {
+     properties {
+        String stmt = _stmt;
+        DbDb db = _db;
+        Bool nextWaiting = false;
+      }
+   }
+        
+   execute() self {
+     emit(cs) {
+     """
+     bevi_cmd.ExecuteNonQuery();
+     """
+     }
+     emit(jv) {
+     """
+     bevi_stmt.executeUpdate(bevp_stmt.bems_toJvString());
+     """
+     }
+   }
+   
+   executeQuery() self {
+     emit(cs) {
+     """
+     bevi_reader = bevi_cmd.ExecuteReader();
+     """
+     }
+     emit(jv) {
+     """
+     bevi_res = bevi_stmt.executeQuery(bevp_stmt.bems_toJvString());
+     """
+     }
+   }
+   
+   hasNextGet() Bool {
+     if (nextWaiting) {
+      return(true);
+     }
+     emit(cs) {
+     """
+     if (bevi_reader.Read()) {
+     """
+     }
+     emit(jv) {
+     """
+     if (bevi_res.next()) {
+     """
+     }
+     nextWaiting = true;
+     emit(cs) {
+     """
+     }
+     """
+     }
+     emit(jv) {
+     """
+     }
+     """
+     }
+     return(nextWaiting);
+   }
+   
+   nextGet() self {
+     if (nextWaiting) {
+       nextWaiting = false;
+       return(self);
+     }
+     if (self.hasNext) {
+      return(self);
+     }
+     return(null);
+   }
+   
+   //get col as string for current row
+   getString(Int col) String {
+      String res;
+      emit(cs) {
+      """
+      bevl_res = new BEC_4_6_TextString(bevi_reader[beva_col.bevi_int].ToString());
+      """
+      }
+      emit(jv) {
+      """
+      bevl_res = new BEC_4_6_TextString(bevi_res.getString(beva_col.bevi_int + 1));
+      """
+      }
+      return(res);
+   }
+   
+   getInt(Int col) Int {
+      Int res;
+      emit(cs) {
+      """
+      bevl_res = new BEC_4_3_MathInt((int)bevi_reader[beva_col.bevi_int]);
+      """
+      }
+      emit(jv) {
+      """
+      bevl_res = new BEC_4_3_MathInt(bevi_res.getInt(beva_col.bevi_int + 1));
+      """
+      }
+      return(res);
+   }
+   
+   iteratorGet() {
+    //to support foreach
+    return(self);
+   }
+}
+
+use Db:Firebird:Database as FbDb;
+class Db:Firebird:Database(DbDb) {
+
+  new(String _db) self {
+    super.new(_db);
+    emit(cs) {
+    """
+      bevi_conn = new FbConnection(bevp_db.bems_toCsString());
+    """
+    }
+  }
+
+  createDatabase() self {
+    emit(cs) {
+      """
+      FbConnection.CreateDatabase(bevp_db.bems_toCsString());
+      """
+    }
+  }
+  
+  getStatement(String _stmt) DbSt {
+    DbSt st = super.getStatement(_stmt);
+    emit(cs) {
+    """
+    if (bevi_trans == null) {
+      bevl_st.bevi_cmd = new FbCommand(
+        beva__stmt.bems_toCsString(),
+        (FbConnection)bevi_conn
+        );
+     } else {
+       bevl_st.bevi_cmd = new FbCommand(
+        beva__stmt.bems_toCsString(),
+        (FbConnection)bevi_conn,
+        (FbTransaction)bevi_trans
+        );
+     }
+     """
+     }
+     return(st);
+   }
+
+}
+
 use class Dz:Test(Assert) {
 
   testTest() {
@@ -136,4 +544,4 @@ use class Dz:Test(Assert) {
 
 }
 
-use class Dz:Alert(Exc) { }
+use class Dz:Alert(Exception) { }
