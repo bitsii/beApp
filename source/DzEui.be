@@ -40,6 +40,7 @@ use class Dz:Eui {
     main() {
       HD.getElementById("msgdiv").innerHTML = "<h2>boo</h2>";
       Map arg = Map.new();
+      arg["module"] = "Hello";
       arg["action"] = "sayHelloRequest";
       HC.new(self).call(arg);
    }

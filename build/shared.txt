@@ -1,4 +1,4 @@
 --buildFile
-build\base.txt
+build/base.txt
 --buildFile
-build\extended.txt
+build/extended.txt

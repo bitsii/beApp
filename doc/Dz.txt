@@ -1,24 +1,30 @@
 
 basics - getting in waking up boxes (save macs etc)
-  use rowstore, put crs around it without the map stuff (just for concurrency)
-    test
-    db with test, csc too
-    rs with test...
-    crs
-  login (test)
+  
+  accounts create/update/delete, if none can be made
+  admin / regular users (can make/delete/change other users or no)
+  user own settings page (passwd)
+  login
+  
+  shared and not shared links (others can use links or no)
   wake
   save name/mac
-  windows / csc
-  support port forward for ssh (manual to hub, hub may need to double-forward locally) or over novnc
-  hub/app need to do internal discovery and auto port forward (ok dynamic ip, needs to be plug and play)
-  dynamic updates/passthrough for other machines - info on open port (link to box)
-    wake, link to it, determine if in or out of network (local or no), gives back correct links
-    hub and proxy, remote access
-    authenticated web proxying, no need for them to direct listen, > security
-      no need for them to do ssl
-      take off the cookie on way through...
+  
+  web (req login)
+  authenticated web proxy (manual endpoint setup)
+  proxy for others of same (linking, udp)
+  ssl
+  novnc
+  just the address update in app, actual svc other
+    can also do port fwd listen
+    no need for them to do ssl
+    take off the cookie on way through to avoid security leak
   cam options besides vnc
+  windows / csc
+  
   also instructions for ssh/auto assist (copssh looks fine on windows)
+
+other web/bcastle csc, also mono?
       
 discover ip
 port forwarding

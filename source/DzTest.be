@@ -24,4 +24,12 @@ use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
 use Db:SQLite:Database as SlDb;
 
-use class Dz:Alert(Exception) { }
+use class Dz:Test(Assert) {
+ 
+  main() {
+    "Begin Dz Test".print();
+    Db:Relational:Test.new().main();
+    "End Dz Test".print();
+  }
+
+}
