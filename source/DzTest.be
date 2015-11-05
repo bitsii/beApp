@@ -28,7 +28,13 @@ use class Dz:Test(Assert) {
  
   main() {
     "Begin Dz Test".print();
-    Db:Relational:Test.new().main();
+    try {
+      Db:Relational:Test.new().main();
+      Dz:AccountTest.new().main();
+    } catch (var e) {
+      "Exception during test".print();
+      e.print();
+    }
     "End Dz Test".print();
   }
 

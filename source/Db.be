@@ -17,6 +17,7 @@ use IO:File:Path;
 use IO:File;
 use Text:Strings as TS;
 use Test:Assertions as Assert;
+use System:Thread:Lock;
 
 emit(jv) {
 """
@@ -382,22 +383,51 @@ class Db:Firebird:Database(DbDb) {
 }
 
 use System:Thread:ObjectLocker as OLocker;
-use System:Thread:SharedResource as Shared;
+use System:Thread:RecycledResource as Recyc;
 
-class Shared {
+class Recyc {
 
   new() self {
     vars {
       var resource;
-      OLocker shLocker = OLocker.new();
-      IO:Log log = IO:Log.new();
-      Int lvl = log.debug;
+      Lock lock = Lock.new();
+      OLocker shLocker;
+      IO:Log log;
+      Int lvl;
+    }
+    try {
+      lock.lock();
+      shLocker = OLocker.new();
+      log = IO:Log.new();
+      lvl = log.debug;
+      lock.unlock();
+    } catch (var e) {
+      lock.unlock();
+      throw(e);
     }
   }
   
-  new(_resource) self {
-    new();
-    resource = _resource;
+  templateResourceSet(_resource) self {
+    try {
+      lock.lock();
+      resource = _resource;
+      lock.unlock();
+    } catch (var e) {
+      lock.unlock();
+      throw(e);
+    }
+  }
+  
+  templateResourceGet() {
+    try {
+      lock.lock();
+      var res = resource;
+      lock.unlock();
+    } catch (var e) {
+      lock.unlock();
+      throw(e);
+    }
+    return(res);
   }
   
   close() {
@@ -411,26 +441,31 @@ class Shared {
     log.log(lvl, "Getting");
     var shared = shLocker.getAndClear();
     if (undef(shared)) {
-      shared = resource.copy();
-      shared.open();
+      try {
+        lock.lock();
+        if (def(resource)) {
+          shared = resource.copy();
+          shared.open();
+        }
+        lock.unlock();
+      } catch (var e) {
+        lock.unlock();
+        throw(e);
+      }
     }
     return (shared);
   }
   
-  set(shared) {
+  done(shared) {
     unless (shLocker.setIfClear(shared)) {
-      shared.close();
+      //shared.close();
     }
   }
   
-  done(shared) {
-    set(shared);
-  }
-  
-  fail(shared) {
+  failed(shared) {
     if (def(shared)) {
       try {
-        shared.close();
+        //shared.close();
       } catch (var e) {
         log.log(lvl, "Exception closing shared in failed");
       }

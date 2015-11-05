@@ -1,6 +1,15 @@
 
 basics - getting in waking up boxes (save macs etc)
   
+  initial account creation - from cmd line
+  java webserve, incl webserve only mode
+  run command fswebcam 
+  list and html display pics
+  
+  wake on lan
+  android
+  pictures/video
+  
   accounts create/update/delete, if none can be made
   admin / regular users (can make/delete/change other users or no)
   user own settings page (passwd)

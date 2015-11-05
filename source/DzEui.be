@@ -20,12 +20,20 @@ use Text:Strings as TS;
 
 emit(js) {
 """
-//Here's some js
+
+var dzeui;
+//ui startup
 var startup = function() {
-  var mc1 = new be_BEL_4_Base_BEC_2_3_DzEui();
-  mc1.bem_new_0();
-  mc1.bem_main_0();
+  dzeui = new be_BEL_4_Base_BEC_2_3_DzEui();
+  dzeui.bem_new_0();
+  dzeui.bem_main_0();
 }
+
+var updateImage = function() {
+  dzeui.bem_updateImage_0();
+}
+
+
 window.onload = startup;
 """
 }
@@ -36,17 +44,20 @@ use class Dz:Eui {
         properties {
         }
     }
-
+    
     main() {
-      HD.getElementById("msgdiv").innerHTML = "<h2>boo</h2>";
+    
+    }
+    
+    updateImage() {
       Map arg = Map.new();
-      arg["module"] = "Hello";
-      arg["action"] = "sayHelloRequest";
+      arg["module"] = "Image";
+      arg["action"] = "updateImageRequest";
       HC.new(self).call(arg);
    }
    
-   sayHelloResponse(Map arg) {
-     HD.getElementById("infotxt").value = arg["msg"];
+   updateImageResponse(Map arg) {
+     HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
    }
 }
 
