@@ -288,15 +288,36 @@ use class Dz:AccountManager {
       throw(e);
     }
   }
+  
+  createAccount(Account a) {
+    try {
+      DbDb db = dbProvider.db;
+      db.execute("INSERT INTO " + tableName + " (LOGIN, PASS) VALUES ('" + a.login + "', '" + a.password + "')");
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+  }
 
 }
 
+//add random salt
 use class Dz:Account {
-  new(String login, String pass) self {
+  new(String _login, String _password) self {
     properties {
-      String login;
-      String pass;
+      String login = _login;
+      String password;
     }
+    self.password = _password;
+  }
+  
+  passwordSet(String _password) {
+    password = _password;
+  }
+  
+  cryptedPasswordGet() String {
+    return(password);
   }
 }
 
@@ -304,12 +325,14 @@ use class Dz:AccountTest(Assert) {
   
   testAccounts() {
     Ui ui = Ui.new();
-    Account atest = Account.new();
-    atest.login = "test";
+    Account atest = Account.new("test", "testpass");
     AccountManager am = AccountManager.new(ui, "ACCOUNTS");
     am.deleteAccount(atest);
     Account a = am.getAccountByLogin(atest.login);
     assertNull(a);
+    am.createAccount(atest);
+    a = am.getAccountByLogin(atest.login);
+    assertNotNull(a);
   }
   
   main() {
