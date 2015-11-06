@@ -182,8 +182,8 @@ use class Dz:Ui {
           db = dbRecyc.get();
           db.open();
           db.begin();
-          db.execute("CREATE TABLE IF NOT EXISTS ACCOUNTS( LOGIN VARCHAR(110), PASS VARCHAR(500),"
-            + " constraint ACCOUNTS_k primary key (LOGIN) )");
+          db.execute("CREATE TABLE IF NOT EXISTS ACCOUNTS( USER VARCHAR(110), PASS VARCHAR(500), SALT VARCHAR(64), "
+            + " constraint ACCOUNTS_k primary key (USER) )");
           db.commit();
           dbRecyc.done(db);
           lock.unlock();
@@ -263,11 +263,11 @@ use class Dz:AccountManager {
     tableName = _tableName;
   }
 
-  getAccountByLogin(String login) {
+  getAccountByLogin(String user) {
     try {
       DbDb db = dbProvider.db;
-      foreach (DbSt ares in db.executeQuery("SELECT LOGIN, PASS FROM " + tableName + " WHERE LOGIN='" + login + "'")) {
-        Account a = Account.new(ares.getString(0), ares.getString(1));
+      foreach (DbSt ares in db.executeQuery("SELECT USER, PASS, SALT FROM " + tableName + " WHERE USER='" + user + "'")) {
+        Account a = Account.new(ares.getString(0), ares.getString(1), ares.getString(2));
       }
       //ares.close();
       dbProvider.dbDone(db);
@@ -281,7 +281,7 @@ use class Dz:AccountManager {
   deleteAccount(Account a) {
     try {
       DbDb db = dbProvider.db;
-      db.execute("DELETE FROM " + tableName + " WHERE LOGIN='" + a.login + "'");
+      db.execute("DELETE FROM " + tableName + " WHERE USER='" + a.user + "'");
       dbProvider.dbDone(db);
     } catch (var e) {
       dbProvider.dbFailed(db);
@@ -292,7 +292,7 @@ use class Dz:AccountManager {
   createAccount(Account a) {
     try {
       DbDb db = dbProvider.db;
-      db.execute("INSERT INTO " + tableName + " (LOGIN, PASS) VALUES ('" + a.login + "', '" + a.password + "')");
+      db.execute("INSERT INTO " + tableName + " (USER, PASS, SALT) VALUES ('" + a.user + "', '" + a.pass + "', '" + a.salt + "')");
       dbProvider.dbDone(db);
     } catch (var e) {
       dbProvider.dbFailed(db);
@@ -302,37 +302,59 @@ use class Dz:AccountManager {
 
 }
 
-//add random salt
 use class Dz:Account {
-  new(String _login, String _password) self {
+  new(String _user, String _hashPass, String _salt) self {
     properties {
-      String login = _login;
-      String password;
+      String user = _user;
+      String pass = _hashPass;
+      String salt = _salt;
     }
-    self.password = _password;
   }
   
-  passwordSet(String _password) {
-    password = _password;
+  passSet(String _pass) {
+    salt = System:Random.getString(16);
+    pass = passToHash(_pass, salt);
   }
   
-  cryptedPasswordGet() String {
-    return(password);
+  passToHash(String pass, String salt) String {
+    if (TS.isEmpty(salt) || TS.isEmpty(pass)) {
+      return(null);
+    }
+    pass = salt + pass;
+    Digest:SHA256 ds = Digest:SHA256.new();
+    for (Int i = 0;i < 7;i++=) {
+      pass = ds.digest(pass);
+    }
+    pass = Encode:Hex.encode(pass);
+    return(pass);
   }
+  
+  auth(String _pass) Bool {
+    _pass = passToHash(_pass, salt);
+    if (_pass == pass) {
+      return(true);
+    }
+    return(false);
+  }
+  
 }
 
 use class Dz:AccountTest(Assert) {
   
   testAccounts() {
     Ui ui = Ui.new();
-    Account atest = Account.new("test", "testpass");
+    Account atest = Account.new();
+    atest.user = "test";
+    atest.pass = "pass";
     AccountManager am = AccountManager.new(ui, "ACCOUNTS");
     am.deleteAccount(atest);
-    Account a = am.getAccountByLogin(atest.login);
+    Account a = am.getAccountByLogin(atest.user);
     assertNull(a);
     am.createAccount(atest);
-    a = am.getAccountByLogin(atest.login);
+    a = am.getAccountByLogin(atest.user);
     assertNotNull(a);
+    assertTrue(a.auth("pass"));
+    assertFalse(a.auth("notpass"));
   }
   
   main() {
