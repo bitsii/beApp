@@ -33,6 +33,13 @@ var updateImage = function() {
   dzeui.bem_updateImage_0();
 }
 
+var handleCallback = function(res) {
+    if (res != null) {
+      var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
+      dzeui.bem_handleCallback_1(bevs_resjs);
+    }
+}
+
 
 window.onload = startup;
 """
@@ -47,6 +54,10 @@ use class Dz:Eui {
     
     main() {
     
+    }
+    
+    handleCallback(String res) {
+      HC.new(self).handleCallback(res);
     }
     
     updateImage() {
@@ -119,22 +130,58 @@ class HC {
     String resjs;
     emit(js) {
     """
+    if (typeof(window.external) !== 'undefined'
+            && typeof(window.external.HandleCall) !== 'undefined') {
     var res = window.external.HandleCall(bevl_argjs.bems_toJsString());
     //document.getElementById("infotxt").value = res;
     if (res !== null) {
       bevl_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
       //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
     }
+    } else {
+      var req;
+      if (window.XMLHttpRequest) {
+        req = new XMLHttpRequest();
+      } else if (window.ActiveXObject) {
+        try {
+          req = new ActiveXObject("Msxml2.XMLHTTP");
+        } 
+        catch (e) {
+          try {
+            req = new ActiveXObject("Microsoft.XMLHTTP");
+          } 
+          catch (e) {}
+        }
+      }
+      var data = bevl_argjs.bems_toJsString();
+      req.open('POST', '/', true);
+      req.setRequestHeader("Content-type", "application/json");
+      //req.setRequestHeader("Connection", "close");
+      req.onreadystatechange = function(){
+          if (req.readyState != 4) return;
+          if (req.status != 200 && req.status != 304) {
+              //logmsg('HTTP error ' + req.status);
+              return;
+          }
+          //logmsg(req.responseText);
+          handleCallback(req.responseText);
+      }
+      req.send(data);
+    }
     """
     }
     if (def(resjs)) {
-      Map resm = unmar.unmarshall(resjs);
-      String mname = resm["action"];
-      Array rargs = Array.new(1);
-      rargs[0] = resm;
-      if (callback.can(mname, rargs.length)) {
-        callback.invoke(mname, rargs);
-      }
+      handleCallback(resjs);
+    }
+  }
+  
+  handleCallback(String resjs) {
+    Map resm = unmar.unmarshall(resjs);
+    String mname = resm["action"];
+    Array rargs = Array.new(1);
+    rargs[0] = resm;
+    if (def(mname) && mname.ends("Response") && callback.can(mname, rargs.length)) {
+      callback.invoke(mname, rargs);
     }
   }
 }

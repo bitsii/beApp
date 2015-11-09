@@ -50,7 +50,7 @@ use class Dz:Lui(Ui) {
         log.log(lvl, "mode empty");
       }
       if (TS.isEmpty(mode)) {
-        mode = "ui";
+        mode = "wui";
       }
       if (mode == "ui") {
         webr = WeBr.new();
@@ -68,6 +68,9 @@ use class Dz:Lui(Ui) {
         webr.content = content;
         //webr.content = IO:File.new("Dz.html").reader.open().readString();
         webr.setup();
+      }
+      if (mode == "wui") {
+        Wui.new().main();
       }
    }
 
@@ -89,6 +92,74 @@ use class Dz:Lui(Ui) {
     exit() {
       webr.close();
       webr.exit();
+    }
+
+}
+
+use class Dz:Wui(Ui) {
+
+  new() self {
+        properties {
+        }
+        super.new();
+    }
+    
+    startWeb() {
+      var e;
+      Int port = 5000;
+      //String cerPath = app.assureCert(port);
+      //portL.o = port;
+      Web:Server vw = Web:Server.new();
+      //vwL.o = vw;
+      vw.port = port;
+      //vw.ssl = true;
+      //vw.sslPath = cerPath;
+      vw.app = self;
+      vars {
+        System:Thread myThread = System:Thread.new(vw);
+      }
+      log.log(lvl, "Starting Web");
+      myThread.start();
+    }
+    
+
+    main() {
+      Array args = System:Process.new().args;
+
+      startWeb();
+   }
+
+   initWeb() {
+
+   }
+
+   handleWeb(request) {
+     
+     Map arg = request.scriptArg;
+     if (undef(arg)) {
+       String uri = request.uri;
+       log.log(lvl, "uri " + uri);
+       if (uri.ends(".jpg")) {
+         content = IO:File.new("pic.jpg").reader.open().readString();
+       } else {
+        String content = IO:File.new("DzA.html").reader.open().readString()
+          + IO:File.new("BEL_4_Base.js").reader.open().readString()
+          //+ IO:File.new("Dzmid.js").reader.open().readString()
+          + IO:File.new("DzB.html").reader.open().readString();
+          //content.print();
+        }
+      request.outputContent = content;
+      return(null);
+     }
+     return(super.handleWeb(request, arg));
+   }
+   
+    exitRequest(Map arg, request) Map {
+      exit();
+      return(null);
+    }
+
+    exit() {
     }
 
 }
