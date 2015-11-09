@@ -1,5 +1,6 @@
 
 mkdir -p ../apprun
+mkdir -p ../apprun/dzdata
 
 export TEST_APPDATA=../apprun/dzt
 

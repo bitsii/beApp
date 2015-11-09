@@ -171,11 +171,11 @@ use class Dz:Ui {
         try {
           lock.lock();
           ifEmit(jv) {
-            dbp = Path.new("SDZDB");
+            dbp = Path.apNew("../dzdata/SDZDB");
             db = SlDb.pathNew(dbp);
           }
           ifEmit(cs) {
-            dbp = Path.new("FDZDB");
+            dbp = Path.apNew("../dzdata/FDZDB");
             db = FbDb.pathNew(dbp);
           }
           dbRecyc.templateResource = db;
@@ -196,7 +196,50 @@ use class Dz:Ui {
       return(db);
       
     }
+    
+    accountManagerGet() AccountManager {
+      properties {
+        AccountManager am;
+      }
+      if (undef(am)) {
+        am = AccountManager.new(self, "ACCOUNTS");
+      }
+      return(am);
+    }
 
+}
+
+use class Dz:CmdUi(Ui) {
+
+  new() self {
+        properties {
+          WeBr webr;
+          UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
+        }
+        super.new();
+    }
+    
+    main() {
+      return(main(System:Process.new().args));
+    }
+
+    main(Array args) {
+      if (args.length > 0) {
+        String mode = args[0]; //ui, svc, both, [absent]
+        log.log(lvl, "cmd " + mode);
+      } else {
+        log.log(lvl, "cmd empty");
+      }
+      if (TS.notEmpty(mode) && mode == "createAccount") {
+        String user = args[1];
+        String pass = args[2];
+        log.log(lvl, "Creating Account " + user);
+        Account ac = Account.new();
+        ac.user = user;
+        ac.pass = pass;
+        self.accountManager.createAccount(ac);
+      }
+    }
 }
 
 use class Dz:Hello {
@@ -263,7 +306,7 @@ use class Dz:AccountManager {
     tableName = _tableName;
   }
 
-  getAccountByLogin(String user) {
+  getAccount(String user) {
     try {
       DbDb db = dbProvider.db;
       foreach (DbSt ares in db.executeQuery("SELECT USER, PASS, SALT FROM " + tableName + " WHERE USER='" + user + "'")) {
@@ -293,6 +336,17 @@ use class Dz:AccountManager {
     try {
       DbDb db = dbProvider.db;
       db.execute("INSERT INTO " + tableName + " (USER, PASS, SALT) VALUES ('" + a.user + "', '" + a.pass + "', '" + a.salt + "')");
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+  }
+  
+  updateAccount(Account a) {
+    try {
+      DbDb db = dbProvider.db;
+      db.execute("UPDATE " + tableName + " SET PASS='" + a.pass + "', SALT='" + a.salt +  "' WHERE USER='" + a.user + "'");
       dbProvider.dbDone(db);
     } catch (var e) {
       dbProvider.dbFailed(db);
@@ -329,7 +383,7 @@ use class Dz:Account {
     return(pass);
   }
   
-  auth(String _pass) Bool {
+  checkPass(String _pass) Bool {
     _pass = passToHash(_pass, salt);
     if (_pass == pass) {
       return(true);
@@ -346,15 +400,22 @@ use class Dz:AccountTest(Assert) {
     Account atest = Account.new();
     atest.user = "test";
     atest.pass = "pass";
-    AccountManager am = AccountManager.new(ui, "ACCOUNTS");
+    AccountManager am = ui.accountManager;
     am.deleteAccount(atest);
-    Account a = am.getAccountByLogin(atest.user);
+    Account a = am.getAccount(atest.user);
     assertNull(a);
     am.createAccount(atest);
-    a = am.getAccountByLogin(atest.user);
+    a = am.getAccount(atest.user);
     assertNotNull(a);
-    assertTrue(a.auth("pass"));
-    assertFalse(a.auth("notpass"));
+    assertTrue(a.checkPass("pass"));
+    assertFalse(a.checkPass("notpass"));
+    a.pass = "yo";
+    assertTrue(a.checkPass("yo"));
+    am.updateAccount(a);
+    a = am.getAccount(a.user);
+    assertEqual(a.user, "test");
+    assertTrue(a.checkPass("yo"));
+    am.deleteAccount(atest);
   }
   
   main() {

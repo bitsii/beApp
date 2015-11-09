@@ -1,4 +1,5 @@
 mkdir ..\apprun
+mkdir ..\apprun\dzdata
 
 SET TEST_APPDATA=..\apprun\dzt
 
