@@ -2,8 +2,14 @@
         </script>
         </head>
         <body>
+        <a href="#" onclick="resetCount();return false;">Reset Count</a>
         <div id="imgdiv"></div>
         <a href="#" onclick="updateImage();return false;">Update Image</a>
-        <img src="pic.jpg" alt="boo">
+        <form>
+        <p>Login Name<input type="text" id="loginName"></input></p>
+        <p>Login Pass<input type="text" id="loginPass"></input></p>
+        <a href="#" onclick="login();return false;">Login</a>
+        <a href="#" onclick="logout();return false;">Logout</a>
+        </form>
         </body>
         </html>

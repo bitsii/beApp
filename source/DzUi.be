@@ -134,13 +134,14 @@ use class Dz:Wui(Ui) {
    }
 
    handleWeb(request) {
-     
+   
+     String accountName = request.getSession("account.name");
      Map arg = request.scriptArg;
      if (undef(arg)) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
-       if (uri.ends(".jpg")) {
-         content = IO:File.new("pic.jpg").reader.open().readString();
+       if (uri.ends(".jpg") && TS.notEmpty(accountName)) {
+         content = IO:File.new(Path.apNew(uri).name).reader.open().readString();
        } else {
         String content = IO:File.new("DzA.html").reader.open().readString()
           + IO:File.new("BEL_4_Base.js").reader.open().readString()
@@ -196,7 +197,12 @@ use class Dz:Ui {
             if (undef(aname) || aname.ends("Request")! || undef(mname) || modules.has(mname)!) {
               throw(Exception.new("Invalid request"));
             }
-            //String accountName = request.getSession("account.name");
+            String accountName = request.getSession("account.name");
+            if (TS.isEmpty(accountName)) {
+              unless (mname == "Accounts" && aname == "loginRequest") {
+                return(null);
+              }
+            }
             //log.log(lvl, "module " + module + " action " + action);
             Array args = Array.new(2);
             args[0] = arg;
@@ -347,9 +353,15 @@ use class Dz:Image {
       log.log(lvl, "In load image");
       Map res = Map.new();
       res["action"] = "updateImageResponse";
-      res["imghtm"] = "<h1>hi " + count + "</h1>";
+      //res["imghtm"] = "<h1>hi " + count + "</h1>";
+      res["imghtm"] = "<h3>On " + count + "</h3><img src=\"pic" + count + ".jpg\" alt=\"boo\">";
       count++=;
       return(res);
+   }
+   
+   resetCountRequest(Map arg, request) {
+    count = 0;
+    return(updateImageRequest(arg, request));
    }
 
 }
@@ -359,6 +371,14 @@ use class Dz:Image {
 //web thing
 use class Dz:Accounts {
 
+  loginRequest(Map arg, request) {
+    request.putSession("account.name", arg["loginName"]);
+  }
+  
+  logoutRequest(Map arg, request) {
+    request.putSession("account.name", "");
+  }
+  
 }
 
 //logic

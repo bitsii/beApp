@@ -33,6 +33,18 @@ var updateImage = function() {
   dzeui.bem_updateImage_0();
 }
 
+var resetCount = function() {
+  dzeui.bem_resetCount_0();
+}
+
+var login = function() {
+  dzeui.bem_login_0();
+}
+
+var logout = function() {
+  dzeui.bem_logout_0();
+}
+
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
@@ -64,6 +76,29 @@ use class Dz:Eui {
       Map arg = Map.new();
       arg["module"] = "Image";
       arg["action"] = "updateImageRequest";
+      HC.new(self).call(arg);
+   }
+   
+   resetCount() {
+      Map arg = Map.new();
+      arg["module"] = "Image";
+      arg["action"] = "resetCountRequest";
+      HC.new(self).call(arg);
+   }
+   
+   login() {
+      Map arg = Map.new();
+      arg["module"] = "Accounts";
+      arg["action"] = "loginRequest";
+      arg["loginName"] = HD.getElementById("loginName").value;
+      arg["loginPass"] = HD.getElementById("loginPass").value;
+      HC.new(self).call(arg);
+   }
+   
+   logout() {
+      Map arg = Map.new();
+      arg["module"] = "Accounts";
+      arg["action"] = "logoutRequest";
       HC.new(self).call(arg);
    }
    
@@ -101,6 +136,16 @@ class HE {
     this.bevi_element.value = beva_val.bems_toJsString();
     """
     }
+  }
+  
+  valueGet() String {
+    String res;
+    emit(js) {
+    """
+    bevl_res = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(this.bevi_element.value);
+    """
+    }
+    return(res);
   }
   
   innerHTMLSet(String val) self {
