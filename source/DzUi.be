@@ -96,7 +96,27 @@ use class Dz:Lui(Ui) {
 
 }
 
+emit(jv) {
+"""
+import java.security.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import java.io.*;
+import java.sql.*;
+import org.bouncycastle.x509.*;
+import java.math.BigInteger;
+import java.security.cert.X509Certificate;
+import org.bouncycastle.jce.X509Principal;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+"""
+}
 use class Dz:Wui(Ui) {
+
+  emit(jv) {
+  """
+  static { Security.addProvider(new BouncyCastleProvider());  }
+  """
+  }
 
   new() self {
         properties {
@@ -107,13 +127,13 @@ use class Dz:Wui(Ui) {
     startWeb() {
       var e;
       Int port = 5000;
-      //String cerPath = app.assureCert(port);
+      String cerPath = assureCert(port);
       //portL.o = port;
       Web:Server vw = Web:Server.new();
       //vwL.o = vw;
       vw.port = port;
-      //vw.ssl = true;
-      //vw.sslPath = cerPath;
+      vw.ssl = true;
+      vw.sslPath = cerPath;
       vw.app = self;
       vars {
         System:Thread myThread = System:Thread.new(vw);
@@ -122,7 +142,54 @@ use class Dz:Wui(Ui) {
       myThread.start();
     }
     
+    
+  assureCert(Int port) String {
+    ifEmit(jv) {
+      return(assureCertJv(port));
+    }
+  }
+  
+  assureCertJv(Int port) String {
+    Path cerPath = Path.apNew("cert");
+    String cerPathS = cerPath.toString();
+    log.log(lvl, "cerPath " + cerPathS);
+    if (cerPath.file.exists) {
+      log.log(lvl, "cer exist");
+      return(cerPathS);
+    } else {
+      log.log(lvl, "cer not exist");
+    }
+    log.log(lvl, "Start gencert");
+    emit(jv) {
+    """ 
+    String domainName = "test";
+    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+    keyPairGenerator.initialize(1024);
+    KeyPair KPair = keyPairGenerator.generateKeyPair();
+    X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();
+    v3CertGen.setSerialNumber(BigInteger.valueOf(new SecureRandom().nextInt(Integer.MAX_VALUE)));
+        v3CertGen.setIssuerDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
+        v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
+        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365*10)));
+        v3CertGen.setSubjectDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
+    v3CertGen.setPublicKey(KPair.getPublic());
+    v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption"); 
+    X509Certificate PKCertificate = v3CertGen.generateX509Certificate(KPair.getPrivate());
+    
+    KeyStore privateKS = KeyStore.getInstance("JKS");
+    privateKS.load(null);
+    privateKS.setKeyEntry("jetty", KPair.getPrivate(),
+                   //new char[]{'e', 'n', 't', 'r', 'y', 'p', 'a', 's', 's'},
+                   "kp".toCharArray(),
+                   new java.security.cert.Certificate[]{PKCertificate});
+    privateKS.store( new FileOutputStream(bevl_cerPathS.bems_toJvString()), "kp".toCharArray());
 
+    """
+    }
+    log.log(lvl, "End gencert");
+    return(cerPathS);
+  }
+  
     main() {
       Array args = System:Process.new().args;
 
@@ -141,7 +208,10 @@ use class Dz:Wui(Ui) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
        if (uri.ends(".jpg") && TS.notEmpty(accountName)) {
-         content = IO:File.new(Path.apNew(uri).name).reader.open().readString();
+         File imgfile = File.new(Path.apNew(uri).name);
+         if (imgfile.exists) {
+          content = imgfile.reader.open().readString();
+         }
        } else {
         String content = IO:File.new("DzA.html").reader.open().readString()
           + IO:File.new("BEL_4_Base.js").reader.open().readString()
@@ -149,7 +219,9 @@ use class Dz:Wui(Ui) {
           + IO:File.new("DzB.html").reader.open().readString();
           //content.print();
         }
-      request.outputContent = content;
+      if (def(content)) {
+        request.outputContent = content;
+      }
       return(null);
      }
      return(super.handleWeb(request, arg));
@@ -182,12 +254,18 @@ use class Dz:Ui {
       h.lvl = lvl;
       modules["Hello"] = h;
       
-      Image i = Image.new();
+      MediaIO i = MediaIO.new();
       i.log = log;
       i.lvl = log.level;
-      modules["Image"] = i;
+      i.configManager = ConfigManager.new(self, "CONFIG");
+      modules["MediaIO"] = i;
       
-      modules["Accounts"] = Accounts.new();
+      Accounts a = Accounts.new();
+      a.log = log;
+      a.lvl = log.level;
+      a.accountManager = self.accountManager;
+      modules["Accounts"] = a;
+      
   }
 
   handleWeb(request, Map arg) {
@@ -261,6 +339,8 @@ use class Dz:Ui {
           db.begin();
           db.execute("CREATE TABLE IF NOT EXISTS ACCOUNTS( USER VARCHAR(110), PASS VARCHAR(500), SALT VARCHAR(64), "
             + " constraint ACCOUNTS_k primary key (USER) )");
+          db.execute("CREATE TABLE IF NOT EXISTS CONFIG( NAME VARCHAR(110), VALUE VARCHAR(500), "
+            + " constraint CONFIG_k primary key (NAME) )");
           db.commit();
           dbRecyc.done(db);
           lock.unlock();
@@ -339,29 +419,45 @@ use class Dz:Hello {
 
 }
 
-use class Dz:Image {
+use class Dz:MediaIO {
 
      new() self {
        properties {
           IO:Log log;
           Int lvl;
           Int count = 0;
+          var configManager;
         }
      }
 
      updateImageRequest(Map arg, request) {
+      String c = configManager.get("image.count");
+      if (def(c)) {
+        log.log(lvl, "count def " + c);
+        count = Int.new(c);
+      } else {
+        log.log(lvl, "count undef");
+        configManager.create("image.count", count.toString());
+      }
+      String picName = "pic" + count + ".jpg";
+      String lastPicName = "pic" + (count - 1) + ".jpg";
+      File.apNew(picName).delete();
+      File.apNew(lastPicName).delete();
+      System:Command.new("uppic.sh " + picName).run();
       log.log(lvl, "In load image");
       Map res = Map.new();
       res["action"] = "updateImageResponse";
-      //res["imghtm"] = "<h1>hi " + count + "</h1>";
-      res["imghtm"] = "<h3>On " + count + "</h3><img src=\"pic" + count + ".jpg\" alt=\"boo\">";
+      res["imghtm"] = "<img src=\"" + picName + "\" >";
       count++=;
+      log.log(lvl, "updating count " + count);
+      configManager.update("image.count", count.toString());
       return(res);
    }
    
-   resetCountRequest(Map arg, request) {
-    count = 0;
-    return(updateImageRequest(arg, request));
+   playSoundRequest(Map arg, request) {
+      log.log(lvl, "playing sound");
+      System:Command.new("playsound.sh").run();
+      return(null);
    }
 
 }
@@ -371,8 +467,28 @@ use class Dz:Image {
 //web thing
 use class Dz:Accounts {
 
+  new() self {
+     properties {
+        IO:Log log;
+        Int lvl;
+        var accountManager;
+      }
+   }
+
   loginRequest(Map arg, request) {
-    request.putSession("account.name", arg["loginName"]);
+    Account a = accountManager.getAccount(arg["loginName"]);
+    if (def(a)) {
+      log.log(lvl, "Found account " + arg["loginName"]);
+      if (a.checkPass(arg["loginPass"])) {
+        log.log(lvl, "Login ok");
+        request.putSession("account.name", arg["loginName"]);
+      } else {
+        log.log(lvl, "Login notok");
+      }
+    } else {
+      log.log(lvl, "No such account " + arg["loginName"]);
+    }
+    //request.putSession("account.name", arg["loginName"]);
   }
   
   logoutRequest(Map arg, request) {
@@ -400,12 +516,15 @@ use class Dz:AccountManager {
   getAccount(String user) {
     try {
       DbDb db = dbProvider.db;
+      db.begin();
       foreach (DbSt ares in db.executeQuery("SELECT USER, PASS, SALT FROM " + tableName + " WHERE USER='" + user + "'")) {
         Account a = Account.new(ares.getString(0), ares.getString(1), ares.getString(2));
       }
       //ares.close();
+      db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
+      db.rollback();
       dbProvider.dbFailed(db);
       throw(e);
     }
@@ -415,9 +534,12 @@ use class Dz:AccountManager {
   deleteAccount(Account a) {
     try {
       DbDb db = dbProvider.db;
+      db.begin();
       db.execute("DELETE FROM " + tableName + " WHERE USER='" + a.user + "'");
+      db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
+      db.rollback();
       dbProvider.dbFailed(db);
       throw(e);
     }
@@ -426,9 +548,12 @@ use class Dz:AccountManager {
   createAccount(Account a) {
     try {
       DbDb db = dbProvider.db;
+      db.begin();
       db.execute("INSERT INTO " + tableName + " (USER, PASS, SALT) VALUES ('" + a.user + "', '" + a.pass + "', '" + a.salt + "')");
+      db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
+      db.rollback();
       dbProvider.dbFailed(db);
       throw(e);
     }
@@ -437,9 +562,12 @@ use class Dz:AccountManager {
   updateAccount(Account a) {
     try {
       DbDb db = dbProvider.db;
+      db.begin();
       db.execute("UPDATE " + tableName + " SET PASS='" + a.pass + "', SALT='" + a.salt +  "' WHERE USER='" + a.user + "'");
+      db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
+      db.rollback();
       dbProvider.dbFailed(db);
       throw(e);
     }
@@ -515,4 +643,81 @@ use class Dz:AccountTest(Assert) {
     "End AccountTest".print();
   }
   
+}
+
+use class Dz:ConfigManager {
+
+  new() self {
+    properties {
+      var dbProvider;
+      String tableName;
+    }
+  }
+  
+  new(_dbProvider, _tableName) {
+    new();
+    dbProvider = _dbProvider;
+    tableName = _tableName;
+  }
+
+  get(String name) String {
+    try {
+      DbDb db = dbProvider.db;
+      db.begin();
+      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME='" + name + "'")) {
+        String value = ares.getString(0);
+      }
+      //ares.close();
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+    return(value);
+  }
+  
+  delete(String name) {
+    try {
+      DbDb db = dbProvider.db;
+      db.begin();
+      db.execute("DELETE FROM " + tableName + " WHERE NAME='" + name + "'");
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+  }
+  
+  create(String name, String value) {
+    try {
+      DbDb db = dbProvider.db;
+      db.begin();
+      db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES ('" + name + "', '" + value + "')");
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+  }
+  
+  update(String name, String value) {
+    try {
+      DbDb db = dbProvider.db;
+      db.begin();
+      db.execute("UPDATE " + tableName + " SET VALUE='" + value +  "' WHERE NAME='" + name + "'");
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+  }
+
 }

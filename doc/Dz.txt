@@ -1,4 +1,6 @@
 
+dump cmd and all, just the one main with a mode (test ver to avoid js tho)
+
 basics - getting in waking up boxes (save macs etc)
   
   initial account creation - from cmd line
@@ -33,6 +35,7 @@ basics - getting in waking up boxes (save macs etc)
   
   also instructions for ssh/auto assist (copssh looks fine on windows)
 
+load file from browser not print to it (test with images/resources)
 other web/bcastle csc, also mono?
       
 discover ip

@@ -23,7 +23,8 @@ cd ../../../app
 find ../be/system -name "*.class" -exec rm {} \;
 
 cp ../apprun/dz/Base/target/js/be/BEL_4_Base/BEL_4_Base.js ../apprun/dz
-cp ../pic*.jpg ../apprun/dz
+cp scripts/uppic.sh ../apprun/dz
+cp scripts/playsound.sh ../apprun/dz
 cp source/Dz*.html ../apprun/dz
 cp extlibs/jetty/* ../apprun/dz
 cp extlibs/sqlite/* ../apprun/dz

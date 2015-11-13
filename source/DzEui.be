@@ -29,12 +29,12 @@ var startup = function() {
   dzeui.bem_main_0();
 }
 
-var updateImage = function() {
-  dzeui.bem_updateImage_0();
+var playSound = function() {
+  dzeui.bem_playSound_0();
 }
 
-var resetCount = function() {
-  dzeui.bem_resetCount_0();
+var updateImage = function() {
+  dzeui.bem_updateImage_0();
 }
 
 var login = function() {
@@ -43,6 +43,10 @@ var login = function() {
 
 var logout = function() {
   dzeui.bem_logout_0();
+}
+
+var clearImage = function() {
+  dzeui.bem_clearImage_0();
 }
 
 var handleCallback = function(res) {
@@ -74,17 +78,18 @@ use class Dz:Eui {
     
     updateImage() {
       Map arg = Map.new();
-      arg["module"] = "Image";
+      arg["module"] = "MediaIO";
       arg["action"] = "updateImageRequest";
       HC.new(self).call(arg);
    }
    
-   resetCount() {
+   playSound() {
       Map arg = Map.new();
-      arg["module"] = "Image";
-      arg["action"] = "resetCountRequest";
+      arg["module"] = "MediaIO";
+      arg["action"] = "playSoundRequest";
       HC.new(self).call(arg);
    }
+   
    
    login() {
       Map arg = Map.new();
@@ -92,10 +97,13 @@ use class Dz:Eui {
       arg["action"] = "loginRequest";
       arg["loginName"] = HD.getElementById("loginName").value;
       arg["loginPass"] = HD.getElementById("loginPass").value;
+      HD.getElementById("loginName").value = "";
+      HD.getElementById("loginPass").value = "";
       HC.new(self).call(arg);
    }
    
    logout() {
+      clearImage();
       Map arg = Map.new();
       arg["module"] = "Accounts";
       arg["action"] = "logoutRequest";
@@ -104,6 +112,10 @@ use class Dz:Eui {
    
    updateImageResponse(Map arg) {
      HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
+   }
+   
+   clearImage() {
+     HD.getElementById("imgdiv").innerHTML = "";
    }
 }
 
