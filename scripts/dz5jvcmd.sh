@@ -26,6 +26,7 @@ find ../be/system -name "*.class" -exec rm {} \;
 cp source/Dz*.html ../apprun/dz
 cp extlibs/jetty/* ../apprun/dz
 cp extlibs/sqlite/* ../apprun/dz
+cp extlibs/hsqldb/* ../apprun/dz
 cp extlibs/bcastlejv/* ../apprun/dz
 
 cd ../apprun/dz

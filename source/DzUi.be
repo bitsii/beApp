@@ -23,6 +23,7 @@ use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
 use Db:SQLite:Database as SlDb;
+use Db:HSQL:Database as HqDb;
 use System:Thread:RecycledResource as Recyc;
 use System:Thread:Lock;
 
@@ -324,26 +325,43 @@ use class Dz:Ui {
       
       if (undef(db)) {
         try {
+          emit(jv) {
+          """
+          try {
+          """
+          }
           lock.lock();
           ifEmit(jv) {
-            dbp = Path.apNew("../dzdata/SDZDB");
-            db = SlDb.pathNew(dbp);
+            dbp = Path.apNew("../dzdata/HDZDB");
+            db = HqDb.pathNew(dbp);
           }
           ifEmit(cs) {
             dbp = Path.apNew("../dzdata/FDZDB");
             db = FbDb.pathNew(dbp);
           }
+          Bool createTables = dbp.file.exists!;
           dbRecyc.templateResource = db;
           db = dbRecyc.get();
           db.open();
-          db.begin();
-          db.execute("CREATE TABLE IF NOT EXISTS ACCOUNTS( USER VARCHAR(110), PASS VARCHAR(500), SALT VARCHAR(64), "
-            + " constraint ACCOUNTS_k primary key (USER) )");
-          db.execute("CREATE TABLE IF NOT EXISTS CONFIG( NAME VARCHAR(110), VALUE VARCHAR(500), "
-            + " constraint CONFIG_k primary key (NAME) )");
-          db.commit();
+          if (createTables) {
+            db.begin();
+            db.execute("CREATE TABLE ACCOUNTS( LOGIN VARCHAR(110), PASS VARCHAR(500), SALT VARCHAR(64), "
+              + " constraint ACCOUNTS_k primary key (LOGIN) )");
+            db.execute("CREATE TABLE CONFIG( NAME VARCHAR(110), VALUE VARCHAR(500), "
+              + " constraint CONFIG_k primary key (NAME) )");
+            db.commit();
+          }
           dbRecyc.done(db);
           lock.unlock();
+          emit(jv) {
+          """
+          } catch (Throwable t) {
+            System.out.println(t);
+            t.printStackTrace();
+            throw t;
+          }
+          """
+          }
         } catch (var e) {
           lock.unlock();
           dbRecyc.failed(db);
@@ -377,7 +395,11 @@ use class Dz:CmdUi(Ui) {
     }
     
     main() {
-      return(main(System:Process.new().args));
+      try {
+        return(main(System:Process.new().args));
+      } catch (var e) {
+        log.log(lvl, "Exception in CmdUi main, error is " + e);
+      }
     }
 
     main(Array args) {
@@ -395,6 +417,7 @@ use class Dz:CmdUi(Ui) {
         ac.user = user;
         ac.pass = pass;
         self.accountManager.createAccount(ac);
+        self.db.close();
       }
     }
 }
@@ -441,9 +464,14 @@ use class Dz:MediaIO {
       }
       String picName = "pic" + count + ".jpg";
       String lastPicName = "pic" + (count - 1) + ".jpg";
-      File.apNew(picName).delete();
+      File picFile = File.apNew(picName);
+      picFile.delete();
       File.apNew(lastPicName).delete();
       System:Command.new("uppic.sh " + picName).run();
+      while (picFile.exists!) {
+        Time:Sleep.sleepMilliseconds(500);
+      }
+      Time:Sleep.sleepMilliseconds(500);
       log.log(lvl, "In load image");
       Map res = Map.new();
       res["action"] = "updateImageResponse";
@@ -517,7 +545,7 @@ use class Dz:AccountManager {
     try {
       DbDb db = dbProvider.db;
       db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT USER, PASS, SALT FROM " + tableName + " WHERE USER='" + user + "'")) {
+      foreach (DbSt ares in db.executeQuery("SELECT LOGIN, PASS, SALT FROM " + tableName + " WHERE LOGIN='" + user + "'")) {
         Account a = Account.new(ares.getString(0), ares.getString(1), ares.getString(2));
       }
       //ares.close();
@@ -535,7 +563,7 @@ use class Dz:AccountManager {
     try {
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("DELETE FROM " + tableName + " WHERE USER='" + a.user + "'");
+      db.execute("DELETE FROM " + tableName + " WHERE LOGIN='" + a.user + "'");
       db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
@@ -547,11 +575,25 @@ use class Dz:AccountManager {
   
   createAccount(Account a) {
     try {
+      emit(jv) {
+      """
+      try {
+      """
+      }
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("INSERT INTO " + tableName + " (USER, PASS, SALT) VALUES ('" + a.user + "', '" + a.pass + "', '" + a.salt + "')");
+      db.execute("INSERT INTO " + tableName + " (LOGIN, PASS, SALT) VALUES ('" + a.user + "', '" + a.pass + "', '" + a.salt + "')");
       db.commit();
       dbProvider.dbDone(db);
+      emit(jv) {
+      """
+      } catch (Throwable t) {
+        System.out.println(t.getMessage());
+        t.printStackTrace();
+        throw t;
+      }
+      """
+      }
     } catch (var e) {
       db.rollback();
       dbProvider.dbFailed(db);
@@ -563,7 +605,7 @@ use class Dz:AccountManager {
     try {
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("UPDATE " + tableName + " SET PASS='" + a.pass + "', SALT='" + a.salt +  "' WHERE USER='" + a.user + "'");
+      db.execute("UPDATE " + tableName + " SET PASS='" + a.pass + "', SALT='" + a.salt +  "' WHERE LOGIN='" + a.user + "'");
       db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {

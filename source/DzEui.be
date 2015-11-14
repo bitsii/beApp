@@ -92,6 +92,7 @@ use class Dz:Eui {
    
    
    login() {
+      clearImage();
       Map arg = Map.new();
       arg["module"] = "Accounts";
       arg["action"] = "loginRequest";

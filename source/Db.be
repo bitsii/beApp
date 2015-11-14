@@ -333,6 +333,30 @@ class Db:SQLite:Database(DbDb) {
 
 }
 
+use Db:HSQL:Database as HqDb;
+class Db:HSQL:Database(DbDb) {
+  
+  pathNew(Path _dbp) self {
+    super.pathNew(_dbp);
+    String dbAddr = "jdbc:derby:" + dbp.toString() + ";create=true";
+    new(dbAddr);
+  }
+  
+  open() self {
+    emit(jv) {
+    """
+      Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+    """
+    }
+    super.open();
+  }
+  
+  copy() {
+    return(HqDb.pathNew(dbp));
+  }
+
+}
+
 
 use Db:Firebird:Database as FbDb;
 class Db:Firebird:Database(DbDb) {
@@ -445,6 +469,7 @@ class Recyc {
         lock.lock();
         if (def(resource)) {
           shared = resource.copy();
+          //shared = resource;
           shared.open();
         }
         lock.unlock();
