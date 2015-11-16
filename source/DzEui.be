@@ -37,6 +37,10 @@ var updateImage = function() {
   dzeui.bem_updateImage_0();
 }
 
+var runCommand = function() {
+  dzeui.bem_runCommand_0();
+}
+
 var login = function() {
   dzeui.bem_login_0();
 }
@@ -90,6 +94,14 @@ use class Dz:Eui {
       HC.new(self).call(arg);
    }
    
+   runCommand() {
+      Map arg = Map.new();
+      arg["module"] = "MediaIO";
+      arg["action"] = "runCommandRequest";
+      arg["cmd"] = HD.getElementById("cmd").value;
+      HC.new(self).call(arg);
+   }
+   
    
    login() {
       clearImage();
@@ -113,6 +125,14 @@ use class Dz:Eui {
    
    updateImageResponse(Map arg) {
      HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
+   }
+   
+   loginResponse(Map arg) {
+     HD.getElementById("logindiv").innerHTML = "Welcome " + arg["name"];
+   }
+   
+   logoutResponse(Map arg) {
+     HD.getElementById("logindiv").innerHTML = "";
    }
    
    clearImage() {

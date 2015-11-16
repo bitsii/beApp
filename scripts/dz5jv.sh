@@ -6,9 +6,9 @@ export TEST_APPDATA=../apprun/dzt
 
 rm -rf ../apprun/dz
 
-java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/dzd --buildPath ../apprun/dz --emitLang jv -mainClass=Dz:Lui source/Dz.be source/DzUi.be source/Db.be source/BrowserUI.be
+java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/dzd --buildPath ../apprun/dz --emitLang jv -mainClass=Dz:Lui source/Dz.be source/DzTest.be source/DzUi.be source/Db.be source/BrowserUI.be
 
-javac -source 1.7 -target 1.7 -classpath extlibs/jetty/*:extlibs/sqlite/*:extlibs/hsqldb/*:extlibs/bcastlejv/* ../be/system/jv/be/BELS_Base/*.java ../apprun/dz/Base/target/jv/be/BEL_4_Base/*.java
+javac -source 1.7 -target 1.7 -classpath extlibs/jetty/*:extlibs/sqlite/*:extlibs/derby/*:extlibs/bcastlejv/* ../be/system/jv/be/BELS_Base/*.java ../apprun/dz/Base/target/jv/be/BEL_4_Base/*.java
 
 java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/base.txt --deployPath ../apprun/dzd --buildPath ../apprun/dz --emitLang js --ownProcess false -mainClass=Dz:Eui source/Dz.be source/DzEui.be
 
@@ -28,7 +28,7 @@ cp scripts/playsound.sh ../apprun/dz
 cp source/Dz*.html ../apprun/dz
 cp extlibs/jetty/* ../apprun/dz
 cp extlibs/sqlite/* ../apprun/dz
-cp extlibs/hsqldb/* ../apprun/dz
+cp extlibs/derby/* ../apprun/dz
 cp extlibs/bcastlejv/* ../apprun/dz
 
 cd ../apprun/dz

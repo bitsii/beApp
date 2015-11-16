@@ -23,7 +23,7 @@ use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
 use Db:SQLite:Database as SlDb;
-use Db:HSQL:Database as HqDb;
+use Db:Derby:Database as Derby;
 use System:Thread:RecycledResource as Recyc;
 use System:Thread:Lock;
 
@@ -53,7 +53,7 @@ use class Dz:Lui(Ui) {
       if (TS.isEmpty(mode)) {
         mode = "wui";
       }
-      if (mode == "ui") {
+      if (mode == "lui") {
         webr = WeBr.new();
         webr.webHandler = self;
         webr.height = 450;
@@ -72,6 +72,12 @@ use class Dz:Lui(Ui) {
       }
       if (mode == "wui") {
         Wui.new().main();
+      }
+      if (mode == "test") {
+        Dz:Test.new().main();
+      }
+      if (mode == "cmd") {
+        CmdUi.new().main(args);
       }
    }
 
@@ -243,8 +249,8 @@ use class Dz:Ui {
   new() self {
       properties {
         IO:Log log = IO:Log.new();
-        log.level = log.debug;
-        Int lvl = log.info;
+        log.level = log.info;
+        Int lvl = log.level;
         Map modules = Map.new();
         Lock lock = Lock.new();
         Recyc dbRecyc = Recyc.new();
@@ -257,13 +263,13 @@ use class Dz:Ui {
       
       MediaIO i = MediaIO.new();
       i.log = log;
-      i.lvl = log.level;
+      i.lvl = lvl;
       i.configManager = ConfigManager.new(self, "CONFIG");
       modules["MediaIO"] = i;
       
       Accounts a = Accounts.new();
       a.log = log;
-      a.lvl = log.level;
+      a.lvl = lvl;
       a.accountManager = self.accountManager;
       modules["Accounts"] = a;
       
@@ -332,8 +338,8 @@ use class Dz:Ui {
           }
           lock.lock();
           ifEmit(jv) {
-            dbp = Path.apNew("../dzdata/HDZDB");
-            db = HqDb.pathNew(dbp);
+            dbp = Path.apNew("../dzdata/DDZDB");
+            db = Derby.pathNew(dbp);
           }
           ifEmit(cs) {
             dbp = Path.apNew("../dzdata/FDZDB");
@@ -403,15 +409,15 @@ use class Dz:CmdUi(Ui) {
     }
 
     main(Array args) {
-      if (args.length > 0) {
-        String mode = args[0]; //ui, svc, both, [absent]
+      if (args.length > 1) {
+        String mode = args[1]; //ui, svc, both, [absent]
         log.log(lvl, "cmd " + mode);
       } else {
         log.log(lvl, "cmd empty");
       }
       if (TS.notEmpty(mode) && mode == "createAccount") {
-        String user = args[1];
-        String pass = args[2];
+        String user = args[2];
+        String pass = args[3];
         log.log(lvl, "Creating Account " + user);
         Account ac = Account.new();
         ac.user = user;
@@ -487,6 +493,13 @@ use class Dz:MediaIO {
       System:Command.new("playsound.sh").run();
       return(null);
    }
+   
+   runCommandRequest(Map arg, request) {
+      String cmd = arg["cmd"];
+      log.log(lvl, "running command " + cmd);
+      System:Command.new(cmd).run();
+      return(null);
+   }
 
 }
 
@@ -510,17 +523,24 @@ use class Dz:Accounts {
       if (a.checkPass(arg["loginPass"])) {
         log.log(lvl, "Login ok");
         request.putSession("account.name", arg["loginName"]);
+        Map res = Map.new();
+        res["action"] = "loginResponse";
+        res["name"] = arg["loginName"];
+        return(res);
       } else {
         log.log(lvl, "Login notok");
       }
     } else {
       log.log(lvl, "No such account " + arg["loginName"]);
     }
-    //request.putSession("account.name", arg["loginName"]);
+    return(logoutRequest(arg, request));
   }
   
   logoutRequest(Map arg, request) {
     request.putSession("account.name", "");
+    Map res = Map.new();
+    res["action"] = "logoutResponse";
+    return(res);
   }
   
 }

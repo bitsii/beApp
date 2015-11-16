@@ -333,8 +333,8 @@ class Db:SQLite:Database(DbDb) {
 
 }
 
-use Db:HSQL:Database as HqDb;
-class Db:HSQL:Database(DbDb) {
+use Db:Derby:Database as Derby;
+class Db:Derby:Database(DbDb) {
   
   pathNew(Path _dbp) self {
     super.pathNew(_dbp);
@@ -352,7 +352,7 @@ class Db:HSQL:Database(DbDb) {
   }
   
   copy() {
-    return(HqDb.pathNew(dbp));
+    return(Derby.pathNew(dbp));
   }
 
 }

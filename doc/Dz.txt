@@ -1,12 +1,8 @@
 
-dump cmd and all, just the one main with a mode (test ver to avoid js tho)
+load file from browser not print to it (test with images/resources)
+other web/bcastle csc, also mono?
 
 basics - getting in waking up boxes (save macs etc)
-  
-  initial account creation - from cmd line
-  java webserve, incl webserve only mode
-  run command fswebcam 
-  list and html display pics
   
   wake on lan
   android
@@ -34,9 +30,6 @@ basics - getting in waking up boxes (save macs etc)
   windows / csc
   
   also instructions for ssh/auto assist (copssh looks fine on windows)
-
-load file from browser not print to it (test with images/resources)
-other web/bcastle csc, also mono?
       
 discover ip
 port forwarding
