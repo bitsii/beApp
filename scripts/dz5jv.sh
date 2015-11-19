@@ -33,6 +33,8 @@ cp extlibs/bcastlejv/* ../apprun/dz
 
 cd ../apprun/dz
 
+export MYPWD=`pwd`
+
 java -classpath "*" be.BEL_4_Base.BEL_4_Base $*
 
 cd ../../app

@@ -1,7 +1,4 @@
 
-load file from browser not print to it (test with images/resources)
-other web/bcastle csc, also mono?
-
 basics - getting in waking up boxes (save macs etc)
   
   wake on lan
@@ -19,6 +16,7 @@ basics - getting in waking up boxes (save macs etc)
   
   web (req login)
   authenticated web proxy (manual endpoint setup)
+    ?? nginx ??
   proxy for others of same (linking, udp)
   ssl
   novnc

@@ -58,16 +58,10 @@ use class Dz:Lui(Ui) {
         webr.webHandler = self;
         webr.height = 450;
         webr.width = 320;
-        //webr.content = Ve:App.new().readHtml("Dz.html");
-        //webr.content = "<html><body><h1>hi</h1></body></html>";
-        //put together string from 3 files, middle generated bejs
-        String content = IO:File.new("DzA.html").reader.open().readString()
-        + IO:File.new("BEL_4_Base.js").reader.open().readString()
-        //+ IO:File.new("Dzmid.js").reader.open().readString()
-        + IO:File.new("DzB.html").reader.open().readString();
-        //content.print();
-        webr.content = content;
-        //webr.content = IO:File.new("Dz.html").reader.open().readString();
+        
+        String mypwd = System:Environment.getVariable("MYPWD");
+        webr.location = "file:///" + mypwd + "/Dz.html";
+        
         webr.setup();
       }
       if (mode == "wui") {
@@ -214,18 +208,12 @@ use class Dz:Wui(Ui) {
      if (undef(arg)) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
-       if (uri.ends(".jpg") && TS.notEmpty(accountName)) {
+       if ((uri.ends(".jpg") && TS.notEmpty(accountName)) || uri.ends("/Dz.html") || uri.ends("/BEL_4_Base.js")) {
          File imgfile = File.new(Path.apNew(uri).name);
          if (imgfile.exists) {
-          content = imgfile.reader.open().readString();
+          String content = imgfile.reader.open().readString();
          }
-       } else {
-        String content = IO:File.new("DzA.html").reader.open().readString()
-          + IO:File.new("BEL_4_Base.js").reader.open().readString()
-          //+ IO:File.new("Dzmid.js").reader.open().readString()
-          + IO:File.new("DzB.html").reader.open().readString();
-          //content.print();
-        }
+       }
       if (def(content)) {
         request.outputContent = content;
       }

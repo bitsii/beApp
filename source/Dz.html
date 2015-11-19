@@ -1,0 +1,53 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+<style>
+
+label.luiForm {
+    width: 120px; float: left;margin:0;padding:0;
+}
+
+input.luiFormField {
+    width: 140px;margin:0;padding:0;clear: right;
+}
+
+input.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+p.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+h5.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+#alertDiv {
+    top:0;
+    left:0;
+    width:100%;
+    height:150%;
+    display:none;
+}
+
+</style>
+<script type="text/javascript" src="BEL_4_Base.js">
+</script>
+</head>
+<body>
+<form>
+<p>Login Name<input type="text" id="loginName"></input></p>
+<p>Login Pass<input type="password" id="loginPass"></input></p>
+</form>
+<div id="logindiv"></div>
+<p><a href="#" onclick="login();return false;">Login</a></p>
+<p><a href="#" onclick="logout();return false;">Logout</a></p>
+<p>Command<input type="text" id="cmd"></input></p>
+<p><a href="#" onclick="runCommand();return false;">Run Command</a></p>
+<p><a href="#" onclick="playSound();return false;">Play Sound</a></p>
+<p><a href="#" onclick="clearImage();return false;">Clear Picture</a></p>
+<p><a href="#" onclick="updateImage();return false;">Take Picture</a></p>
+<div id="imgdiv"></div>
+</body>
+</html>
