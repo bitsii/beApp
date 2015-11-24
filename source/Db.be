@@ -170,14 +170,34 @@ public Connection bevi_trans = null;
     return(st);
   }
   
+  getStatement(String _stmt, Array vals) DbSt {
+    DbSt st = DbSt.new(_stmt, self, vals);
+    emit(jv) {
+    """
+    bevl_st.bevi_stmt = bevi_conn.prepareStatement(beva__stmt.bems_toJvString());
+    """
+    }
+    return(st);
+  }
+  
   execute(String stmt) DbSt {
     DbSt fbstmt = getStatement(stmt);
     return(fbstmt.execute());
   }
   
+  execute(String stmt, Array vals) DbSt {
+    DbSt fbstmt = getStatement(stmt, vals);
+    return(fbstmt.execute(vals));
+  }
+  
   executeQuery(String stmt) DbSt {
     DbSt fbstmt = getStatement(stmt);
     return(fbstmt.executeQuery());
+  }
+  
+  executeQuery(String stmt, Array vals) DbSt {
+    DbSt fbstmt = getStatement(stmt, vals);
+    return(fbstmt.executeQuery(vals));
   }
 
 }
@@ -206,6 +226,13 @@ public ResultSet bevi_res = null;
         Bool nextWaiting = false;
       }
    }
+   
+   new(String _stmt, DbDb _db, Array _vals) self {
+     new(_stmt, _db);
+     properties {
+      Array vals = _vals;
+     }
+   }
         
    execute() self {
      emit(cs) {
@@ -216,6 +243,52 @@ public ResultSet bevi_res = null;
      emit(jv) {
      """
      bevi_stmt.executeUpdate(bevp_stmt.bems_toJvString());
+     """
+     }
+   }
+   
+   execute(Array vals) self {
+     emit(jv) {
+     """
+     PreparedStatement bevi_pstmt = (PreparedStatement) bevi_stmt;
+     """
+     }
+     Int i = 1;
+     foreach (var v in vals) {
+       String sv = v;
+       emit(jv) {
+       """
+       bevi_pstmt.setString(bevl_i.bevi_int, bevl_sv.bems_toJvString());
+       """
+       } 
+       i++=;    
+     }
+     emit(jv) {
+     """
+     bevi_pstmt.executeUpdate();
+     """
+     }
+   }
+   
+   executeQuery(Array vals) self {
+     emit(jv) {
+     """
+     PreparedStatement bevi_pstmt = (PreparedStatement) bevi_stmt;
+     """
+     }
+     Int i = 1;
+     foreach (var v in vals) {
+       String sv = v;
+       emit(jv) {
+       """
+       bevi_pstmt.setString(bevl_i.bevi_int, bevl_sv.bems_toJvString());
+       """
+       } 
+       i++=;    
+     }
+     emit(jv) {
+     """
+     bevi_res = bevi_pstmt.executeQuery();
      """
      }
    }
@@ -513,10 +586,37 @@ use class Db:Relational:Test(Assert) {
       db = FbDb.pathNew(dbp);
     }
     db.open();
+    
     db.begin();
     db.execute("CREATE TABLE TESTTAB( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
       + " constraint TESTTAB_k primary key (P,K) )");
     db.commit();
+    
+    db.begin();
+    db.execute("insert into TESTTAB(P, K) values ('hi', 'bob')");
+    db.commit();
+    
+    db.begin();
+    foreach (DbSt re in db.executeQuery("select * from TESTTAB")) {
+      assertEqual(re.getString(0), "hi");
+    }
+    db.commit();
+    
+    Array vals2 = Array.new(2);
+    vals2[0] = "yo";
+    vals2[1] = "adrian";
+    db.begin();
+    db.execute("insert into TESTTAB(P, K) values (?, ?)", vals2);
+    db.commit();
+    
+    Array vals1 = Array.new(1);
+    vals1[0] = "yo";
+    db.begin();
+    foreach (re in db.executeQuery("select * from TESTTAB where P=?", vals1)) {
+      assertEqual(re.getString(1), "adrian");
+    }
+    db.commit();
+    
     db.close();
   }
  
