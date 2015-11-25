@@ -380,6 +380,14 @@ public ResultSet bevi_res = null;
     //to support foreach
     return(self);
    }
+   
+   close() {
+   emit(jv) {
+   """
+   bevi_stmt.close();
+   """
+   }
+   }
 }
 
 use Db:SQLite:Database as SlDb;

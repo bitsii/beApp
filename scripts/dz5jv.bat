@@ -26,6 +26,7 @@ del /s *.class
 cd ..\..\app
 
 copy /y ..\apprun\dz\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\dz
+copy /y scripts\uppic.bat ..\apprun\dz
 copy /y source\Dz*.html ..\apprun\dz
 copy /y source\Dz*.js ..\apprun\dz
 copy /y extlibs\jetty\* ..\apprun\dz
@@ -34,6 +35,8 @@ copy /y extlibs\derby\* ..\apprun\dz
 copy /y extlibs\bcastlejv\* ..\apprun\dz
 
 cd ..\apprun\dz
+
+set "MYPWD=%cd%"
 
 java -classpath * be.BEL_4_Base.BEL_4_Base %*
 

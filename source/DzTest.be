@@ -30,7 +30,7 @@ use class Dz:Test(Assert) {
     "Begin Dz Test".print();
     try {
       Db:Relational:Test.new().main();
-      //Dz:AccountTest.new().main();
+      Dz:AccountTest.new().main();
     } catch (var e) {
       "Exception during test".print();
       e.print();

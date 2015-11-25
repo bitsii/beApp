@@ -36,18 +36,23 @@ h5.luiForm {
 </script>
 </head>
 <body>
+<div id="logindiv">
+<p>Login</p>
 <form>
-<p>Login Name<input type="text" id="loginName"></input></p>
-<p>Login Pass<input type="password" id="loginPass"></input></p>
+<p><label class="luiForm">Account Name</label><input type="text" id="loginName"></input></p>
+<p><label class="luiForm">Account Password</label><input type="password" id="loginPass"></input></p>
 </form>
-<div id="logindiv"></div>
 <p><a href="#" onclick="login();return false;">Login</a></p>
+</div>
+<div id="loginmsgdiv"></div>
+<div id="loggedindiv" style="display: none;">
 <p><a href="#" onclick="logout();return false;">Logout</a></p>
 <p>Command<input type="text" id="cmd"></input></p>
 <p><a href="#" onclick="runCommand();return false;">Run Command</a></p>
 <p><a href="#" onclick="playSound();return false;">Play Sound</a></p>
 <p><a href="#" onclick="clearImage();return false;">Clear Picture</a></p>
 <p><a href="#" onclick="updateImage();return false;">Take Picture</a></p>
+</div>
 <div id="imgdiv"></div>
 </body>
 </html>

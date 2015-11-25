@@ -461,7 +461,12 @@ use class Dz:MediaIO {
       File picFile = File.apNew(picName);
       picFile.delete();
       File.apNew(lastPicName).delete();
-      System:Command.new("uppic.sh " + picName).run();
+      if (System:CurrentPlatform.name == "mswin") {
+        String piccmd = "uppic.bat";
+      } else {
+        piccmd = "uppic.sh";
+      }
+      System:Command.new(piccmd + " " + picName).run();
       while (picFile.exists!) {
         Time:Sleep.sleepMilliseconds(500);
       }
@@ -551,13 +556,15 @@ use class Dz:AccountManager {
 
   getAccount(String user) {
     try {
+      Array qa = Array.new(1);
+      qa[0] = user;
       DbDb db = dbProvider.db;
       db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT LOGIN, PASS, SALT FROM " + tableName + " WHERE LOGIN='" + user + "'")) {
+      foreach (DbSt ares in db.executeQuery("SELECT LOGIN, PASS, SALT FROM " + tableName + " WHERE LOGIN=?", qa)) {
         Account a = Account.new(ares.getString(0), ares.getString(1), ares.getString(2));
       }
-      //ares.close();
       db.commit();
+      //ares.close();
       dbProvider.dbDone(db);
     } catch (var e) {
       db.rollback();
@@ -569,9 +576,10 @@ use class Dz:AccountManager {
   
   deleteAccount(Account a) {
     try {
+      Array qa = Array.new(1).put(0, a.user);
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("DELETE FROM " + tableName + " WHERE LOGIN='" + a.user + "'");
+      db.execute("DELETE FROM " + tableName + " WHERE LOGIN=?", qa);
       db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
@@ -588,9 +596,10 @@ use class Dz:AccountManager {
       try {
       """
       }
+      Array qa = Array.new(3).put(0, a.user).put(1, a.pass).put(2, a.salt);
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("INSERT INTO " + tableName + " (LOGIN, PASS, SALT) VALUES ('" + a.user + "', '" + a.pass + "', '" + a.salt + "')");
+      db.execute("INSERT INTO " + tableName + " (LOGIN, PASS, SALT) VALUES (?, ?, ?)", qa);
       db.commit();
       dbProvider.dbDone(db);
       emit(jv) {
@@ -611,9 +620,10 @@ use class Dz:AccountManager {
   
   updateAccount(Account a) {
     try {
+      Array qa = Array.new(3).put(0, a.pass).put(1, a.salt).put(2, a.user);
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("UPDATE " + tableName + " SET PASS='" + a.pass + "', SALT='" + a.salt +  "' WHERE LOGIN='" + a.user + "'");
+      db.execute("UPDATE " + tableName + " SET PASS=?, SALT=? WHERE LOGIN=?", qa);
       db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
@@ -712,9 +722,11 @@ use class Dz:ConfigManager {
 
   get(String name) String {
     try {
+      Array qa = Array.new(1);
+      qa[0] = name;
       DbDb db = dbProvider.db;
       db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME='" + name + "'")) {
+      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
         String value = ares.getString(0);
       }
       //ares.close();
@@ -730,9 +742,10 @@ use class Dz:ConfigManager {
   
   delete(String name) {
     try {
+      Array qa = Array.new(1).put(0, name);
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("DELETE FROM " + tableName + " WHERE NAME='" + name + "'");
+      db.execute("DELETE FROM " + tableName + " WHERE NAME=?", qa);
       db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
@@ -744,9 +757,10 @@ use class Dz:ConfigManager {
   
   create(String name, String value) {
     try {
+      Array qa = Array.new(2).put(0, name).put(1, value);
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES ('" + name + "', '" + value + "')");
+      db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
       db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
@@ -758,9 +772,10 @@ use class Dz:ConfigManager {
   
   update(String name, String value) {
     try {
+      Array qa = Array.new(2).put(0, value).put(1, name);
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("UPDATE " + tableName + " SET VALUE='" + value +  "' WHERE NAME='" + name + "'");
+      db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
       db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {

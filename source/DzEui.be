@@ -128,11 +128,15 @@ use class Dz:Eui {
    }
    
    loginResponse(Map arg) {
-     HD.getElementById("logindiv").innerHTML = "Welcome " + arg["name"];
+     HD.getElementById("loginmsgdiv").innerHTML = "Welcome " + arg["name"];
+     HD.getElementById("logindiv").display = "none";
+     HD.getElementById("loggedindiv").display = "block";
    }
    
    logoutResponse(Map arg) {
-     HD.getElementById("logindiv").innerHTML = "";
+     HD.getElementById("loginmsgdiv").innerHTML = "";
+     HD.getElementById("logindiv").display = "block";
+     HD.getElementById("loggedindiv").display = "none";
    }
    
    clearImage() {
@@ -185,6 +189,14 @@ class HE {
     emit(js) {
     """
     this.bevi_element.innerHTML = beva_val.bems_toJsString();
+    """
+    }
+  }
+  
+  displaySet(String val) self {
+    emit(js) {
+    """
+    this.bevi_element.style.display = beva_val.bems_toJsString();
     """
     }
   }
