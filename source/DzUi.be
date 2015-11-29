@@ -252,15 +252,19 @@ use class Dz:Ui {
       MediaIO i = MediaIO.new();
       i.log = log;
       i.lvl = lvl;
-      i.configManager = ConfigManager.new(self, "CONFIG");
+      i.app = self;
       modules["MediaIO"] = i;
       
       Accounts a = Accounts.new();
       a.log = log;
       a.lvl = lvl;
-      a.accountManager = self.accountManager;
+      a.app = self;
       modules["Accounts"] = a;
       
+  }
+  
+  configManagerGet() {
+    return(ConfigManager.new(self, "CONFIG"));
   }
 
   handleWeb(request, Map arg) {
@@ -339,7 +343,7 @@ use class Dz:Ui {
           db.open();
           if (createTables) {
             db.begin();
-            db.execute("CREATE TABLE ACCOUNTS( LOGIN VARCHAR(110), PASS VARCHAR(500), SALT VARCHAR(64), "
+            db.execute("CREATE TABLE ACCOUNTS( LOGIN VARCHAR(110), PASS VARCHAR(500), SALT VARCHAR(64), PERMS VARCHAR(256), "
               + " constraint ACCOUNTS_k primary key (LOGIN) )");
             db.execute("CREATE TABLE CONFIG( NAME VARCHAR(110), VALUE VARCHAR(500), "
               + " constraint CONFIG_k primary key (NAME) )");
@@ -364,6 +368,17 @@ use class Dz:Ui {
       }
       return(db);
       
+    }
+    
+    getHomeDir(request) Path {
+      String accountName = request.getSession("account.name");
+      Path homeDir = Path.apNew(accountName);
+      return(homeDir);
+    }
+    
+    getAccountUser(request) String {
+      String accountName = request.getSession("account.name");
+      return(accountName);
     }
     
     accountManagerGet() AccountManager {
@@ -410,7 +425,22 @@ use class Dz:CmdUi(Ui) {
         Account ac = Account.new();
         ac.user = user;
         ac.pass = pass;
+        if (args.length > 4) {
+          ac.permsString = args[4];
+        }
         self.accountManager.createAccount(ac);
+        self.db.close();
+      }
+      if (TS.notEmpty(mode) && mode == "deleteAccount") {
+        user = args[2];
+        log.log(lvl, "Deleting Account " + user);
+        ac = self.accountManager.getAccount(user);
+        if (def(ac)) {
+          self.accountManager.deleteAccount(ac);
+          log.log(lvl, "Deleted account " + user);
+        } else {
+          log.log(lvl, "No such account for deletion " + user);
+        }
         self.db.close();
       }
     }
@@ -443,41 +473,49 @@ use class Dz:MediaIO {
           IO:Log log;
           Int lvl;
           Int count = 0;
-          var configManager;
+          var app;
         }
      }
 
      updateImageRequest(Map arg, request) {
-      String c = configManager.get("image.count");
+      Path pp = app.getHomeDir(request).addStep("WebCam");
+      String an = app.getAccountUser(request);
+      String c = app.configManager.get("image.count." + an);
+      if (pp.file.exists!) {
+        pp.file.makeDirs();
+      }
       if (def(c)) {
         log.log(lvl, "count def " + c);
         count = Int.new(c);
       } else {
         log.log(lvl, "count undef");
-        configManager.create("image.count", count.toString());
+        app.configManager.create("image.count." + an, count.toString());
       }
       String picName = "pic" + count + ".jpg";
       String lastPicName = "pic" + (count - 1) + ".jpg";
-      File picFile = File.apNew(picName);
+      File picFile = pp.copy().addStep(picName).file;
       picFile.delete();
-      File.apNew(lastPicName).delete();
+      pp.copy().addStep(lastPicName).file.delete();
       if (System:CurrentPlatform.name == "mswin") {
         String piccmd = "uppic.bat";
       } else {
         piccmd = "uppic.sh";
       }
-      System:Command.new(piccmd + " " + picName).run();
-      while (picFile.exists!) {
+      log.log(lvl, "pic path " + picFile.path);
+      System:Command.new(piccmd + " " + picFile.path).run();
+      Int tries = 60;
+      while (picFile.exists! && tries > 0) {
         Time:Sleep.sleepMilliseconds(500);
+        tries--=;
       }
       Time:Sleep.sleepMilliseconds(500);
       log.log(lvl, "In load image");
       Map res = Map.new();
       res["action"] = "updateImageResponse";
-      res["imghtm"] = "<img src=\"" + picName + "\" >";
+      res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
       count++=;
       log.log(lvl, "updating count " + count);
-      configManager.update("image.count", count.toString());
+      app.configManager.update("image.count." + an, count.toString());
       return(res);
    }
    
@@ -505,12 +543,12 @@ use class Dz:Accounts {
      properties {
         IO:Log log;
         Int lvl;
-        var accountManager;
+        var app;
       }
    }
 
   loginRequest(Map arg, request) {
-    Account a = accountManager.getAccount(arg["loginName"]);
+    Account a = app.accountManager.getAccount(arg["loginName"]);
     if (def(a)) {
       log.log(lvl, "Found account " + arg["loginName"]);
       if (a.checkPass(arg["loginPass"])) {
@@ -560,8 +598,8 @@ use class Dz:AccountManager {
       qa[0] = user;
       DbDb db = dbProvider.db;
       db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT LOGIN, PASS, SALT FROM " + tableName + " WHERE LOGIN=?", qa)) {
-        Account a = Account.new(ares.getString(0), ares.getString(1), ares.getString(2));
+      foreach (DbSt ares in db.executeQuery("SELECT LOGIN, PASS, SALT, PERMS FROM " + tableName + " WHERE LOGIN=?", qa)) {
+        Account a = Account.new(ares.getString(0), ares.getString(1), ares.getString(2), ares.getString(3));
       }
       db.commit();
       //ares.close();
@@ -596,10 +634,10 @@ use class Dz:AccountManager {
       try {
       """
       }
-      Array qa = Array.new(3).put(0, a.user).put(1, a.pass).put(2, a.salt);
+      Array qa = Array.new(4).put(0, a.user).put(1, a.pass).put(2, a.salt).put(3, a.permsString);
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("INSERT INTO " + tableName + " (LOGIN, PASS, SALT) VALUES (?, ?, ?)", qa);
+      db.execute("INSERT INTO " + tableName + " (LOGIN, PASS, SALT, PERMS) VALUES (?, ?, ?, ?)", qa);
       db.commit();
       dbProvider.dbDone(db);
       emit(jv) {
@@ -620,10 +658,10 @@ use class Dz:AccountManager {
   
   updateAccount(Account a) {
     try {
-      Array qa = Array.new(3).put(0, a.pass).put(1, a.salt).put(2, a.user);
+      Array qa = Array.new(4).put(0, a.pass).put(1, a.salt).put(2, a.permsString).put(3, a.user);
       DbDb db = dbProvider.db;
       db.begin();
-      db.execute("UPDATE " + tableName + " SET PASS=?, SALT=? WHERE LOGIN=?", qa);
+      db.execute("UPDATE " + tableName + " SET PASS=?, SALT=?, PERMS=? WHERE LOGIN=?", qa);
       db.commit();
       dbProvider.dbDone(db);
     } catch (var e) {
@@ -636,12 +674,21 @@ use class Dz:AccountManager {
 }
 
 use class Dz:Account {
-  new(String _user, String _hashPass, String _salt) self {
+
+  new() self {
+    properties {
+      Set perms = Set.new();
+    }
+  }
+
+  new(String _user, String _hashPass, String _salt, String _permsString) self {
+    new();
     properties {
       String user = _user;
       String pass = _hashPass;
       String salt = _salt;
     }
+    self.permsString = _permsString;
   }
   
   passSet(String _pass) {
@@ -670,6 +717,29 @@ use class Dz:Account {
     return(false);
   }
   
+  permsStringSet(String permsString) {
+    perms = Set.new();
+    if (TS.notEmpty(permsString)) {
+      foreach (String perm in permsString.split(",")) {
+        perms.put(perm);
+      }
+    }
+  }
+  
+  permsStringGet() String {
+    Bool first = true;
+    String permsString = "";
+    foreach (String perm in perms) {
+      if (first) {
+        first = false;
+      } else {
+        permsString += ",";
+      }
+      permsString += perm;
+    }
+    return(permsString);
+  }
+  
 }
 
 use class Dz:AccountTest(Assert) {
@@ -686,14 +756,17 @@ use class Dz:AccountTest(Assert) {
     am.createAccount(atest);
     a = am.getAccount(atest.user);
     assertNotNull(a);
+    assertFalse(a.perms.has("admin"));
     assertTrue(a.checkPass("pass"));
     assertFalse(a.checkPass("notpass"));
     a.pass = "yo";
     assertTrue(a.checkPass("yo"));
+    a.perms.put("admin");
     am.updateAccount(a);
     a = am.getAccount(a.user);
     assertEqual(a.user, "test");
     assertTrue(a.checkPass("yo"));
+    //assertTrue(a.perms.has("admin"));
     am.deleteAccount(atest);
   }
   
