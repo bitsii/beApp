@@ -209,7 +209,12 @@ use class Dz:Wui(Ui) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
        if ((uri.ends(".jpg") && TS.notEmpty(accountName)) || uri.ends("/Dz.html") || uri.ends("/BEL_4_Base.js")) {
-         File imgfile = File.new(Path.apNew(uri).name);
+         if (uri.ends(".jpg")) {
+          File imgfile = File.apNew(uri.substring(1));
+         } else {
+          imgfile = File.new(Path.apNew(uri).name);
+         }
+         log.log(lvl, "imgfile " + imgfile.path);
          if (imgfile.exists) {
           String content = imgfile.reader.open().readString();
          }

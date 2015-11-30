@@ -32,4 +32,3 @@ copy /y extlibs\sqlite\* ..\apprun\dz
 copy /y extlibs\derby\* ..\apprun\dz
 copy /y extlibs\bcastlejv\* ..\apprun\dz
 
-call scripts\dz5jvrun.bat %*
