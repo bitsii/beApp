@@ -697,8 +697,7 @@ use class Web:Client {
             bevi_conn.setRequestMethod(bevp_method.bems_toJvString());
         }
         bevi_conn.setDoOutput(true);
-        //bevp_outputWriter.bevi_os = bevi_conn.getOutputStream();
-        bevp_outputWriter.bevi_os = new java.util.zip.GZIPOutputStream(bevi_conn.getOutputStream());
+        bevp_outputWriter.bevi_os = bevi_conn.getOutputStream();
         if (bevl_ssl != null) {
           HttpsURLConnection c = (HttpsURLConnection) bevi_conn;
           Certificate[] certs = c.getServerCertificates();
@@ -928,6 +927,7 @@ use class Web:Server {
       var sessionManager = Web:SessionManager.new();
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
+      Bool gzipOutput = false;
     }
   }
   
@@ -940,6 +940,7 @@ use class Web:Server {
   handleWeb(request) {
     var e;
     try {
+      request.gzipOutput = gzipOutput;
       request.sessionManager = sessionManager;
       app.handleWeb(request);
     } catch (e) {
@@ -1404,6 +1405,9 @@ use class Web:ScriptRequest {
     
     sendContentType() {
         if (def(outputContentType)) {
+            if (self.shouldGzipOutput) {
+              Bool gzo = true;
+            }
             emit(cs) {
             """
             bevi_res.ContentType = bevp_outputContentType.bems_toCsString();
@@ -1411,11 +1415,31 @@ use class Web:ScriptRequest {
             }
             emit(jv) {
             """
-            bevi_res.setHeader("Content-Encoding", "gzip");
+            if (bevl_gzo != null) {
+              bevi_res.setHeader("Content-Encoding", "gzip");
+            }
             bevi_res.setContentType(bevp_outputContentType.bems_toJvString());
             """
             }
         }
+    }
+    
+    shouldGzipOutputGet() Bool {
+      properties {
+        Bool gzipOutput;
+      }
+      if (def(gzipOutput) && gzipOutput) {
+        return(self.canGzipOutput);
+      }
+      return(false);
+    }
+    
+    canGzipOutputGet() Bool {
+      String ac = getInputHeader("accept-encoding");
+      if (def(ac) && ac.has("gzip")) {
+        return(true);
+      }
+      return(false);
     }
     
     closeOutput() self {
@@ -1458,6 +1482,10 @@ use class Web:ScriptRequest {
     
     openOutputWriter() IO:Writer {
         if (undef(outputWriter)) {
+            //("can gzip " + self.canGzipOutput).print();
+            if (self.shouldGzipOutput) {
+              Bool gzo = true;
+            }
             outputWriter = IO:Writer.new();
             emit(cs) {
             """
@@ -1466,7 +1494,11 @@ use class Web:ScriptRequest {
             }
             emit(jv) {
             """
-            bevp_outputWriter.bevi_os = new java.util.zip.GZIPOutputStream(bevi_res.getOutputStream());
+            if (bevl_gzo != null) {
+              bevp_outputWriter.bevi_os = new java.util.zip.GZIPOutputStream(bevi_res.getOutputStream());
+            } else {
+              bevp_outputWriter.bevi_os = bevi_res.getOutputStream();
+            }
             """
             }
             outputWriter.extOpen();

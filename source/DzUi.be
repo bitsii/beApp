@@ -136,6 +136,7 @@ use class Dz:Wui(Ui) {
       vw.ssl = true;
       vw.sslPath = cerPath;
       vw.app = self;
+      vw.gzipOutput = true;
       vars {
         System:Thread myThread = System:Thread.new(vw);
       }
