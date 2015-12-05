@@ -697,7 +697,8 @@ use class Web:Client {
             bevi_conn.setRequestMethod(bevp_method.bems_toJvString());
         }
         bevi_conn.setDoOutput(true);
-        bevp_outputWriter.bevi_os = bevi_conn.getOutputStream();
+        //bevp_outputWriter.bevi_os = bevi_conn.getOutputStream();
+        bevp_outputWriter.bevi_os = new java.util.zip.GZIPOutputStream(bevi_conn.getOutputStream());
         if (bevl_ssl != null) {
           HttpsURLConnection c = (HttpsURLConnection) bevi_conn;
           Certificate[] certs = c.getServerCertificates();
@@ -1410,6 +1411,7 @@ use class Web:ScriptRequest {
             }
             emit(jv) {
             """
+            bevi_res.setHeader("Content-Encoding", "gzip");
             bevi_res.setContentType(bevp_outputContentType.bems_toJvString());
             """
             }
@@ -1464,7 +1466,7 @@ use class Web:ScriptRequest {
             }
             emit(jv) {
             """
-            bevp_outputWriter.bevi_os = bevi_res.getOutputStream();
+            bevp_outputWriter.bevi_os = new java.util.zip.GZIPOutputStream(bevi_res.getOutputStream());
             """
             }
             outputWriter.extOpen();

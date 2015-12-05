@@ -862,5 +862,43 @@ use class Dz:ConfigManager {
       throw(e);
     }
   }
+  
+  compareAndUpdate(String name, String oldValue, String value) Bool {
+    Bool result = false;
+    try {
+      DbDb db = dbProvider.db;
+      db.begin();
+      Array qc = Array.new(1).put(0, name);
+      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qc)) {
+        String currValue = ares.getString(0);
+      }
+      if (currValue == oldValue) {
+          Array qa = Array.new(2).put(0, value).put(1, name);
+          db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
+          db.commit();
+          result = true;
+          dbProvider.dbDone(db);
+      }
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      //expected case, not fatal
+    }
+    return(result);
+  }
 
+}
+
+use class Dz:ConfigTest(Assert) {
+  
+  testConfig() {
+  
+  }
+  
+  main() {
+    "Begin ConfigTest".print();
+    testConfig();
+    "End ConfigTest".print();
+  }
+  
 }
