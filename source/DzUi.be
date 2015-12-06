@@ -497,8 +497,15 @@ use class Dz:MediaIO {
         log.log(lvl, "count undef");
         app.configManager.create("image.count." + an, count.toString());
       }
-      String picName = "pic" + count + ".jpg";
-      String lastPicName = "pic" + (count - 1) + ".jpg";
+      String rv = app.configManager.get("image.userkey." + an);
+      if (undef(rv)) {
+        rv = System:Random.getString(6);
+        app.configManager.create("image.userkey." + an, rv);
+      }
+      String myhn = System:Environment.getVariable("MYHN");
+      String picBaseName = "Pic-" + myhn + "-" + rv + "-";
+      String picName = picBaseName + count + ".jpg";
+      String lastPicName = picBaseName + (count - 1) + ".jpg";
       File picFile = pp.copy().addStep(picName).file;
       picFile.delete();
       pp.copy().addStep(lastPicName).file.delete();
@@ -864,23 +871,26 @@ use class Dz:ConfigManager {
     }
   }
   
-  compareAndUpdate(String name, String oldValue, String value) Bool {
+  testAndUpdate(String name, String oldValue, String value) Bool {
     Bool result = false;
     try {
       DbDb db = dbProvider.db;
       db.begin();
+      Array qa = Array.new(3).put(0, value).put(1, name).put(2, oldValue);
+      db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=? AND VALUE=?", qa);
+      //db.commit();
       Array qc = Array.new(1).put(0, name);
       foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qc)) {
         String currValue = ares.getString(0);
-      }
-      if (currValue == oldValue) {
-          Array qa = Array.new(2).put(0, value).put(1, name);
-          db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
-          db.commit();
+        if (currValue == value) {
           result = true;
-          dbProvider.dbDone(db);
+        }
       }
+      //if (true) { throw(Exception.new("fail")); }
+      db.commit();
+      dbProvider.dbDone(db);
     } catch (var e) {
+      result = false;
       db.rollback();
       dbProvider.dbFailed(db);
       //expected case, not fatal
@@ -893,7 +903,18 @@ use class Dz:ConfigManager {
 use class Dz:ConfigTest(Assert) {
   
   testConfig() {
-  
+    Ui ui = Ui.new();
+    ConfigManager cm = ui.configManager;
+    cm.delete("test.blarg");
+    assertNull(cm.get("test.blarg"));
+    cm.create("test.blarg", "test");
+    assertEqual(cm.get("test.blarg"), "test");
+    cm.update("test.blarg", "foo");
+    assertEqual(cm.get("test.blarg"), "foo");
+    assertFalse(cm.testAndUpdate("test.blarg", "test", "la"));
+    assertNotEqual(cm.get("test.blarg"), "la");
+    assertTrue(cm.testAndUpdate("test.blarg", "foo", "la"));
+    assertEqual(cm.get("test.blarg"), "la");
   }
   
   main() {

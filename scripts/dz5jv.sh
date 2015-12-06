@@ -33,6 +33,8 @@ cd ../apprun/dz
 
 export MYPWD=`pwd`
 
+export MYHN=`hostname`
+
 java -classpath "*" be.BEL_4_Base.BEL_4_Base $*
 
 cd ../../app
