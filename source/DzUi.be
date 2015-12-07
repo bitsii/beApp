@@ -478,7 +478,6 @@ use class Dz:MediaIO {
        properties {
           IO:Log log;
           Int lvl;
-          Int count = 0;
           var app;
         }
      }
@@ -486,15 +485,16 @@ use class Dz:MediaIO {
      updateImageRequest(Map arg, request) {
       Path pp = app.getHomeDir(request).addStep("WebCam");
       String an = app.getAccountUser(request);
-      String c = app.configManager.get("image.count." + an);
       if (pp.file.exists!) {
         pp.file.makeDirs();
       }
+      String c = app.configManager.get("image.count." + an);
       if (def(c)) {
         log.log(lvl, "count def " + c);
         count = Int.new(c);
       } else {
         log.log(lvl, "count undef");
+        Int count = 0;
         app.configManager.create("image.count." + an, count.toString());
       }
       String rv = app.configManager.get("image.userkey." + an);
@@ -504,11 +504,24 @@ use class Dz:MediaIO {
       }
       String myhn = System:Environment.getVariable("MYHN");
       String picBaseName = "Pic-" + myhn + "-" + rv + "-";
+      Int tries = 5;
+      Int maxPics = 4;
+      Bool updatedCount = false;
+      while (tries > 0 && updatedCount!) {
+        count = Int.new(app.configManager.get("image.count." + an));
+        tries--=;
+        Int nxcount = count++;
+        if (nxcount > maxPics) {
+          nxcount = 0;
+        }
+        updatedCount = app.configManager.testAndUpdate("image.count." + an, count.toString(), nxcount.toString());
+      }
+      if (tries <= 0) {
+        throw(System:Exception.new("Unable to get a count option"));
+      }
       String picName = picBaseName + count + ".jpg";
-      String lastPicName = picBaseName + (count - 1) + ".jpg";
       File picFile = pp.copy().addStep(picName).file;
       picFile.delete();
-      pp.copy().addStep(lastPicName).file.delete();
       if (System:CurrentPlatform.name == "mswin") {
         String piccmd = "uppic.bat";
       } else {
@@ -516,7 +529,7 @@ use class Dz:MediaIO {
       }
       log.log(lvl, "pic path " + picFile.path);
       System:Command.new(piccmd + " " + picFile.path).run();
-      Int tries = 60;
+      tries = 60;
       while (picFile.exists! && tries > 0) {
         Time:Sleep.sleepMilliseconds(500);
         tries--=;
@@ -526,9 +539,6 @@ use class Dz:MediaIO {
       Map res = Map.new();
       res["action"] = "updateImageResponse";
       res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
-      count++=;
-      log.log(lvl, "updating count " + count);
-      app.configManager.update("image.count." + an, count.toString());
       return(res);
    }
    
