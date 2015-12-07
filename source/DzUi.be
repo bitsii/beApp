@@ -127,7 +127,12 @@ use class Dz:Wui(Ui) {
     
     startWeb() {
       var e;
-      Int port = 5000;
+      String ports = self.configManager.get("wui.port");
+      if (TS.isEmpty(ports)) {
+        ports = "5000";
+        self.configManager.create("wui.port", ports);
+      }
+      Int port = Int.new(ports);
       String cerPath = assureCert(port);
       //portL.o = port;
       Web:Server vw = Web:Server.new();
@@ -447,6 +452,13 @@ use class Dz:CmdUi(Ui) {
         } else {
           log.log(lvl, "No such account for deletion " + user);
         }
+        self.db.close();
+      }
+      if (TS.notEmpty(mode) && mode == "updateConfig") {
+        String key = args[2];
+        String value = args[3];
+        log.log(lvl, "Updating config " + key + " " + value);
+        self.configManager.update(key, value);
         self.db.close();
       }
     }
