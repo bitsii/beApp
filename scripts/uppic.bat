@@ -1,1 +1,1 @@
-ffmpeg.exe -f dshow -i video="Integrated Webcam" -vframes 10 %1
+ffmpeg.exe -f dshow -i video="Integrated Webcam" -vframes 10 %2

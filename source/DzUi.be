@@ -243,6 +243,46 @@ use class Dz:Wui(Ui) {
 
 }
 
+use class Dz:Background {
+
+  new() self {
+    vars {
+      var app;
+      Int lvl;
+      IO:Log log;
+    }
+  }
+  
+  runTasks() {
+    //log.log(lvl, "Running tasks");
+    //duck, in app, last update/update now, get from config / set to config on change, etc
+  }
+  
+  main() {
+    var e;
+    while (true) {
+      try {
+        runTasks();
+      } catch (e) {
+        log.log(lvl, "Caught exception running tasks " + e);
+      }
+      try {          
+        Time:Sleep.sleepMilliseconds(10000);
+      } catch (e) {
+        log.log(lvl, "Caught exception sleeping " + e);
+      }
+    }
+  }
+  
+  startBackground() {
+    vars {
+      System:Thread myThread = System:Thread.new(self);
+    }
+    //myThread.start();
+  }
+
+}
+
 use class Dz:Ui {
 
   new() self {
@@ -253,6 +293,7 @@ use class Dz:Ui {
         Map modules = Map.new();
         Lock lock = Lock.new();
         Recyc dbRecyc = Recyc.new();
+        Background bg = Background.new();
       }
       
       Hello h = Hello.new();
@@ -271,6 +312,11 @@ use class Dz:Ui {
       a.lvl = lvl;
       a.app = self;
       modules["Accounts"] = a;
+      
+      bg.log = log;
+      bg.lvl = lvl;
+      bg.app = self;
+      bg.startBackground();
       
   }
   
@@ -540,7 +586,7 @@ use class Dz:MediaIO {
         piccmd = "uppic.sh";
       }
       log.log(lvl, "pic path " + picFile.path);
-      System:Command.new(piccmd + " " + picFile.path).run();
+      System:Command.new(piccmd + " " + "device" + " " + picFile.path).run();
       tries = 60;
       while (picFile.exists! && tries > 0) {
         Time:Sleep.sleepMilliseconds(500);
@@ -565,6 +611,36 @@ use class Dz:MediaIO {
       log.log(lvl, "running command " + cmd);
       System:Command.new(cmd).run();
       return(null);
+   }
+   
+   detectCamsRequest(Map arg, request) {
+      //TODO for real, ls /dev/video* with a script into a file
+      updateCams();
+      return(null);
+   }
+   
+   updateCams() {
+     updateCams("/dev/video0\n/dev/video1\n");
+   }
+   
+   updateCams(String dcs) {
+      Set ecm = Set.new();
+      String ecps = app.configManager.get("cam.paths");
+      if (TS.notEmpty(cp)) {
+        foreach (String cp in ecps.split("\n")) {
+          ecm.put(cp);
+        }
+      }
+      if (TS.notEmpty(dcs)) {
+        foreach (cp in dcs.split("\n")) {
+          if (ecm.has(cp)!) {
+            app.configManager.delete("cam." + cp + ".label");
+            app.configManager.create("cam." + cp + ".label", Path.apNew(cp).steps.last);
+          }
+        }
+      }
+      app.configManager.delete("cam.paths");
+      app.configManager.create("cam.paths", dcs);
    }
 
 }
@@ -943,6 +1019,33 @@ use class Dz:ConfigTest(Assert) {
     "Begin ConfigTest".print();
     testConfig();
     "End ConfigTest".print();
+  }
+  
+}
+
+use class Dz:MediaIOTest(Assert) {
+  
+  testCamUpdate() {
+  
+    Ui app = Ui.new();
+    app.configManager.delete("cam.paths");
+    app.configManager.delete("cam./dev/video0.label");
+    app.configManager.delete("cam./dev/video1.label");
+    MediaIO mio = app.modules["MediaIO"];
+    mio.updateCams();
+    assertEqual(app.configManager.get("cam.paths"), "/dev/video0\n/dev/video1\n");
+    assertEqual(app.configManager.get("cam./dev/video0.label"), "video0");
+    
+    mio.updateCams();
+    assertEqual(app.configManager.get("cam.paths"), "/dev/video0\n/dev/video1\n");
+    assertEqual(app.configManager.get("cam./dev/video1.label"), "video1");
+    
+  }
+  
+  main() {
+    "Begin MediaIOTest".print();
+    testCamUpdate();
+    "End MediaIOTest".print();
   }
   
 }

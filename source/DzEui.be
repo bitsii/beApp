@@ -53,6 +53,10 @@ var clearImage = function() {
   dzeui.bem_clearImage_0();
 }
 
+var detectCams = function() {
+  dzeui.bem_detectCams_0();
+}
+
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
@@ -141,6 +145,13 @@ use class Dz:Eui {
    
    clearImage() {
      HD.getElementById("imgdiv").innerHTML = "";
+   }
+   
+   detectCams() {
+      Map arg = Map.new();
+      arg["module"] = "MediaIO";
+      arg["action"] = "detectCamsRequest";
+      HC.new(self).call(arg);
    }
 }
 
