@@ -33,8 +33,8 @@ var playSound = function() {
   dzeui.bem_playSound_0();
 }
 
-var updateImage = function() {
-  dzeui.bem_updateImage_0();
+var updateImage = function(cam) {
+  dzeui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new(cam));
 }
 
 var runCommand = function() {
@@ -84,10 +84,11 @@ use class Dz:Eui {
       HC.new(self).handleCallback(res);
     }
     
-    updateImage() {
+    updateImage(String cam) {
       Map arg = Map.new();
       arg["module"] = "MediaIO";
       arg["action"] = "updateImageRequest";
+      arg["cam"] = cam;
       HC.new(self).call(arg);
    }
    
@@ -131,10 +132,34 @@ use class Dz:Eui {
      HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
    }
    
-   loginResponse(Map arg) {
-     HD.getElementById("loginmsgdiv").innerHTML = "Welcome " + arg["name"];
-     HD.getElementById("logindiv").display = "none";
-     HD.getElementById("loggedindiv").display = "block";
+   updateResponse(Map arg) {
+     if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
+      HD.getElementById("loginmsgdiv").innerHTML = "Welcome " + arg["name"];
+      HD.getElementById("logindiv").display = "none";
+      HD.getElementById("loggedindiv").display = "block";
+    }
+    if (arg.has("camLinks")) {
+      HD.getElementById("camLinksDiv").innerHTML = arg["camLinks"];
+    }
+    if (arg.has("permsString")) {
+      String permsString = arg["permsString"];
+      Set perms = Set.new();
+      if (TS.notEmpty(permsString)) {
+        foreach (String perm in permsString.split(",")) {
+          perms.put(perm);
+        }
+      }
+      HD.getElementById("runCommandId").display = "none";
+      HD.getElementById("playSoundId").display = "none";
+      HD.getElementById("detectCamsId").display = "none";
+      HD.getElementById("cmd").display = "none";
+      if (perms.has("admin")) {
+        HD.getElementById("runCommandId").display = "block";
+        HD.getElementById("playSoundId").display = "block";
+        HD.getElementById("detectCamsId").display = "block";
+        HD.getElementById("cmd").display = "block";
+      }
+    }
    }
    
    logoutResponse(Map arg) {

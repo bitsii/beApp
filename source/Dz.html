@@ -48,12 +48,11 @@ h5.luiForm {
 <div id="loggedindiv" style="display: none;">
 <p><a href="#" onclick="logout();return false;">Logout</a></p>
 <p>Command<input type="text" id="cmd"></input></p>
-<p><a href="#" onclick="runCommand();return false;">Run Command</a></p>
-<p><a href="#" onclick="playSound();return false;">Play Sound</a></p>
-<p><a href="#" onclick="detectCams();return false;">Detect WebCams</a></p>
+<p><a id="runCommandId" href="#" onclick="runCommand();return false;" style="display: none;">Run Command</a></p>
+<p><a id="playSoundId" href="#" onclick="playSound();return false;" style="display: none;">Play Sound</a></p>
+<p><a id="detectCamsId" href="#" onclick="detectCams();return false;" style="display: none;">Detect WebCams</a></p>
 <p><a href="#" onclick="clearImage();return false;">Clear Picture</a></p>
-<p><a href="#" onclick="updateImage();return false;">Take Picture</a></p>
-</div>
+<div id="camLinksDiv"></div>
 <div id="imgdiv"></div>
 </body>
 </html>

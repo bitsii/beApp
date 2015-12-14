@@ -320,7 +320,7 @@ use class Dz:Ui {
       
   }
   
-  configManagerGet() {
+  configManagerGet() ConfigManager {
     return(ConfigManager.new(self, "CONFIG"));
   }
 
@@ -433,11 +433,6 @@ use class Dz:Ui {
       return(homeDir);
     }
     
-    getAccountUser(request) String {
-      String accountName = request.getSession("account.name");
-      return(accountName);
-    }
-    
     accountManagerGet() AccountManager {
       properties {
         AccountManager am;
@@ -446,6 +441,14 @@ use class Dz:Ui {
         am = AccountManager.new(self, "ACCOUNTS");
       }
       return(am);
+    }
+    
+    loggedIn(Account a, Map res, Map arg, request) {
+      res["action"] = "updateResponse";
+      res["permsString"] = a.permsString;
+      res["camLinks"] = modules.get("MediaIO").camLinksForAccount(a);
+      log.log(lvl, "CamLinks " + res["camLinks"]);
+      return(res);
     }
 
 }
@@ -542,23 +545,28 @@ use class Dz:MediaIO {
 
      updateImageRequest(Map arg, request) {
       Path pp = app.getHomeDir(request).addStep("WebCam");
-      String an = app.getAccountUser(request);
+      String cam = arg["cam"];
+      Account a = app.accountManager.getAccountForRequest(request);
+      String an = a.user;
+      unless (camOkForAccount(cam, a)) {
+        throw(Exception.new("Account " + an + " not authorized for cam " + cam));
+      }
       if (pp.file.exists!) {
         pp.file.makeDirs();
       }
-      String c = app.configManager.get("image.count." + an);
+      String countKey = "image.count." + cam + "." + an;
+      String c = app.configManager.get(countKey);
       if (def(c)) {
         log.log(lvl, "count def " + c);
         count = Int.new(c);
       } else {
         log.log(lvl, "count undef");
         Int count = 0;
-        app.configManager.create("image.count." + an, count.toString());
+        app.configManager.create(countKey, count.toString());
       }
-      String rv = app.configManager.get("image.userkey." + an);
+      String rv = app.configManager.get("cam." + cam + ".label");
       if (undef(rv)) {
         rv = System:Random.getString(6);
-        app.configManager.create("image.userkey." + an, rv);
       }
       String myhn = System:Environment.getVariable("MYHN");
       String picBaseName = "Pic-" + myhn + "-" + rv + "-";
@@ -566,13 +574,13 @@ use class Dz:MediaIO {
       Int maxPics = 4;
       Bool updatedCount = false;
       while (tries > 0 && updatedCount!) {
-        count = Int.new(app.configManager.get("image.count." + an));
+        count = Int.new(app.configManager.get(countKey));
         tries--=;
         Int nxcount = count++;
         if (nxcount > maxPics) {
           nxcount = 0;
         }
-        updatedCount = app.configManager.testAndUpdate("image.count." + an, count.toString(), nxcount.toString());
+        updatedCount = app.configManager.testAndUpdate(countKey, count.toString(), nxcount.toString());
       }
       if (tries <= 0) {
         throw(System:Exception.new("Unable to get a count option"));
@@ -586,7 +594,7 @@ use class Dz:MediaIO {
         piccmd = "uppic.sh";
       }
       log.log(lvl, "pic path " + picFile.path);
-      System:Command.new(piccmd + " " + "device" + " " + picFile.path).run();
+      System:Command.new(piccmd + " " + cam + " " + picFile.path).run();
       tries = 60;
       while (picFile.exists! && tries > 0) {
         Time:Sleep.sleepMilliseconds(500);
@@ -601,12 +609,22 @@ use class Dz:MediaIO {
    }
    
    playSoundRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      unless (a.perms.has("admin")) {
+        log.log(lvl, "Account not admin, not playing sound");
+        return(null);
+      }
       log.log(lvl, "playing sound");
       System:Command.new("playsound.sh").run();
       return(null);
    }
    
    runCommandRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      unless (a.perms.has("admin")) {
+        log.log(lvl, "Account not admin, not running command");
+        return(null);
+      }
       String cmd = arg["cmd"];
       log.log(lvl, "running command " + cmd);
       System:Command.new(cmd).run();
@@ -614,25 +632,38 @@ use class Dz:MediaIO {
    }
    
    detectCamsRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      unless (a.perms.has("admin")) {
+        log.log(lvl, "Account not admin, not detecting cams");
+        return(null);
+      }
       //TODO for real, ls /dev/video* with a script into a file
       updateCams();
-      return(null);
+      Map res = Map.new();
+      res["action"] = "updateResponse";
+      res["camLinks"] = app.modules.get("MediaIO").camLinksForAccount(a);
+      return(res);
    }
    
    updateCams() {
      updateCams("/dev/video0\n/dev/video1\n");
    }
    
-   updateCams(String dcs) {
+   getCams() Set {
       Set ecm = Set.new();
       String ecps = app.configManager.get("cam.paths");
-      if (TS.notEmpty(cp)) {
+      if (def(ecps)) {
         foreach (String cp in ecps.split("\n")) {
           ecm.put(cp);
         }
       }
+      return(ecm);
+   }
+   
+   updateCams(String dcs) {
+      Set ecm = getCams();
       if (TS.notEmpty(dcs)) {
-        foreach (cp in dcs.split("\n")) {
+        foreach (String cp in dcs.split("\n")) {
           if (ecm.has(cp)!) {
             app.configManager.delete("cam." + cp + ".label");
             app.configManager.create("cam." + cp + ".label", Path.apNew(cp).steps.last);
@@ -641,6 +672,26 @@ use class Dz:MediaIO {
       }
       app.configManager.delete("cam.paths");
       app.configManager.create("cam.paths", dcs);
+   }
+   
+   camOkForAccount(String c, Account a) {
+    if (a.perms.has("admin") || a.perms.has("allcam") || 
+        a.perms.has("cam." + c)) {
+      return(true);
+    }
+    return(false);
+   }
+   
+   camLinksForAccount(Account a) String {
+     String camLinks = String.new();
+     Set ecm = getCams();
+     foreach (String c in ecm) {
+       if (camOkForAccount(c, a)) {
+          String clabel = app.configManager.get("cam." + c + ".label");
+          camLinks += "<p><a href=\"#\" onclick=\"updateImage('" + c + "');return false;\">Take Picture with " + clabel + "</a></p>";
+        }
+     }
+     return(camLinks);
    }
 
 }
@@ -666,9 +717,10 @@ use class Dz:Accounts {
         log.log(lvl, "Login ok");
         request.putSession("account.name", arg["loginName"]);
         Map res = Map.new();
-        res["action"] = "loginResponse";
+        res["action"] = "loggedInResponse";
         res["name"] = arg["loginName"];
-        return(res);
+        res["justLoggedIn"] = true;
+        return(app.loggedIn(a, res, arg, request));
       } else {
         log.log(lvl, "Login notok");
       }
@@ -780,6 +832,12 @@ use class Dz:AccountManager {
       dbProvider.dbFailed(db);
       throw(e);
     }
+  }
+  
+  getAccountForRequest(request) Account {
+    String an = request.getSession("account.name");
+    Account a = getAccount(an);
+    return(a);
   }
 
 }

@@ -25,6 +25,7 @@ cd ..\..\app
 
 copy /y ..\apprun\dz\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\dz
 copy /y scripts\uppic.bat ..\apprun\dz
+copy /y scripts\uppic.sh ..\apprun\dz
 copy /y source\Dz*.html ..\apprun\dz
 copy /y source\Dz*.js ..\apprun\dz
 copy /y extlibs\jetty\* ..\apprun\dz
