@@ -37,42 +37,19 @@ use class Dz:Lui(Ui) {
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
         }
         super.new();
+        bg.startBackground();
     }
 
     main() {
-      Array args = System:Process.new().args;
-
-      Web:Client:CertificateManager.validateHosts = false;
-
-      if (args.length > 0) {
-        String mode = args[0]; //ui, svc, both, [absent]
-        log.log(lvl, "mode " + mode);
-      } else {
-        log.log(lvl, "mode empty");
-      }
-      if (TS.isEmpty(mode)) {
-        mode = "wui";
-      }
-      if (mode == "lui") {
-        webr = WeBr.new();
-        webr.webHandler = self;
-        webr.height = 450;
-        webr.width = 320;
-        
-        String mypwd = System:Environment.getVariable("MYPWD");
-        webr.location = "file:///" + mypwd + "/Dz.html";
-        
-        webr.setup();
-      }
-      if (mode == "wui") {
-        Wui.new().main();
-      }
-      if (mode == "test") {
-        Dz:Test.new().main();
-      }
-      if (mode == "cmd") {
-        CmdUi.new().main(args);
-      }
+      webr = WeBr.new();
+      webr.webHandler = self;
+      webr.height = 450;
+      webr.width = 320;
+      
+      String mypwd = System:Environment.getVariable("MYPWD");
+      webr.location = "file:///" + mypwd + "/Dz.html";
+      
+      webr.setup();
    }
 
    initWeb() {
@@ -123,6 +100,7 @@ use class Dz:Wui(Ui) {
         properties {
         }
         super.new();
+        bg.startBackground();
     }
     
     startWeb() {
@@ -243,6 +221,54 @@ use class Dz:Wui(Ui) {
 
 }
 
+use class Dz:DnsUpdate {
+
+  new() self {
+  
+    vars {
+      String duckDomain;
+      String duckToken;
+      var app;
+      Int lvl;
+      IO:Log log;
+      Int lastSec = 0;
+      Int pollSecs = 3600;
+      //Int pollSecs = 1;
+    }
+  
+  }
+  
+  updateOnInterval() {
+    Int currSec = Time:Interval.now().seconds;
+    if (currSec - lastSec > pollSecs) {
+      lastSec = currSec;
+      doUpdate();
+    }
+  }
+  
+  doUpdate() {
+    log.log(lvl, "In doUpdate");
+    if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
+      log.log(lvl, "Hitting Duck");
+      String url =  "https://duckdns.org/update/" + duckDomain + "/" + duckToken;
+      Web:Client client = Web:Client.new();
+      Web:Client:CertificateManager.validateCertificates = false;
+      client.method = "GET";
+      client.url = url;
+      String res = client.openInput().readString();
+      client.close();
+      Web:Client:CertificateManager.validateCertificates = true;
+      client = null;
+    }
+  }
+  
+  init() {
+    duckDomain = app.configManager.get("dns.duckDomain");
+    duckToken = app.configManager.get("dns.duckToken");
+  }
+
+}
+
 use class Dz:Background {
 
   new() self {
@@ -250,12 +276,14 @@ use class Dz:Background {
       var app;
       Int lvl;
       IO:Log log;
+      DnsUpdate du = DnsUpdate.new();
     }
   }
   
   runTasks() {
     //log.log(lvl, "Running tasks");
     //duck, in app, last update/update now, get from config / set to config on change, etc
+    du.updateOnInterval();
   }
   
   main() {
@@ -278,7 +306,11 @@ use class Dz:Background {
     vars {
       System:Thread myThread = System:Thread.new(self);
     }
-    //myThread.start();
+    du.app = app;
+    du.lvl = lvl;
+    du.log = log;
+    du.init();
+    myThread.start();
   }
 
 }
@@ -316,7 +348,7 @@ use class Dz:Ui {
       bg.log = log;
       bg.lvl = lvl;
       bg.app = self;
-      bg.startBackground();
+      //bg.startBackground();
       
   }
   
@@ -450,6 +482,34 @@ use class Dz:Ui {
       log.log(lvl, "CamLinks " + res["camLinks"]);
       return(res);
     }
+    
+    main() {
+      Array args = System:Process.new().args;
+
+      Web:Client:CertificateManager.validateHosts = false;
+
+      if (args.length > 0) {
+        String mode = args[0]; //ui, svc, both, [absent]
+        log.log(lvl, "mode " + mode);
+      } else {
+        log.log(lvl, "mode empty");
+      }
+      if (TS.isEmpty(mode)) {
+        mode = "wui";
+      }
+      if (mode == "lui") {
+        Lui.new().main();
+      }
+      if (mode == "wui") {
+        Wui.new().main();
+      }
+      if (mode == "test") {
+        Dz:Test.new().main();
+      }
+      if (mode == "cmd") {
+        CmdUi.new().main(args);
+      }
+   }
 
 }
 
@@ -508,6 +568,13 @@ use class Dz:CmdUi(Ui) {
         String value = args[3];
         log.log(lvl, "Updating config " + key + " " + value);
         self.configManager.update(key, value);
+        self.db.close();
+      }
+      if (TS.notEmpty(mode) && mode == "createConfig") {
+        key = args[2];
+        value = args[3];
+        log.log(lvl, "Creating config " + key + " " + value);
+        self.configManager.create(key, value);
         self.db.close();
       }
     }
