@@ -233,7 +233,6 @@ use class Dz:DnsUpdate {
       IO:Log log;
       Int lastSec = 0;
       Int pollSecs = 3600;
-      //Int pollSecs = 1;
     }
   
   }
@@ -247,7 +246,7 @@ use class Dz:DnsUpdate {
   }
   
   doUpdate() {
-    log.log(lvl, "In doUpdate");
+    //log.log(lvl, "In doUpdate");
     if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
       log.log(lvl, "Hitting Duck");
       String url =  "https://duckdns.org/update/" + duckDomain + "/" + duckToken;
@@ -265,6 +264,10 @@ use class Dz:DnsUpdate {
   init() {
     duckDomain = app.configManager.get("dns.duckDomain");
     duckToken = app.configManager.get("dns.duckToken");
+    Int _pollSecs = app.configManager.get("dns.pollSecs");
+    if (def(_pollSecs) && _pollSecs > 0) {
+      pollSecs = _pollSecs;
+    }
   }
 
 }
@@ -295,7 +298,7 @@ use class Dz:Background {
         log.log(lvl, "Caught exception running tasks " + e);
       }
       try {          
-        Time:Sleep.sleepMilliseconds(10000);
+        Time:Sleep.sleepMilliseconds(sleepTime);
       } catch (e) {
         log.log(lvl, "Caught exception sleeping " + e);
       }
@@ -305,6 +308,11 @@ use class Dz:Background {
   startBackground() {
     vars {
       System:Thread myThread = System:Thread.new(self);
+      Int sleepTime = 10000;
+    }
+    Int _sleepTime = app.configManager.get("bk.sleepTime");
+    if (def(_sleepTime) && _sleepTime > 0) {
+      sleepTime = _sleepTime;
     }
     du.app = app;
     du.lvl = lvl;
@@ -575,6 +583,12 @@ use class Dz:CmdUi(Ui) {
         value = args[3];
         log.log(lvl, "Creating config " + key + " " + value);
         self.configManager.create(key, value);
+        self.db.close();
+      }
+      if (TS.notEmpty(mode) && mode == "deleteConfig") {
+        key = args[2];
+        log.log(lvl, "Deleting config " + key);
+        self.configManager.delete(key);
         self.db.close();
       }
     }
