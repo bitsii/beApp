@@ -532,19 +532,32 @@ use class Dz:CmdUi(Ui) {
     }
     
     main() {
+      return(main(System:Process.new().args));
+    }
+    
+    main(Array args) {
       try {
-        return(main(System:Process.new().args));
+        return(innerMain(System:Process.new().args));
       } catch (var e) {
         log.log(lvl, "Exception in CmdUi main, error is " + e);
       }
     }
 
-    main(Array args) {
+    innerMain(Array args) {
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
         log.log(lvl, "cmd " + mode);
       } else {
         log.log(lvl, "cmd empty");
+      }
+      if (TS.isEmpty(mode) || mode == "help") {
+        log.log(lvl, "Help");
+      }
+      if (TS.notEmpty(mode) && mode == "listLogins") {
+        foreach (String login in self.accountManager.getLogins()) {
+          log.log(lvl, "Account login " + login);
+        }
+        self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "createAccount") {
         String user = args[2];
@@ -557,6 +570,32 @@ use class Dz:CmdUi(Ui) {
           ac.permsString = args[4];
         }
         self.accountManager.createAccount(ac);
+        self.db.close();
+      }
+      if (TS.notEmpty(mode) && mode == "getAccount") {
+        user = args[2];
+        log.log(lvl, "Get Account " + user);
+        ac = self.accountManager.getAccount(user);
+        log.log(lvl, "Account " + ac);
+        self.db.close();
+      }
+      if (TS.notEmpty(mode) && mode == "setPermsString") {
+        user = args[2];
+        String ps = args[3];
+        log.log(lvl, "Set Perms " + user);
+        ac = self.accountManager.getAccount(user);
+        ac.permsString = ps;
+        self.accountManager.updateAccount(ac);
+        log.log(lvl, "Account " + ac);
+        self.db.close();
+      }
+      if (TS.notEmpty(mode) && mode == "setPass") {
+        user = args[2];
+        pass = args[3];
+        log.log(lvl, "Set Pass " + user);
+        ac = self.accountManager.getAccount(user);
+        ac.pass = pass;
+        self.accountManager.updateAccount(ac);
         self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
@@ -576,6 +615,12 @@ use class Dz:CmdUi(Ui) {
         String value = args[3];
         log.log(lvl, "Updating config " + key + " " + value);
         self.configManager.update(key, value);
+        self.db.close();
+      }
+      if (TS.notEmpty(mode) && mode == "showConfig") {
+        foreach (var kv in self.configManager.getMap()) {
+          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
+        }
         self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "createConfig") {
@@ -835,6 +880,26 @@ use class Dz:AccountManager {
     dbProvider = _dbProvider;
     tableName = _tableName;
   }
+  
+  getLogins() Array {
+    Array logins = Array.new();
+    try {
+      Array qa = Array.new(0);
+      DbDb db = dbProvider.db;
+      db.begin();
+      foreach (DbSt ares in db.executeQuery("SELECT LOGIN FROM " + tableName, qa)) {
+        logins.addValue(ares.getString(0));
+      }
+      db.commit();
+      //ares.close();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+    return(logins);
+  }
 
   getAccount(String user) {
     try {
@@ -941,6 +1006,16 @@ use class Dz:Account {
     self.permsString = _permsString;
   }
   
+  toString() String {
+    String rs = String.new();
+    String ps = self.permsString;
+    if (TS.isEmpty(ps)) {
+      ps = "";
+    }
+    rs += " User: " += user += " permsString: " += ps;
+    return(rs);
+  }
+  
   passSet(String _pass) {
     salt = System:Random.getString(16);
     pass = passToHash(_pass, salt);
@@ -1041,6 +1116,28 @@ use class Dz:ConfigManager {
     new();
     dbProvider = _dbProvider;
     tableName = _tableName;
+  }
+  
+  getMap() Map {
+    try {
+      Map res = Map.new();
+      Array qa = Array.new(0);
+      DbDb db = dbProvider.db;
+      db.begin();
+      foreach (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName, qa)) {
+        String name = ares.getString(0);
+        String value = ares.getString(1);
+        res.put(name, value);
+      }
+      //ares.close();
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+    return(res);
   }
 
   get(String name) String {
