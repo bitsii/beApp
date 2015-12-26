@@ -744,7 +744,8 @@ use class Dz:MediaIO {
       log.log(lvl, "In load image");
       Map res = Map.new();
       res["action"] = "updateImageResponse";
-      res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
+      //res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
+      res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
       return(res);
    }
    
