@@ -5,7 +5,7 @@ del /s /q ..\apprun\dz
 
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\dzd --buildPath ..\apprun\dz --emitLang jv -mainClass=Dz:Ui source\Dz.be source\DzTest.be source\DzUi.be source\Db.be source\BrowserUI.be
 
-javac -source 1.7 -target 1.7 -classpath extlibs\jetty\*;extlibs\sqlite\*;extlibs\derby\*;extlibs\bcastlejv\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\dz\Base\target\jv\be\BEL_4_Base\*.java
+javac -classpath extlibs\jetty\*;extlibs\sqlite\*;extlibs\derby\*;extlibs\bcastlejv\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\dz\Base\target\jv\be\BEL_4_Base\*.java
 
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\dzd --buildPath ..\apprun\dz --emitLang js --ownProcess false -mainClass=Dz:Eui source\DzEui.be
 
@@ -29,7 +29,7 @@ copy /y scripts\uppic.sh ..\apprun\dz
 copy /y source\Dz*.html ..\apprun\dz
 copy /y source\Dz*.js ..\apprun\dz
 copy /y extlibs\jetty\* ..\apprun\dz
-copy /y extlibs\sqlite\* ..\apprun\dz
+REM copy /y extlibs\sqlite\* ..\apprun\dz
 copy /y extlibs\derby\* ..\apprun\dz
 copy /y extlibs\bcastlejv\* ..\apprun\dz
 

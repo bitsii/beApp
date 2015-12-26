@@ -264,6 +264,9 @@ use class Dz:DnsUpdate {
   init() {
     duckDomain = app.configManager.get("dns.duckDomain");
     duckToken = app.configManager.get("dns.duckToken");
+    //if (TS.isEmpty(duckDomain)) { duckDomain = ""; }
+    //if (TS.isEmpty(duckToken)) { duckToken = ""; }
+    //log.log(lvl, "dns.duckDomain " + duckDomain + " dns.duckToken " + duckToken);
     Int _pollSecs = app.configManager.get("dns.pollSecs");
     if (def(_pollSecs) && _pollSecs > 0) {
       pollSecs = _pollSecs;
@@ -307,8 +310,8 @@ use class Dz:Background {
   
   startBackground() {
     vars {
-      System:Thread myThread = System:Thread.new(self);
-      Int sleepTime = 10000;
+      System:Thread myThread;
+      Int sleepTime = 500;
     }
     Int _sleepTime = app.configManager.get("bk.sleepTime");
     if (def(_sleepTime) && _sleepTime > 0) {
@@ -318,6 +321,7 @@ use class Dz:Background {
     du.lvl = lvl;
     du.log = log;
     du.init();
+    myThread = System:Thread.new(self);
     myThread.start();
   }
 
@@ -469,7 +473,7 @@ use class Dz:Ui {
     
     getHomeDir(request) Path {
       String accountName = request.getSession("account.name");
-      Path homeDir = Path.apNew(accountName);
+      Path homeDir = Path.apNew("Home/" + accountName);
       return(homeDir);
     }
     
@@ -532,14 +536,23 @@ use class Dz:CmdUi(Ui) {
     }
     
     main() {
-      return(main(System:Process.new().args));
+      main(System:Process.new().args);
     }
     
     main(Array args) {
+      outerMain(System:Process.new().args);
       try {
-        return(innerMain(System:Process.new().args));
+        self.db.close();
       } catch (var e) {
-        log.log(lvl, "Exception in CmdUi main, error is " + e);
+        log.log(lvl, "Exception closing db in CmdUi, error is " + e);
+      }
+    }
+    
+    outerMain(Array args) {
+      try {
+        innerMain(System:Process.new().args);
+      } catch (var e) {
+        log.log(lvl, "Exception in CmdUi, error is " + e);
       }
     }
 
@@ -552,12 +565,13 @@ use class Dz:CmdUi(Ui) {
       }
       if (TS.isEmpty(mode) || mode == "help") {
         log.log(lvl, "Help");
+        log.log(lvl, "listLogins, createAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         foreach (String login in self.accountManager.getLogins()) {
           log.log(lvl, "Account login " + login);
         }
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "createAccount") {
         String user = args[2];
@@ -570,14 +584,14 @@ use class Dz:CmdUi(Ui) {
           ac.permsString = args[4];
         }
         self.accountManager.createAccount(ac);
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
         log.log(lvl, "Get Account " + user);
         ac = self.accountManager.getAccount(user);
         log.log(lvl, "Account " + ac);
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "setPermsString") {
         user = args[2];
@@ -587,7 +601,7 @@ use class Dz:CmdUi(Ui) {
         ac.permsString = ps;
         self.accountManager.updateAccount(ac);
         log.log(lvl, "Account " + ac);
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
         user = args[2];
@@ -596,7 +610,7 @@ use class Dz:CmdUi(Ui) {
         ac = self.accountManager.getAccount(user);
         ac.pass = pass;
         self.accountManager.updateAccount(ac);
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
@@ -608,33 +622,33 @@ use class Dz:CmdUi(Ui) {
         } else {
           log.log(lvl, "No such account for deletion " + user);
         }
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "updateConfig") {
         String key = args[2];
         String value = args[3];
         log.log(lvl, "Updating config " + key + " " + value);
         self.configManager.update(key, value);
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
         foreach (var kv in self.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "createConfig") {
         key = args[2];
         value = args[3];
         log.log(lvl, "Creating config " + key + " " + value);
         self.configManager.create(key, value);
-        self.db.close();
+        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "deleteConfig") {
         key = args[2];
         log.log(lvl, "Deleting config " + key);
         self.configManager.delete(key);
-        self.db.close();
+        //self.db.close();
       }
     }
 }
