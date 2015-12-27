@@ -184,6 +184,29 @@ use class Dz:Wui(Ui) {
    initWeb() {
 
    }
+   
+   checkPath(Path p, String accountName) Bool {
+    var e;
+    Bool isOk = false;
+    if (undef(accountName)) { accountName = ""; }
+    try {
+      Path pa = p.file.absPath;
+      Path adz = Path.apNew("App/Dz").file.absPath;
+      if (TS.notEmpty(accountName)) {
+        Path h = Path.apNew("Home/" + accountName).file.absPath;
+      }
+      String pas = pa.toString();
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js"))) {
+        isOk = true;
+      } elif (def(h) && pas.begins(h.toString())) {
+        isOk = true;
+      }
+    } catch (e) {
+      log.log(lvl, "Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
+    }
+    //log.log(lvl, "checkPath isOk " + isOk);
+    return(isOk);
+   }
 
    handleWeb(request) {
    
@@ -192,12 +215,8 @@ use class Dz:Wui(Ui) {
      if (undef(arg)) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
-       if ((uri.ends(".jpg") && TS.notEmpty(accountName)) || uri.ends("/Dz.html") || uri.ends("/BEL_4_Base.js")) {
-         //if (uri.ends(".jpg")) {
-          File imgfile = File.apNew(uri.substring(1));
-         //} else {
-         // imgfile = File.new(Path.apNew(uri).name);
-         //}
+       File imgfile = File.apNew(uri.substring(1));
+       if (checkPath(imgfile.path, accountName)) {
          log.log(lvl, "imgfile " + imgfile.path);
          if (imgfile.exists) {
           String content = imgfile.reader.open().readString();
