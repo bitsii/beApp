@@ -1,15 +1,6 @@
 
-del /s /q ..\apprun\dz\Base
-rmdir /s /q ..\apprun\dz\Base
+call uglifyjs ..\apprun\App\Dz\BEL_4_Base.js > ..\apprun\App\Dz\BEL_4_Base.js.1
 
-del /s /q ..\apprun\dz\Home
-rmdir /s /q ..\apprun\dz\Home
+del /q ..\apprun\App\Dz\BEL_4_Base.js
 
-del /s /q ..\apprun\dz\cert
-del /s/q ..\apprun\dz\derby.log
-
-call uglifyjs ..\apprun\dz\BEL_4_Base.js > ..\apprun\dz\BEL_4_Base.js.1
-
-del /q ..\apprun\dz\BEL_4_Base.js
-
-move ..\apprun\dz\BEL_4_Base.js.1 ..\apprun\dz\BEL_4_Base.js
+move ..\apprun\App\Dz\BEL_4_Base.js.1 ..\apprun\App\Dz\BEL_4_Base.js

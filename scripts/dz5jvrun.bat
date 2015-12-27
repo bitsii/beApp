@@ -1,10 +1,10 @@
 
-cd ..\apprun\dz
+cd ..\apprun
 
 set "MYPWD=%cd%"
 
 for /f "delims=" %%a in ('hostname') do @set MYHN=%%a
 
-java -classpath * be.BEL_4_Base.BEL_4_Base %*
+java -classpath App\Dz\* be.BEL_4_Base.BEL_4_Base %*
 
-cd ..\..\app
+cd ..\app

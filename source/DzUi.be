@@ -47,7 +47,7 @@ use class Dz:Lui(Ui) {
       webr.width = 320;
       
       String mypwd = System:Environment.getVariable("MYPWD");
-      webr.location = "file:///" + mypwd + "/Dz.html";
+      webr.location = "file:///" + mypwd + "/App/Dz/Dz.html";
       
       webr.setup();
    }
@@ -135,7 +135,7 @@ use class Dz:Wui(Ui) {
   }
   
   assureCertJv(Int port) String {
-    Path cerPath = Path.apNew("cert");
+    Path cerPath = Path.apNew("Data/Dz/cert");
     String cerPathS = cerPath.toString();
     log.log(lvl, "cerPath " + cerPathS);
     if (cerPath.file.exists) {
@@ -193,11 +193,11 @@ use class Dz:Wui(Ui) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
        if ((uri.ends(".jpg") && TS.notEmpty(accountName)) || uri.ends("/Dz.html") || uri.ends("/BEL_4_Base.js")) {
-         if (uri.ends(".jpg")) {
+         //if (uri.ends(".jpg")) {
           File imgfile = File.apNew(uri.substring(1));
-         } else {
-          imgfile = File.new(Path.apNew(uri).name);
-         }
+         //} else {
+         // imgfile = File.new(Path.apNew(uri).name);
+         //}
          log.log(lvl, "imgfile " + imgfile.path);
          if (imgfile.exists) {
           String content = imgfile.reader.open().readString();
@@ -431,11 +431,11 @@ use class Dz:Ui {
           }
           lock.lock();
           ifEmit(jv) {
-            dbp = Path.apNew("../dzdata/DDZDB");
+            dbp = Path.apNew("Data/Dz/DDZDB");
             db = Derby.pathNew(dbp);
           }
           ifEmit(cs) {
-            dbp = Path.apNew("../dzdata/FDZDB");
+            dbp = Path.apNew("Data/Dz/FDZDB");
             db = FbDb.pathNew(dbp);
           }
           Bool createTables = dbp.file.exists!;
@@ -729,9 +729,9 @@ use class Dz:MediaIO {
       File picFile = pp.copy().addStep(picName).file;
       picFile.delete();
       if (System:CurrentPlatform.name == "mswin") {
-        String piccmd = "uppic.bat";
+        String piccmd = "App\\Dz\\uppic.bat";
       } else {
-        piccmd = "uppic.sh";
+        piccmd = "App/Dz/uppic.sh";
       }
       log.log(lvl, "pic path " + picFile.path);
       System:Command.new(piccmd + " " + cam + " " + picFile.path).run();
@@ -745,7 +745,7 @@ use class Dz:MediaIO {
       Map res = Map.new();
       res["action"] = "updateImageResponse";
       //res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
-      res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
+      res["imghtm"] = "<img src=\"../../" + picFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
       return(res);
    }
    

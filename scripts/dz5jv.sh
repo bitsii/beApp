@@ -1,8 +1,9 @@
 
 mkdir -p ../apprun
-mkdir -p ../apprun/dzdata
+mkdir -p ../apprun/dz/Data
 
-rm -rf ../apprun/dz
+rm -rf ../apprun/dz/App
+mkdir -p ../apprun/dz/App
 
 java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/dzd --buildPath ../apprun/dz --emitLang jv -mainClass=Dz:Ui source/Dz.be source/DzTest.be source/DzUi.be source/Db.be source/BrowserUI.be
 

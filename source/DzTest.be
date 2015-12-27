@@ -29,7 +29,7 @@ use class Dz:Test(Assert) {
   main() {
     "Begin Dz Test".print();
     try {
-      Db:Relational:Test.new().main();
+      //Db:Relational:Test.new().main();
       Dz:AccountTest.new().main();
       Dz:ConfigTest.new().main();
       Dz:MediaIOTest.new().main();
