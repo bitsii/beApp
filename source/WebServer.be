@@ -1,0 +1,612 @@
+// Copyright 2015 Craig Welch
+//
+// Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
+// http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
+// <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
+// option. This file may not be copied, modified, or distributed
+// except according to those terms.
+
+use Text:String;
+use Text:Strings as TS;
+use Logic:Bool;
+use Math:Int;
+use Container:Array;
+use Container:Map;
+use Container:Set;
+
+emit(jv) {
+"""
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+ 
+import java.io.IOException;
+ 
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+
+//ssl
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.server.*;
+"""
+}
+use class Web:Server {
+
+  emit(cs) {
+  """
+  public volatile Mono.Net.HttpListener bevi_listener = new Mono.Net.HttpListener();
+  public void bems_handleWeb(object o)  {
+    Mono.Net.HttpListenerContext context = o as Mono.Net.HttpListenerContext;
+    BEC_3_13_WebScriptRequest request = new BEC_3_13_WebScriptRequest(context);
+    request.bem_new_0();
+    bem_handleWeb_1(request);
+  }
+  """
+  }
+  
+  emit(jv) {
+  """
+  public Server server;
+  public class BECS_WebHandler extends AbstractHandler
+  {
+    public void handle(String target,
+                       Request baseRequest,
+                       HttpServletRequest request,
+                       HttpServletResponse response) 
+        throws IOException, ServletException
+    {
+      try {
+          BEC_3_13_WebScriptRequest wr = new BEC_3_13_WebScriptRequest(request, response);
+          wr.bem_new_0();
+          bem_handleWeb_1(wr);
+       } catch (Throwable t) { 
+          t.printStackTrace();
+       }
+    }
+    }
+  """
+  }
+  
+  new() self {
+    vars {
+      Int port = 8080;
+      var app;
+      Bool ssl = false;
+      String sslPath;
+      var sessionManager = Web:SessionManager.new();
+      IO:Log log = IO:Log.new();
+      Int lvl = log.debug;
+      Bool gzipOutput = false;
+    }
+  }
+  
+  handleStartWeb() {
+    if (app.can("handleStartWeb", 0)) {
+      app.handleStartWeb();
+    }
+  }
+  
+  handleWeb(request) {
+    var e;
+    try {
+      request.gzipOutput = gzipOutput;
+      request.sessionManager = sessionManager;
+      app.handleWeb(request);
+    } catch (e) {
+      try {
+        log.log(lvl, "Caught exception handling request");
+        if (log.will(lvl)) { log.log(lvl, e.toString()); }
+      } catch (e) {
+      }
+    }
+  }
+  
+  main() {
+    start();
+  }
+  
+  stop() {
+    emit(cs) {
+    """
+    bevi_listener.Prefixes.Remove(bevp_listenerPrefix.bems_toCsString());
+    bevi_listener.Stop();
+    """
+    }
+    emit(jv) {
+    """
+    server.stop();
+    """
+    }
+  }
+
+  start() {
+    emit(cs) {
+    """
+    if (!Mono.Net.HttpListener.IsSupported)
+    {
+        throw new Exception("Mono.Net.HttpListener is not supported.");
+    }
+    """
+    }
+    
+    var ussl;
+    if (ssl) {
+      ussl = "notnull";
+    }
+    
+    ifEmit(cs) {
+      if (ssl) {
+        String bt = "https://+:" += port.toString() + "/";
+      } else {
+        bt = "http://+:" += port.toString() + "/";
+      }
+      vars {
+        String listenerPrefix = bt;
+      }
+    }
+    emit(cs) {
+    """
+    bevi_listener.Prefixes.Add(bevl_bt.bems_toCsString());
+    """
+    }
+    
+    emit(cs) {
+    """
+    bevi_listener.Start();
+    //Won't get here if start failed, port in use, etc
+    bem_handleStartWeb_0();
+    while(true) {
+      try {
+        ThreadPool.QueueUserWorkItem(bems_handleWeb, bevi_listener.GetContext());  
+      } catch (Mono.Net.HttpListenerException hle) {
+        //should indicate shutdown
+        break;
+      }
+    }
+    """
+    }
+    
+    emit(jv) {
+    """
+    if (bevl_ussl == null) {
+      //for http
+      server = new Server(bevp_port.bevi_int);
+    } else {
+      //for https
+      server = new Server();
+  
+      SslContextFactory contextFactory = new SslContextFactory();
+      //contextFactory.setKeyStorePath("keystore");
+      //contextFactory.setKeyStorePassword("boohiss");
+      contextFactory.setKeyStorePath(bevp_sslPath.bems_toJvString());
+      contextFactory.setKeyStorePassword("kp");
+      SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(contextFactory, org.eclipse.jetty.http.HttpVersion.HTTP_1_1.toString());
+      
+      HttpConfiguration config = new HttpConfiguration();
+      config.setSecureScheme("https");
+      config.setSecurePort(bevp_port.bevi_int);
+      HttpConfiguration sslConfiguration = new HttpConfiguration(config);
+      sslConfiguration.addCustomizer(new SecureRequestCustomizer());
+      HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(sslConfiguration);
+      
+      ServerConnector connector = new ServerConnector(server, sslConnectionFactory, httpConnectionFactory);
+      connector.setPort(bevp_port.bevi_int);
+      server.addConnector(connector);
+    }
+    server.setHandler(new BECS_WebHandler());
+
+    server.start();
+    //Won't get here if start failed, port in use, etc
+    bem_handleStartWeb_0();
+    server.join();
+    """
+    }
+    
+    return(null);
+  }
+
+}
+
+//script request should eventually inherit from a Request which doesn't have the json stuff
+
+use class Web:ScriptRequest {
+
+  emit(cs) {
+  """
+  public Mono.Net.HttpListenerContext bevi_context;
+  public Mono.Net.HttpListenerRequest bevi_req;
+  public Mono.Net.HttpListenerResponse bevi_res;
+  
+  public BEC_3_13_WebScriptRequest(Mono.Net.HttpListenerContext bevi_context) {
+      this.bevi_context = bevi_context;
+      this.bevi_req = bevi_context.Request;
+      this.bevi_res = bevi_context.Response;
+      bem_new_0();
+  }
+  """
+  }
+  
+  emit(jv) {
+   """
+    public javax.servlet.http.HttpServletRequest bevi_req;
+    public javax.servlet.http.HttpServletResponse bevi_res;
+    
+    public BEC_3_13_WebScriptRequest(javax.servlet.http.HttpServletRequest bevi_req, javax.servlet.http.HttpServletResponse bevi_res) {
+        this.bevi_req = bevi_req;
+        this.bevi_res = bevi_res;
+        try {
+        bem_new_0();
+        } catch (Throwable t) { }
+    }
+    
+   """
+   }
+   
+   uriGet() String {
+     String uri;
+     emit(cs) {
+     """
+     string url = bevi_req.RawUrl;
+     if (url != null) {
+       bevl_uri = new BEC_4_6_TextString(url);
+     }
+     """
+     }
+     emit(jv) {
+     """
+     String url = bevi_req.getRequestURI();
+     if (url != null) {
+       bevl_uri = new BEC_4_6_TextString(url);
+     }
+     """
+     }
+     return(uri);
+   }
+   
+   inputAddressGet() String {
+     String addr = getInputHeader("X-Forwarded-For");
+      if (TS.isEmpty(addr) || addr.lower() == "unknown") {
+          addr = getInputHeader("WL-Proxy-Client-IP");
+      }
+      if (TS.isEmpty(addr) || addr.lower() == "unknown") {  
+          addr = getInputHeader("Proxy-Client-IP");
+      }
+      if (TS.isEmpty(addr) || addr.lower() == "unknown") {  
+          addr = getInputHeader("HTTP_CLIENT_IP");
+      }
+      if (TS.isEmpty(addr) || addr.lower() == "unknown") {  
+          addr = getInputHeader("HTTP_X_FORWARDED_FOR");
+      }
+      if (TS.isEmpty(addr) || addr.lower() == "unknown") {  
+          addr = self.remoteAddress;
+      }
+      return(addr);
+   }
+   
+   localAddressGet() String {
+     String res;
+     emit(cs) {
+     """
+     if (bevi_req != null) {
+       string emaddr = bevi_req.LocalEndPoint.Address.ToString();
+       bevl_res = new BEC_4_6_TextString(emaddr);
+     }
+     """
+     }
+     emit(jv) {
+     """
+     if (bevi_req != null) {
+      bevl_res = new BEC_4_6_TextString(bevi_req.getLocalAddr());
+     }
+     """
+     }
+     return(res);
+   }
+   
+   //inputAddressGet does the header check
+   remoteAddressGet() String {
+     String res;
+     emit(cs) {
+     """
+     if (bevi_req != null) {
+       string emaddr = bevi_req.RemoteEndPoint.Address.ToString();
+       bevl_res = new BEC_4_6_TextString(emaddr);
+     }
+     """
+     }
+     emit(jv) {
+     """
+     if (bevi_req != null) {
+       String emaddr = bevi_req.getRemoteAddr();
+       bevl_res = new BEC_4_6_TextString(emaddr);
+     }
+     """
+     }
+     return(res);
+   }
+   
+   setOutputCookie(String name, String value) {
+     emit(cs) {
+     """
+     Cookie toAdd = new Cookie(beva_name.bems_toCsString(), beva_value.bems_toCsString());
+     bevi_res.Cookies.Add(toAdd);
+     """
+     }
+     emit(jv) {
+     """
+     Cookie toAdd = new Cookie(beva_name.bems_toJvString(), beva_value.bems_toJvString());
+     bevi_res.addCookie(toAdd);
+     """
+     }
+   }
+   
+   getInputCookie(String name) String {
+     emit(cs) {
+     """
+     string csname = beva_name.bems_toCsString();
+     foreach (Cookie cook in bevi_req.Cookies) {
+       if (cook.Name == csname) {
+         return(new BEC_4_6_TextString(cook.Value));
+       }
+     }
+     """
+     }
+     emit(jv) {
+     """
+      String jvname = beva_name.bems_toJvString();
+      Cookie[] cookies = bevi_req.getCookies();
+      if (cookies != null) 
+      {
+          for(int i=0; i<cookies.length; i++) 
+          {
+            Cookie cookie = cookies[i];
+            if (jvname.equals(cookie.getName())) {
+              return(new BEC_4_6_TextString(cookie.getValue()));
+            }
+          }
+      }
+     """
+     }
+     return(null);
+   }
+   
+   getInputHeader(String name) String {
+     String val;
+     emit(cs) {
+     """
+     String[] vals = bevi_req.Headers.GetValues(beva_name.bems_toCsString());
+     if (vals != null && vals.Length > 0) {
+        bevl_val = new BEC_4_6_TextString(vals[0]);
+     }
+     """
+     }
+     emit(jv) {
+     """
+     String emval = bevi_req.getHeader(beva_name.bems_toJvString());
+     if (emval != null) {
+       bevl_val = new BEC_4_6_TextString(emval);
+     }
+     """
+     }
+     return(val);
+   }
+   
+   setOutputHeader(String name, String value) {
+     String val;
+     emit(cs) {
+     """
+     bevi_res.AddHeader(beva_name.bems_toCsString(),
+       beva_value.bems_toCsString());
+     """
+     }
+     emit(jv) {
+     """
+     bevi_res.addHeader(beva_name.bems_toJvString(),
+       beva_value.bems_toJvString());
+     """
+     }
+     return(val);
+   }
+   
+   inputContentGet() String {
+      //arrange to work for multiple goes
+      String ret = openInput().readString();
+      closeInputReader();
+      return(ret);
+   }
+   
+   outputContentSet(String content) {
+      openOutput().write(content);
+      closeOutputWriter();
+   }
+   
+   scriptArgGet() {
+     String ic = self.inputContent;
+     IO:Log.log(IO:Log.debug, "In scriptArgGet, inputContent " + ic);
+     return(unmar.unmarshall(ic));
+   }
+   
+   scriptReturnSet(ret) {
+     String oc = mar.marshall(ret);
+     IO:Log.log(IO:Log.debug, "In scriptReturnSet, outputContent " + oc);
+     self.outputContentType =@ "application/json";
+     self.outputContent = oc;
+   }
+   
+   getParameter(String name) String {
+       String value;
+       emit(cs) {
+       """
+       String[] vals = bevi_req.QueryString.GetValues(beva_name.bems_toCsString());
+       if (vals != null && vals.Length > 0) {
+          bevl_value = new BEC_4_6_TextString(vals[0]);
+       }
+       """
+       }
+       emit(jv) {
+       """
+       Object val = bevi_req.getParameter(beva_name.bems_toJvString());
+       if (val != null) {
+          bevl_value = new BEC_4_6_TextString(val.toString());
+       }
+       """
+       }
+       return(value);
+   }
+   
+   deleteSession()  {
+     if (def(sessionManager)) {
+       return(sessionManager.deleteSession(self));
+     }
+     return(null);
+   }
+   
+   getSession(String name) String {
+     vars {
+       var sessionManager;
+     }
+     if (def(sessionManager)) {
+       return(sessionManager.getSession(self, name));
+     }
+     return(null);
+   }
+   
+   putSession(String name, String value) self {
+     if (def(sessionManager)) {
+       sessionManager.putSession(self, name, value);
+     }
+   }
+
+    new() self {
+        properties {
+            IO:Writer outputWriter;
+            String outputContentType =@ "text/html"; //sensible default
+            Bool outputOpened = false;
+            Json:Marshaller mar = Json:Marshaller.new();
+            Json:Unmarshaller unmar = Json:Unmarshaller.new();
+        }
+    }
+    
+    openOutput() IO:Writer {
+        if (outputOpened!) {
+            //do all the onetime things, content type, cookies, etc
+            sendContentType();
+            //open the writer last
+            openOutputWriter();
+        }
+        return(outputWriter);
+    }
+    
+    sendContentType() {
+        if (def(outputContentType)) {
+            if (self.shouldGzipOutput) {
+              Bool gzo = true;
+            }
+            emit(cs) {
+            """
+            bevi_res.ContentType = bevp_outputContentType.bems_toCsString();
+            """
+            }
+            emit(jv) {
+            """
+            if (bevl_gzo != null) {
+              bevi_res.setHeader("Content-Encoding", "gzip");
+            }
+            bevi_res.setContentType(bevp_outputContentType.bems_toJvString());
+            """
+            }
+        }
+    }
+    
+    shouldGzipOutputGet() Bool {
+      properties {
+        Bool gzipOutput;
+      }
+      if (def(gzipOutput) && gzipOutput) {
+        return(self.canGzipOutput);
+      }
+      return(false);
+    }
+    
+    canGzipOutputGet() Bool {
+      String ac = getInputHeader("accept-encoding");
+      if (def(ac) && ac.has("gzip")) {
+        return(true);
+      }
+      return(false);
+    }
+    
+    closeOutput() self {
+        if (outputOpened) {
+            closeOutputWriter();
+            outputOpened = false;
+        }
+    }
+    
+    openInput() IO:Reader {
+      //later ? check for already opened, etc?
+      return(openInputReader());
+    }
+    
+    openInputReader() IO:Reader {
+      properties {
+        IO:Reader inputReader;
+      }
+      inputReader = IO:Reader.new();
+        emit(cs) {
+        """
+        bevp_inputReader.bevi_is = bevi_req.InputStream;
+        """
+        }
+        emit(jv) {
+        """
+        bevp_inputReader.bevi_is = bevi_req.getInputStream();
+        """
+        }
+        inputReader.extOpen();
+      return(inputReader);
+    }
+    
+    closeInputReader() self {
+      if (def(inputReader)) {
+          inputReader.close();
+          inputReader = null;
+      }
+    }
+    
+    openOutputWriter() IO:Writer {
+        if (undef(outputWriter)) {
+            //("can gzip " + self.canGzipOutput).print();
+            if (self.shouldGzipOutput) {
+              Bool gzo = true;
+            }
+            outputWriter = IO:Writer.new();
+            emit(cs) {
+            """
+            bevp_outputWriter.bevi_os = bevi_res.OutputStream;
+            """
+            }
+            emit(jv) {
+            """
+            if (bevl_gzo != null) {
+              bevp_outputWriter.bevi_os = new java.util.zip.GZIPOutputStream(bevi_res.getOutputStream());
+            } else {
+              bevp_outputWriter.bevi_os = bevi_res.getOutputStream();
+            }
+            """
+            }
+            outputWriter.extOpen();
+        }
+        return(outputWriter);
+    }
+    
+    closeOutputWriter() self {
+        if (def(outputWriter)) {
+            outputWriter.close();
+            outputWriter = null;
+        }
+    }
+}
+
