@@ -37,7 +37,7 @@ use class Dz:Hello {
       log.log(lvl, "In say hello");
       Map res = Map.new();
       res["action"] = "sayHelloResponse";
-      res["msg"] = "hello";
+      res["msg"] = "hello 1 " + System:Random.getString(3);
       return(res);
    }
 

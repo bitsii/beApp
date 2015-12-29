@@ -39,177 +39,22 @@ using System.Diagnostics;
     """
 }
 
-emit(jv) {
-"""
-import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import javafx.stage.Stage;
-import netscape.javascript.JSObject;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Worker.State;
-"""
-}
-use UI:JvFx:WebBrowser as FxBr;
-class FxBr {
+use UI:WebBrowserImpl as WebImp;
+class WebImp {
 
- emit(jv) {
-    """
-    
-    public Stage stage;
-    public static BEC_2_4_10_UIJvFxWebBrowser sinst;
-    
-    public static class BECS_FxWebBrowser extends Application {
-    
-        @Override
-        public void start(Stage stage) {
-        
-          try {
-            //handler setup happens here
-            sinst = BEC_2_4_10_UIJvFxWebBrowser.bevs_inst;
-            sinst.bem_initWeb_0();
-            sinst.stage = stage;
-        
-            stage.setTitle(sinst.bem_titleGet_0().bems_toJvString());
-            stage.setWidth(sinst.bem_widthGet_0().bevi_int);                 
-            stage.setHeight(sinst.bem_heightGet_0().bevi_int);
-            Scene scene = new Scene(new Group());
-      
-            VBox root = new VBox();     
-      
-            final WebView browser = new WebView();
-            final WebEngine webEngine = browser.getEngine();
-      
-            BEC_4_6_TextString cont = sinst.bem_contentGet_0();
-            if (cont != null) {
-              webEngine.loadContent(cont.bems_toJvString());
-            } else {
-              BEC_4_6_TextString loc = sinst.bem_locationGet_0();
-              if (loc != null) {
-                webEngine.load(loc.bems_toJvString());
-              }
-            }
-            webEngine.getLoadWorker().stateProperty().addListener(
-              new ChangeListener<State>() {  
-                  @Override
-                  public void changed(ObservableValue<? extends State>
-                      ov, State oldState, State newState) {
-                      if (newState == State.SUCCEEDED
-                          || newState == State.FAILED) {
-                          JSObject win = (JSObject) 
-                          webEngine.executeScript("window");
-                          win.setMember("external", sinst);
-                          webEngine.executeScript("startup();");
-                      }
-                  }
-              });
-            root.getChildren().addAll(browser);
-            scene.setRoot(root);
-      
-            stage.setScene(scene);
-            stage.show();
-          } catch (Throwable t) {
-            throw new RuntimeException(t.getMessage(), t);
-          }
-        }
-     
-        public static void main(String[] args) {
-            launch(args);
-        }
+  new() self {
+    properties {
+      var setupHandler;
+      var webHandler;
     }
-    
-    public Object HandleCall(Object obj) {
-      try {
-        if (obj == null) {
-          System.err.println("got a null obj in HandleCall");
-        } else {
-          //System.out.println("HANDLE CALL GOT " + obj);
-          String objstr = obj.toString();
-          BEC_4_6_TextString objbes = new BEC_4_6_TextString(objstr);
-          BEC_4_6_TextString resbes = sinst.bem_handleWeb_1(objbes);
-          if (resbes != null) {
-            return resbes.bems_toJvString();
-          }
-        }
-      } catch (Throwable t) {
-        //throw new RuntimeException(t.getMessage(), t);
-        System.err.println("got exception " + t.getMessage());
-        t.printStackTrace();
-      }
-      return null;
-    }
-    """
-    }
-
-  default() self {
-        properties {
-            var setupHandler;
-            var webHandler;
-        }
-   }
-   
-   setupStuff() {
-     vars {
-        IO:Log log = IO:Log.new();
-        //Int lvl = log.debug;
-        Int lvl = log.info;
-        Map session = Map.new();
-     }
-   }
-   
-   initWeb() self {
-     setupStuff();
-     webHandler.initWeb();
-   }
-   
-   setup() {
-    emit(jv) {
-    """
-    BECS_FxWebBrowser.main(new String[]{});
-    """
-    }
+  }
+  
+  setup() {
+  
   }
   
   close() {
-    emit(jv) {
-    """
-    stage.hide();
-    """
-    }
-  }
   
-  titleGet() String {
-    return(setupHandler.title);
-  }
-  
-  heightGet() Int {
-    return(setupHandler.height);
-  }
-  
-  widthGet() Int {
-    return(setupHandler.width);
-  }
-  
-  contentGet() String {
-    return(setupHandler.content);
-  }
-  
-  locationGet() String {
-    return(setupHandler.location);
-  }
-  
-  handleWeb(String arg) String {
-    log.log(lvl, "in handleWeb, arg " + arg);
-    BrowserScriptRequest r = BrowserScriptRequest.new(session);
-    r.scriptArgJson = arg;
-    webHandler.handleWeb(r);
-    String ret = r.scriptReturnJson;
-    log.log(lvl, "in handleWeb, ret " + ret);
-    return(ret);
   }
 
 }
@@ -227,10 +72,7 @@ class UI:WebBrowser {
       String location;
       String browserType;
       var webHandler;
-      //only populated if winform
-      WfBr winForm;
-      //same for jv
-      FxBr fx;
+      WebImp webImp;
     }
     ifEmit(cs) {
       browserType = "winform";
@@ -244,26 +86,20 @@ class UI:WebBrowser {
     unless (haveSetup) {
       haveSetup = true;
       if (browserType == "winform") {
-        winForm = WfBr.new();
-        winForm.setupHandler = self;
-        winForm.webHandler = webHandler;
-        winForm.setup();
+        webImp = createInstance("UI:WinForm:WebBrowser");
       }
       if (browserType == "jvfx") {
-        fx = FxBr.new();
-        fx.setupHandler = self;
-        fx.webHandler = webHandler;
-        fx.setup();
+        webImp = createInstance("UI:JvFx:WebBrowser");
       }
+      webImp.new();
+      webImp.setupHandler = self;
+      webImp.webHandler = webHandler;
+      webImp.setup();
     }
   }
   
   close() {
-    if (browserType == "winform") {
-      winForm.close();
-    } elif (browserType == "jvfx") {
-      fx.close();
-    }
+    webImp.close();
   }
   
   exit() {
@@ -289,7 +125,7 @@ class UI:WebBrowser {
 }
 
 use UI:WinForm:WebBrowser as WfBr;
-class WfBr {
+class WfBr(WebImp) {
 
    //wf specific
    emit(cs) {
@@ -308,10 +144,7 @@ class WfBr {
    }
 
     default() self {
-        properties {
-            var setupHandler;
-            var webHandler;
-        }
+
     }
     
     setup() {
@@ -932,11 +765,13 @@ use class UI:ExternalBrowser {
     """
     }
     
+    ifNotEmit(platDroid) {
     emit(jv) {
     """
     java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
     desktop.browse(new java.net.URI(beva_url.bems_toJvString()));
     """
+    }
     }
   
   }

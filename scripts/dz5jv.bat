@@ -6,7 +6,7 @@ del /s /q ..\apprun\App\Dz
 rmdir /s /q ..\apprun\App\Dz
 mkdir ..\apprun\App\Dz
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\Dz\d --buildPath ..\apprun\App\Dz --emitLang jv -mainClass=Dz:Ui source\Dz.be source\DzTest.be source\DzUi.be source\Db.be source\BrowserUI.be source\WebServer.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\Dz\d --buildPath ..\apprun\App\Dz --emitLang jv -mainClass=Dz:Ui source\Dz.be source\DzTest.be source\DzUi.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be
 
 javac -classpath extlibs\jetty\*;extlibs\sqlite\*;extlibs\derby\*;extlibs\bcastlejv\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\Dz\Base\target\jv\be\BEL_4_Base\*.java
 
