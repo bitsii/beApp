@@ -80,6 +80,9 @@ class UI:WebBrowser {
     ifEmit(jv) {
       browserType = "jvfx";
     }
+    ifEmit(platAndroid) {
+      browserType = "jvad";
+    }
   }
 
   setup() {
@@ -90,6 +93,9 @@ class UI:WebBrowser {
       }
       if (browserType == "jvfx") {
         webImp = createInstance("UI:JvFx:WebBrowser");
+      }
+      if (browserType == "jvad") {
+        webImp = createInstance("UI:JvAd:WebBrowser");
       }
       webImp.new();
       webImp.setupHandler = self;
@@ -765,7 +771,7 @@ use class UI:ExternalBrowser {
     """
     }
     
-    ifNotEmit(platDroid) {
+    ifNotEmit(platAndroid) {
     emit(jv) {
     """
     java.awt.Desktop desktop = java.awt.Desktop.getDesktop();

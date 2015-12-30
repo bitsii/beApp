@@ -71,7 +71,8 @@ use class App:LocPing {
       webr.width = 320;
       
       String mypwd = System:Environment.getVariable("MYPWD");
-      webr.location = "file:///" + mypwd + "/App/LocPing/LocPing.html";
+      //webr.location = "file:///" + mypwd + "/App/LocPing/LocPing.html";
+      webr.location = "http://slashdot.org";
       
       webr.setup();
    }
