@@ -641,3 +641,139 @@ use class Db:Relational:Test(Assert) {
 
 }
 
+//TODO
+//kv (interface)
+//rkv (relational, try to fit android sqlite into DbDb)
+use Db:KeyValue as KvDb;
+class KvDb {
+
+  new() self {
+    properties {
+      var dbProvider;
+      String tableName;
+    }
+  }
+  
+  new(_dbProvider, _tableName) {
+    new();
+    dbProvider = _dbProvider;
+    tableName = _tableName;
+  }
+  
+  getMap() Map {
+    try {
+      Map res = Map.new();
+      Array qa = Array.new(0);
+      DbDb db = dbProvider.db;
+      db.begin();
+      foreach (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName, qa)) {
+        String name = ares.getString(0);
+        String value = ares.getString(1);
+        res.put(name, value);
+      }
+      //ares.close();
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+    return(res);
+  }
+
+  get(String name) String {
+    try {
+      Array qa = Array.new(1);
+      qa[0] = name;
+      DbDb db = dbProvider.db;
+      db.begin();
+      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
+        String value = ares.getString(0);
+      }
+      //ares.close();
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+    return(value);
+  }
+  
+  delete(String name) {
+    try {
+      Array qa = Array.new(1).put(0, name);
+      DbDb db = dbProvider.db;
+      db.begin();
+      db.execute("DELETE FROM " + tableName + " WHERE NAME=?", qa);
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+  }
+  
+  create(String name, String value) {
+    try {
+      Array qa = Array.new(2).put(0, name).put(1, value);
+      DbDb db = dbProvider.db;
+      db.begin();
+      db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+  }
+  
+  update(String name, String value) {
+    try {
+      Array qa = Array.new(2).put(0, value).put(1, name);
+      DbDb db = dbProvider.db;
+      db.begin();
+      db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      db.rollback();
+      dbProvider.dbFailed(db);
+      throw(e);
+    }
+  }
+  
+  testAndUpdate(String name, String oldValue, String value) Bool {
+    Bool result = false;
+    try {
+      DbDb db = dbProvider.db;
+      db.begin();
+      Array qa = Array.new(3).put(0, value).put(1, name).put(2, oldValue);
+      db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=? AND VALUE=?", qa);
+      //db.commit();
+      Array qc = Array.new(1).put(0, name);
+      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qc)) {
+        String currValue = ares.getString(0);
+        if (currValue == value) {
+          result = true;
+        }
+      }
+      //if (true) { throw(Exception.new("fail")); }
+      db.commit();
+      dbProvider.dbDone(db);
+    } catch (var e) {
+      result = false;
+      db.rollback();
+      dbProvider.dbFailed(db);
+      //expected case, not fatal
+    }
+    return(result);
+  }
+
+}
+
+

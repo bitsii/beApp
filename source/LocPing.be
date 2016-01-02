@@ -71,8 +71,12 @@ use class App:LocPing {
       webr.width = 320;
       
       String mypwd = System:Environment.getVariable("MYPWD");
-      //webr.location = "file:///" + mypwd + "/App/LocPing/LocPing.html";
-      webr.location = "http://slashdot.org";
+      ifNotEmit(platDroid) {
+        webr.location = "file:///" + mypwd + "/App/LocPing/LocPing.html";
+      }
+      ifEmit(platDroid) {
+        webr.location = "file:///android_asset/App/LocPing/LocPing.html";
+      }
       
       webr.setup();
    }

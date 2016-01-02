@@ -21,8 +21,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.JavascriptInterface;
 """
 }
+
+/*
+Example of android app component, just extend the activity below
+
+public class MainActivity extends be.BEL_4_Base.BEC_2_4_10_UIJvAdWebBrowser.MainActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        mWebView = (WebView) findViewById(R.id.webView);
+        postCreate();
+    }
+}
+*/
+
 use UI:JvAd:WebBrowser as AdBr;
 class AdBr(WebImp) {
 
@@ -47,6 +63,7 @@ public static class MainActivity extends AppCompatActivity {
             System.err.println("Failed in main with " + t.getMessage());
             throw new Error(t.getMessage(), t);
         }
+        mWebView.addJavascriptInterface(new WebAppInterface(), "Android");
         //mWebView.loadUrl("https://some.place");
     }
 
@@ -58,6 +75,30 @@ public static class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+  }
+  
+  public static class WebAppInterface {
+
+      @JavascriptInterface
+      public String HandleCall(String objstr) {
+          try {
+          if (objstr == null) {
+            System.err.println("got a null obj in HandleCall");
+          } else {
+            BEC_4_6_TextString objbes = new BEC_4_6_TextString(objstr);
+            BEC_2_4_10_UIJvAdWebBrowser sinst = BEC_2_4_10_UIJvAdWebBrowser.bevs_inst;
+            BEC_4_6_TextString resbes = sinst.bem_handleWeb_1(objbes);
+            if (resbes != null) {
+              return resbes.bems_toJvString();
+            }
+          }
+        } catch (Throwable t) {
+          //throw new RuntimeException(t.getMessage(), t);
+          System.err.println("got exception " + t.getMessage());
+          t.printStackTrace();
+        }
+        return null;
+      }
   }
 
 """
@@ -81,6 +122,7 @@ public static class MainActivity extends AppCompatActivity {
    }
    
    setup() {
+   initWeb();
    String loc = setupHandler.location;
    emit(jv) {
    """

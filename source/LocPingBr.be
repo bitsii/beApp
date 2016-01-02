@@ -31,6 +31,7 @@ var startup = function() {
   dzeui = new be_BEL_4_Base_BEC_3_7_4_AppLocPingLPBr();
   dzeui.bem_new_0();
   dzeui.bem_main_0();
+  sayHi();
 }
 
 var sayHi = function() {
