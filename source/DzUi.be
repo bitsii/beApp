@@ -212,6 +212,22 @@ use class Dz:Wui(Ui) {
    
      String accountName = request.getSession("account.name");
      Map arg = request.scriptArg;
+     /*if (def(arg) && TS.isEmpty(accountName)) {
+       String ln = arg["svcLoginName"];
+       String lp = arg["svcLoginPass"];
+       if (TS.notEmpty(ln) && TS.notEmpty(lp)) {
+          log.log(lvl, "doing svc login");
+          Account a = self.accountManager.getAccount(ln);
+          if (def(a)) {
+            log.log(lvl, "Found account " + ln);
+            if (a.checkPass(lp)) {
+              log.log(lvl, "svc login ok");
+              request.putSession("account.name", ln);
+              accountName = ln;
+            }
+          }
+        }
+     }*/
      if (undef(arg)) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
@@ -508,6 +524,7 @@ use class Dz:Ui {
     
     loggedIn(Account a, Map res, Map arg, request) {
       res["action"] = "updateResponse";
+      res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["camLinks"] = modules.get("MediaIO").camLinksForAccount(a);
       log.log(lvl, "CamLinks " + res["camLinks"]);
@@ -806,14 +823,14 @@ use class Dz:MediaIO {
    }
    
    updateCams() {
-     updateCams("/dev/video0\n/dev/video1\n");
+     updateCams("/dev/video0,/dev/video1");
    }
    
    getCams() Set {
       Set ecm = Set.new();
       String ecps = app.configManager.get("cam.paths");
       if (def(ecps)) {
-        foreach (String cp in ecps.split("\n")) {
+        foreach (String cp in ecps.split(",")) {
           ecm.put(cp);
         }
       }
@@ -823,7 +840,7 @@ use class Dz:MediaIO {
    updateCams(String dcs) {
       Set ecm = getCams();
       if (TS.notEmpty(dcs)) {
-        foreach (String cp in dcs.split("\n")) {
+        foreach (String cp in dcs.split(",")) {
           if (ecm.has(cp)!) {
             app.configManager.delete("cam." + cp + ".label");
             app.configManager.create("cam." + cp + ".label", Path.apNew(cp).steps.last);
@@ -868,6 +885,23 @@ use class Dz:Accounts {
         var app;
       }
    }
+   
+   checkLoggedInRequest(Map arg, request) {
+    String accountName = request.getSession("account.name");
+    if (TS.notEmpty(accountName)) {
+      Account a = app.accountManager.getAccount(accountName);
+      if (def(a)) {
+        log.log(lvl, "Found logged in account " + accountName);
+        Map res = Map.new();
+        res["action"] = "loggedInResponse";
+        res["name"] = accountName;
+        return(app.loggedIn(a, res, arg, request));
+      } else {
+        log.log(lvl, "No such account " + accountName);
+      }
+    }
+    return(logoutRequest(arg, request));
+  }
 
   loginRequest(Map arg, request) {
     Account a = app.accountManager.getAccount(arg["loginName"]);
@@ -879,7 +913,6 @@ use class Dz:Accounts {
         Map res = Map.new();
         res["action"] = "loggedInResponse";
         res["name"] = arg["loginName"];
-        res["justLoggedIn"] = true;
         return(app.loggedIn(a, res, arg, request));
       } else {
         log.log(lvl, "Login notok");
@@ -1174,11 +1207,11 @@ use class Dz:MediaIOTest(Assert) {
     app.configManager.delete("cam./dev/video1.label");
     MediaIO mio = app.modules["MediaIO"];
     mio.updateCams();
-    assertEqual(app.configManager.get("cam.paths"), "/dev/video0\n/dev/video1\n");
+    assertEqual(app.configManager.get("cam.paths"), "/dev/video0,/dev/video1");
     assertEqual(app.configManager.get("cam./dev/video0.label"), "video0");
     
     mio.updateCams();
-    assertEqual(app.configManager.get("cam.paths"), "/dev/video0\n/dev/video1\n");
+    assertEqual(app.configManager.get("cam.paths"), "/dev/video0,/dev/video1");
     assertEqual(app.configManager.get("cam./dev/video1.label"), "video1");
     
   }

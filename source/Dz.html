@@ -40,7 +40,7 @@ h5.luiForm {
 <p>Login</p>
 <form>
 <p><label class="luiForm">Account Name</label><input type="text" id="loginName"></input></p>
-<p><label class="luiForm">Account Password</label><input type="password" id="loginPass"></input></p>
+<p><label class="luiForm">Account Password</label><input type="password" id="loginPass" onkeydown = "if (event.keyCode == 13) login()"></input></p>
 </form>
 <p><a href="#" onclick="login();return false;">Login</a></p>
 </div>

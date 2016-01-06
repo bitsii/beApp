@@ -174,12 +174,16 @@ class FxBr(WebImp) {
   }
   
   handleWeb(String arg) String {
-    log.log(lvl, "in handleWeb, arg " + arg);
+    if (def(arg)) {
+      log.log(lvl, "in handleWeb, arg " + arg);
+    }
     BrowserScriptRequest r = BrowserScriptRequest.new(session);
     r.scriptArgJson = arg;
     webHandler.handleWeb(r);
     String ret = r.scriptReturnJson;
-    log.log(lvl, "in handleWeb, ret " + ret);
+    if (def(ret)) {
+      log.log(lvl, "in handleWeb, ret " + ret);
+    }
     return(ret);
   }
 

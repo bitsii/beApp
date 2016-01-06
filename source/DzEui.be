@@ -31,6 +31,12 @@ var startup = function() {
   dzeui = new be_BEL_4_Base_BEC_2_3_DzEui();
   dzeui.bem_new_0();
   dzeui.bem_main_0();
+  var ln = getParameter("loginName");
+  var lp = getParameter("loginPass");
+  if (ln !== null && lp !== null && ln !== '' && lp !== '') {
+    dzeui.bem_login_2(new be_BEL_4_Base_BEC_4_6_TextString().bems_new(ln), new be_BEL_4_Base_BEC_4_6_TextString().bems_new(lp));
+  }
+  dzeui.bem_startup_0();
 }
 
 var playSound = function() {
@@ -66,6 +72,13 @@ var handleCallback = function(res) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
       dzeui.bem_handleCallback_1(bevs_resjs);
     }
+}
+
+function getParameter(param) {
+    param = param.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + param + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
 
@@ -111,14 +124,27 @@ use class Dz:Eui {
       HC.new(self).call(arg);
    }
    
+   startup() {
+      clearImage();
+      Map arg = Map.new();
+      arg["module"] = "Accounts";
+      arg["action"] = "checkLoggedInRequest";
+      HD.getElementById("loginName").value = "";
+      HD.getElementById("loginPass").value = "";
+      HC.new(self).call(arg);
+   }
    
    login() {
+      login(HD.getElementById("loginName").value, HD.getElementById("loginPass").value);
+   }
+   
+   login(String loginName, String loginPass) {
       clearImage();
       Map arg = Map.new();
       arg["module"] = "Accounts";
       arg["action"] = "loginRequest";
-      arg["loginName"] = HD.getElementById("loginName").value;
-      arg["loginPass"] = HD.getElementById("loginPass").value;
+      arg["loginName"] = loginName;
+      arg["loginPass"] = loginPass;
       HD.getElementById("loginName").value = "";
       HD.getElementById("loginPass").value = "";
       HC.new(self).call(arg);
