@@ -733,7 +733,7 @@ use class Web:SessionManager {
       until (sessions.putIfAbsent(sk, s)) {
         sk = System:Random.getString(keyLen);
       }
-      request.setOutputCookie(keyName, sk);
+      request.setOutputCookie(keyName, sk, "/");
       request.setOutputHeader(keyName, sk);
     }
     return(s);
@@ -744,7 +744,7 @@ use class Web:SessionManager {
     if (TS.notEmpty(sk)) {
       sessions.delete(sk);
     }
-    request.setOutputCookie(keyName, "");
+    request.setOutputCookie(keyName, "", "/");
   }
   
   getSession(request, String name) String {

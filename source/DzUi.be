@@ -212,9 +212,9 @@ use class Dz:Wui(Ui) {
    
      String accountName = request.getSession("account.name");
      Map arg = request.scriptArg;
-     /*if (def(arg) && TS.isEmpty(accountName)) {
-       String ln = arg["svcLoginName"];
-       String lp = arg["svcLoginPass"];
+     if (TS.isEmpty(accountName)) {
+       String ln = request.getParameter("loginName");
+       String lp = request.getParameter("loginPass");
        if (TS.notEmpty(ln) && TS.notEmpty(lp)) {
           log.log(lvl, "doing svc login");
           Account a = self.accountManager.getAccount(ln);
@@ -227,7 +227,7 @@ use class Dz:Wui(Ui) {
             }
           }
         }
-     }*/
+     }
      if (undef(arg)) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);

@@ -327,7 +327,7 @@ use class Web:ScriptRequest {
      return(res);
    }
    
-   setOutputCookie(String name, String value) {
+   setOutputCookie(String name, String value, String path) {
      emit(cs) {
      """
      Cookie toAdd = new Cookie(beva_name.bems_toCsString(), beva_value.bems_toCsString());
@@ -337,6 +337,9 @@ use class Web:ScriptRequest {
      emit(jv) {
      """
      Cookie toAdd = new Cookie(beva_name.bems_toJvString(), beva_value.bems_toJvString());
+     if (beva_path != null) {
+       toAdd.setPath(beva_path.bems_toJvString());
+     }
      bevi_res.addCookie(toAdd);
      """
      }
