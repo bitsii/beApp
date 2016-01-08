@@ -265,6 +265,19 @@ use class Web:ScriptRequest {
      return(uri);
    }
    
+   inputMethodGet() String {
+     String val;
+     emit(jv) {
+     """
+     String val = bevi_req.getMethod();
+     if (val != null) {
+       bevl_val = new BEC_4_6_TextString(val);
+     }
+     """
+     }
+     return(val);
+   }
+   
    inputAddressGet() String {
      String addr = getInputHeader("X-Forwarded-For");
       if (TS.isEmpty(addr) || addr.lower() == "unknown") {

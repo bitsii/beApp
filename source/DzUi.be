@@ -185,7 +185,27 @@ use class Dz:Wui(Ui) {
 
    }
    
-   checkPath(Path p, String accountName) Bool {
+   checkWritePath(Path p, String accountName) Bool {
+    var e;
+    Bool isOk = false;
+    if (undef(accountName)) { accountName = ""; }
+    try {
+      Path pa = p.file.absPath;
+      if (TS.notEmpty(accountName)) {
+        Path h = Path.apNew("Home/" + accountName).file.absPath;
+      }
+      String pas = pa.toString();
+      if (def(h) && pas.begins(h.toString())) {
+        isOk = true;
+      }
+    } catch (e) {
+      log.log(lvl, "Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
+    }
+    //log.log(lvl, "checkPath isOk " + isOk);
+    return(isOk);
+   }
+   
+   checkReadPath(Path p, String accountName) Bool {
     var e;
     Bool isOk = false;
     if (undef(accountName)) { accountName = ""; }
@@ -209,9 +229,13 @@ use class Dz:Wui(Ui) {
    }
 
    handleWeb(request) {
-   
+     //log.log(lvl, "in hw");
      String accountName = request.getSession("account.name");
-     Map arg = request.scriptArg;
+     String rmtd = request.inputMethod;
+     //log.log(lvl, "rmtd is " + rmtd);
+     if (TS.isEmpty(rmtd) || rmtd != "PUT") {
+        Map arg = request.scriptArg;
+     }
      if (TS.isEmpty(accountName)) {
        String ln = request.getParameter("loginName");
        String lp = request.getParameter("loginPass");
@@ -232,15 +256,65 @@ use class Dz:Wui(Ui) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
        File imgfile = File.apNew(uri.substring(1));
-       if (checkPath(imgfile.path, accountName)) {
+       if (TS.notEmpty(rmtd) && rmtd == "PUT") {
+         if (checkWritePath(imgfile.path, accountName)) {
+           log.log(lvl, "put for " + imgfile.path);
+            String rwbuf1 = String.new(4096);
+            String rwbuf2 = String.new(4096);
+            outw = imgfile.writer.open();
+            inr = request.openInput();
+            String firstLine = inr.readBufferLine();
+            String line = firstLine;
+            firstLine = firstLine.substring(0, firstLine.size - 2);
+            //log.log(lvl, "first line " + firstLine.size + " " + firstLine);
+            while (def(line) && line != "\n" && line != "\r\n") {
+              line = inr.readBufferLine();
+            }
+            Bool found = false;
+            while (found! && inr.readIntoBuffer(rwbuf2) > 0) {
+              String accum = rwbuf1 + rwbuf2;
+              Int pos = accum.find(firstLine);
+              if (def(pos)) {
+                //log.log(lvl, "foundFirst");
+                found = true;
+                accum = accum.substring(0, pos);
+                outw.write(rwbuf1);
+              } else {
+                outw.write(rwbuf1);
+                String tb = rwbuf1;
+                rwbuf1 = rwbuf2;
+                rwbuf2 = tb;
+                rwbuf2.clear();
+              }
+            }
+            request.closeInputReader();
+            outw.close();
+            request.outputContent = "UPLOAD COMPLETE";
+         }
+       } elif (checkReadPath(imgfile.path, accountName)) {
          log.log(lvl, "imgfile " + imgfile.path);
          if (imgfile.exists) {
-          String content = imgfile.reader.open().readString();
+          String mtype;
+          if (uri.ends(".html")) {
+            mtype = "text/html";
+          } elif (uri.ends(".jpg")) {
+            mtype = "image/jpeg";
+          } elif (uri.ends(".js")) {
+            mtype = "text/javascript";
+          } else {
+            mtype = "application/octet-stream";
+          }
+          request.outputContentType = mtype;
+          String rwbuf = String.new(4096);
+          IO:Writer outw = request.openOutput();
+          IO:Reader inr = imgfile.reader.open();
+          while (inr.readIntoBuffer(rwbuf) > 0) {
+            outw.write(rwbuf);
+          }
+          request.closeOutputWriter();
+          inr.close();
          }
        }
-      if (def(content)) {
-        request.outputContent = content;
-      }
       return(null);
      }
      return(super.handleWeb(request, arg));
