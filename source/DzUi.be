@@ -261,9 +261,12 @@ use class Dz:Wui(Ui) {
            log.log(lvl, "put for " + imgfile.path);
             String rwbuf1 = String.new(4096);
             String rwbuf2 = String.new(4096);
+            String accum = String.new(8192);
             outw = imgfile.writer.open();
             inr = request.openInput();
             String firstLine = inr.readBufferLine();
+            String firstChar = firstLine.substring(0,1);
+            //log.log(lvl, "first char |" + firstChar + "|");
             String line = firstLine;
             firstLine = firstLine.substring(0, firstLine.size - 2);
             //log.log(lvl, "first line " + firstLine.size + " " + firstLine);
@@ -272,8 +275,13 @@ use class Dz:Wui(Ui) {
             }
             Bool found = false;
             while (found! && inr.readIntoBuffer(rwbuf2) > 0) {
-              String accum = rwbuf1 + rwbuf2;
-              Int pos = accum.find(firstLine);
+              pos = null;
+              if (rwbuf1.has(firstChar) || rwbuf2.has(firstLine)) {
+                accum.clear();
+                accum += rwbuf1;
+                accum += rwbuf2;
+                Int pos = accum.find(firstLine);
+              }
               if (def(pos)) {
                 //log.log(lvl, "foundFirst");
                 found = true;
