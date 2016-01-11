@@ -24,7 +24,6 @@ use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
 use Db:SQLite:Database as SlDb;
 use Db:Derby:Database as Derby;
-use System:Thread:RecycledResource as Recyc;
 use System:Thread:Lock;
 
 use Dz:Alert;
@@ -453,7 +452,6 @@ use class Dz:Ui {
         Int lvl = log.level;
         Map modules = Map.new();
         Lock lock = Lock.new();
-        Recyc dbRecyc = Recyc.new();
         Background bg = Background.new();
       }
       
@@ -482,7 +480,22 @@ use class Dz:Ui {
   }
   
   configManagerGet() KvDb {
-    return(KvDb.new(self, "CONFIG"));
+    vars {
+      KvDb configManager;
+    }
+    if (undef(configManager)) {
+      ifEmit(jv) {
+        Path dbp = Path.apNew("Data/Dz/DDZDB");
+        DbDb db = Derby.pathNew(dbp);
+      }
+      ifEmit(cs) {
+        dbp = Path.apNew("Data/Dz/FDZDB");
+        db = FbDb.pathNew(dbp);
+      }
+      configManager = KvDb.new(db, "CONFIG");
+      configManager.createOpen();
+    }
+    return(configManager);
   }
 
   handleWeb(request, Map arg) {
@@ -523,71 +536,6 @@ use class Dz:Ui {
         }
     }
     
-    dbDone(DbDb db) {
-      dbRecyc.done(db);
-    }
-    
-    dbFailed(DbDb db) {
-      dbRecyc.failed(db);
-    }
-    
-    dbGet() DbDb {
-      
-      properties {
-        Path dbp;
-      }
-      
-      DbDb db = dbRecyc.get();
-      
-      if (undef(db)) {
-        try {
-          emit(jv) {
-          """
-          try {
-          """
-          }
-          lock.lock();
-          ifEmit(jv) {
-            dbp = Path.apNew("Data/Dz/DDZDB");
-            db = Derby.pathNew(dbp);
-          }
-          ifEmit(cs) {
-            dbp = Path.apNew("Data/Dz/FDZDB");
-            db = FbDb.pathNew(dbp);
-          }
-          Bool createTables = dbp.file.exists!;
-          dbRecyc.templateResource = db;
-          db = dbRecyc.get();
-          db.open();
-          if (createTables) {
-            db.begin();
-            db.execute("CREATE TABLE ACCOUNTS( LOGIN VARCHAR(110), PASS VARCHAR(500), SALT VARCHAR(64), PERMS VARCHAR(256), "
-              + " constraint ACCOUNTS_k primary key (LOGIN) )");
-            db.execute("CREATE TABLE CONFIG( NAME VARCHAR(110), VALUE VARCHAR(500), "
-              + " constraint CONFIG_k primary key (NAME) )");
-            db.commit();
-          }
-          dbRecyc.done(db);
-          lock.unlock();
-          emit(jv) {
-          """
-          } catch (Throwable t) {
-            System.out.println(t);
-            t.printStackTrace();
-            throw t;
-          }
-          """
-          }
-        } catch (var e) {
-          lock.unlock();
-          dbRecyc.failed(db);
-          throw(e);
-        }
-      }
-      return(db);
-      
-    }
-    
     getHomeDir(request) Path {
       String accountName = request.getSession("account.name");
       Path homeDir = Path.apNew("Home/" + accountName);
@@ -599,7 +547,7 @@ use class Dz:Ui {
         AccountManager am;
       }
       if (undef(am)) {
-        am = AccountManager.new(self, "ACCOUNTS");
+        am = AccountManager.new(self.configManager, "ACCOUNTS.");
       }
       return(am);
     }
@@ -660,7 +608,7 @@ use class Dz:CmdUi(Ui) {
     main(Array args) {
       outerMain(System:Process.new().args);
       try {
-        self.db.close();
+        self.configManager.close();
       } catch (var e) {
         log.log(lvl, "Exception closing db in CmdUi, error is " + e);
       }
@@ -689,7 +637,6 @@ use class Dz:CmdUi(Ui) {
         foreach (String login in self.accountManager.getLogins()) {
           log.log(lvl, "Account login " + login);
         }
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "createAccount") {
         String user = args[2];
@@ -702,14 +649,12 @@ use class Dz:CmdUi(Ui) {
           ac.permsString = args[4];
         }
         self.accountManager.createAccount(ac);
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
         log.log(lvl, "Get Account " + user);
         ac = self.accountManager.getAccount(user);
         log.log(lvl, "Account " + ac);
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "setPermsString") {
         user = args[2];
@@ -719,7 +664,6 @@ use class Dz:CmdUi(Ui) {
         ac.permsString = ps;
         self.accountManager.updateAccount(ac);
         log.log(lvl, "Account " + ac);
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
         user = args[2];
@@ -728,7 +672,6 @@ use class Dz:CmdUi(Ui) {
         ac = self.accountManager.getAccount(user);
         ac.pass = pass;
         self.accountManager.updateAccount(ac);
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
@@ -740,33 +683,28 @@ use class Dz:CmdUi(Ui) {
         } else {
           log.log(lvl, "No such account for deletion " + user);
         }
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "updateConfig") {
         String key = args[2];
         String value = args[3];
         log.log(lvl, "Updating config " + key + " " + value);
         self.configManager.update(key, value);
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
         foreach (var kv in self.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "createConfig") {
         key = args[2];
         value = args[3];
         log.log(lvl, "Creating config " + key + " " + value);
         self.configManager.create(key, value);
-        //self.db.close();
       }
       if (TS.notEmpty(mode) && mode == "deleteConfig") {
         key = args[2];
         log.log(lvl, "Deleting config " + key);
         self.configManager.delete(key);
-        //self.db.close();
       }
     }
 }
@@ -1019,114 +957,45 @@ use class Dz:AccountManager {
 
   new() self {
     properties {
-      var dbProvider;
-      String tableName;
+      KvDb kvDb;
+      String prefix;
+      Json:Marshaller mar = Json:Marshaller.new();
+      Json:Unmarshaller unmar = Json:Unmarshaller.new();
     }
   }
   
-  new(_dbProvider, _tableName) {
+  new(_kvDb, _prefix) {
     new();
-    dbProvider = _dbProvider;
-    tableName = _tableName;
+    kvDb = _kvDb;
+    prefix = _prefix;
   }
   
   getLogins() Array {
     Array logins = Array.new();
-    try {
-      Array qa = Array.new(0);
-      DbDb db = dbProvider.db;
-      db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT LOGIN FROM " + tableName, qa)) {
-        logins.addValue(ares.getString(0));
-      }
-      db.commit();
-      //ares.close();
-      dbProvider.dbDone(db);
-    } catch (var e) {
-      db.rollback();
-      dbProvider.dbFailed(db);
-      throw(e);
+    foreach (var kv in kvDb.getMap(prefix)) {
+      logins.addValue(kv.key.substring(prefix.size));
     }
     return(logins);
   }
 
   getAccount(String user) {
-    try {
-      Array qa = Array.new(1);
-      qa[0] = user;
-      DbDb db = dbProvider.db;
-      db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT LOGIN, PASS, SALT, PERMS FROM " + tableName + " WHERE LOGIN=?", qa)) {
-        Account a = Account.new(ares.getString(0), ares.getString(1), ares.getString(2), ares.getString(3));
-      }
-      db.commit();
-      //ares.close();
-      dbProvider.dbDone(db);
-    } catch (var e) {
-      db.rollback();
-      dbProvider.dbFailed(db);
-      throw(e);
+    String aj = kvDb.get(prefix + user);
+    if (TS.notEmpty(aj)) {
+      Account a = Account.mapNew(unmar.unmarshall(aj));
     }
     return(a);
   }
   
   deleteAccount(Account a) {
-    try {
-      Array qa = Array.new(1).put(0, a.user);
-      DbDb db = dbProvider.db;
-      db.begin();
-      db.execute("DELETE FROM " + tableName + " WHERE LOGIN=?", qa);
-      db.commit();
-      dbProvider.dbDone(db);
-    } catch (var e) {
-      db.rollback();
-      dbProvider.dbFailed(db);
-      throw(e);
-    }
+    kvDb.delete(prefix + a.user);
   }
   
   createAccount(Account a) {
-    try {
-      emit(jv) {
-      """
-      try {
-      """
-      }
-      Array qa = Array.new(4).put(0, a.user).put(1, a.pass).put(2, a.salt).put(3, a.permsString);
-      DbDb db = dbProvider.db;
-      db.begin();
-      db.execute("INSERT INTO " + tableName + " (LOGIN, PASS, SALT, PERMS) VALUES (?, ?, ?, ?)", qa);
-      db.commit();
-      dbProvider.dbDone(db);
-      emit(jv) {
-      """
-      } catch (Throwable t) {
-        System.out.println(t.getMessage());
-        t.printStackTrace();
-        throw t;
-      }
-      """
-      }
-    } catch (var e) {
-      db.rollback();
-      dbProvider.dbFailed(db);
-      throw(e);
-    }
+    kvDb.create(prefix + a.user, mar.marshall(a.toMap()));
   }
   
   updateAccount(Account a) {
-    try {
-      Array qa = Array.new(4).put(0, a.pass).put(1, a.salt).put(2, a.permsString).put(3, a.user);
-      DbDb db = dbProvider.db;
-      db.begin();
-      db.execute("UPDATE " + tableName + " SET PASS=?, SALT=?, PERMS=? WHERE LOGIN=?", qa);
-      db.commit();
-      dbProvider.dbDone(db);
-    } catch (var e) {
-      db.rollback();
-      dbProvider.dbFailed(db);
-      throw(e);
-    }
+    kvDb.update(prefix + a.user, mar.marshall(a.toMap()));
   }
   
   getAccountForRequest(request) Account {
@@ -1153,6 +1022,14 @@ use class Dz:Account {
       String salt = _salt;
     }
     self.permsString = _permsString;
+  }
+  
+  mapNew(Map map) self {
+    new(map["user"], map["pass"], map["salt"], map["perms"]);
+  }
+  
+  toMap() Map {
+    return(Map.new().put("user", user).put("pass", pass).put("salt", salt).put("perms", self.permsString));
   }
   
   toString() String {

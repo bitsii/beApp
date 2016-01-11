@@ -52,6 +52,10 @@ public Connection bevi_trans = null;
     }
   }
   
+  existsGet() Bool {
+    return(dbp.file.exists);
+  }
+  
   open() self {
     ifEmit(cs) {
       emit(cs) {
@@ -402,7 +406,8 @@ class Db:SQLite:Database(DbDb) {
   open() self {
     emit(jv) {
     """
-      Class.forName("org.sqlite.JDBC");
+      //Class.forName("org.sqlite.JDBC");
+      Class.forName("SQLite.JDBCDriver");
     """
     }
     super.open();
@@ -487,99 +492,6 @@ class Db:Firebird:Database(DbDb) {
 
 }
 
-use System:Thread:ObjectLocker as OLocker;
-use System:Thread:RecycledResource as Recyc;
-
-class Recyc {
-
-  new() self {
-    vars {
-      var resource;
-      Lock lock = Lock.new();
-      OLocker shLocker;
-      IO:Log log;
-      Int lvl;
-    }
-    try {
-      lock.lock();
-      shLocker = OLocker.new();
-      log = IO:Log.new();
-      lvl = log.debug;
-      lock.unlock();
-    } catch (var e) {
-      lock.unlock();
-      throw(e);
-    }
-  }
-  
-  templateResourceSet(_resource) self {
-    try {
-      lock.lock();
-      resource = _resource;
-      lock.unlock();
-    } catch (var e) {
-      lock.unlock();
-      throw(e);
-    }
-  }
-  
-  templateResourceGet() {
-    try {
-      lock.lock();
-      var res = resource;
-      lock.unlock();
-    } catch (var e) {
-      lock.unlock();
-      throw(e);
-    }
-    return(res);
-  }
-  
-  close() {
-    var shared = shLocker.getAndClear();
-    if (def(shared)) {
-      shared.close();
-    }
-  }
-    
-  get() {
-    log.log(lvl, "Getting");
-    var shared = shLocker.getAndClear();
-    if (undef(shared)) {
-      try {
-        lock.lock();
-        if (def(resource)) {
-          shared = resource.copy();
-          //shared = resource;
-          shared.open();
-        }
-        lock.unlock();
-      } catch (var e) {
-        lock.unlock();
-        throw(e);
-      }
-    }
-    return (shared);
-  }
-  
-  done(shared) {
-    unless (shLocker.setIfClear(shared)) {
-      //shared.close();
-    }
-  }
-  
-  failed(shared) {
-    if (def(shared)) {
-      try {
-        //shared.close();
-      } catch (var e) {
-        log.log(lvl, "Exception closing shared in failed");
-      }
-    }
-  }
-  
-}
-
 use class Db:Relational:Test(Assert) {
 
   dbTest() {
@@ -644,27 +556,62 @@ use class Db:Relational:Test(Assert) {
 //TODO
 //kv (interface)
 //rkv (relational, try to fit android sqlite into DbDb)
+//locking single thread version
+//polling concurrent version
 use Db:KeyValue as KvDb;
 class KvDb {
 
   new() self {
     properties {
-      var dbProvider;
+      DbDb db;
       String tableName;
     }
   }
   
-  new(_dbProvider, _tableName) {
+  new(_db, _tableName) {
     new();
-    dbProvider = _dbProvider;
+    db = _db;
     tableName = _tableName;
+  }
+  
+  dbFailed() {
+    var e;
+    try {
+      close();
+    } catch (e) {
+    
+    }
+    open();
+  }
+  
+  open() self {
+    db.open();
+  }
+  
+  close() self {
+    db.close();
+  }
+  
+  createOpen() self {
+    if (db.exists!) {
+      open();
+      create();
+    } else {
+      open();
+    }
+  }
+  
+  create() {
+    db.begin();
+    db.execute("CREATE TABLE CONFIG( NAME VARCHAR(110), VALUE VARCHAR(500), "
+      + " constraint CONFIG_k primary key (NAME) )");
+    db.commit();
   }
   
   getMap() Map {
     try {
       Map res = Map.new();
       Array qa = Array.new(0);
-      DbDb db = dbProvider.db;
       db.begin();
       foreach (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName, qa)) {
         String name = ares.getString(0);
@@ -673,10 +620,30 @@ class KvDb {
       }
       //ares.close();
       db.commit();
-      dbProvider.dbDone(db);
     } catch (var e) {
       db.rollback();
-      dbProvider.dbFailed(db);
+      dbFailed();
+      throw(e);
+    }
+    return(res);
+  }
+  
+  getMap(String prefix) Map {
+    try {
+      Map res = Map.new();
+      Array qa = Array.new(1);
+      qa.put(0, prefix + "%");
+      db.begin();
+      foreach (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName + " WHERE NAME LIKE ?", qa)) {
+        String name = ares.getString(0);
+        String value = ares.getString(1);
+        res.put(name, value);
+      }
+      //ares.close();
+      db.commit();
+    } catch (var e) {
+      db.rollback();
+      dbFailed();
       throw(e);
     }
     return(res);
@@ -686,17 +653,15 @@ class KvDb {
     try {
       Array qa = Array.new(1);
       qa[0] = name;
-      DbDb db = dbProvider.db;
       db.begin();
       foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
         String value = ares.getString(0);
       }
       //ares.close();
       db.commit();
-      dbProvider.dbDone(db);
     } catch (var e) {
       db.rollback();
-      dbProvider.dbFailed(db);
+      dbFailed();
       throw(e);
     }
     return(value);
@@ -705,14 +670,12 @@ class KvDb {
   delete(String name) {
     try {
       Array qa = Array.new(1).put(0, name);
-      DbDb db = dbProvider.db;
       db.begin();
       db.execute("DELETE FROM " + tableName + " WHERE NAME=?", qa);
       db.commit();
-      dbProvider.dbDone(db);
     } catch (var e) {
       db.rollback();
-      dbProvider.dbFailed(db);
+      dbFailed();
       throw(e);
     }
   }
@@ -720,14 +683,12 @@ class KvDb {
   create(String name, String value) {
     try {
       Array qa = Array.new(2).put(0, name).put(1, value);
-      DbDb db = dbProvider.db;
       db.begin();
       db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
       db.commit();
-      dbProvider.dbDone(db);
     } catch (var e) {
       db.rollback();
-      dbProvider.dbFailed(db);
+      dbFailed();
       throw(e);
     }
   }
@@ -735,14 +696,12 @@ class KvDb {
   update(String name, String value) {
     try {
       Array qa = Array.new(2).put(0, value).put(1, name);
-      DbDb db = dbProvider.db;
       db.begin();
       db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
       db.commit();
-      dbProvider.dbDone(db);
     } catch (var e) {
       db.rollback();
-      dbProvider.dbFailed(db);
+      dbFailed();
       throw(e);
     }
   }
@@ -750,7 +709,6 @@ class KvDb {
   testAndUpdate(String name, String oldValue, String value) Bool {
     Bool result = false;
     try {
-      DbDb db = dbProvider.db;
       db.begin();
       Array qa = Array.new(3).put(0, value).put(1, name).put(2, oldValue);
       db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=? AND VALUE=?", qa);
@@ -764,11 +722,9 @@ class KvDb {
       }
       //if (true) { throw(Exception.new("fail")); }
       db.commit();
-      dbProvider.dbDone(db);
     } catch (var e) {
       result = false;
       db.rollback();
-      dbProvider.dbFailed(db);
       //expected case, not fatal
     }
     return(result);
