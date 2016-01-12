@@ -38,5 +38,16 @@ h5.luiForm {
 <body>
 <p><a href="#" onclick="sayHi();return false;">Say Hi</a></p>
 <div id="msgdiv"></div>
+<p><label>URL for Location Receiver</label><input type="text" id="locUrl" size="40" value=""></p>
+<p><button id="saveConfigButton" type="button" onclick="saveConfig();return false;">Save Configuration</button>&nbsp;<button id="loadConfigButton" type="button" onclick="loadConfig();return false;">Reload Configuration</button></p>
+<!--<p><label>Turn Location Sending On or Off</label>&nbsp;<button id="enabledButtonId" type="button" onclick="toggleEnabled();return false;">Currently Off</button></p>
+<p><label>Location Sending Frequency</label>&nbsp;<select>
+  <option value="5">5</option>
+  <option value="10">10</option>
+  <option value="15">15</option>
+  <option value="20">20</option>
+  <option value="25">25</option>
+  <option value="30">30</option>
+</select></p>-->
 </body>
 </html>

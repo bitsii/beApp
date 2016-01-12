@@ -38,6 +38,14 @@ var sayHi = function() {
   dzeui.bem_sayHi_0();
 }
 
+var saveConfig = function() {
+  dzeui.bem_saveConfig_0();
+}
+
+var loadConfig = function() {
+  dzeui.bem_loadConfig_0();
+}
+
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
@@ -69,6 +77,20 @@ use class App:LocPing:LPBr {
       Map arg = Map.new();
       arg["module"] = "Hello";
       arg["action"] = "sayHelloRequest";
+      HC.new(self).call(arg);
+   }
+   
+   saveConfig() {
+      Map arg = Map.new();
+      arg["module"] = "Configure";
+      arg["action"] = "saveRequest";
+      HC.new(self).call(arg);
+   }
+   
+   loadConfig() {
+      Map arg = Map.new();
+      arg["module"] = "Configure";
+      arg["action"] = "loadRequest";
       HC.new(self).call(arg);
    }
    

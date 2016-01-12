@@ -22,7 +22,7 @@ use Test:Assertions as Assert;
 
 use class App:Alert(Exception) { } //need to move up to Ui
 
-use class Dz:Hello {
+use class MP:Hello {
 
      new() self {
        properties {
@@ -39,6 +39,26 @@ use class Dz:Hello {
       res["action"] = "sayHelloResponse";
       res["msg"] = "hello 1 " + System:Random.getString(3);
       return(res);
+   }
+
+}
+
+use class MP:Configure {
+
+     new() self {
+       properties {
+          IO:Log log;
+          Int lvl;
+          var app;
+        }
+     }
+
+     saveRequest(Map arg, request) {
+      log.log(lvl, "In save");
+   }
+   
+     loadRequest(Map arg, request) {
+      log.log(lvl, "In load");
    }
 
 }
@@ -61,6 +81,12 @@ use class App:LocPing {
         h.lvl = lvl;
         h.app = self;
         modules["Hello"] = h;
+        
+        Configure c = Configure.new();
+        c.log = log;
+        c.lvl = lvl;
+        c.app = self;
+        modules["Configure"] = c;
         
     }
 
