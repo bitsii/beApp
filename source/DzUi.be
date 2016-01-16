@@ -21,12 +21,9 @@ use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
 use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
-use Db:Firebird:Database as FbDb;
-use Db:SQLite:Database as SlDb;
-use Db:Derby:Database as Derby;
 use System:Thread:Lock;
 
-use Dz:Alert;
+use App:Alert;
 
 use class Dz:Lui(Ui) {
 
@@ -479,20 +476,23 @@ use class Dz:Ui {
       
   }
   
+  pathsGet() App:Paths {
+    vars {
+      App:Paths paths;
+    }
+    if (undef(paths)) {
+      paths = App:Paths.new();
+    }
+    return(paths);
+  }
+  
   configManagerGet() KvDb {
     vars {
       KvDb configManager;
     }
     if (undef(configManager)) {
-      ifEmit(jv) {
-        Path dbp = Path.apNew("Data/Dz/DDZDB");
-        DbDb db = Derby.pathNew(dbp);
-      }
-      ifEmit(cs) {
-        dbp = Path.apNew("Data/Dz/FDZDB");
-        db = FbDb.pathNew(dbp);
-      }
-      configManager = KvDb.new(db, "CONFIG");
+      Path db = self.paths.dataPath.addStep("Dz").addStep("DDZDB");
+      configManager = KvDb.pathNew(db, "CONFIG");
       configManager.createOpen();
     }
     return(configManager);
@@ -893,7 +893,8 @@ use class Dz:MediaIO {
 
 }
 
-// create, create if none, get, check pass, type, update, delete
+use App:Account;
+use App:AccountManager;
 
 //web thing
 use class Dz:Accounts {
@@ -952,182 +953,7 @@ use class Dz:Accounts {
   
 }
 
-//logic
-use class Dz:AccountManager {
 
-  new() self {
-    properties {
-      KvDb kvDb;
-      String prefix;
-      Json:Marshaller mar = Json:Marshaller.new();
-      Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    }
-  }
-  
-  new(_kvDb, _prefix) {
-    new();
-    kvDb = _kvDb;
-    prefix = _prefix;
-  }
-  
-  getLogins() Array {
-    Array logins = Array.new();
-    foreach (var kv in kvDb.getMap(prefix)) {
-      logins.addValue(kv.key.substring(prefix.size));
-    }
-    return(logins);
-  }
-
-  getAccount(String user) {
-    String aj = kvDb.get(prefix + user);
-    if (TS.notEmpty(aj)) {
-      Account a = Account.mapNew(unmar.unmarshall(aj));
-    }
-    return(a);
-  }
-  
-  deleteAccount(Account a) {
-    kvDb.delete(prefix + a.user);
-  }
-  
-  createAccount(Account a) {
-    kvDb.create(prefix + a.user, mar.marshall(a.toMap()));
-  }
-  
-  updateAccount(Account a) {
-    kvDb.update(prefix + a.user, mar.marshall(a.toMap()));
-  }
-  
-  getAccountForRequest(request) Account {
-    String an = request.getSession("account.name");
-    Account a = getAccount(an);
-    return(a);
-  }
-
-}
-
-use class Dz:Account {
-
-  new() self {
-    properties {
-      Set perms = Set.new();
-    }
-  }
-
-  new(String _user, String _hashPass, String _salt, String _permsString) self {
-    new();
-    properties {
-      String user = _user;
-      String pass = _hashPass;
-      String salt = _salt;
-    }
-    self.permsString = _permsString;
-  }
-  
-  mapNew(Map map) self {
-    new(map["user"], map["pass"], map["salt"], map["perms"]);
-  }
-  
-  toMap() Map {
-    return(Map.new().put("user", user).put("pass", pass).put("salt", salt).put("perms", self.permsString));
-  }
-  
-  toString() String {
-    String rs = String.new();
-    String ps = self.permsString;
-    if (TS.isEmpty(ps)) {
-      ps = "";
-    }
-    rs += " User: " += user += " permsString: " += ps;
-    return(rs);
-  }
-  
-  passSet(String _pass) {
-    salt = System:Random.getString(16);
-    pass = passToHash(_pass, salt);
-  }
-  
-  passToHash(String pass, String salt) String {
-    if (TS.isEmpty(salt) || TS.isEmpty(pass)) {
-      return(null);
-    }
-    pass = salt + pass;
-    Digest:SHA256 ds = Digest:SHA256.new();
-    for (Int i = 0;i < 7;i++=) {
-      pass = ds.digest(pass);
-    }
-    pass = Encode:Hex.encode(pass);
-    return(pass);
-  }
-  
-  checkPass(String _pass) Bool {
-    _pass = passToHash(_pass, salt);
-    if (_pass == pass) {
-      return(true);
-    }
-    return(false);
-  }
-  
-  permsStringSet(String permsString) {
-    perms = Set.new();
-    if (TS.notEmpty(permsString)) {
-      foreach (String perm in permsString.split(",")) {
-        perms.put(perm);
-      }
-    }
-  }
-  
-  permsStringGet() String {
-    Bool first = true;
-    String permsString = "";
-    foreach (String perm in perms) {
-      if (first) {
-        first = false;
-      } else {
-        permsString += ",";
-      }
-      permsString += perm;
-    }
-    return(permsString);
-  }
-  
-}
-
-use class Dz:AccountTest(Assert) {
-  
-  testAccounts() {
-    Ui ui = Ui.new();
-    Account atest = Account.new();
-    atest.user = "test";
-    atest.pass = "pass";
-    AccountManager am = ui.accountManager;
-    am.deleteAccount(atest);
-    Account a = am.getAccount(atest.user);
-    assertNull(a);
-    am.createAccount(atest);
-    a = am.getAccount(atest.user);
-    assertNotNull(a);
-    assertFalse(a.perms.has("admin"));
-    assertTrue(a.checkPass("pass"));
-    assertFalse(a.checkPass("notpass"));
-    a.pass = "yo";
-    assertTrue(a.checkPass("yo"));
-    a.perms.put("admin");
-    am.updateAccount(a);
-    a = am.getAccount(a.user);
-    assertEqual(a.user, "test");
-    assertTrue(a.checkPass("yo"));
-    //assertTrue(a.perms.has("admin"));
-    am.deleteAccount(atest);
-  }
-  
-  main() {
-    "Begin AccountTest".print();
-    testAccounts();
-    "End AccountTest".print();
-  }
-  
-}
 
 use Db:KeyValue as KvDb;
 
@@ -1182,3 +1008,41 @@ use class Dz:MediaIOTest(Assert) {
   }
   
 }
+
+
+use class Dz:AccountTest(Assert) {
+  
+  testAccounts() {
+    Ui ui = Ui.new();
+    Account atest = Account.new();
+    atest.user = "test";
+    atest.pass = "pass";
+    AccountManager am = ui.accountManager;
+    am.deleteAccount(atest);
+    Account a = am.getAccount(atest.user);
+    assertNull(a);
+    am.createAccount(atest);
+    a = am.getAccount(atest.user);
+    assertNotNull(a);
+    assertFalse(a.perms.has("admin"));
+    assertTrue(a.checkPass("pass"));
+    assertFalse(a.checkPass("notpass"));
+    a.pass = "yo";
+    assertTrue(a.checkPass("yo"));
+    a.perms.put("admin");
+    am.updateAccount(a);
+    a = am.getAccount(a.user);
+    assertEqual(a.user, "test");
+    assertTrue(a.checkPass("yo"));
+    //assertTrue(a.perms.has("admin"));
+    am.deleteAccount(atest);
+  }
+  
+  main() {
+    "Begin AccountTest".print();
+    testAccounts();
+    "End AccountTest".print();
+  }
+  
+}
+

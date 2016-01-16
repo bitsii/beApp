@@ -5,11 +5,11 @@ mkdir -p ../apprun/dz/Data
 rm -rf ../apprun/dz/App
 mkdir -p ../apprun/dz/App
 
-java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/dzd --buildPath ../apprun/dz --emitLang jv -mainClass=Dz:Ui source/Dz.be source/DzTest.be source/DzUi.be source/Db.be source/BrowserUI.be
+java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/dzd --buildPath ../apprun/dz --emitLang jv -mainClass=Dz:Ui source/DzTest.be source/DzUi.be source/Db.be source/BrowserUI.be
 
 javac -classpath extlibs/jetty/*:extlibs/sqlite/*:extlibs/derby/*:extlibs/bcastlejv/* ../be/system/jv/be/BELS_Base/*.java ../apprun/dz/Base/target/jv/be/BEL_4_Base/*.java
 
-java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/base.txt --deployPath ../apprun/dzd --buildPath ../apprun/dz --emitLang js --ownProcess false -mainClass=Dz:Eui source/Dz.be source/DzEui.be
+java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/base.txt --deployPath ../apprun/dzd --buildPath ../apprun/dz --emitLang js --ownProcess false -mainClass=Dz:Eui source/DzEui.be
 
 cd ../apprun/dz/Base/target/jv
 jar -cf ../../../BEL_4_Base_lui_jv.jar .

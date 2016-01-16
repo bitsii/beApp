@@ -164,6 +164,19 @@ public static class MainActivity extends AppCompatActivity {
     log.log(lvl, "in handleWeb, ret " + ret);
     return(ret);
   }
+  
+  appDataDirGet() String {
+  String toRet;
+  ifEmit(platDroid) {
+  emit(jv) {
+  """
+  String ddir = MainActivity.mainActivity.getApplicationContext().getApplicationInfo().dataDir;
+  bevl_toRet = new BEC_4_6_TextString(ddir);
+  """
+  }
+  }
+  return(toRet);
+  }
 
 }
 

@@ -568,10 +568,20 @@ class KvDb {
     }
   }
   
-  new(_db, _tableName) {
+  new(DbDb _db, String _tableName) self {
     new();
     db = _db;
     tableName = _tableName;
+  }
+  
+  pathNew(Path dbp, String _tableName) self {
+    ifEmit(jv) {
+      DbDb db = Derby.pathNew(dbp);
+    }
+    ifEmit(cs) {
+      db = FbDb.pathNew(dbp);
+    }
+    new(db, _tableName);
   }
   
   dbFailed() {

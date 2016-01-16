@@ -20,7 +20,7 @@ use Text:Strings as TS;
 use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
 
-use class App:Alert(Exception) { } //need to move up to Ui
+use App:Alert;
 
 use class MP:Hello {
 
@@ -54,7 +54,8 @@ use class MP:Configure {
      }
 
      saveRequest(Map arg, request) {
-      log.log(lvl, "In save");
+      
+      log.log(lvl, "In save, dataPath " + app.paths.dataPath);
    }
    
      loadRequest(Map arg, request) {
@@ -110,6 +111,16 @@ use class App:LocPing {
    initWeb() {
 
    }
+   
+   pathsGet() App:Paths {
+    vars {
+      App:Paths paths;
+    }
+    if (undef(paths)) {
+      paths = App:Paths.new();
+    }
+    return(paths);
+  }
 
    handleWeb(request) {
      
