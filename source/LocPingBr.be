@@ -46,6 +46,10 @@ var loadConfig = function() {
   dzeui.bem_loadConfig_0();
 }
 
+var clearConfig = function() {
+  dzeui.bem_clearConfig_0();
+}
+
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
@@ -84,6 +88,7 @@ use class App:LocPing:LPBr {
       Map arg = Map.new();
       arg["module"] = "Configure";
       arg["action"] = "saveRequest";
+      arg["locRcvUrl"] = HD.getElementById("locRcvUrl").value;
       HC.new(self).call(arg);
    }
    
@@ -92,6 +97,14 @@ use class App:LocPing:LPBr {
       arg["module"] = "Configure";
       arg["action"] = "loadRequest";
       HC.new(self).call(arg);
+   }
+   
+   clearConfig() {
+      HD.getElementById("locRcvUrl").value = "";
+   }
+   
+   loadResponse(Map arg) {
+     HD.getElementById("locRcvUrl").value = arg["locRcvUrl"];
    }
    
    sayHelloResponse(Map arg) {

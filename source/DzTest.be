@@ -22,7 +22,6 @@ use Test:Assertions as Assert;
 use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
-use Db:SQLite:Database as SlDb;
 
 use class Dz:Test(Assert) {
  

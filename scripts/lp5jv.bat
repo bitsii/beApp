@@ -29,6 +29,8 @@ cd ..\..\app
 copy /y ..\apprun\App\LocPing\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\LocPing
 copy /y source\LocPing.html ..\apprun\App\LocPing
 
+copy /y extlibs\hsqldb\* ..\apprun\App\LocPing
+
 del /s /q ..\apprun\App\LocPing\Base
 rmdir /s /q ..\apprun\App\LocPing\Base
 

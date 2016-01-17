@@ -19,6 +19,8 @@ use System:Random;
 use Text:Strings as TS;
 use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
+use Db:KeyValue as KvDb;
+use Db:HSQLDb:Database as HsDb;
 
 use App:Alert;
 
@@ -54,13 +56,25 @@ use class MP:Configure {
      }
 
      saveRequest(Map arg, request) {
-      
-      log.log(lvl, "In save, dataPath " + app.paths.dataPath);
-   }
+      log.log(lvl, "In save");
+      String locRcvUrl = arg["locRcvUrl"];
+      if (undef(locRcvUrl)) {
+        locRcvUrl = "";
+      }
+      app.configManager.upsert("locRcvUrl", locRcvUrl);
+    }
    
      loadRequest(Map arg, request) {
       log.log(lvl, "In load");
-   }
+      String locRcvUrl = app.configManager.get("locRcvUrl");
+      if (undef(locRcvUrl)) {
+        locRcvUrl = "";
+      }
+      Map res = Map.new();
+      res["action"] = "loadResponse";
+      res["locRcvUrl"] = locRcvUrl;
+      return(res);
+    }
 
 }
 
@@ -89,6 +103,19 @@ use class App:LocPing {
         c.app = self;
         modules["Configure"] = c;
         
+    }
+    
+    configManagerGet() KvDb {
+      vars {
+        KvDb configManager;
+      }
+      if (undef(configManager)) {
+        Path db = self.paths.dataPath.addStep("LocPing").addStep("DDZDB");
+        //configManager = KvDb.new(Derby.pathNew(db), "CONFIG");
+        configManager = KvDb.new(HsDb.pathNew(db), "CONFIG");
+        configManager.createOpen();
+      }
+      return(configManager);
     }
 
     main() {

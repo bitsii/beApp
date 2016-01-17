@@ -22,7 +22,6 @@ use Test:Assertions as Assert;
 use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
-use Db:SQLite:Database as SlDb;
 use Db:Derby:Database as Derby;
 use Db:KeyValue as KvDb;
 
@@ -82,7 +81,7 @@ use class App:AccountManager {
   }
   
   createAccount(Account a) {
-    kvDb.create(prefix + a.user, mar.marshall(a.toMap()));
+    kvDb.insert(prefix + a.user, mar.marshall(a.toMap()));
   }
   
   updateAccount(Account a) {

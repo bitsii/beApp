@@ -33,6 +33,7 @@ copy /y source\Dz*.html ..\apprun\App\Dz
 copy /y source\Dz*.js ..\apprun\App\Dz
 copy /y extlibs\jetty\* ..\apprun\App\Dz
 copy /y extlibs\derby\* ..\apprun\App\Dz
+copy /y extlibs\hsqldb\* ..\apprun\App\Dz
 copy /y extlibs\bcastlejv\* ..\apprun\App\Dz
 
 del /s /q ..\apprun\App\Dz\Base

@@ -394,27 +394,30 @@ public ResultSet bevi_res = null;
    }
 }
 
-use Db:SQLite:Database as SlDb;
-class Db:SQLite:Database(DbDb) {
+use Db:HSQLDb:Database as HsDb;
+class HsDb(DbDb) {
   
   pathNew(Path _dbp) self {
-    super.pathNew(_dbp);
-    String dbAddr = "jdbc:sqlite:" + dbp.toString();
+    super.pathNew(_dbp); //dbp.toStringWithSeparator("/")
+    String dbAddr = "jdbc:hsqldb:file:" + dbp.toString();
     new(dbAddr);
   }
   
   open() self {
     emit(jv) {
     """
-      //Class.forName("org.sqlite.JDBC");
-      Class.forName("SQLite.JDBCDriver");
+      Class.forName("org.hsqldb.jdbcDriver");
     """
     }
     super.open();
   }
   
   copy() {
-    return(SlDb.pathNew(dbp));
+    return(HsDb.pathNew(dbp));
+  }
+  
+  existsGet() Bool {
+    return(Path.new(dbp.toString() + ".script").file.exists);
   }
 
 }
@@ -499,7 +502,7 @@ use class Db:Relational:Test(Assert) {
     Path dbp;
     ifEmit(jv) {
       dbp = Path.new("SLDBT");
-      db = SlDb.pathNew(dbp);
+      db = Derby.pathNew(dbp);
     }
     ifEmit(cs) {
       dbp = Path.new("FBDBT");
@@ -572,16 +575,6 @@ class KvDb {
     new();
     db = _db;
     tableName = _tableName;
-  }
-  
-  pathNew(Path dbp, String _tableName) self {
-    ifEmit(jv) {
-      DbDb db = Derby.pathNew(dbp);
-    }
-    ifEmit(cs) {
-      db = FbDb.pathNew(dbp);
-    }
-    new(db, _tableName);
   }
   
   dbFailed() {
@@ -677,20 +670,7 @@ class KvDb {
     return(value);
   }
   
-  delete(String name) {
-    try {
-      Array qa = Array.new(1).put(0, name);
-      db.begin();
-      db.execute("DELETE FROM " + tableName + " WHERE NAME=?", qa);
-      db.commit();
-    } catch (var e) {
-      db.rollback();
-      dbFailed();
-      throw(e);
-    }
-  }
-  
-  create(String name, String value) {
+  insert(String name, String value) {
     try {
       Array qa = Array.new(2).put(0, name).put(1, value);
       db.begin();
@@ -708,6 +688,30 @@ class KvDb {
       Array qa = Array.new(2).put(0, value).put(1, name);
       db.begin();
       db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
+      db.commit();
+    } catch (var e) {
+      db.rollback();
+      dbFailed();
+      throw(e);
+    }
+  }
+  
+  upsert(String name, String value) {
+    try {
+      Array qa = Array.new(1);
+      qa[0] = name;
+      db.begin();
+      Bool exists = false;
+      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
+        exists = true;
+      }
+      if (exists) {
+        qa = Array.new(2).put(0, value).put(1, name);
+        db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
+      } else {
+        qa = Array.new(2).put(0, name).put(1, value);
+        db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
+      }
       db.commit();
     } catch (var e) {
       db.rollback();
@@ -738,6 +742,19 @@ class KvDb {
       //expected case, not fatal
     }
     return(result);
+  }
+  
+  delete(String name) {
+    try {
+      Array qa = Array.new(1).put(0, name);
+      db.begin();
+      db.execute("DELETE FROM " + tableName + " WHERE NAME=?", qa);
+      db.commit();
+    } catch (var e) {
+      db.rollback();
+      dbFailed();
+      throw(e);
+    }
   }
 
 }
