@@ -69,17 +69,27 @@ use class Web:Server {
   """
   }
   
-  new() self {
+  init() {
     vars {
       Int port = 8080;
       var app;
       Bool ssl = false;
       String sslPath;
-      var sessionManager = Web:SessionManager.new();
+      var sessionManager;
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
       Bool gzipOutput = false;
     }
+  }
+  
+  new() self {
+    init();
+    sessionManager = Web:SessionManager.new();
+  }
+  
+  new(_sessionManager) self {
+    init();
+    sessionManager = _sessionManager;
   }
   
   handleStartWeb() {
@@ -95,6 +105,7 @@ use class Web:Server {
       request.sessionManager = sessionManager;
       app.handleWeb(request);
     } catch (e) {
+      ("got exception " + e).print();
       try {
         log.log(lvl, "Caught exception handling request");
         if (log.will(lvl)) { log.log(lvl, e.toString()); }

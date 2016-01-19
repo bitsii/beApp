@@ -61,7 +61,7 @@ use class MP:Configure {
       if (undef(locRcvUrl)) {
         locRcvUrl = "";
       }
-      app.configManager.upsert("locRcvUrl", locRcvUrl);
+      app.configManager.put("locRcvUrl", locRcvUrl);
     }
    
      loadRequest(Map arg, request) {

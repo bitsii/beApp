@@ -606,8 +606,8 @@ class KvDb {
   
   create() {
     db.begin();
-    db.execute("CREATE TABLE CONFIG( NAME VARCHAR(110), VALUE VARCHAR(500), "
-      + " constraint CONFIG_k primary key (NAME) )");
+    db.execute("CREATE TABLE " + tableName + "( NAME VARCHAR(110), VALUE VARCHAR(500), "
+      + " constraint " + tableName + "_k primary key (NAME) )");
     db.commit();
   }
   
@@ -696,7 +696,7 @@ class KvDb {
     }
   }
   
-  upsert(String name, String value) {
+  put(String name, String value) {
     try {
       Array qa = Array.new(1);
       qa[0] = name;
@@ -720,7 +720,7 @@ class KvDb {
     }
   }
   
-  testAndUpdate(String name, String oldValue, String value) Bool {
+  testAndPut(String name, String oldValue, String value) Bool {
     Bool result = false;
     try {
       db.begin();

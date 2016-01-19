@@ -706,53 +706,54 @@ use System:Thread:ContainerLocker as CLocker;
 
 use class Web:SessionManager {
 
-  new() self {
+  new(_sessions) self {
     vars {
-      CLocker sessions = CLocker.new(Map.new());
+      var sessions = _sessions;
       String keyName = "sesskey";
       Int keyLen = 16;
     }
   }
   
-  getSession(request) {
-    
+  new() self {
+    new(CLocker.new(Map.new()));
+  }
+  
+  getSessionKey(request) String {
     String sk = request.getInputHeader(keyName);
     if (TS.isEmpty(sk)) {
       sk = request.getInputCookie(keyName);
     }
     if (TS.notEmpty(sk)) {
-      CLocker s = sessions.get(sk);
       //to make it harder to probe for sessions
-      if (undef(s)) {
-        s = sessions.getOrPut(sk, CLocker.new(Map.new()));
-      }
       request.setOutputHeader(keyName, sk);
     } else {
-      s = CLocker.new(Map.new());
       sk = System:Random.getString(keyLen);
-      until (sessions.putIfAbsent(sk, s)) {
+      until (sessions.getMap(sk + ".").isEmpty) {
         sk = System:Random.getString(keyLen);
       }
       request.setOutputCookie(keyName, sk, "/");
       request.setOutputHeader(keyName, sk);
     }
-    return(s);
+    return(sk);
   }
   
   deleteSession(request) {
     String sk = request.getInputCookie(keyName);
     if (TS.notEmpty(sk)) {
-      sessions.delete(sk);
+      Map toDel = sessions.getMap(getSessionKey(request) + ".");
+      foreach (var x in toDel) {
+        sessions.delete(x.key);
+      }
     }
     request.setOutputCookie(keyName, "", "/");
   }
   
   getSession(request, String name) String {
-    return(getSession(request).get(name));
+    return(sessions.get(getSessionKey(request) + "." + name));
   }
   
   putSession(request, String name, String value) {
-    getSession(request).put(name, value);
+    sessions.put(getSessionKey(request) + "." + name, value);
   }
 
 }

@@ -24,6 +24,7 @@ use Db:Relational:Statement as DbSt;
 use Db:Derby:Database as Derby;
 use Db:HSQLDb:Database as HsDb;
 use System:Thread:Lock;
+use System:Thread:ContainerLocker as CLocker;
 
 use App:Alert;
 
@@ -106,12 +107,14 @@ use class Dz:Wui(Ui) {
       String ports = self.configManager.get("wui.port");
       if (TS.isEmpty(ports)) {
         ports = "5000";
-        self.configManager.insert("wui.port", ports);
+        self.configManager.put("wui.port", ports);
       }
       Int port = Int.new(ports);
       String cerPath = assureCert(port);
       //portL.o = port;
-      Web:Server vw = Web:Server.new();
+      
+      Web:Server vw = Web:Server.new(self.sessionManager);
+      
       //vwL.o = vw;
       vw.port = port;
       vw.ssl = true;
@@ -130,6 +133,10 @@ use class Dz:Wui(Ui) {
     ifEmit(jv) {
       return(assureCertJv(port));
     }
+  }
+  
+  handleStartWeb() {
+    log.log(lvl, "In handleStartWeb");
   }
   
   assureCertJv(Int port) String {
@@ -488,18 +495,34 @@ use class Dz:Ui {
     return(paths);
   }
   
-  configManagerGet() KvDb {
+  configManagerGet() CLocker {
     vars {
-      KvDb configManager;
+      CLocker configManager;
     }
     if (undef(configManager)) {
       Path db = self.paths.dataPath.addStep("Dz").addStep("DDZDB");
-      configManager = KvDb.new(Derby.pathNew(db), "CONFIG");
-      //configManager = KvDb.new(HsDb.pathNew(db), "CONFIG");
-      configManager.createOpen();
+      KvDb configManagerKv = KvDb.new(Derby.pathNew(db), "CONFIG");
+      //configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
+      configManagerKv.createOpen();
+      configManager = CLocker.new(configManagerKv);
     }
     return(configManager);
   }
+  
+  sessionManagerGet() Web:SessionManager {
+    vars {
+      Web:SessionManager sessionDb;
+    }
+    if (undef(sessionDb)) {
+      Path db = self.paths.dataPath.addStep("Dz").addStep("SESSDB");
+      KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
+      sessionDbKv.createOpen();
+      sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv));
+    }
+    ("got sessionmanager").print();
+    return(sessionDb);
+  }
+  
 
   handleWeb(request, Map arg) {
         try {
@@ -514,7 +537,7 @@ use class Dz:Ui {
                 return(null);
               }
             }
-            //log.log(lvl, "module " + module + " action " + action);
+            log.log(lvl, "here");
             Array args = Array.new(2);
             args[0] = arg;
             args[1] = request;
@@ -691,7 +714,7 @@ use class Dz:CmdUi(Ui) {
         String key = args[2];
         String value = args[3];
         log.log(lvl, "Updating config " + key + " " + value);
-        self.configManager.update(key, value);
+        self.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
         foreach (var kv in self.configManager.getMap()) {
@@ -702,7 +725,7 @@ use class Dz:CmdUi(Ui) {
         key = args[2];
         value = args[3];
         log.log(lvl, "Creating config " + key + " " + value);
-        self.configManager.insert(key, value);
+        self.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "deleteConfig") {
         key = args[2];
@@ -761,7 +784,7 @@ use class Dz:MediaIO {
       } else {
         log.log(lvl, "count undef");
         Int count = 0;
-        app.configManager.insert(countKey, count.toString());
+        app.configManager.put(countKey, count.toString());
       }
       String rv = app.configManager.get("cam." + cam + ".label");
       if (undef(rv)) {
@@ -779,7 +802,7 @@ use class Dz:MediaIO {
         if (nxcount > maxPics) {
           nxcount = 0;
         }
-        updatedCount = app.configManager.testAndUpdate(countKey, count.toString(), nxcount.toString());
+        updatedCount = app.configManager.testAndPut(countKey, count.toString(), nxcount.toString());
       }
       if (tries <= 0) {
         throw(System:Exception.new("Unable to get a count option"));
@@ -866,12 +889,12 @@ use class Dz:MediaIO {
         foreach (String cp in dcs.split(",")) {
           if (ecm.has(cp)!) {
             app.configManager.delete("cam." + cp + ".label");
-            app.configManager.insert("cam." + cp + ".label", Path.apNew(cp).steps.last);
+            app.configManager.put("cam." + cp + ".label", Path.apNew(cp).steps.last);
           }
         }
       }
       app.configManager.delete("cam.paths");
-      app.configManager.insert("cam.paths", dcs);
+      app.configManager.put("cam.paths", dcs);
    }
    
    camOkForAccount(String c, Account a) {
@@ -964,16 +987,16 @@ use class Dz:ConfigTest(Assert) {
   
   testConfig() {
     Ui ui = Ui.new();
-    KvDb cm = ui.configManager;
+    KvDb cm = ui.configManager.container;
     cm.delete("test.blarg");
     assertNull(cm.get("test.blarg"));
     cm.insert("test.blarg", "test");
     assertEqual(cm.get("test.blarg"), "test");
     cm.update("test.blarg", "foo");
     assertEqual(cm.get("test.blarg"), "foo");
-    assertFalse(cm.testAndUpdate("test.blarg", "test", "la"));
+    assertFalse(cm.testAndPut("test.blarg", "test", "la"));
     assertNotEqual(cm.get("test.blarg"), "la");
-    assertTrue(cm.testAndUpdate("test.blarg", "foo", "la"));
+    assertTrue(cm.testAndPut("test.blarg", "foo", "la"));
     assertEqual(cm.get("test.blarg"), "la");
   }
   

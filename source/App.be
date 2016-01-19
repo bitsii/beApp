@@ -47,7 +47,7 @@ use class App:AccountManager {
 
   new() self {
     properties {
-      KvDb kvDb;
+      var kvDb;
       String prefix;
       Json:Marshaller mar = Json:Marshaller.new();
       Json:Unmarshaller unmar = Json:Unmarshaller.new();
@@ -81,11 +81,11 @@ use class App:AccountManager {
   }
   
   createAccount(Account a) {
-    kvDb.insert(prefix + a.user, mar.marshall(a.toMap()));
+    kvDb.put(prefix + a.user, mar.marshall(a.toMap()));
   }
   
   updateAccount(Account a) {
-    kvDb.update(prefix + a.user, mar.marshall(a.toMap()));
+    kvDb.put(prefix + a.user, mar.marshall(a.toMap()));
   }
   
   getAccountForRequest(request) Account {
