@@ -78,6 +78,8 @@ use class MP:Configure {
 
 }
 
+use App:EventHandlers as AppEv;
+
 use class App:LocPing {
     
        
@@ -117,8 +119,15 @@ use class App:LocPing {
       }
       return(configManager);
     }
-
+    
     main() {
+      AppEv.put("startUi", self);
+      ifNotEmit(platDroid) {
+        startUi();
+      }
+    }
+
+    startUi() {
       webr = WeBr.new();
       webr.webHandler = self;
       webr.height = 450;

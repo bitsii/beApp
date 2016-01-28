@@ -56,13 +56,8 @@ public static class MainActivity extends AppCompatActivity {
         //so things stay in the webview
         mWebView.setWebViewClient(new WebViewClient());
         mainActivity = this;
-        String[] margs = new String[0];
-        try {
-            be.BEL_4_Base.BEL_4_Base.main(margs);
-        } catch (Throwable t) {
-            System.err.println("Failed in main with " + t.getMessage());
-            throw new Error(t.getMessage(), t);
-        }
+        BEC_3_11_AppRunMainOnce.runMainOnce();
+        BEC_3_13_AppEventHandlers.handleEvent("startUi");
         mWebView.addJavascriptInterface(new WebAppInterface(), "Android");
         //mWebView.loadUrl("https://some.place");
     }
@@ -182,3 +177,6 @@ public static class MainActivity extends AppCompatActivity {
 
 use UI:WebBrowserImpl as WebImp;
 use UI:BrowserScriptRequest;
+
+
+

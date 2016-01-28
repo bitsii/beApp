@@ -40,19 +40,26 @@ h5.luiForm {
 <p>Login</p>
 <form>
 <p><label class="luiForm">Account Name</label><input type="text" id="loginName"></input></p>
-<p><label class="luiForm">Account Password</label><input type="password" id="loginPass" onkeydown = "if (event.keyCode == 13) login()"></input></p>
+<p><label class="luiForm">Account Password</label><input type="password" id="loginPass" onkeydown = "if (event.keyCode == 13) dzeui.bem_login_0()"></input></p>
 </form>
-<p><a href="#" onclick="login();return false;">Login</a></p>
+<p><a href="#" onclick="dzeui.bem_login_0();return false;">Login</a></p>
 </div>
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
-<p><a href="#" onclick="logout();return false;">Logout</a></p>
+<p><a href="#" onclick="dzeui.bem_logout_0();return false;">Logout</a></p>
+<p><a id="showAdminId" href="#" onclick="dzeui.bem_showAdmin_0();return false;" style="display: none;">Administration</a></p>
+<div id="admindiv" style="display: none;">
+<p><a id="hideAdminId" href="#" onclick="dzeui.bem_hideAdmin_0();return false;" >Close Administration</a></p>
+<p><a id="detectCamsId" href="#" onclick="dzeui.bem_detectCams_0();return false;" >Detect WebCams</a></p>
 <p>Command<input type="text" id="cmd"></input></p>
-<p><a id="runCommandId" href="#" onclick="runCommand();return false;" style="display: none;">Run Command</a></p>
-<p><a id="playSoundId" href="#" onclick="playSound();return false;" style="display: none;">Play Sound</a></p>
-<p><a id="detectCamsId" href="#" onclick="detectCams();return false;" style="display: none;">Detect WebCams</a></p>
-<p><a href="#" onclick="clearImage();return false;">Clear Picture</a></p>
+<p><a id="runCommandId" href="#" onclick="dzeui.bem_runCommand_0();return false;">Run Command</a></p>
+<p><a id="playSoundId" href="#" onclick="dzeui.bem_playSound_0();return false;">Play Sound</a></p>
+<p><a id="showConfigId" href="#" onclick="dzeui.bem_showConfig_0();return false;">Show Configuration</a></p>
+</div>
+<div id="configsDiv"></div>
 <div id="camLinksDiv"></div>
+<p><a href="#" id="clearPicId" onclick="dzeui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
 <div id="imgdiv"></div>
+</div>
 </body>
 </html>

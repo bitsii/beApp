@@ -182,3 +182,70 @@ use class App:Account {
   }
   
 }
+
+use App:RunMainOnce;
+
+class RunMainOnce {
+
+emit(jv) {
+"""
+public static volatile boolean haveRun = false;
+public synchronized static void runMainOnce() {
+  if (!haveRun) {
+    String[] margs = new String[0];
+    try {
+        be.BEL_4_Base.BEL_4_Base.main(margs);
+    } catch (Throwable t) {
+        System.err.println("Failed in main with " + t.getMessage());
+        throw new Error(t.getMessage(), t);
+    }
+    haveRun = true;
+  }
+}
+"""
+}
+
+}
+
+use App:EventHandlers as AppEv;
+class AppEv {
+
+  emit(jv) {
+  """
+  static void handleEvent(String event) {
+    try {
+        
+    bevs_inst.bem_handleEvent_1(
+    new BEC_4_6_TextString(event)
+    );
+    } catch (Throwable t) {
+        System.err.println("failed in handleEvent " + t.getMessage());
+        throw new Error(t.getMessage(), t);
+    }
+  }
+  """
+  }
+
+  put(String label, var handler) {
+    registry.put(label, handler);
+  }
+  
+  get(String label) {
+    return(registry.get(label));
+  }
+  
+  default() {
+    vars {
+      Map registry = Map.new();
+    }
+  }
+  
+  handleEvent(String event) {
+    var rc = registry.get(event);
+    if (def(rc)) {
+      Array args = Array.new(0);
+      rc.invoke(event, args);
+    }
+  }
+
+}

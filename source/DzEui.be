@@ -34,39 +34,17 @@ var startup = function() {
   dzeui.bem_startup_0();
 }
 
-var playSound = function() {
-  dzeui.bem_playSound_0();
-}
-
-var updateImage = function(cam) {
-  dzeui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new(cam));
-}
-
-var runCommand = function() {
-  dzeui.bem_runCommand_0();
-}
-
-var login = function() {
-  dzeui.bem_login_0();
-}
-
-var logout = function() {
-  dzeui.bem_logout_0();
-}
-
-var clearImage = function() {
-  dzeui.bem_clearImage_0();
-}
-
-var detectCams = function() {
-  dzeui.bem_detectCams_0();
-}
-
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
       dzeui.bem_handleCallback_1(bevs_resjs);
     }
+}
+
+var updateConfig = function(forKey, forId) {
+  var theKey = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forKey);
+  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
+  dzeui.bem_updateConfig_2(theKey, theId);
 }
 
 
@@ -104,11 +82,35 @@ use class Dz:Eui {
       HC.new(self).call(arg);
    }
    
+   showConfig() {
+      Map arg = Map.new();
+      arg["module"] = "MediaIO";
+      arg["action"] = "showConfigRequest";
+      HC.new(self).call(arg);
+   }
+   
+   showConfigResponse(Map arg) {
+     HD.getElementById("configsDiv").innerHTML = arg["configs"];
+   }
+   
+   hideConfig() {
+     HD.getElementById("configsDiv").innerHTML = "";
+   }
+   
    runCommand() {
       Map arg = Map.new();
       arg["module"] = "MediaIO";
       arg["action"] = "runCommandRequest";
       arg["cmd"] = HD.getElementById("cmd").value;
+      HC.new(self).call(arg);
+   }
+   
+   updateConfig(String theKey, String theId) {
+      Map arg = Map.new();
+      arg["module"] = "MediaIO";
+      arg["action"] = "updateConfigRequest";
+      arg["configKey"] = theKey;
+      arg["configValue"] = HD.getElementById(theId).value;
       HC.new(self).call(arg);
    }
    
@@ -147,6 +149,7 @@ use class Dz:Eui {
    }
    
    updateImageResponse(Map arg) {
+     HD.getElementById("clearPicId").display = "block";
      HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
    }
    
@@ -167,15 +170,10 @@ use class Dz:Eui {
           perms.put(perm);
         }
       }
-      HD.getElementById("runCommandId").display = "none";
-      HD.getElementById("playSoundId").display = "none";
-      HD.getElementById("detectCamsId").display = "none";
-      HD.getElementById("cmd").display = "none";
+      HD.getElementById("showAdminId").display = "none";
+      HD.getElementById("admindiv").display = "none";
       if (perms.has("admin")) {
-        HD.getElementById("runCommandId").display = "block";
-        HD.getElementById("playSoundId").display = "block";
-        HD.getElementById("detectCamsId").display = "block";
-        HD.getElementById("cmd").display = "block";
+        HD.getElementById("showAdminId").display = "block";
       }
     }
    }
@@ -188,6 +186,17 @@ use class Dz:Eui {
    
    clearImage() {
      HD.getElementById("imgdiv").innerHTML = "";
+     HD.getElementById("clearPicId").display = "none";
+   }
+   
+   showAdmin() { 
+     HD.getElementById("admindiv").display = "block";
+     HD.getElementById("showAdminId").display = "none";
+   }
+   
+   hideAdmin() {
+     HD.getElementById("admindiv").display = "none";
+     HD.getElementById("showAdminId").display = "block";
    }
    
    detectCams() {

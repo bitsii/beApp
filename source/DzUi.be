@@ -343,6 +343,527 @@ use class Dz:Wui(Ui) {
 
 }
 
+
+emit(jv) {
+"""
+//import java.io.*;
+import java.net.*;
+"""
+}
+use class Net:Interface {
+ 
+ new(String _description, String _macAddress, String _name, 
+     String _status, 
+     String _address) self {
+   properties {
+     String description = _description;
+     String macAddress = _macAddress;
+     String name = _name;
+     String status = _status;
+     String address = _address;
+   }
+ }
+ 
+ toString() String {
+   String res = String.new();
+   if (def(description)) {
+     res += " description: " += description;
+   }
+   if (def(macAddress)) {
+     res += " macAddress: " += macAddress;
+   }
+   if (def(name)) {
+     res += " name: " += name;
+   }
+   if (def(status)) {
+     res += " status: " += status;
+   }
+   if (def(address)) {
+     res += " address: " += address;
+   }
+   return(res);
+ }
+ 
+ localInterfacesGet() Array {
+   Array res;
+   ifEmit(cs) {
+     res = localInterfacesGetCs();
+   }
+   ifEmit(jv) {
+     res = localInterfacesGetJv();
+   }
+   return(res);
+ }
+ 
+ localInterfacesGetJv() Array {
+   
+    Array interfaces = Array.new();
+    
+    String description;
+    String macAddress;
+    String name;
+    String status;
+    String address;
+    
+     emit(jv) {
+  """
+  for(NetworkInterface ifc : java.util.Collections.list(NetworkInterface.getNetworkInterfaces())) {
+    String status;
+    if (ifc.isUp()) {
+      status = "Up";
+    } else {
+      status = "Down";
+    }
+    String description = ifc.getDisplayName();
+    String name = ifc.getName();
+    byte[] hwad = ifc.getHardwareAddress();
+    String macAddress = null;
+    if (hwad != null) {
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < hwad.length; i++) {
+        sb.append(String.format("%02X%s", hwad[i], ""));		
+      }
+      macAddress = sb.toString();
+    }
+    for(InetAddress addr : java.util.Collections.list(ifc.getInetAddresses())) {
+      int count = 0;
+      String address = addr.getHostAddress();
+      if (address != null) {
+        for (int i = 0;i < address.length();i++) {
+          if (address.charAt(i) == '.') {
+            count++;
+          }
+        }
+        if (count != 3) {
+          continue;
+        }
+         bevl_address = new BEC_4_6_TextString(address);
+      } else {
+        continue;
+      }
+      if (description != null) {
+         bevl_description = new BEC_4_6_TextString(description);
+      } else {
+        bevl_description = null;
+      }
+      if (name != null) {
+         bevl_name = new BEC_4_6_TextString(name);
+      } else {
+        bevl_name = null;
+      }
+      if (macAddress != null) {
+         bevl_macAddress = new BEC_4_6_TextString(macAddress);
+      } else {
+        bevl_macAddress = null;
+      }
+      bevl_status = new BEC_4_6_TextString(status);
+      """
+      }
+      ifEmit(jv) {
+        interfaces +=  Interface.new(description, macAddress,
+          name, status, address);
+      }
+      emit(jv) {
+      """
+    }
+  }
+  """
+  }    
+      return(interfaces);
+    }
+ 
+ localInterfacesGetCs() Array {
+   
+    Array interfaces = Array.new();
+    
+    String description;
+    String macAddress;
+    String name;
+    String status;
+    String address;
+    emit(cs) {
+        """            
+        NetworkInterface[] adapters  = NetworkInterface.GetAllNetworkInterfaces();
+        foreach (NetworkInterface adapter in adapters)
+        {
+            string description = adapter.Description;
+            string macAddress = adapter.GetPhysicalAddress().ToString();
+            string name = adapter.Name;
+            string status = adapter.OperationalStatus.ToString();
+            IPInterfaceProperties adapterProperties = adapter.GetIPProperties();
+            
+            UnicastIPAddressInformationCollection unicastIps = adapterProperties.UnicastAddresses;
+            
+            /*GatewayIPAddressInformationCollection addresses = adapterProperties.GatewayAddresses;
+            string gatewayAddress = null;
+            if (addresses.Count >0)
+            {
+                foreach (GatewayIPAddressInformation gaddress in addresses)
+                {
+                  if (gaddress.Address.AddressFamily.ToString().Equals("InterNetwork")) {
+                    gatewayAddress = gaddress.Address.ToString();
+                  }
+                    
+                }
+            }*/
+            string address = null;
+            foreach(UnicastIPAddressInformation unicastIp in unicastIps)
+            {
+              if (unicastIp.Address.AddressFamily.ToString().Equals("InterNetwork")) {
+                    address = unicastIp.Address.ToString();
+                    if (description != null) {
+                      bevl_description = new BEC_4_6_TextString(description);
+                    } else {
+                      bevl_description = null;
+                    }
+                    if (macAddress != null) {
+                      bevl_macAddress = new BEC_4_6_TextString(macAddress);
+                    } else {
+                      bevl_macAddress = null;
+                    }
+                    if (name != null) {
+                      bevl_name = new BEC_4_6_TextString(name);
+                    } else {
+                      bevl_name = null;
+                    }
+                    if (status != null) {
+                      bevl_status = new BEC_4_6_TextString(status);
+                    } else {
+                      bevl_status = null;
+                    }
+                    if (address != null) {
+                      bevl_address = new BEC_4_6_TextString(address);
+                    } else {
+                      bevl_address = null;
+                    }
+                    """
+                    }
+                    ifEmit(cs) {
+                      interfaces +=  Interface.new(description, macAddress,
+                        name, status, address);
+                    }
+                    emit(cs) {
+                    """
+              }
+            }
+        }
+        """
+        }
+        return(interfaces);
+    }
+    
+    score(Interface i) Int {
+      Int s = 0;
+      if (def(i.status) && i.status == "Up") {
+       s++=;
+      }
+      if (def(i.address)) {
+       s++=;
+       if (i.address != "127.0.0.1") {
+         s++=;
+       }
+      }
+      if (def(i.macAddress)) {
+        s++=;
+      }
+      return(s);
+    }
+    
+    upInterfacesGet() Array {
+      Array ups = Array.new();
+      foreach (Interface i in self.localInterfaces) {
+        if (TS.notEmpty(i.status) && i.status == "Up" && TS.notEmpty(i.address)) {
+          ups += i;
+        }
+      }
+      return(ups);
+    }
+    
+    interfaceForNetwork(String netip) String {
+      Int maxSoFar = 0;
+      String bestMatch;
+      foreach (Interface i in self.localInterfaces) {
+        String iip = i.address;
+        if (TS.notEmpty(iip)) {
+          String cp = TS.commonPrefix(iip, netip);
+          if (def(cp)) {
+            Int cps = cp.size;
+            if (cps > maxSoFar) {
+              maxSoFar = cps;
+              bestMatch = iip;
+            }
+          }
+        }
+      }
+      return(bestMatch);
+    }
+    
+    sortedUpInterfacesGet() Array {
+      Array ups = self.upInterfaces;
+      Array sups = Array.new();
+      Map adif = Map.new();
+      Array ads = Array.new();
+      foreach (Interface i in ups) {
+        adif.put(i.address, i);
+        ads += i.address;
+      }
+      ads.sort();
+      foreach (String ad in ads) {
+        sups += adif.get(ad);
+      }
+      return(sups);
+    }
+    
+    preferredInterfaceGet() Interface {
+      Interface res;
+      Int resScore = -1;
+      foreach (Interface i in self.localInterfaces) {
+        Int score = score(i);
+        if (score > resScore) {
+          res = i;
+          resScore = score;
+        }
+      }
+      return(res);
+    }
+ 
+}
+
+use Net:UPnP as Upnp;
+
+class Upnp {
+
+  new(String _netGw) self {
+    vars {
+      String netGw = _netGw;
+      IO:Log log = IO:Log.new();
+      Int lvl = log.debug;
+    }
+  }
+  
+  deviceURLGet() String {
+    vars {
+      String deviceURL;
+    }
+    if (def(deviceURL)) {
+      return(deviceURL);
+    }
+    var e;
+    String discover = "M-SEARCH * HTTP/1.1\r\n" +
+            "HOST: 239.255.255.250:1900\r\n" +
+            "ST:upnp:rootdevice\r\n" +
+            "MAN:\"ssdp:discover\"\r\n" +
+            "MX:3\r\n\r\n";
+            
+    emit(cs) {
+    """
+    Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+    s.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+    byte[] data = Encoding.ASCII.GetBytes(bevl_discover.bems_toCsString());
+    IPEndPoint ipe = new IPEndPoint(IPAddress.Broadcast, 1900);
+    byte[] buffer = new byte[0x1000];
+    int length;
+    s.SendTimeout = 500;
+    s.ReceiveTimeout = 500;
+    """
+    }
+    
+    emit(jv) {
+    """
+    DatagramSocket s = new DatagramSocket();
+    s.setBroadcast(true);
+    s.setSoTimeout(500);
+    byte[] data = bevl_discover.bems_toJvString().getBytes("UTF-8");
+    DatagramPacket spacket = new DatagramPacket(data, data.length, InetAddress.getByName("255.255.255.255"), 1900);
+    byte[] buffer = new byte[0x1000];
+    """
+    }
+    
+    String received;
+    Int endSec = Time:Interval.now().seconds + 5;
+    Int nowSec = Time:Interval.now().seconds;
+    Int count = 0;
+    while (nowSec < endSec) {
+      received = null;
+      if (count % 3 == 0) {
+        var bcast = true;
+      } else {
+        bcast = null;
+      }
+      count++=;
+      try {
+      emit(cs) {
+      """
+      if (bevl_bcast != null) {
+        s.SendTo(data, ipe);
+      }
+      length = s.Receive(buffer);
+      string got = Encoding.ASCII.GetString(buffer, 0, length);
+      bevl_received = new BEC_4_6_TextString(got);
+      """
+      }
+      emit(jv) {
+      """
+      if (bevl_bcast != null) {
+        s.send(spacket);
+      }
+      DatagramPacket rpacket = new DatagramPacket(buffer, buffer.length);
+      s.receive(rpacket);
+      String got = new String(rpacket.getData(), 0, rpacket.getLength(), "UTF-8");
+      bevl_received = new BEC_4_6_TextString(got);
+      """
+      }
+      } catch (e) {
+        log.log(lvl, "got except during upnp bcast et all");
+      }
+      if (def(received)) {
+        received.lowerValue();
+        log.log(lvl, "deviceURLGet Received " + received);
+        if (received.has("upnp:rootdevice")) {
+          Int loc = received.find("location:");
+          if (def(loc)) {
+            loc += 10;
+            received = received.substring(loc);
+            loc = received.find("\r");
+            if (def(loc)) {
+              received = received.substring(0, loc);
+              if (received.has(netGw)) {
+                deviceURL = received;
+                return(received);
+              }
+            }
+          }
+        }
+      }
+      nowSec = Time:Interval.now().seconds;
+    }
+    
+    return(null);
+    }
+    
+    dropTrailingPath(String received) String {
+      //drop trailing path
+      Int mk = received.find("/");
+      mk = received.find("/", mk + 1);
+      mk = received.find("/", mk + 1);
+      if (def(mk)) {
+        received = received.substring(0, mk);
+      }
+      return(received);
+    }
+    
+    controlURLGet() String {
+      var e;
+      vars {
+        String controlURL;
+      }
+      if (def(controlURL)) {
+        return(controlURL);
+      }
+      String deviceURL = self.deviceURL;
+      Web:Client client = Web:Client.new();
+      client.url = deviceURL;
+      try {
+        String received = client.openInput().readString();
+      } catch (e) {
+        cu = dropTrailingPath(deviceURL);
+        controlURL = cu;
+        return(cu);
+      }
+      Int mk = received.find("InternetGatewayDevice");
+      if (def(mk)) {
+        mk = received.find("WANIPConnection", mk + 1);
+        if (def(mk)) {
+          mk = received.find("controlURL", mk + 1);
+        }
+        if (def(mk)) {
+          received = received.substring(mk + 11);
+          mk = received.find("</controlURL>");
+          if (def(mk)) {
+            received = received.substring(0, mk);
+            String cu = dropTrailingPath(deviceURL);
+            cu = cu + received;
+            controlURL = cu;
+          }
+        }
+      }
+      return(controlURL);
+    }
+
+    externalIPGet() String {
+      String cu = self.controlURL;
+      Web:Client client = Web:Client.new();
+      client.url = cu;
+      client.outputContentType = "text/xml";
+      
+      client.outputHeaders.put("SoapAction", "urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress");
+      
+      client.method = "POST";
+      String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'> <s:Body> <u:GetExternalIPAddress xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\" /> </s:Body> </s:Envelope>";
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      if (def(res)) {
+        Int start = res.find("<NewExternalIPAddress>");
+        Int end = res.find("</NewExternalIPAddress>");
+        if (def(start) && def("end")) {
+          String ip = res.substring(start + 22, end);
+          return(ip);
+        }
+      }
+      
+      return(null);
+    }
+    
+    internalIPGet() {
+      vars {
+        String internalIP;
+      }
+      if (def(internalIP)) {
+        return(internalIP);
+      }
+      Net:Interface ni = Net:Interface.new();
+      internalIP = ni.interfaceForNetwork(netGw);
+      return(internalIP);
+    }
+    
+    forwardPort(Int duration, Int external, Int internal) Bool {
+      return(forwardPort(duration, external, internal, self.internalIP));
+    }
+    
+    forwardPort(Int duration, Int external, Int internal, String internalIP) Bool {
+      var e;
+      String cu = self.controlURL;
+      Web:Client client = Web:Client.new();
+      client.url = cu;
+      client.outputContentType = "text/xml";
+      
+      client.outputHeaders.put("SoapAction", "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping");
+      
+      client.method = "POST";
+      //String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'> <s:Body> <u:GetExternalIPAddress xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\" /> </s:Body> </s:Envelope>";
+      
+      String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'><s:Body><u:AddPortMapping xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\"><NewRemoteHost></NewRemoteHost> <NewExternalPort>" + external.toString() + "</NewExternalPort><NewProtocol>TCP</NewProtocol> <NewInternalPort>" + internal.toString() + "</NewInternalPort> <NewInternalClient>" + internalIP + "</NewInternalClient> <NewEnabled>1</NewEnabled> <NewPortMappingDescription>node:nat:upnp</NewPortMappingDescription> <NewLeaseDuration>" + duration.toString() + "</NewLeaseDuration> </u:AddPortMapping> </s:Body> </s:Envelope>";
+      
+      try {
+        client.openOutput().write(payload);
+        String res = client.openInput().readString();
+      } catch (e) {
+        return(false);
+      }
+      if (def(res)) {
+        if (res.has("Fault") || res.has("UPnPError")) {
+          return(false);
+        }
+        return(true);
+      }
+      
+      return(false);
+    }
+            
+    
+
+}
+
 use class Dz:DnsUpdate {
 
   new() self {
@@ -911,11 +1432,46 @@ use class Dz:MediaIO {
      foreach (String c in ecm) {
        if (camOkForAccount(c, a)) {
           String clabel = app.configManager.get("cam." + c + ".label");
-          camLinks += "<p><a href=\"#\" onclick=\"updateImage('" + c + "');return false;\">Take Picture with " + clabel + "</a></p>";
+          camLinks += "<p><a href=\"#\" onclick=\"dzeui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
         }
      }
      return(camLinks);
    }
+   
+   showConfigRequest(Map arg, request) Map {
+     Account a = app.accountManager.getAccountForRequest(request);
+     if (def(a) && a.perms.has("admin")) {
+       String conf = String.new();
+       Map ecm = app.configManager.getMap();
+       if (ecm.isEmpty!) {
+         conf += "<table>";
+         foreach (var kv in ecm) {
+           unless(kv.value.has("\"")) {
+              String ckey = "configKey" + kv.key;
+              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" onchange=\"updateConfig('" + kv.key + "', '" + ckey + "')\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td></tr>";
+            }
+         }
+      }
+      conf += "</table>";
+      conf += "<a href=\"#\" onclick=\"dzeui.bem_hideConfig_0();return false;\">Hide Configuration</a>";
+       Map res = Map.new();
+      res["action"] = "showConfigResponse";
+      res["configs"] = conf;
+      return(res);
+    }
+    return(null);
+   }
+   
+   updateConfigRequest(Map arg, request) Map {
+     Account a = app.accountManager.getAccountForRequest(request);
+     if (def(a) && a.perms.has("admin")) {
+      log.log(lvl, "update for " + arg["configKey"] + " value " + arg["configValue"]);
+      app.configManager.put(arg["configKey"], arg["configValue"]);
+      return(showConfigRequest(arg, request));
+      }
+      return(null);
+   }
+
 
 }
 

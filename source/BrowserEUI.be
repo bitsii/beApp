@@ -145,11 +145,13 @@ class HC {
   
   handleCallback(String resjs) {
     Map resm = unmar.unmarshall(resjs);
-    String mname = resm["action"];
-    Array rargs = Array.new(1);
-    rargs[0] = resm;
-    if (def(mname) && mname.ends("Response") && callback.can(mname, rargs.length)) {
-      callback.invoke(mname, rargs);
+    if (def(resm)) {
+      String mname = resm["action"];
+      Array rargs = Array.new(1);
+      rargs[0] = resm;
+      if (def(mname) && mname.ends("Response") && callback.can(mname, rargs.length)) {
+        callback.invoke(mname, rargs);
+      }
     }
   }
 }
