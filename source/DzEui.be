@@ -82,6 +82,13 @@ use class Dz:Eui {
       HC.new(self).call(arg);
    }
    
+   upnp() {
+      Map arg = Map.new();
+      arg["module"] = "MediaIO";
+      arg["action"] = "upnpRequest";
+      HC.new(self).call(arg);
+   }
+   
    showConfig() {
       Map arg = Map.new();
       arg["module"] = "MediaIO";
@@ -114,18 +121,30 @@ use class Dz:Eui {
       HC.new(self).call(arg);
    }
    
+   deleteConfig(String theKey) {
+      Map arg = Map.new();
+      arg["module"] = "MediaIO";
+      arg["action"] = "deleteConfigRequest";
+      arg["configKey"] = theKey;
+      HC.new(self).call(arg);
+   }
+   
+   addConfig() {
+      updateConfig(HD.getElementById("addConfigKeyId").value, "addConfigValId");
+   }
+   
    startup() {
       clearImage();
       Map arg = Map.new();
       arg["module"] = "Accounts";
       arg["action"] = "checkLoggedInRequest";
-      HD.getElementById("loginName").value = "";
-      HD.getElementById("loginPass").value = "";
+      HD.getElementById("accountName").value = "";
+      HD.getElementById("accountPass").value = "";
       HC.new(self).call(arg);
    }
    
    login() {
-      login(HD.getElementById("loginName").value, HD.getElementById("loginPass").value);
+      login(HD.getElementById("accountName").value, HD.getElementById("accountPass").value);
    }
    
    login(String loginName, String loginPass) {
@@ -133,10 +152,10 @@ use class Dz:Eui {
       Map arg = Map.new();
       arg["module"] = "Accounts";
       arg["action"] = "loginRequest";
-      arg["loginName"] = loginName;
-      arg["loginPass"] = loginPass;
-      HD.getElementById("loginName").value = "";
-      HD.getElementById("loginPass").value = "";
+      arg["accountName"] = loginName;
+      arg["accountPass"] = loginPass;
+      HD.getElementById("accountName").value = "";
+      HD.getElementById("accountPass").value = "";
       HC.new(self).call(arg);
    }
    

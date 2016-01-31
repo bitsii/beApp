@@ -104,11 +104,7 @@ use class Dz:Wui(Ui) {
     
     startWeb() {
       var e;
-      String ports = self.configManager.get("wui.port");
-      if (TS.isEmpty(ports)) {
-        ports = "5000";
-        self.configManager.put("wui.port", ports);
-      }
+      String ports = self.internalPort;
       Int port = Int.new(ports);
       String cerPath = assureCert(port);
       //portL.o = port;
@@ -242,8 +238,8 @@ use class Dz:Wui(Ui) {
         Map arg = request.scriptArg;
      }
      if (TS.isEmpty(accountName)) {
-       String ln = request.getParameter("loginName");
-       String lp = request.getParameter("loginPass");
+       String ln = request.getParameter("accountName");
+       String lp = request.getParameter("accountPass");
        if (TS.notEmpty(ln) && TS.notEmpty(lp)) {
           log.log(lvl, "doing svc login");
           Account a = self.accountManager.getAccount(ln);
@@ -633,12 +629,46 @@ use Net:UPnP as Upnp;
 
 class Upnp {
 
+  new() self {
+    new(self.gatewayAddress);
+  }
+  
   new(String _netGw) self {
     vars {
       String netGw = _netGw;
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
     }
+  }
+  
+  gatewayAddressGet() String {
+    
+    System:Command sc = System:Command.new("netstat -rn").open();
+    String res = sc.output.readString();
+    sc.close();
+    
+    Int fz = res.find("0.0.0.0"); //win
+    if (def(fz)) {
+      Int fz2 = res.find("0.0.0.0", fz + 1);
+      if (def(fz2)) {
+        fz = fz2;
+      }
+      fz += 7;
+      res = res.substring(fz);
+      Bool started = false;
+      String accum = String.new();
+      foreach (String s in res.biter) {
+        if (s == " ") {
+          if (started) {
+            break;
+          }
+        } else {
+          started = true;
+          accum += s;
+        }
+      }
+    }
+    return(accum);
   }
   
   deviceURLGet() String {
@@ -667,10 +697,11 @@ class Upnp {
     s.ReceiveTimeout = 500;
     """
     }
-    
+    String intip = self.internalIP;
     emit(jv) {
     """
-    DatagramSocket s = new DatagramSocket();
+    //DatagramSocket s = new DatagramSocket();
+    DatagramSocket s = new DatagramSocket(0, InetAddress.getByName(bevl_intip.bems_toJvString()));
     s.setBroadcast(true);
     s.setSoTimeout(500);
     byte[] data = bevl_discover.bems_toJvString().getBytes("UTF-8");
@@ -685,7 +716,7 @@ class Upnp {
     Int count = 0;
     while (nowSec < endSec) {
       received = null;
-      if (count % 3 == 0) {
+      if (count % 7 == 0) {
         var bcast = true;
       } else {
         bcast = null;
@@ -714,7 +745,7 @@ class Upnp {
       """
       }
       } catch (e) {
-        log.log(lvl, "got except during upnp bcast et all");
+        log.log(lvl, "got except during upnp bcast et all " + e);
       }
       if (def(received)) {
         received.lowerValue();
@@ -761,6 +792,7 @@ class Upnp {
         return(controlURL);
       }
       String deviceURL = self.deviceURL;
+      //("deviceUrl " + deviceURL).print();
       Web:Client client = Web:Client.new();
       client.url = deviceURL;
       try {
@@ -1006,6 +1038,38 @@ use class Dz:Ui {
       
   }
   
+  internalPortGet() String {
+      vars {
+        String intPort;
+      }
+      if (TS.isEmpty(intPort)) {
+        intPort = self.configManager.get("wui.port");
+        if (TS.isEmpty(intPort)) {
+          Int intPorti = System:Random.getInt(Int.new(), 6000);
+          intPorti += 3000;
+          intPort = intPorti.toString();
+          self.configManager.put("wui.port", intPort);
+        }
+      }
+      return(intPort);
+    }
+    
+    externalPortGet() String {
+      vars {
+        String extPort;
+      }
+      if (TS.isEmpty(extPort)) {
+        extPort = self.configManager.get("wui.extPort");
+        if (TS.isEmpty(extPort)) {
+          Int extPorti = System:Random.getInt(Int.new(), 6000);
+          extPorti += 3000;
+          extPort = extPorti.toString();
+          self.configManager.put("wui.extPort", extPort);
+        }
+      }
+      return(extPort);
+    }
+  
   pathsGet() App:Paths {
     vars {
       App:Paths paths;
@@ -1022,8 +1086,8 @@ use class Dz:Ui {
     }
     if (undef(configManager)) {
       Path db = self.paths.dataPath.addStep("Dz").addStep("DDZDB");
-      KvDb configManagerKv = KvDb.new(Derby.pathNew(db), "CONFIG");
-      //configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
+      //KvDb configManagerKv = KvDb.new(Derby.pathNew(db), "CONFIG");
+      KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
       configManagerKv.createOpen();
       configManager = CLocker.new(configManagerKv);
     }
@@ -1036,7 +1100,8 @@ use class Dz:Ui {
     }
     if (undef(sessionDb)) {
       Path db = self.paths.dataPath.addStep("Dz").addStep("SESSDB");
-      KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
+      //KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
+      KvDb sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
       sessionDbKv.createOpen();
       sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv));
     }
@@ -1134,6 +1199,16 @@ use class Dz:Ui {
       if (mode == "cmd") {
         CmdUi.new().main(args);
       }
+   }
+   
+   doUpnp() {
+      log.log(lvl, "upnping");
+      Upnp upnp = Upnp.new();
+      upnp.lvl = lvl;
+      log.log(lvl, "gw address " + upnp.netGw);
+      log.log(lvl, "int address " + upnp.internalIP);
+      log.log(lvl, "ext address " + upnp.externalIP);
+      upnp.forwardPort(3600, Int.new(self.externalPort), Int.new(self.internalPort));
    }
 
 }
@@ -1363,6 +1438,16 @@ use class Dz:MediaIO {
       return(null);
    }
    
+   upnpRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      unless (a.perms.has("admin")) {
+        log.log(lvl, "Account not admin, not upnping");
+        return(null);
+      }
+      app.doUpnp();
+      return(null);
+   }
+   
    runCommandRequest(Map arg, request) {
       Account a = app.accountManager.getAccountForRequest(request);
       unless (a.perms.has("admin")) {
@@ -1448,10 +1533,11 @@ use class Dz:MediaIO {
          foreach (var kv in ecm) {
            unless(kv.value.has("\"")) {
               String ckey = "configKey" + kv.key;
-              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" onchange=\"updateConfig('" + kv.key + "', '" + ckey + "')\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td></tr>";
+              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" onchange=\"updateConfig('" + kv.key + "', '" + ckey + "')\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"dzeui.bem_deleteConfig_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">x</a></td></tr>";
             }
          }
       }
+      conf += "<tr><td>Add New:&nbsp;<input type=\"text\" onchange=\"dzeui.bem_addConfig_0()\" id=\"addConfigKeyId\" value=\"\"></td><td><a href=\"#\" onclick=\"return false;\">+</a><input type=\"hidden\" id=\"addConfigValId\" value=\"\"></td></tr>";
       conf += "</table>";
       conf += "<a href=\"#\" onclick=\"dzeui.bem_hideConfig_0();return false;\">Hide Configuration</a>";
        Map res = Map.new();
@@ -1467,6 +1553,16 @@ use class Dz:MediaIO {
      if (def(a) && a.perms.has("admin")) {
       log.log(lvl, "update for " + arg["configKey"] + " value " + arg["configValue"]);
       app.configManager.put(arg["configKey"], arg["configValue"]);
+      return(showConfigRequest(arg, request));
+      }
+      return(null);
+   }
+   
+   deleteConfigRequest(Map arg, request) Map {
+     Account a = app.accountManager.getAccountForRequest(request);
+     if (def(a) && a.perms.has("admin")) {
+      log.log(lvl, "delete for " + arg["configKey"]);
+      app.configManager.delete(arg["configKey"]);
       return(showConfigRequest(arg, request));
       }
       return(null);
@@ -1507,21 +1603,21 @@ use class Dz:Accounts {
   }
 
   loginRequest(Map arg, request) {
-    Account a = app.accountManager.getAccount(arg["loginName"]);
+    Account a = app.accountManager.getAccount(arg["accountName"]);
     if (def(a)) {
-      log.log(lvl, "Found account " + arg["loginName"]);
-      if (a.checkPass(arg["loginPass"])) {
+      log.log(lvl, "Found account " + arg["accountName"]);
+      if (a.checkPass(arg["accountPass"])) {
         log.log(lvl, "Login ok");
-        request.putSession("account.name", arg["loginName"]);
+        request.putSession("account.name", arg["accountName"]);
         Map res = Map.new();
         res["action"] = "loggedInResponse";
-        res["name"] = arg["loginName"];
+        res["name"] = arg["accountName"];
         return(app.loggedIn(a, res, arg, request));
       } else {
         log.log(lvl, "Login notok");
       }
     } else {
-      log.log(lvl, "No such account " + arg["loginName"]);
+      log.log(lvl, "No such account " + arg["accountName"]);
     }
     return(logoutRequest(arg, request));
   }

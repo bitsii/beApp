@@ -558,7 +558,7 @@ use class Db:Relational:Test(Assert) {
 
 //TODO
 //kv (interface)
-//rkv (relational, try to fit android sqlite into DbDb)
+//rkv (relational)
 //locking single thread version
 //polling concurrent version
 use Db:KeyValue as KvDb;

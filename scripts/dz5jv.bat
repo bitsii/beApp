@@ -8,7 +8,7 @@ mkdir ..\apprun\App\Dz
 
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\Dz\d --buildPath ..\apprun\App\Dz --emitLang jv -mainClass=Dz:Ui source\DzTest.be source\DzUi.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be
 
-javac -classpath extlibs\jetty\*;extlibs\sqlite\*;extlibs\derby\*;extlibs\bcastlejv\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\Dz\Base\target\jv\be\BEL_4_Base\*.java
+javac -classpath extlibs\jetty\*;extlibs\hsqldb\*;extlibs\bcastlejv\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\Dz\Base\target\jv\be\BEL_4_Base\*.java
 
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\App\Dz\d --buildPath ..\apprun\App\Dz --emitLang js --ownProcess false -mainClass=Dz:Eui source\DzEui.be source\BrowserEUI.be
 
@@ -32,7 +32,6 @@ copy /y scripts\uppic.sh ..\apprun\App\Dz
 copy /y source\Dz*.html ..\apprun\App\Dz
 copy /y source\Dz*.js ..\apprun\App\Dz
 copy /y extlibs\jetty\* ..\apprun\App\Dz
-copy /y extlibs\derby\* ..\apprun\App\Dz
 copy /y extlibs\hsqldb\* ..\apprun\App\Dz
 copy /y extlibs\bcastlejv\* ..\apprun\App\Dz
 
