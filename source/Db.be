@@ -559,8 +559,6 @@ use class Db:Relational:Test(Assert) {
 //TODO
 //kv (interface)
 //rkv (relational)
-//locking single thread version
-//polling concurrent version
 use Db:KeyValue as KvDb;
 class KvDb {
 

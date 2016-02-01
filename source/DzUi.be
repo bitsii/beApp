@@ -939,12 +939,140 @@ use class Dz:DnsUpdate {
   init() {
     duckDomain = app.configManager.get("dns.duckDomain");
     duckToken = app.configManager.get("dns.duckToken");
-    //if (TS.isEmpty(duckDomain)) { duckDomain = ""; }
-    //if (TS.isEmpty(duckToken)) { duckToken = ""; }
-    //log.log(lvl, "dns.duckDomain " + duckDomain + " dns.duckToken " + duckToken);
-    Int _pollSecs = app.configManager.get("dns.pollSecs");
-    if (def(_pollSecs) && _pollSecs > 0) {
-      pollSecs = _pollSecs;
+    String pollSecsS = app.configManager.get("dns.pollSecs");
+    if (TS.notEmpty(pollSecsS)) {
+      pollSecs = Int.new(pollSecsS);
+    } else {
+      app.configManager.put("dns.pollSecs", pollSecs.toString());
+    }
+  }
+
+}
+
+use class Dz:UpnpUpdate {
+
+  new() self {
+  
+    vars {
+      var app;
+      Int lvl;
+      IO:Log log;
+      Int lastPoll = 0;
+      Int lastUpdate = 0;
+      Int pollSecs = 1200;//10 mins
+      Int forceUpdate = 43200;//12 hrs
+      Bool disable = false;
+    }
+  
+  }
+  
+  updateOnInterval() {
+    Int currSec = Time:Interval.now().seconds;
+    if (currSec - lastPoll > pollSecs) {
+      lastPoll = currSec;
+      doUpdate();
+    }
+  }
+  
+  doUpdate() {
+    log.log(lvl, "In upnp doUpdate");
+    unless (disable) {
+      log.log(lvl, "upnp doing");
+      
+      Bool changed = false;
+      
+      Int currSec = Time:Interval.now().seconds;
+      if (currSec - lastUpdate > forceUpdate) {
+        lastUpdate = currSec;
+        changed = true;
+      }
+    
+      Upnp upnp = Upnp.new();
+      upnp.lvl = lvl;
+      String gwNow = upnp.netGw;
+      String iaNow = upnp.internalIP;
+      String eaNow = upnp.externalIP;
+      
+      if (TS.notEmpty(gwNow)) {
+        if (TS.isEmpty(gw) || gwNow != gw) {
+          changed = true;
+          gw = gwNow;
+          app.configManager.put("upnp.gw", gw);
+        }
+      }
+      
+      if (TS.notEmpty(iaNow)) {
+        if (TS.isEmpty(intAddress) || iaNow != intAddress) {
+          changed = true;
+          intAddress = iaNow;
+          app.configManager.put("upnp.intAddress", intAddress);
+        }
+      }
+      
+      if (TS.notEmpty(eaNow)) {
+        if (TS.isEmpty(extAddress) || eaNow != extAddress) {
+          changed = true;
+          extAddress = eaNow;
+          app.configManager.put("upnp.extAddress", extAddress);
+        }
+      }
+      
+      if (TS.isEmpty(intPort) || intPort != appIntPort) {
+        changed = true;
+        intPort = appIntPort;
+        app.configManager.put("upnp.intPort", intPort);
+      }
+      
+      if (TS.isEmpty(extPort) || extPort != appExtPort) {
+        changed = true;
+        extPort = appExtPort;
+        app.configManager.put("upnp.extPort", extPort);
+      }
+
+      if (changed) {
+        log.log(lvl, "Changed, forwarding");
+        upnp.forwardPort(forceUpdate * 2, Int.new(extPort), Int.new(intPort));
+      }
+    }
+  }
+  
+  init() {
+    vars {
+      String gw;
+      String intAddress;
+      String extAddress;
+      String intPort;
+      String extPort;
+      String appIntPort;
+      String appExtPort;
+    }
+    
+    gw = app.configManager.get("upnp.gw");
+    intAddress = app.configManager.get("upnp.intAddress");
+    extAddress = app.configManager.get("upnp.extAddress");
+    intPort = app.configManager.get("upnp.intPort");
+    extPort = app.configManager.get("upnp.extPort");
+    
+    appIntPort = app.internalPort;
+    appExtPort = app.externalPort;
+    
+    String disables = app.configManager.get("upnp.disable");
+    if (TS.notEmpty(disables) && disables == "true") {
+      disable = true;
+    }
+    
+    String pollSecsS = app.configManager.get("upnp.pollSecs");
+    if (TS.notEmpty(pollSecsS)) {
+      pollSecs = Int.new(pollSecsS);
+    } else {
+      app.configManager.put("upnp.pollSecs", pollSecs.toString());
+    }
+    
+    String forceUpdateS = app.configManager.get("upnp.forceUpdateSecs");
+    if (TS.notEmpty(forceUpdateS)) {
+      forceUpdate = Int.new(forceUpdateS);
+    } else {
+      app.configManager.put("upnp.forceUpdateSecs", forceUpdate.toString());
     }
   }
 
@@ -958,13 +1086,14 @@ use class Dz:Background {
       Int lvl;
       IO:Log log;
       DnsUpdate du = DnsUpdate.new();
+      UpnpUpdate uu = UpnpUpdate.new();
     }
   }
   
   runTasks() {
     //log.log(lvl, "Running tasks");
-    //duck, in app, last update/update now, get from config / set to config on change, etc
     du.updateOnInterval();
+    uu.updateOnInterval();
   }
   
   main() {
@@ -996,6 +1125,10 @@ use class Dz:Background {
     du.lvl = lvl;
     du.log = log;
     du.init();
+    uu.app = app;
+    uu.lvl = lvl;
+    uu.log = log;
+    uu.init();
     myThread = System:Thread.new(self);
     myThread.start();
   }
@@ -1202,13 +1335,8 @@ use class Dz:Ui {
    }
    
    doUpnp() {
-      log.log(lvl, "upnping");
-      Upnp upnp = Upnp.new();
-      upnp.lvl = lvl;
-      log.log(lvl, "gw address " + upnp.netGw);
-      log.log(lvl, "int address " + upnp.internalIP);
-      log.log(lvl, "ext address " + upnp.externalIP);
-      upnp.forwardPort(3600, Int.new(self.externalPort), Int.new(self.internalPort));
+      log.log(lvl, "upnping not");
+      
    }
 
 }
