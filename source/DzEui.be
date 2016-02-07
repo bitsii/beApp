@@ -67,31 +67,21 @@ use class Dz:Eui {
       HC.new(self).handleCallback(res);
     }
     
+    tryThing() {
+      Map arg = Map.new();
+      arg["action"] = "tryThingRequest";
+      HC.new(self).call(arg);
+   }
+    
     updateImage(String cam) {
       Map arg = Map.new();
-      arg["module"] = "MediaIO";
       arg["action"] = "updateImageRequest";
       arg["cam"] = cam;
       HC.new(self).call(arg);
    }
    
-   playSound() {
-      Map arg = Map.new();
-      arg["module"] = "MediaIO";
-      arg["action"] = "playSoundRequest";
-      HC.new(self).call(arg);
-   }
-   
-   upnp() {
-      Map arg = Map.new();
-      arg["module"] = "MediaIO";
-      arg["action"] = "upnpRequest";
-      HC.new(self).call(arg);
-   }
-   
    showConfig() {
       Map arg = Map.new();
-      arg["module"] = "MediaIO";
       arg["action"] = "showConfigRequest";
       HC.new(self).call(arg);
    }
@@ -104,17 +94,15 @@ use class Dz:Eui {
      HD.getElementById("configsDiv").innerHTML = "";
    }
    
-   runCommand() {
+   runCommand(String key) {
       Map arg = Map.new();
-      arg["module"] = "MediaIO";
       arg["action"] = "runCommandRequest";
-      arg["cmd"] = HD.getElementById("cmd").value;
+      arg["cmdKey"] = key;
       HC.new(self).call(arg);
    }
    
    updateConfig(String theKey, String theId) {
       Map arg = Map.new();
-      arg["module"] = "MediaIO";
       arg["action"] = "updateConfigRequest";
       arg["configKey"] = theKey;
       arg["configValue"] = HD.getElementById(theId).value;
@@ -123,7 +111,6 @@ use class Dz:Eui {
    
    deleteConfig(String theKey) {
       Map arg = Map.new();
-      arg["module"] = "MediaIO";
       arg["action"] = "deleteConfigRequest";
       arg["configKey"] = theKey;
       HC.new(self).call(arg);
@@ -136,7 +123,6 @@ use class Dz:Eui {
    startup() {
       clearImage();
       Map arg = Map.new();
-      arg["module"] = "Accounts";
       arg["action"] = "checkLoggedInRequest";
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
@@ -150,7 +136,6 @@ use class Dz:Eui {
    login(String loginName, String loginPass) {
       clearImage();
       Map arg = Map.new();
-      arg["module"] = "Accounts";
       arg["action"] = "loginRequest";
       arg["accountName"] = loginName;
       arg["accountPass"] = loginPass;
@@ -162,7 +147,6 @@ use class Dz:Eui {
    logout() {
       clearImage();
       Map arg = Map.new();
-      arg["module"] = "Accounts";
       arg["action"] = "logoutRequest";
       HC.new(self).call(arg);
    }
@@ -180,6 +164,9 @@ use class Dz:Eui {
     }
     if (arg.has("camLinks")) {
       HD.getElementById("camLinksDiv").innerHTML = arg["camLinks"];
+    }
+    if (arg.has("cmdLinks")) {
+      HD.getElementById("cmdLinksDiv").innerHTML = arg["cmdLinks"];
     }
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
@@ -220,7 +207,6 @@ use class Dz:Eui {
    
    detectCams() {
       Map arg = Map.new();
-      arg["module"] = "MediaIO";
       arg["action"] = "detectCamsRequest";
       HC.new(self).call(arg);
    }

@@ -1032,6 +1032,22 @@ use class Dz:UpnpUpdate {
       if (changed) {
         log.log(lvl, "Changed, forwarding");
         upnp.forwardPort(forceUpdate * 2, Int.new(extPort), Int.new(intPort));
+        String intLink = "<a href=\"https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html\">Internal Link (use on same network as the device is on)</a>";
+        String extLink = "<a href=\"https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html\">External Link (use from outside the nework the device is on / from the internet)</a>";
+        log.log(lvl, "intLink " + intLink);
+        log.log(lvl, "extLink " + extLink);
+        Map jsl = Map.new();
+        jsl.put("intAddress", intAddress);
+        jsl.put("intPort", intPort);
+        jsl.put("extAddress", extAddress);
+        jsl.put("extPort", extPort);
+        jsl.put("gw", gw);
+        jsl.put("deviceName", deviceName);
+        jsl.put("deviceId", deviceId);
+        jsl.put("intLink", intLink);
+        jsl.put("extLink", extLink);
+        app.links.o = jsl;
+        app.updateNetAddresses();
       }
     }
   }
@@ -1045,6 +1061,8 @@ use class Dz:UpnpUpdate {
       String extPort;
       String appIntPort;
       String appExtPort;
+      String deviceName;
+      String deviceId;
     }
     
     gw = app.configManager.get("upnp.gw");
@@ -1055,6 +1073,8 @@ use class Dz:UpnpUpdate {
     
     appIntPort = app.internalPort;
     appExtPort = app.externalPort;
+    deviceName = app.deviceName;
+    deviceId = app.deviceId;
     
     String disables = app.configManager.get("upnp.disable");
     if (TS.notEmpty(disables) && disables == "true") {
@@ -1135,6 +1155,18 @@ use class Dz:Background {
 
 }
 
+use System:Thread:ObjectLocker as OLocker;
+emit(jv) {
+"""
+import java.util.Properties;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.Folder;
+import javax.mail.internet.MimeMessage;
+import javax.mail.Message;
+import javax.mail.Flags.Flag;
+"""
+}
 use class Dz:Ui {
 
   new() self {
@@ -1142,33 +1174,143 @@ use class Dz:Ui {
         IO:Log log = IO:Log.new();
         log.level = log.info;
         Int lvl = log.level;
-        Map modules = Map.new();
         Lock lock = Lock.new();
         Background bg = Background.new();
+        OLocker links = OLocker.new();
+        MediaIO requestHandler;
       }
       
-      Hello h = Hello.new();
-      h.log = log;
-      h.lvl = lvl;
-      modules["Hello"] = h;
-      
-      MediaIO i = MediaIO.new();
-      i.log = log;
-      i.lvl = lvl;
-      i.app = self;
-      modules["MediaIO"] = i;
-      
-      Accounts a = Accounts.new();
-      a.log = log;
-      a.lvl = lvl;
-      a.app = self;
-      modules["Accounts"] = a;
+      requestHandler = MediaIO.new();
+      requestHandler.log = log;
+      requestHandler.lvl = lvl;
+      requestHandler.app = self;
       
       bg.log = log;
       bg.lvl = lvl;
       bg.app = self;
       //bg.startBackground();
       
+  }
+  
+  updateNetAddresses() {
+    log.log(lvl, "In doimap");
+    var e;
+    try {
+      Map jsl = links.o;
+      if(def(jsl) && jsl.notEmpty) {
+        String prot = self.configManager.get("imap.protocol");
+        if (TS.isEmpty(prot)) {
+          prot = "imaps";
+        }
+        String endpoint = self.configManager.get("imap.endpoint");
+        String user = self.configManager.get("imap.user");
+        String pass = self.configManager.get("imap.pass");
+        String lastSub = self.configManager.get("imap.lastSubject");
+        if (TS.isEmpty(lastSub)) {
+          lastSub = null;
+        }
+        String subf = self.configManager.get("imap.subFolder");
+        if (TS.isEmpty(subf)) {
+          subf = null;
+        }
+        if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
+          return(null);
+        }
+        Json:Marshaller mar = Json:Marshaller.new();
+        String json = mar.marshall(jsl);
+        log.log(lvl, "links json " + json);
+        String msg = "<p>" + jsl.get("extLink") + "</p>\n<p>" + jsl.get("intLink") + "</p>\n";
+        String subj = jsl.get("deviceName") + " " + jsl.get("deviceId") + " " + Time:Interval.now().seconds;
+        emit(jv) {
+        """
+        Properties props = System.getProperties();
+        props.setProperty("mail.store.protocol", bevl_prot.bems_toJvString());
+          Session session = Session.getDefaultInstance(props, null);
+          Store store = session.getStore(bevl_prot.bems_toJvString());
+          if (!store.isConnected()) {
+            store.connect(bevl_endpoint.bems_toJvString(), bevl_user.bems_toJvString(), bevl_pass.bems_toJvString());
+          }
+          //Folder f = store.getDefaultFolder();
+          Folder f = store.getFolder("inbox");
+          if (bevl_subf != null) {
+            Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
+            if (!f2.exists()) {
+              f2.create(Folder.HOLDS_MESSAGES);
+              f = f2;
+            }
+          }
+          f.open(Folder.READ_WRITE);
+          
+          MimeMessage m = new MimeMessage(session);
+          //m.setFrom(new InternetAddress(from));
+          //m.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+       
+          m.setSubject(bevl_subj.bems_toJvString());
+          //m.setText(bevl_msg.bems_toJvString());
+          m.setText(bevl_msg.bems_toJvString(), "utf-8", "html");
+
+          
+          m.setFlag(Flag.DRAFT, true);
+          Message ms[] = {m};
+          f.appendMessages(ms);
+          
+          if (bevl_lastSub != null) {
+          
+            String ls = bevl_lastSub.bems_toJvString();
+            
+            Message[] messages = f.getMessages();
+            if (messages != null) {
+              for(int i = 0; i < messages.length; i++)
+              {
+                String subj = messages[i].getSubject();
+                if (subj != null && subj.equals(ls)) {
+                  System.out.println("deleting message");
+                  messages[i].setFlag(Flag.DELETED, true);
+                }
+              }
+            }            
+          }
+          
+          f.close(true);
+          store.close();
+        """
+        }
+        log.log(lvl, "Done with imap stuff");
+        self.configManager.put("imap.lastSubject", subj);
+      }
+    } catch (e) {
+      if(def(e)) {
+        ("Exception during imap update " + e);
+      }
+    }
+  }
+  
+  deviceNameGet() String {
+    vars {
+      String deviceName;
+    }
+    if (TS.isEmpty(deviceName)) {
+      deviceName = self.configManager.get("deviceName");
+      if (TS.isEmpty(deviceName)) {
+        deviceName = "Device-" + System:Random.getString(4);
+        self.configManager.put("deviceName", deviceName);
+      }
+    }
+    return(deviceName);
+  }
+  
+  deviceIdGet() String {
+    vars {
+      String deviceId;
+    }
+    if (TS.isEmpty(deviceId)) {
+      deviceId = self.configManager.get("deviceId");
+      if (TS.isEmpty(deviceId)) {
+        deviceId = System:Random.getString(8);
+        self.configManager.put("deviceId", deviceId);
+      }
+    }
+    return(deviceId);
   }
   
   internalPortGet() String {
@@ -1245,14 +1387,13 @@ use class Dz:Ui {
 
   handleWeb(request, Map arg) {
         try {
-            String mname = arg.get("module");
             String aname = arg.get("action");
-            if (undef(aname) || aname.ends("Request")! || undef(mname) || modules.has(mname)!) {
+            if (undef(aname) || aname.ends("Request")!) {
               throw(Exception.new("Invalid request"));
             }
             String accountName = request.getSession("account.name");
             if (TS.isEmpty(accountName)) {
-              unless (mname == "Accounts" && aname == "loginRequest") {
+              unless (aname == "loginRequest") {
                 return(null);
               }
             }
@@ -1260,9 +1401,8 @@ use class Dz:Ui {
             Array args = Array.new(2);
             args[0] = arg;
             args[1] = request;
-            var module = modules.get(mname);
-            if (module.can(aname, args.length)) {
-              var res = module.invoke(aname, args);
+            if (requestHandler.can(aname, args.length)) {
+              var res = requestHandler.invoke(aname, args);
             }
             request.scriptReturn = res;
         } catch (var e) {
@@ -1301,7 +1441,8 @@ use class Dz:Ui {
       res["action"] = "updateResponse";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
-      res["camLinks"] = modules.get("MediaIO").camLinksForAccount(a);
+      res["camLinks"] = requestHandler.camLinksForAccount(a);
+      res["cmdLinks"] = requestHandler.cmdLinksForAccount(a);
       log.log(lvl, "CamLinks " + res["camLinks"]);
       return(res);
     }
@@ -1459,26 +1600,6 @@ use class Dz:CmdUi(Ui) {
     }
 }
 
-use class Dz:Hello {
-
-     new() self {
-       properties {
-          IO:Log log;
-          Int lvl;
-        }
-     }
-
-     sayHelloRequest(Map arg, request) {
-      "in say hello".print();
-      log.log(lvl, "In say hello");
-      Map res = Map.new();
-      res["action"] = "sayHelloResponse";
-      res["msg"] = "hello";
-      return(res);
-   }
-
-}
-
 use class Dz:MediaIO {
 
      new() self {
@@ -1488,6 +1609,14 @@ use class Dz:MediaIO {
           var app;
         }
      }
+     
+  tryThingRequest(Map arg, request) Map {
+     Account a = app.accountManager.getAccountForRequest(request);
+     if (def(a) && a.perms.has("admin")) {
+        app.updateNetAddresses();
+     }
+     return(null);
+   }
 
      updateImageRequest(Map arg, request) {
       Path pp = app.getHomeDir(request).addStep("WebCam");
@@ -1555,39 +1684,6 @@ use class Dz:MediaIO {
       return(res);
    }
    
-   playSoundRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
-      unless (a.perms.has("admin")) {
-        log.log(lvl, "Account not admin, not playing sound");
-        return(null);
-      }
-      log.log(lvl, "playing sound");
-      System:Command.new("playsound.sh").run();
-      return(null);
-   }
-   
-   upnpRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
-      unless (a.perms.has("admin")) {
-        log.log(lvl, "Account not admin, not upnping");
-        return(null);
-      }
-      app.doUpnp();
-      return(null);
-   }
-   
-   runCommandRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
-      unless (a.perms.has("admin")) {
-        log.log(lvl, "Account not admin, not running command");
-        return(null);
-      }
-      String cmd = arg["cmd"];
-      log.log(lvl, "running command " + cmd);
-      System:Command.new(cmd).run();
-      return(null);
-   }
-   
    detectCamsRequest(Map arg, request) {
       Account a = app.accountManager.getAccountForRequest(request);
       unless (a.perms.has("admin")) {
@@ -1598,7 +1694,7 @@ use class Dz:MediaIO {
       updateCams();
       Map res = Map.new();
       res["action"] = "updateResponse";
-      res["camLinks"] = app.modules.get("MediaIO").camLinksForAccount(a);
+      res["camLinks"] = app.requestHandler.camLinksForAccount(a);
       return(res);
    }
    
@@ -1615,6 +1711,23 @@ use class Dz:MediaIO {
         }
       }
       return(ecm);
+   }
+   
+   runCommandRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      String cmdKey = arg["cmdKey"];
+      String user = cmdKey.substring(4, cmdKey.find("!"));
+      log.log(lvl, "cmd user " + user + " acct user " + a.user);
+      unless (user == a.user) {
+        log.log(lvl, "Cmd not for user");
+        return(null);
+      }
+      String cmd = app.configManager.get(cmdKey);
+      if (TS.notEmpty(cmd)) {
+        log.log(lvl, "running command " + cmd);
+        System:Command.new(cmd).run();
+      }
+      return(null);
    }
    
    updateCams(String dcs) {
@@ -1649,6 +1762,17 @@ use class Dz:MediaIO {
         }
      }
      return(camLinks);
+   }
+   
+  cmdLinksForAccount(Account a) String {
+     String cmdLinks = String.new();
+     Set ecm = app.configManager.getMap("CMD." + a.user + "!");
+     foreach (var kv in ecm) {
+      String key = kv.key;
+      key = key.substring(key.find("!") + 1, key.size);
+      cmdLinks += "<p><a href=\"#\" onclick=\"dzeui.bem_runCommand_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
+     }
+     return(cmdLinks);
    }
    
    showConfigRequest(Map arg, request) Map {
@@ -1695,23 +1819,6 @@ use class Dz:MediaIO {
       }
       return(null);
    }
-
-
-}
-
-use App:Account;
-use App:AccountManager;
-
-//web thing
-use class Dz:Accounts {
-
-  new() self {
-     properties {
-        IO:Log log;
-        Int lvl;
-        var app;
-      }
-   }
    
    checkLoggedInRequest(Map arg, request) {
     String accountName = request.getSession("account.name");
@@ -1756,11 +1863,23 @@ use class Dz:Accounts {
     res["action"] = "logoutResponse";
     return(res);
   }
-  
+
+
 }
 
+use Email:Imap;
 
+class Imap {
 
+  new() self {
+  
+  }
+
+}
+
+use App:Account;
+use App:AccountManager;
+   
 use Db:KeyValue as KvDb;
 
 use class Dz:ConfigTest(Assert) {
@@ -1796,7 +1915,7 @@ use class Dz:MediaIOTest(Assert) {
     app.configManager.delete("cam.paths");
     app.configManager.delete("cam./dev/video0.label");
     app.configManager.delete("cam./dev/video1.label");
-    MediaIO mio = app.modules["MediaIO"];
+    MediaIO mio = app.requestHandler;
     mio.updateCams();
     assertEqual(app.configManager.get("cam.paths"), "/dev/video0,/dev/video1");
     assertEqual(app.configManager.get("cam./dev/video0.label"), "video0");

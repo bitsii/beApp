@@ -29,6 +29,7 @@ cp source/Dz*.html ../apprun/dz
 cp extlibs/jetty/* ../apprun/dz
 cp extlibs/hsqldb/* ../apprun/dz
 cp extlibs/bcastlejv/* ../apprun/dz
+cp extlibs/javamail/* ../apprun/dz
 
 cd ../apprun/dz
 
