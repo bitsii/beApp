@@ -31,11 +31,6 @@ var startup = function() {
   dzeui = new be_BEL_4_Base_BEC_3_7_4_AppLocPingLPBr();
   dzeui.bem_new_0();
   dzeui.bem_main_0();
-  //sayHi();
-}
-
-var sayHi = function() {
-  dzeui.bem_sayHi_0();
 }
 
 var saveConfig = function() {
@@ -76,17 +71,9 @@ use class App:LocPing:LPBr {
     handleCallback(String res) {
       HC.new(self).handleCallback(res);
     }
-    
-    sayHi() {
-      Map arg = Map.new();
-      arg["module"] = "Hello";
-      arg["action"] = "sayHelloRequest";
-      HC.new(self).call(arg);
-   }
    
    saveConfig() {
       Map arg = Map.new();
-      arg["module"] = "Configure";
       arg["action"] = "saveRequest";
       arg["locRcvUrl"] = HD.getElementById("locRcvUrl").value;
       HC.new(self).call(arg);
@@ -94,7 +81,6 @@ use class App:LocPing:LPBr {
    
    loadConfig() {
       Map arg = Map.new();
-      arg["module"] = "Configure";
       arg["action"] = "loadRequest";
       HC.new(self).call(arg);
    }

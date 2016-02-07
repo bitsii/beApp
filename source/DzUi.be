@@ -1177,10 +1177,10 @@ use class Dz:Ui {
         Lock lock = Lock.new();
         Background bg = Background.new();
         OLocker links = OLocker.new();
-        MediaIO requestHandler;
+        DzHandler requestHandler;
       }
       
-      requestHandler = MediaIO.new();
+      requestHandler = DzHandler.new();
       requestHandler.log = log;
       requestHandler.lvl = lvl;
       requestHandler.app = self;
@@ -1600,7 +1600,7 @@ use class Dz:CmdUi(Ui) {
     }
 }
 
-use class Dz:MediaIO {
+use class Dz:DzHandler {
 
      new() self {
        properties {
@@ -1907,7 +1907,7 @@ use class Dz:ConfigTest(Assert) {
   
 }
 
-use class Dz:MediaIOTest(Assert) {
+use class Dz:DzHandlerTest(Assert) {
   
   testCamUpdate() {
   
@@ -1915,7 +1915,7 @@ use class Dz:MediaIOTest(Assert) {
     app.configManager.delete("cam.paths");
     app.configManager.delete("cam./dev/video0.label");
     app.configManager.delete("cam./dev/video1.label");
-    MediaIO mio = app.requestHandler;
+    DzHandler mio = app.requestHandler;
     mio.updateCams();
     assertEqual(app.configManager.get("cam.paths"), "/dev/video0,/dev/video1");
     assertEqual(app.configManager.get("cam./dev/video0.label"), "video0");
@@ -1927,9 +1927,9 @@ use class Dz:MediaIOTest(Assert) {
   }
   
   main() {
-    "Begin MediaIOTest".print();
+    "Begin DzHandlerTest".print();
     testCamUpdate();
-    "End MediaIOTest".print();
+    "End DzHandlerTest".print();
   }
   
 }

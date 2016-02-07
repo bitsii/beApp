@@ -31,7 +31,7 @@ use class Dz:Test(Assert) {
       //Db:Relational:Test.new().main();
       Dz:AccountTest.new().main();
       Dz:ConfigTest.new().main();
-      Dz:MediaIOTest.new().main();
+      Dz:DzHandlerTest.new().main();
     } catch (var e) {
       "Exception during test".print();
       e.print();

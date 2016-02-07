@@ -45,7 +45,7 @@ use class MP:Hello {
 
 }
 
-use class MP:Configure {
+use class MP:LpHandler {
 
      new() self {
        properties {
@@ -90,20 +90,13 @@ use class App:LocPing {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          Map modules = Map.new();
+          LpHandler requestHandler;
         }
         
-        Hello h = Hello.new();
-        h.log = log;
-        h.lvl = lvl;
-        h.app = self;
-        modules["Hello"] = h;
-        
-        Configure c = Configure.new();
-        c.log = log;
-        c.lvl = lvl;
-        c.app = self;
-        modules["Configure"] = c;
+        requestHandler = LpHandler.new();
+        requestHandler.log = log;
+        requestHandler.lvl = lvl;
+        requestHandler.app = self;
         
     }
     
@@ -166,18 +159,15 @@ use class App:LocPing {
 
   handleWeb(request, Map arg) {
         try {
-            String mname = arg.get("module");
             String aname = arg.get("action");
-            if (undef(aname) || aname.ends("Request")! || undef(mname) || modules.has(mname)!) {
+            if (undef(aname) || aname.ends("Request")!) {
               throw(Exception.new("Invalid request"));
             }
-            //log.log(lvl, "module " + module + " action " + action);
             Array args = Array.new(2);
             args[0] = arg;
             args[1] = request;
-            var module = modules.get(mname);
-            if (module.can(aname, args.length)) {
-              var res = module.invoke(aname, args);
+            if (requestHandler.can(aname, args.length)) {
+              var res = requestHandler.invoke(aname, args);
             }
             request.scriptReturn = res;
         } catch (var e) {
