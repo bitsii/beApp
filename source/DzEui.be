@@ -94,6 +94,20 @@ use class Dz:Eui {
      HD.getElementById("configsDiv").innerHTML = "";
    }
    
+   showDevs() {
+      Map arg = Map.new();
+      arg["action"] = "showDevsRequest";
+      HC.new(self).call(arg);
+   }
+   
+   showDevsResponse(Map arg) {
+     HD.getElementById("devsDiv").innerHTML = arg["devs"];
+   }
+   
+   hideDevs() {
+     HD.getElementById("devsDiv").innerHTML = "";
+   }
+   
    runCommand(String key) {
       Map arg = Map.new();
       arg["action"] = "runCommandRequest";

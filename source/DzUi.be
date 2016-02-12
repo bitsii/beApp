@@ -1032,8 +1032,8 @@ use class Dz:UpnpUpdate {
       if (changed) {
         log.log(lvl, "Changed, forwarding");
         upnp.forwardPort(forceUpdate * 2, Int.new(extPort), Int.new(intPort));
-        String intLink = "<a href=\"https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html\">Internal Link (use on same network as the device is on)</a>";
-        String extLink = "<a href=\"https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html\">External Link (use from outside the nework the device is on / from the internet)</a>";
+        String intLink = "<a href=\"https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html\">Internal Link, use on same network as the device is on.</a>";
+        String extLink = "<a href=\"https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html\">External Link, use from the internet or outside the network the device is on.</a>";
         log.log(lvl, "intLink " + intLink);
         log.log(lvl, "extLink " + extLink);
         Map jsl = Map.new();
@@ -1043,7 +1043,6 @@ use class Dz:UpnpUpdate {
         jsl.put("extPort", extPort);
         jsl.put("gw", gw);
         jsl.put("deviceName", deviceName);
-        jsl.put("deviceId", deviceId);
         jsl.put("intLink", intLink);
         jsl.put("extLink", extLink);
         app.links.o = jsl;
@@ -1062,7 +1061,6 @@ use class Dz:UpnpUpdate {
       String appIntPort;
       String appExtPort;
       String deviceName;
-      String deviceId;
     }
     
     gw = app.configManager.get("upnp.gw");
@@ -1074,7 +1072,6 @@ use class Dz:UpnpUpdate {
     appIntPort = app.internalPort;
     appExtPort = app.externalPort;
     deviceName = app.deviceName;
-    deviceId = app.deviceId;
     
     String disables = app.configManager.get("upnp.disable");
     if (TS.notEmpty(disables) && disables == "true") {
@@ -1211,7 +1208,7 @@ use class Dz:Ui {
         }
         String subf = self.configManager.get("imap.subFolder");
         if (TS.isEmpty(subf)) {
-          subf = null;
+          subf = "Dz";
         }
         if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
           return(null);
@@ -1220,7 +1217,8 @@ use class Dz:Ui {
         String json = mar.marshall(jsl);
         log.log(lvl, "links json " + json);
         String msg = "<p>" + jsl.get("extLink") + "</p>\n<p>" + jsl.get("intLink") + "</p>\n";
-        String subj = jsl.get("deviceName") + " " + jsl.get("deviceId") + " " + Time:Interval.now().seconds;
+        msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
+        String subj = jsl.get("deviceName") + " " + Time:Interval.now().seconds;
         emit(jv) {
         """
         Properties props = System.getProperties();
@@ -1231,14 +1229,14 @@ use class Dz:Ui {
             store.connect(bevl_endpoint.bems_toJvString(), bevl_user.bems_toJvString(), bevl_pass.bems_toJvString());
           }
           //Folder f = store.getDefaultFolder();
-          Folder f = store.getFolder("inbox");
-          if (bevl_subf != null) {
-            Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
-            if (!f2.exists()) {
-              f2.create(Folder.HOLDS_MESSAGES);
-              f = f2;
-            }
-          }
+          Folder f = store.getFolder("Inbox");
+          //if (bevl_subf != null) {
+          //  Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
+          //  if (!f2.exists()) {
+          //    f2.create(Folder.HOLDS_MESSAGES);
+          //  }
+          //  f = f2;
+          //}
           f.open(Folder.READ_WRITE);
           
           MimeMessage m = new MimeMessage(session);
@@ -1297,20 +1295,6 @@ use class Dz:Ui {
       }
     }
     return(deviceName);
-  }
-  
-  deviceIdGet() String {
-    vars {
-      String deviceId;
-    }
-    if (TS.isEmpty(deviceId)) {
-      deviceId = self.configManager.get("deviceId");
-      if (TS.isEmpty(deviceId)) {
-        deviceId = System:Random.getString(8);
-        self.configManager.put("deviceId", deviceId);
-      }
-    }
-    return(deviceId);
   }
   
   internalPortGet() String {
