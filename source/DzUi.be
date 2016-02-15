@@ -630,15 +630,16 @@ use Net:UPnP as Upnp;
 class Upnp {
 
   new() self {
-    new(self.gatewayAddress);
-  }
-  
-  new(String _netGw) self {
     vars {
-      String netGw = _netGw;
+      String netGw;
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
     }
+  }
+  
+  new(String _netGw) self {
+    new();
+    netGw = _netGw;
   }
   
   gatewayAddressGet() String {
@@ -647,7 +648,13 @@ class Upnp {
     String res = sc.output.readString();
     sc.close();
     
-    Int fz = res.find("0.0.0.0"); //win
+    //log.log(lvl, "netstat output " + res);
+    
+    if (System:CurrentPlatform.name == "mswin") {
+      Int fz = res.find("0.0.0.0"); //win
+    } else {
+      fz = 0;
+    }
     if (def(fz)) {
       Int fz2 = res.find("0.0.0.0", fz + 1);
       if (def(fz2)) {
@@ -992,7 +999,9 @@ use class Dz:UpnpUpdate {
     
       Bool upnpWorking = true;
       Upnp upnp = Upnp.new();
+      upnp.log = log;
       upnp.lvl = lvl;
+      upnp.netGw = upnp.gatewayAddress;
       String gwNow = upnp.netGw;
       String iaNow = upnp.internalIP;
       try {
