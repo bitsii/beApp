@@ -94,18 +94,27 @@ use class Dz:Eui {
      HD.getElementById("configsDiv").innerHTML = "";
    }
    
-   showDevs() {
+   showDevLinks() {
       Map arg = Map.new();
-      arg["action"] = "showDevsRequest";
+      arg["action"] = "showDevLinksRequest";
       HC.new(self).call(arg);
    }
    
-   showDevsResponse(Map arg) {
-     HD.getElementById("devsDiv").innerHTML = arg["devs"];
+   showDevLinksResponse(Map arg) {
+     //HD.getElementById("devsDiv").innerHTML = arg["devs"];
+     HD.getElementById("offerDevLinkDiv").display = "block";
    }
    
-   hideDevs() {
-     HD.getElementById("devsDiv").innerHTML = "";
+   hideDevLinks() {
+     HD.getElementById("offerDevLinkDiv").display = "none";
+   }
+   
+   offerLink() {
+    //HD.getElementById("devsDiv").innerHTML = arg["devs"];
+    //HD.getElementById("offerDevLinkDiv").display = "block";
+    Map arg = Map.new();
+    arg["action"] = "offerLinkRequest";
+    HC.new(self).call(arg);
    }
    
    runCommand(String key) {
