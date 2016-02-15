@@ -854,7 +854,9 @@ class Upnp {
         return(internalIP);
       }
       Net:Interface ni = Net:Interface.new();
+      log.log(lvl, "getgw " + netGw);
       internalIP = ni.interfaceForNetwork(netGw);
+      log.log(lvl, "Got internal ip " + internalIP);
       return(internalIP);
     }
     
@@ -975,6 +977,7 @@ use class Dz:UpnpUpdate {
   }
   
   doUpdate() {
+    var e;
     log.log(lvl, "In upnp doUpdate");
     unless (disable) {
       log.log(lvl, "upnp doing");
@@ -987,11 +990,20 @@ use class Dz:UpnpUpdate {
         changed = true;
       }
     
+      Bool upnpWorking = true;
       Upnp upnp = Upnp.new();
       upnp.lvl = lvl;
       String gwNow = upnp.netGw;
       String iaNow = upnp.internalIP;
-      String eaNow = upnp.externalIP;
+      try {
+        String eaNow = upnp.externalIP;
+      } catch (e) {
+        //don't change external ip when upnp fails
+        log.log(lvl, "Upnp externalIp failed, will not update external or forward ");
+        if (def(e)) { log.log(lvl, e.toString()); }
+        upnpWorking = false;
+        eaNow = extAddress;
+      }
       
       if (TS.notEmpty(gwNow)) {
         if (TS.isEmpty(gw) || gwNow != gw) {
@@ -1030,8 +1042,11 @@ use class Dz:UpnpUpdate {
       }
 
       if (changed) {
-        log.log(lvl, "Changed, forwarding");
-        upnp.forwardPort(forceUpdate * 2, Int.new(extPort), Int.new(intPort));
+        log.log(lvl, "Changed");
+        if (upnpWorking) {
+          log.log(lvl, "Forwarding");
+          upnp.forwardPort(forceUpdate * 2, Int.new(extPort), Int.new(intPort));
+        }
         String intLink = "<a href=\"https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html\">Internal Link, use on same network as the device is on.</a>";
         String extLink = "<a href=\"https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html\">External Link, use from the internet or outside the network the device is on.</a>";
         log.log(lvl, "intLink " + intLink);
@@ -1208,7 +1223,7 @@ use class Dz:Ui {
         }
         String subf = self.configManager.get("imap.subFolder");
         if (TS.isEmpty(subf)) {
-          subf = "Dz";
+          subf = null;
         }
         if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
           return(null);
@@ -1228,15 +1243,14 @@ use class Dz:Ui {
           if (!store.isConnected()) {
             store.connect(bevl_endpoint.bems_toJvString(), bevl_user.bems_toJvString(), bevl_pass.bems_toJvString());
           }
-          //Folder f = store.getDefaultFolder();
           Folder f = store.getFolder("Inbox");
-          //if (bevl_subf != null) {
-          //  Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
-          //  if (!f2.exists()) {
-          //    f2.create(Folder.HOLDS_MESSAGES);
-          //  }
-          //  f = f2;
-          //}
+          if (bevl_subf != null) {
+            Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
+            if (!f2.exists()) {
+              f2.create(Folder.HOLDS_MESSAGES);
+            }
+            f = f2;
+          }
           f.open(Folder.READ_WRITE);
           
           MimeMessage m = new MimeMessage(session);
@@ -1757,6 +1771,26 @@ use class Dz:DzHandler {
       cmdLinks += "<p><a href=\"#\" onclick=\"dzeui.bem_runCommand_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
      }
      return(cmdLinks);
+   }
+   
+   showDevLinksRequest(Map arg, request) Map {
+     Account a = app.accountManager.getAccountForRequest(request);
+     if (def(a) && a.perms.has("admin")) {
+       //String devLinks = "<p><a href=\"#\" onclick=\"dzeui.bem_offerDevLink_0();return false;\">Send Link Offer</a></p>";
+       Map res = Map.new();
+       res["action"] = "showDevLinksResponse";
+       //res["devLinks"] = devLinks;
+       return(res);
+     }
+     return(null);
+   }
+   
+   offerLinkRequest(Map arg, request) Map {
+     Account a = app.accountManager.getAccountForRequest(request);
+     if (def(a) && a.perms.has("admin")) {
+       log.log(lvl, "In offer link request");
+     }
+     return(null);
    }
    
    showConfigRequest(Map arg, request) Map {
