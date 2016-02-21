@@ -114,6 +114,9 @@ use class Dz:Eui {
     //HD.getElementById("offerDevLinkDiv").display = "block";
     Map arg = Map.new();
     arg["action"] = "offerLinkRequest";
+    arg["offerEmail"] = HD.getElementById("offerEmail").value;
+    arg["offerPass1"] = HD.getElementById("offerPass1").value;
+    arg["offerPass2"] = HD.getElementById("offerPass2").value;
     HC.new(self).call(arg);
    }
    
@@ -181,7 +184,8 @@ use class Dz:Eui {
    
    updateResponse(Map arg) {
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
-      HD.getElementById("loginmsgdiv").innerHTML = "Welcome " + arg["name"];
+      String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
+      HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
     }

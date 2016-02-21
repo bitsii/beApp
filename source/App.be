@@ -249,3 +249,103 @@ class AppEv {
   }
 
 }
+
+emit(jv) {
+"""
+import java.security.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+"""
+}
+use Crypto:Symmetric as Crypt;
+class Crypt {
+
+  new() self {
+    vars {
+      Int keyLength = 16;
+      Int ivLength = 16;
+    }
+  }
+  
+  encryptPassToHex(String iv, String pass, String val) String {
+    return(Encode:Hex.encode(encryptPass(iv, pass, val)));
+  }
+
+  encryptPass(String iv, String pass, String val) String {
+    pass = Digest:SHA256.digest(pass);
+    return(encrypt(iv, pass, val));
+  }
+  
+  encrypt(String iv, String key, String val) String {
+    iv = iv.substring(0, ivLength);
+    key = key.substring(0, keyLength);//jv limit
+    val = val.substring(0, val.size);
+    String res;
+    emit(cs) {
+    """
+    byte[] key = beva_key.bevi_bytes;
+    byte[] iv = beva_iv.bevi_bytes;
+    byte[] val = beva_val.bevi_bytes;
+    RijndaelManaged rijndael = new RijndaelManaged();
+    ICryptoTransform enc = rijndael.CreateEncryptor(key, iv);
+    byte[] res = enc.TransformFinalBlock(val, 0, val.Length);
+    bevl_res = new BEC_4_6_TextString(res);
+    """
+    }
+    emit(jv) {
+    """
+    byte[] key = beva_key.bevi_bytes;
+    byte[] iv = beva_iv.bevi_bytes;
+    byte[] val = beva_val.bevi_bytes;
+    Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+    SecretKey secretKey = new SecretKeySpec(key, "AES");
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+    aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
+    byte[] res = aesCipher.doFinal(val);
+    bevl_res = new BEC_4_6_TextString(res);
+    """
+    }
+    return(res);
+  }
+  
+  decryptPassFromHex(String iv, String pass, String val) String {
+    return(decryptPass(iv, pass, Encode:Hex.decode(val)));
+  }
+  
+  decryptPass(String iv, String pass, String val) String {
+    pass = Digest:SHA256.digest(pass);
+    return(decrypt(iv, pass, val));
+  }
+  
+  decrypt(String iv, String key, String val) String {
+    iv = iv.substring(0, ivLength);
+    key = key.substring(0, keyLength);//jv limit
+    val = val.substring(0, val.size);
+    String res;
+    emit(cs) {
+    """
+    byte[] key = beva_key.bevi_bytes;
+    byte[] iv = beva_iv.bevi_bytes;
+    byte[] val = beva_val.bevi_bytes;
+    RijndaelManaged rijndael = new RijndaelManaged();
+    ICryptoTransform enc = rijndael.CreateDecryptor(key, iv);
+    byte[] res = enc.TransformFinalBlock(val, 0, val.Length);
+    bevl_res = new BEC_4_6_TextString(res);
+    """
+    }
+    emit(jv) {
+    """
+    byte[] key = beva_key.bevi_bytes;
+    byte[] iv = beva_iv.bevi_bytes;
+    byte[] val = beva_val.bevi_bytes;
+    Cipher aesCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+    SecretKey secretKey = new SecretKeySpec(key, "AES");
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
+    aesCipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
+    byte[] res = aesCipher.doFinal(val);
+    bevl_res = new BEC_4_6_TextString(res);
+    """
+    }
+    return(res);
+  }
+}

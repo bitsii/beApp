@@ -968,8 +968,11 @@ use class Dz:UpnpUpdate {
       IO:Log log;
       Int lastPoll = 0;
       Int lastUpdate = 0;
-      Int pollSecs = 1200;//10 mins
-      Int forceUpdate = 43200;//12 hrs
+      Int lastFwd = 0;
+      Int pollSecs = 600;//how often to check for ip changes
+      Int uupdateSecs = 500;//how often to update upnp fwd
+      Int fwdSecs = 7200;//fwd upnp for how long
+      Int forceUpdate = 21600;//imap force update (6hrs)
       Bool disable = false;
     }
   
@@ -989,12 +992,15 @@ use class Dz:UpnpUpdate {
     unless (disable) {
       log.log(lvl, "upnp doing");
       
-      Bool changed = false;
+      Bool update = false;
+      Bool fwd = false;
       
       Int currSec = Time:Interval.now().seconds;
       if (currSec - lastUpdate > forceUpdate) {
-        lastUpdate = currSec;
-        changed = true;
+        update = true;
+      }
+      if (currSec - lastFwd > uupdateSecs) {
+        fwd = true;
       }
     
       Bool upnpWorking = true;
@@ -1016,7 +1022,7 @@ use class Dz:UpnpUpdate {
       
       if (TS.notEmpty(gwNow)) {
         if (TS.isEmpty(gw) || gwNow != gw) {
-          changed = true;
+          update = true;
           gw = gwNow;
           app.configManager.put("upnp.gw", gw);
         }
@@ -1024,7 +1030,7 @@ use class Dz:UpnpUpdate {
       
       if (TS.notEmpty(iaNow)) {
         if (TS.isEmpty(intAddress) || iaNow != intAddress) {
-          changed = true;
+          update = true;
           intAddress = iaNow;
           app.configManager.put("upnp.intAddress", intAddress);
         }
@@ -1032,30 +1038,32 @@ use class Dz:UpnpUpdate {
       
       if (TS.notEmpty(eaNow)) {
         if (TS.isEmpty(extAddress) || eaNow != extAddress) {
-          changed = true;
+          update = true;
           extAddress = eaNow;
           app.configManager.put("upnp.extAddress", extAddress);
         }
       }
       
       if (TS.isEmpty(intPort) || intPort != appIntPort) {
-        changed = true;
+        update = true;
         intPort = appIntPort;
         app.configManager.put("upnp.intPort", intPort);
       }
       
       if (TS.isEmpty(extPort) || extPort != appExtPort) {
-        changed = true;
+        update = true;
         extPort = appExtPort;
         app.configManager.put("upnp.extPort", extPort);
       }
+      
+      if (fwd && upnpWorking) {
+        log.log(lvl, "Forwarding");
+        upnp.forwardPort(fwdSecs, Int.new(extPort), Int.new(intPort));
+        lastFwd = currSec;
+      }
 
-      if (changed) {
-        log.log(lvl, "Changed");
-        if (upnpWorking) {
-          log.log(lvl, "Forwarding");
-          upnp.forwardPort(forceUpdate * 2, Int.new(extPort), Int.new(intPort));
-        }
+      if (update) {
+        log.log(lvl, "Updating imap");
         String intLink = "<a href=\"https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html\">Internal Link, use on same network as the device is on.</a>";
         String extLink = "<a href=\"https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html\">External Link, use from the internet or outside the network the device is on.</a>";
         log.log(lvl, "intLink " + intLink);
@@ -1071,6 +1079,7 @@ use class Dz:UpnpUpdate {
         jsl.put("extLink", extLink);
         app.links.o = jsl;
         app.updateNetAddresses();
+        lastUpdate = currSec;
       }
     }
   }
@@ -1109,11 +1118,25 @@ use class Dz:UpnpUpdate {
       app.configManager.put("upnp.pollSecs", pollSecs.toString());
     }
     
-    String forceUpdateS = app.configManager.get("upnp.forceUpdateSecs");
+    String forceUpdateS = app.configManager.get("imap.forceUpdateSecs");
     if (TS.notEmpty(forceUpdateS)) {
       forceUpdate = Int.new(forceUpdateS);
     } else {
       app.configManager.put("upnp.forceUpdateSecs", forceUpdate.toString());
+    }
+    
+    String uupdateSecsS = app.configManager.get("upnp.updateSecs");
+    if (TS.notEmpty(uupdateSecsS)) {
+      uupdateSecs = Int.new(uupdateSecsS);
+    } else {
+      app.configManager.put("upnp.updateSecs", uupdateSecs.toString());
+    }
+    
+    String fwdSecsS = app.configManager.get("upnp.fwdSecs");
+    if (TS.notEmpty(fwdSecsS)) {
+      fwdSecs = Int.new(fwdSecsS);
+    } else {
+      app.configManager.put("upnp.fwdSecs", fwdSecs.toString());
     }
   }
 
@@ -1184,6 +1207,8 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Folder;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.Transport;
 import javax.mail.Message;
 import javax.mail.Flags.Flag;
 """
@@ -1199,6 +1224,8 @@ use class Dz:Ui {
         Background bg = Background.new();
         OLocker links = OLocker.new();
         DzHandler requestHandler;
+        Int majorVer = 1;
+        Int minorVer = 1;
       }
       
       requestHandler = DzHandler.new();
@@ -1231,7 +1258,9 @@ use class Dz:Ui {
           lastSub = null;
         }
         String subf = self.configManager.get("imap.subFolder");
-        if (TS.isEmpty(subf)) {
+        if (undef(subf)) {
+          subf = "GossaLinks";
+        } elif (TS.isEmpty(subf)) {
           subf = null;
         }
         if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
@@ -1245,7 +1274,7 @@ use class Dz:Ui {
         String subj = jsl.get("deviceName") + " " + Time:Interval.now().seconds;
         emit(jv) {
         """
-        Properties props = System.getProperties();
+        Properties props = new Properties();
         props.setProperty("mail.store.protocol", bevl_prot.bems_toJvString());
           Session session = Session.getDefaultInstance(props, null);
           Store store = session.getStore(bevl_prot.bems_toJvString());
@@ -1450,6 +1479,8 @@ use class Dz:Ui {
       res["permsString"] = a.permsString;
       res["camLinks"] = requestHandler.camLinksForAccount(a);
       res["cmdLinks"] = requestHandler.cmdLinksForAccount(a);
+      res["appVersion"] = majorVer.toString() + "." + minorVer.toString();
+      res["deviceName"] = self.deviceName;
       log.log(lvl, "CamLinks " + res["camLinks"]);
       return(res);
     }
@@ -1607,6 +1638,7 @@ use class Dz:CmdUi(Ui) {
     }
 }
 
+use Crypto:Symmetric as Crypt;
 use class Dz:DzHandler {
 
      new() self {
@@ -1798,6 +1830,113 @@ use class Dz:DzHandler {
      Account a = app.accountManager.getAccountForRequest(request);
      if (def(a) && a.perms.has("admin")) {
        log.log(lvl, "In offer link request");
+       String offerEmail = arg["offerEmail"];
+       String offerPass1 = arg["offerPass1"];
+       String offerPass2 = arg["offerPass2"];
+       if (TS.isEmpty(offerEmail)) {
+        throw(Alert.new("offerEmail is required"));
+       }
+       if (undef(offerPass1)) {
+         offerPass1 = "";
+       }
+       if (undef(offerPass2)) {
+         offerPass2 = "";
+       }
+       if (offerPass1 != offerPass2) {
+        throw(Alert.new("offer passwords do not match"));
+       }
+       String offerPass = offerPass1;
+       String linkEmail = offerEmail;
+       
+       log.log(lvl, "offer link " + offerEmail + " " + offerPass);
+       
+      /*
+      in envelope - subject has action type and device name and link id, from address
+      in body - encr seed, link id, how protected (pass, none, ?token), in encr blob [ sender (verif), linkId (verif), cert thumb, shared secret (offer only), token (offer only) ]
+      */
+       
+       Json:Marshaller mar = Json:Marshaller.new();
+       
+       //from address
+       String linkId = System:Random.getString(16);
+       String linkToken = System:Random.getString(32);
+       String linkSecret = System:Random.getString(32);
+       String seed = System:Random.getString(24);
+       
+       String subj = "GOS LinkOffer " + linkId + " !" + app.deviceName + "!";
+       Map inner =  Map.new();
+       inner["linkId"] = linkId;
+       inner["linkToken"] = linkToken;
+       inner["linkSecret"] = linkSecret;
+       inner["linkEmail"] = linkEmail;
+       
+       Map outer = Map.new();
+       outer["seed"] = seed;
+       outer["linkId"] = linkId;
+       outer["protectedBy"] = "password";
+       
+       //save it to conf
+       app.configManager.put("link." + linkId + ".token", linkToken);
+       app.configManager.put("link." + linkId + ".secret", linkSecret);
+       app.configManager.put("link." + linkId + ".email", linkEmail);
+       
+       //password protect it
+       outer["inner"] = Crypt.new().encryptPassToHex(seed, seed + offerPass, mar.marshall(inner));
+       String offerOut = mar.marshall(outer);
+       log.log(lvl, "offerOut " + offerOut);
+       String offerOutHex = Encode:Hex.encode(offerOut); 
+       String msg = "<p>" + offerOutHex + "</p>"
+       //email it
+       
+       
+       String user = app.configManager.get("smtp.user");
+       if (TS.isEmpty(user)) {
+        user = app.configManager.get("imap.user");
+       }
+       String pass = app.configManager.get("smtp.pass");
+       if (TS.isEmpty(pass)) {
+        pass = app.configManager.get("imap.pass");
+       }
+       
+       String endpoint = app.configManager.get("smtp.endpoint");
+       String port = app.configManager.get("smtp.port");
+       String email = app.configManager.get("smtp.fromEmail");
+       
+       //"smtp.gmail.com"
+       //"587"
+       
+       emit(jv) {
+        """
+      String user = bevl_user.bems_toJvString();
+      String pass = bevl_pass.bems_toJvString();
+      
+      Properties props = new Properties();
+      props.put("mail.smtp.starttls.enable", true);
+      props.put("mail.smtp.host", bevl_endpoint.bems_toJvString());
+      props.put("mail.smtp.user", user);
+      props.put("mail.smtp.password", pass);
+      props.put("mail.smtp.port", bevl_port.bems_toJvString());
+      props.put("mail.smtp.auth", true);
+    
+      Session session = Session.getInstance(props,
+      new javax.mail.Authenticator() {
+          protected javax.mail.PasswordAuthentication  getPasswordAuthentication() {
+          return new javax.mail.PasswordAuthentication(
+                      user, pass);
+                  }
+      });
+
+			MimeMessage message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(bevl_email.bems_toJvString()));
+			message.setRecipients(Message.RecipientType.TO,
+				InternetAddress.parse(bevl_email.bems_toJvString()));
+			message.setSubject(bevl_subj.bems_toJvString());
+			message.setText(bevl_msg.bems_toJvString(), "utf-8", "html");
+
+			Transport.send(message);
+        """
+        }
+        log.log(lvl, "Sent Invite");
      }
      return(null);
    }
@@ -1806,6 +1945,7 @@ use class Dz:DzHandler {
      Account a = app.accountManager.getAccountForRequest(request);
      if (def(a) && a.perms.has("admin")) {
        String conf = String.new();
+      conf += "<a href=\"#\" onclick=\"dzeui.bem_hideConfig_0();return false;\">Hide Configuration</a>";
        Map ecm = app.configManager.getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
@@ -1818,7 +1958,6 @@ use class Dz:DzHandler {
       }
       conf += "<tr><td>Add New:&nbsp;<input type=\"text\" onchange=\"dzeui.bem_addConfig_0()\" id=\"addConfigKeyId\" value=\"\"></td><td><a href=\"#\" onclick=\"return false;\">+</a><input type=\"hidden\" id=\"addConfigValId\" value=\"\"></td></tr>";
       conf += "</table>";
-      conf += "<a href=\"#\" onclick=\"dzeui.bem_hideConfig_0();return false;\">Hide Configuration</a>";
        Map res = Map.new();
       res["action"] = "showConfigResponse";
       res["configs"] = conf;
