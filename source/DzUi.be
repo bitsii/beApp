@@ -1116,6 +1116,11 @@ use class Dz:UpnpUpdate {
         }
         log.log(lvl, "intLink " + intLink);
         log.log(lvl, "extLink " + extLink);
+        String ct = app.certificateThumbprint;
+        if (TS.notEmpty(ct)) {
+          jsl.put("certThumbprint", ct);
+          jsl.put("certThumbprintMsg", "<p>Certificate Thumbprint: " + ct + "</p>");
+        }
         jsl.put("intAddress", intAddress);
         jsl.put("intPort", intPort);
         jsl.put("extAddress", extAddress);
@@ -1319,6 +1324,9 @@ use class Dz:Ui {
         String msg = "<p>" + jsl.get("extLink") + "</p>\n<p>" + jsl.get("intLink") + "</p>\n";
         if (TS.notEmpty(jsl.get("extraPortsMsg"))) {
           msg += jsl.get("extraPortsMsg");
+        }
+        if (TS.notEmpty(jsl.get("certThumbprintMsg"))) {
+          msg += jsl.get("certThumbprintMsg");
         }
         msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
         String subj = jsl.get("deviceName") + " " + Time:Interval.now().seconds;
