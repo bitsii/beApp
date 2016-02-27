@@ -132,47 +132,69 @@ use class Dz:Wui(Ui) {
   }
   
   handleStartWeb() {
-    log.log(lvl, "In handleStartWeb");
+    log.log(lvl, "In handleStartWeb!!");
   }
   
   assureCertJv(Int port) String {
+    emit(jv) {
+    """
+    java.security.cert.Certificate cert;
+    """
+    }
     Path cerPath = Path.apNew("Data/Dz/cert");
     String cerPathS = cerPath.toString();
     log.log(lvl, "cerPath " + cerPathS);
     if (cerPath.file.exists) {
       log.log(lvl, "cer exist");
-      return(cerPathS);
+      emit(jv) {
+      """
+      KeyStore privateKS = KeyStore.getInstance("JKS");
+      privateKS.load( new FileInputStream(bevl_cerPathS.bems_toJvString()), "kp".toCharArray());
+      cert = privateKS.getCertificate("jetty");
+      """
+      }
     } else {
       log.log(lvl, "cer not exist");
+      log.log(lvl, "Start gencert");
+      emit(jv) {
+      """ 
+      String domainName = "test";
+      KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+      keyPairGenerator.initialize(1024);
+      KeyPair KPair = keyPairGenerator.generateKeyPair();
+      X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();
+      v3CertGen.setSerialNumber(BigInteger.valueOf(new SecureRandom().nextInt(Integer.MAX_VALUE)));
+          v3CertGen.setIssuerDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
+          v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
+          v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365*10)));
+          v3CertGen.setSubjectDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
+      v3CertGen.setPublicKey(KPair.getPublic());
+      v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption"); 
+      X509Certificate PKCertificate = v3CertGen.generateX509Certificate(KPair.getPrivate());
+      
+      KeyStore privateKS = KeyStore.getInstance("JKS");
+      privateKS.load(null);
+      privateKS.setKeyEntry("jetty", KPair.getPrivate(),
+                     //new char[]{'e', 'n', 't', 'r', 'y', 'p', 'a', 's', 's'},
+                     "kp".toCharArray(),
+                     new java.security.cert.Certificate[]{PKCertificate});
+      privateKS.store( new FileOutputStream(bevl_cerPathS.bems_toJvString()), "kp".toCharArray());
+      cert = privateKS.getCertificate("jetty");
+      """
+      }
+      log.log(lvl, "End gencert");
     }
-    log.log(lvl, "Start gencert");
     emit(jv) {
-    """ 
-    String domainName = "test";
-    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-    keyPairGenerator.initialize(1024);
-    KeyPair KPair = keyPairGenerator.generateKeyPair();
-    X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();
-    v3CertGen.setSerialNumber(BigInteger.valueOf(new SecureRandom().nextInt(Integer.MAX_VALUE)));
-        v3CertGen.setIssuerDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
-        v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-        v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365*10)));
-        v3CertGen.setSubjectDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
-    v3CertGen.setPublicKey(KPair.getPublic());
-    v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption"); 
-    X509Certificate PKCertificate = v3CertGen.generateX509Certificate(KPair.getPrivate());
-    
-    KeyStore privateKS = KeyStore.getInstance("JKS");
-    privateKS.load(null);
-    privateKS.setKeyEntry("jetty", KPair.getPrivate(),
-                   //new char[]{'e', 'n', 't', 'r', 'y', 'p', 'a', 's', 's'},
-                   "kp".toCharArray(),
-                   new java.security.cert.Certificate[]{PKCertificate});
-    privateKS.store( new FileOutputStream(bevl_cerPathS.bems_toJvString()), "kp".toCharArray());
-
+    """
+    bevp_certificateThumbprint = new BEC_4_6_TextString(
+                 BEC_3_6_18_WebClientCertificateManager.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
+              );
     """
     }
-    log.log(lvl, "End gencert");
+    vars {
+      String certificateThumbprint;
+    }
+    log.log(lvl, "certificateThumbprint " + certificateThumbprint);
     return(cerPathS);
   }
   
@@ -1059,6 +1081,20 @@ use class Dz:UpnpUpdate {
       if (fwd && upnpWorking) {
         log.log(lvl, "Forwarding");
         upnp.forwardPort(fwdSecs, Int.new(extPort), Int.new(intPort));
+        String exPorts = app.configManager.get("upnp.extraPorts");
+        if (TS.notEmpty(exPorts)) {
+          foreach (String ep in exPorts.split(",")) {
+            String currPortS = app.configManager.get("upnp.extraPort." + ep + ".externalPort");
+            if (TS.isEmpty(currPortS)) {
+              Int intPorti = System:Random.getInt(Int.new(), 6000);
+              intPorti += 3000;
+              currPortS = intPorti.toString();
+              app.configManager.put("upnp.extraPort." + ep + ".externalPort", currPortS);
+            }
+            log.log(lvl, "Forwarding extraport external " + currPortS + " to " + ep);
+            upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
+          }
+        }
         lastFwd = currSec;
       }
 
@@ -1066,9 +1102,20 @@ use class Dz:UpnpUpdate {
         log.log(lvl, "Updating imap");
         String intLink = "<a href=\"https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html\">Internal Link, use on same network as the device is on.</a>";
         String extLink = "<a href=\"https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html\">External Link, use from the internet or outside the network the device is on.</a>";
+        Map jsl = Map.new();
+        if (TS.notEmpty(exPorts)) {
+          String extraPortsMsg = String.new();
+          foreach (ep in exPorts.split(",")) {
+            currPortS = app.configManager.get("upnp.extraPort." + ep + ".externalPort");
+            if (TS.notEmpty(currPortS)) {
+              extraPortsMsg += "<p>External port " += currPortS += " directed to " += ep += "</p>";
+              jsl.put("extraPort:" + ep, currPortS);
+            }
+          }
+          jsl.put("extraPortsMsg", extraPortsMsg);
+        }
         log.log(lvl, "intLink " + intLink);
         log.log(lvl, "extLink " + extLink);
-        Map jsl = Map.new();
         jsl.put("intAddress", intAddress);
         jsl.put("intPort", intPort);
         jsl.put("extAddress", extAddress);
@@ -1270,6 +1317,9 @@ use class Dz:Ui {
         String json = mar.marshall(jsl);
         log.log(lvl, "links json " + json);
         String msg = "<p>" + jsl.get("extLink") + "</p>\n<p>" + jsl.get("intLink") + "</p>\n";
+        if (TS.notEmpty(jsl.get("extraPortsMsg"))) {
+          msg += jsl.get("extraPortsMsg");
+        }
         msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
         String subj = jsl.get("deviceName") + " " + Time:Interval.now().seconds;
         emit(jv) {
@@ -1770,15 +1820,6 @@ use class Dz:DzHandler {
    }
    
    updateCams(String dcs) {
-      Set ecm = getCams();
-      if (TS.notEmpty(dcs)) {
-        foreach (String cp in dcs.split(",")) {
-          if (ecm.has(cp)!) {
-            app.configManager.delete("cam." + cp + ".label");
-            app.configManager.put("cam." + cp + ".label", Path.apNew(cp).steps.last);
-          }
-        }
-      }
       app.configManager.delete("cam.paths");
       app.configManager.put("cam.paths", dcs);
    }
@@ -1797,6 +1838,10 @@ use class Dz:DzHandler {
      foreach (String c in ecm) {
        if (camOkForAccount(c, a)) {
           String clabel = app.configManager.get("cam." + c + ".label");
+          if (TS.isEmpty(clabel)) {
+            clabel = Path.apNew(c).steps.last;
+            app.configManager.put("cam." + c + ".label", clabel);
+          }
           camLinks += "<p><a href=\"#\" onclick=\"dzeui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
         }
      }
@@ -1952,11 +1997,11 @@ use class Dz:DzHandler {
          foreach (var kv in ecm) {
            unless(kv.value.has("\"")) {
               String ckey = "configKey" + kv.key;
-              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" onchange=\"updateConfig('" + kv.key + "', '" + ckey + "')\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"dzeui.bem_deleteConfig_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">x</a></td></tr>";
+              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"dzeui.bem_deleteConfig_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
             }
          }
       }
-      conf += "<tr><td>Add New:&nbsp;<input type=\"text\" onchange=\"dzeui.bem_addConfig_0()\" id=\"addConfigKeyId\" value=\"\"></td><td><a href=\"#\" onclick=\"return false;\">+</a><input type=\"hidden\" id=\"addConfigValId\" value=\"\"></td></tr>";
+      conf += "<tr><td>Add New:&nbsp;<input type=\"text\" id=\"addConfigKeyId\" value=\"\"></td><td><a href=\"#\" onclick=\"dzeui.bem_addConfig_0();return false;\">+</a><input type=\"hidden\" id=\"addConfigValId\" value=\"\"></td></tr>";
       conf += "</table>";
        Map res = Map.new();
       res["action"] = "showConfigResponse";
@@ -2094,7 +2139,7 @@ use class Dz:DzHandlerTest(Assert) {
   
   main() {
     "Begin DzHandlerTest".print();
-    testCamUpdate();
+    //testCamUpdate();
     "End DzHandlerTest".print();
   }
   

@@ -189,17 +189,17 @@ use class Web:Server {
       server = new Server();
   
       SslContextFactory contextFactory = new SslContextFactory();
-      //contextFactory.setKeyStorePath("keystore");
-      //contextFactory.setKeyStorePassword("boohiss");
       contextFactory.setKeyStorePath(bevp_sslPath.bems_toJvString());
       contextFactory.setKeyStorePassword("kp");
+      
       SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(contextFactory, org.eclipse.jetty.http.HttpVersion.HTTP_1_1.toString());
       
       HttpConfiguration config = new HttpConfiguration();
       config.setSecureScheme("https");
       config.setSecurePort(bevp_port.bevi_int);
+      
       HttpConfiguration sslConfiguration = new HttpConfiguration(config);
-      sslConfiguration.addCustomizer(new SecureRequestCustomizer());
+      //sslConfiguration.addCustomizer(new SecureRequestCustomizer());
       HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(sslConfiguration);
       
       ServerConnector connector = new ServerConnector(server, sslConnectionFactory, httpConnectionFactory);
@@ -352,6 +352,10 @@ use class Web:ScriptRequest {
    }
    
    setOutputCookie(String name, String value, String path) {
+     setOutputCookie(name, value, path, true);
+   }
+   
+   setOutputCookie(String name, String value, String path, Bool httpOnly) {
      emit(cs) {
      """
      Cookie toAdd = new Cookie(beva_name.bems_toCsString(), beva_value.bems_toCsString());
@@ -364,6 +368,7 @@ use class Web:ScriptRequest {
      if (beva_path != null) {
        toAdd.setPath(beva_path.bems_toJvString());
      }
+     toAdd.setHttpOnly(beva_httpOnly.bevi_bool);
      bevi_res.addCookie(toAdd);
      """
      }

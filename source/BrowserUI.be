@@ -732,7 +732,7 @@ use class Web:SessionManager {
         sk = System:Random.getString(keyLen);
       }
       request.setOutputCookie(keyName, sk, "/");
-      request.setOutputHeader(keyName, sk);
+      //request.setOutputHeader(keyName, sk);
     }
     return(sk);
   }
