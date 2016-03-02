@@ -29,6 +29,8 @@ cd ..\..\app
 copy /y ..\apprun\App\Dz\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\Dz
 copy /y scripts\uppic.bat ..\apprun\App\Dz
 copy /y scripts\uppic.sh ..\apprun\App\Dz
+copy /y scripts\getcams.bat ..\apprun\App\Dz
+copy /y scripts\getcams.sh ..\apprun\App\Dz
 copy /y source\Dz*.html ..\apprun\App\Dz
 copy /y source\Dz*.js ..\apprun\App\Dz
 copy /y extlibs\jetty\* ..\apprun\App\Dz

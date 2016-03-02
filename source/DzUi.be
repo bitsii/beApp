@@ -1796,7 +1796,26 @@ use class Dz:DzHandler {
    }
    
    updateCams() {
-     updateCams("/dev/video0,/dev/video1");
+      if (System:CurrentPlatform.name == "mswin") {
+        String gccmd = "App\\Dz\\getcams.bat";
+      } else {
+        gccmd = "App/Dz/getcams.sh";
+      }
+      String res = System:Command.new(gccmd).open().output.readString();
+      log.log(lvl, "res from cmd " + res);
+      if (TS.notEmpty(res)) {
+        String cres = String.new();
+        foreach (String v in res.split(" ")) {
+          if (TS.notEmpty(v)) {
+            if (TS.notEmpty(cres)) {
+              cres += ",";
+            }
+            cres += v;
+          }
+        }
+        log.log(lvl, "commares " + cres);
+        updateCams(cres);
+      }
    }
    
    getCams() Set {
