@@ -72,6 +72,12 @@ use class Dz:Eui {
       arg["action"] = "tryThingRequest";
       HC.new(self).call(arg);
    }
+   
+   restart() {
+      Map arg = Map.new();
+      arg["action"] = "restartRequest";
+      HC.new(self).call(arg);
+   }
     
     updateImage(String cam) {
       Map arg = Map.new();

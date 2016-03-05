@@ -1108,7 +1108,7 @@ use class Dz:UpnpUpdate {
           foreach (ep in exPorts.split(",")) {
             currPortS = app.configManager.get("upnp.extraPort." + ep + ".externalPort");
             if (TS.notEmpty(currPortS)) {
-              extraPortsMsg += "<p>External port " += currPortS += " directed to " += ep += "</p>";
+              extraPortsMsg += "<p>External ip " += extAddress += " and port " += currPortS += " directed to port " += ep += "</p>";
               jsl.put("extraPort:" + ep, currPortS);
             }
           }
@@ -1714,6 +1714,15 @@ use class Dz:DzHandler {
      }
      return(null);
    }
+   
+   restartRequest(Map arg, request) Map {
+     Account a = app.accountManager.getAccountForRequest(request);
+     if (def(a) && a.perms.has("admin")) {
+        log.log(lvl, "Restarting as requested, will have exit code 3");
+        System:Process.exit(3);
+     }
+     return(null);
+   }
 
      updateImageRequest(Map arg, request) {
       Path pp = app.getHomeDir(request).addStep("WebCam");
@@ -1804,13 +1813,23 @@ use class Dz:DzHandler {
       String res = System:Command.new(gccmd).open().output.readString();
       log.log(lvl, "res from cmd " + res);
       if (TS.notEmpty(res)) {
+        //res.swap("\r", "\n");
         String cres = String.new();
-        foreach (String v in res.split(" ")) {
+        foreach (String v in res.split("\n")) {
+          log.log(lvl, "v is " + v);
           if (TS.notEmpty(v)) {
+            if (v.ends("\r")) {
+              log.log(lvl, "ends r");
+              v = v.substring(0, v.size - 1);
+              log.log(lvl, "now |" + v + "|");
+            }
             if (TS.notEmpty(cres)) {
+              log.log(lvl, "cres v is " + cres);
               cres += ",";
+              log.log(lvl, "cres v v is " + cres);
             }
             cres += v;
+            log.log(lvl, "v v v cres is " + cres);
           }
         }
         log.log(lvl, "commares " + cres);

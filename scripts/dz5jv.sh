@@ -24,6 +24,8 @@ find ../be/system -name "*.class" -exec rm {} \;
 cp ../apprun/App/Dz/Base/target/js/be/BEL_4_Base/BEL_4_Base.js ../apprun/App/Dz
 cp scripts/uppic.sh ../apprun/App/Dz
 cp scripts/uppic.bat ../apprun/App/Dz
+cp scripts/getcams.sh ../apprun/App/Dz
+cp scripts/getcams.bat ../apprun/App/Dz
 cp scripts/playsound.sh ../apprun/App/Dz
 cp source/Dz*.html ../apprun/App/Dz
 cp extlibs/jetty/* ../apprun/App/Dz

@@ -31,6 +31,10 @@ copy /y scripts\uppic.bat ..\apprun\App\Dz
 copy /y scripts\uppic.sh ..\apprun\App\Dz
 copy /y scripts\getcams.bat ..\apprun\App\Dz
 copy /y scripts\getcams.sh ..\apprun\App\Dz
+copy /y scripts\startdz.sh ..\apprun\App\Dz
+copy /y scripts\dzrun.sh ..\apprun\App\Dz
+copy /y scripts\dzcmdrs.sh ..\apprun\App\Dz
+copy /y scripts\dzcmd.sh ..\apprun\App\Dz
 copy /y source\Dz*.html ..\apprun\App\Dz
 copy /y source\Dz*.js ..\apprun\App\Dz
 copy /y extlibs\jetty\* ..\apprun\App\Dz

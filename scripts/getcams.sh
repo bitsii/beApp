@@ -1,3 +1,3 @@
 #!/bin/bash
 
-ls /dev/video*
+ls -1 /dev/video*

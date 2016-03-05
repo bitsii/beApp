@@ -1,2 +1,3 @@
 @echo off
-echo /dev/video0  /dev/video1
+echo /dev/video0
+echo /dev/video1
