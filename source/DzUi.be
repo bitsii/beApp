@@ -1407,6 +1407,20 @@ use class Dz:Ui {
     return(deviceName);
   }
   
+  deviceIdGet() String {
+    vars {
+      String deviceId;
+    }
+    if (TS.isEmpty(deviceId)) {
+      deviceId = self.configManager.get("deviceId");
+      if (TS.isEmpty(deviceId)) {
+        deviceId = System:Random.getString(16);
+        self.configManager.put("deviceId", deviceId);
+      }
+    }
+    return(deviceId);
+  }
+  
   internalPortGet() String {
       vars {
         String intPort;
@@ -1472,7 +1486,7 @@ use class Dz:Ui {
       //KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
       KvDb sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
       sessionDbKv.createOpen();
-      sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv));
+      sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv), "GsSess" + self.deviceId);
     }
     ("got sessionmanager").print();
     return(sessionDb);

@@ -706,26 +706,31 @@ use System:Thread:ContainerLocker as CLocker;
 
 use class Web:SessionManager {
 
-  new(_sessions) self {
-    vars {
-      var sessions = _sessions;
-      String keyName = "sesskey";
-      Int keyLen = 16;
-    }
-  }
-  
   new() self {
     new(CLocker.new(Map.new()));
   }
   
+  new(_sessions) self {
+    new(_sessions, "sesskey");
+  }
+  
+  new(_sessions, String _keyName) self {
+    vars {
+      var sessions = _sessions;
+      String keyName = _keyName;
+      Int keyLen = 16;
+    }
+  }
+  
   getSessionKey(request) String {
-    String sk = request.getInputHeader(keyName);
+    String sk;
+    //sk = request.getInputHeader(keyName);
     if (TS.isEmpty(sk)) {
       sk = request.getInputCookie(keyName);
     }
     if (TS.notEmpty(sk)) {
       //to make it harder to probe for sessions
-      request.setOutputHeader(keyName, sk);
+      //request.setOutputHeader(keyName, sk);
     } else {
       sk = System:Random.getString(keyLen);
       until (sessions.getMap(sk + ".").isEmpty) {
