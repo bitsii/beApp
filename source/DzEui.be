@@ -47,6 +47,11 @@ var updateConfig = function(forKey, forId) {
   dzeui.bem_updateConfig_2(theKey, theId);
 }
 
+var localBrowseRequest = function(forId) {
+  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
+  dzeui.bem_localBrowseRequest_1(theId);
+}
+
 
 window.onload = startup;
 """
@@ -243,4 +248,21 @@ use class Dz:Eui {
       arg["action"] = "detectCamsRequest";
       HC.new(self).call(arg);
    }
+   
+   localBrowseRequest() {
+     localBrowseRequest("");
+   }
+   
+   localBrowseRequest(String path) {
+      Map arg = Map.new();
+      arg["action"] = "localBrowseRequest";
+      arg["path"] = path;
+      HC.new(self).call(arg);
+   }
+   
+   localBrowseResponse(Map arg) {
+      HD.getElementById("localBrowseListDiv").innerHTML = arg["dirListHtml"];
+      HD.getElementById("localBrowseListDiv").display = "block";
+   }
+  
 }

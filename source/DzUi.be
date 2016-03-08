@@ -278,7 +278,7 @@ use class Dz:Wui(Ui) {
      if (undef(arg)) {
        String uri = request.uri;
        log.log(lvl, "uri " + uri);
-       File imgfile = File.apNew(uri.substring(1));
+       File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
        if (TS.notEmpty(rmtd) && rmtd == "PUT") {
          if (checkWritePath(imgfile.path, accountName)) {
            log.log(lvl, "put for " + imgfile.path);
@@ -1878,6 +1878,57 @@ use class Dz:DzHandler {
       }
       return(null);
    }
+   
+   localBrowseRequest(Map arg, request) Map {
+     log.log(lvl, "in local browse req");
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+      Encode:Hex hex = Encode:Hex.new();
+      Encode:Url urle = Encode:Url.new();
+      Map ret = Map.new();
+      String path = arg["path"];
+      if (TS.isEmpty(path)) {
+        dirFile = app.getHomeDir(request).file;
+      } else {
+        File dirFile = File.apNew(hex.decode(path));
+      }
+      String dirListHtml = String.new();
+      if (dirFile.exists && app.checkReadPath(dirFile.path, accountName)) {
+        dirListHtml += "<p>Listing for " += dirFile.path.toString() += "</p>";
+        IO:File:Path parent = dirFile.path.parent;
+        if (def(parent) && TS.notEmpty(parent.toString())) {
+        dirListHtml += "<p><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(parent.toString()) += "');return false;\">DIR  .. </a></p>";
+        }
+        if (dirFile.isDir) {
+          var dit = dirFile.iterator;
+          dit.open();
+          while (dit.hasNext) {
+            File entry = dit.next;
+            Path p = entry.path;
+            if (entry.isDirectory) {
+              String fdurl = TS.quote + "#" + TS.quote;
+              String jsCall = "localBrowseRequest";
+              String fd = "DIR  ";
+              dirListHtml += "<p><a href=" + fdurl + " onclick=\"return " += jsCall += "('"
+          += hex.encode(p.toString()) += "');\">" += fd += p.name += "</a></p>";
+            } else {
+              //fdurl = TS.quote + p.name + "?getPath=" + Encode:Hex.encode(p.toString()) + TS.quote;
+              //jsCall = "setPathToSend";
+              //p = p.copy().trimParents(2);
+              fd = "FILE ";
+              dirListHtml += "<p><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += fd += p.name += "</a></p>";
+            }
+          }
+          dit.close();
+        }
+      }
+      ret.put("action", "localBrowseResponse");
+      ret.put("dirListHtml", dirListHtml);
+      return(ret);
+    }
    
    updateCams(String dcs) {
       app.configManager.delete("cam.paths");

@@ -8,9 +8,15 @@ mkdir ..\apprun\App\Dz
 
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\Dz\d --buildPath ..\apprun\App\Dz --emitLang jv -mainClass=Dz:Ui source\DzTest.be source\DzUi.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be
 
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 javac -classpath extlibs\jetty\*;extlibs\hsqldb\*;extlibs\bcastlejv\*;extlibs\javamail\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\Dz\Base\target\jv\be\BEL_4_Base\*.java
 
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\App\Dz\d --buildPath ..\apprun\App\Dz --emitLang js --ownProcess false -mainClass=Dz:Eui source\DzEui.be source\BrowserEUI.be
+
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 del ..\apprun\App\Dz\BEL_4_Base_lui_jv.jar
 cd ..\apprun\App\Dz\Base\target\jv
