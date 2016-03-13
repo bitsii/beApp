@@ -282,41 +282,11 @@ use class Dz:Wui(Ui) {
        if (TS.notEmpty(rmtd) && rmtd == "PUT") {
          if (checkWritePath(imgfile.path, accountName)) {
            log.log(lvl, "put for " + imgfile.path);
-            String rwbuf1 = String.new(4096);
-            String rwbuf2 = String.new(4096);
-            String accum = String.new(8192);
+            String rwbufE = String.new(4096);
             outw = imgfile.writer.open();
             inr = request.openInput();
-            String firstLine = inr.readBufferLine();
-            String firstChar = firstLine.substring(0,1);
-            //log.log(lvl, "first char |" + firstChar + "|");
-            String line = firstLine;
-            firstLine = firstLine.substring(0, firstLine.size - 2);
-            //log.log(lvl, "first line " + firstLine.size + " " + firstLine);
-            while (def(line) && line != "\n" && line != "\r\n") {
-              line = inr.readBufferLine();
-            }
-            Bool found = false;
-            while (found! && inr.readIntoBuffer(rwbuf2) > 0) {
-              pos = null;
-              if (rwbuf1.has(firstChar) || rwbuf2.has(firstLine)) {
-                accum.clear();
-                accum += rwbuf1;
-                accum += rwbuf2;
-                Int pos = accum.find(firstLine);
-              }
-              if (def(pos)) {
-                //log.log(lvl, "foundFirst");
-                found = true;
-                accum = accum.substring(0, pos);
-                outw.write(rwbuf1);
-              } else {
-                outw.write(rwbuf1);
-                String tb = rwbuf1;
-                rwbuf1 = rwbuf2;
-                rwbuf2 = tb;
-                rwbuf2.clear();
-              }
+            while (inr.readIntoBuffer(rwbufE) > 0) {
+              outw.write(rwbufE);
             }
             request.closeInputReader();
             outw.close();
@@ -1766,7 +1736,12 @@ use class Dz:DzHandler {
       String myhn = System:Environment.getVariable("MYHN");
       String picBaseName = "Pic-" + myhn + "-" + rv + "-";
       Int tries = 5;
-      Int maxPics = 4;
+      String maxPicsS = app.configManager.get("cam." + cam + ".maxPics");
+      if (TS.notEmpty(maxPicsS)) {
+        maxPics = Int.new(maxPicsS);
+      } else {
+        Int maxPics = 4;
+      }
       Bool updatedCount = false;
       while (tries > 0 && updatedCount!) {
         count = Int.new(app.configManager.get(countKey));
@@ -1896,6 +1871,7 @@ use class Dz:DzHandler {
       }
       String dirListHtml = String.new();
       if (dirFile.exists && app.checkReadPath(dirFile.path, accountName)) {
+        dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
         dirListHtml += "<p>Listing for " += dirFile.path.toString() += "</p>";
         IO:File:Path parent = dirFile.path.parent;
         if (def(parent) && TS.notEmpty(parent.toString())) {

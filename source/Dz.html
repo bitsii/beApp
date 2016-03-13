@@ -70,7 +70,14 @@ h5.luiForm {
 <div id="camLinksDiv"></div>
 <div id="cmdLinksDiv"></div>
 <p><a id="localBrowseId" href="#" onclick="dzeui.bem_localBrowseRequest_0();return false;">Browse Files</a></p>
+<div id="browseFilesDiv" style="display: none;">
+<p><a id="localBrowseId" href="#" onclick="dzeui.bem_closeFileBrowser_0();return false;">Close File Browser</a></p>
+<input type="file" id="files" name="files[]" multiple />
 <div id="localBrowseListDiv"></div>
+</div>
+<script>
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
 <p><a href="#" id="clearPicId" onclick="dzeui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
 <div id="imgdiv"></div>
 </div>

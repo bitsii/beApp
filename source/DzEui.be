@@ -52,6 +52,17 @@ var localBrowseRequest = function(forId) {
   dzeui.bem_localBrowseRequest_1(theId);
 }
 
+  function handleFileSelect(evt) {
+    var dpath = dzeui.bem_browsingDirGet_0().bems_toJsString();
+    var files = evt.target.files; // FileList object
+    for (var i = 0, f; f = files[i]; i++) {
+      var req = new XMLHttpRequest();
+      req.open("PUT", "/".concat(dpath.concat("/".concat(escape(f.name)))));
+      req.setRequestHeader("Content-type", "application/octet-stream");
+      req.send(f);
+    }
+    
+  }
 
 window.onload = startup;
 """
@@ -118,6 +129,10 @@ use class Dz:Eui {
    
    hideDevLinks() {
      HD.getElementById("offerDevLinkDiv").display = "none";
+   }
+   
+   browsingDirGet() {
+     return(Encode:Hex.decode(HD.getElementById("browsingDirId").value));
    }
    
    offerLink() {
@@ -250,7 +265,12 @@ use class Dz:Eui {
    }
    
    localBrowseRequest() {
+     HD.getElementById("browseFilesDiv").display = "block";
      localBrowseRequest("");
+   }
+   
+   closeFileBrowser() {
+     HD.getElementById("browseFilesDiv").display = "none";
    }
    
    localBrowseRequest(String path) {
