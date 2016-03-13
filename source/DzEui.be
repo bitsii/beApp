@@ -58,6 +58,12 @@ var deleteRequest = function(forId) {
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
+var copyRequest = function(forId) {
+  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
+  dzeui.bem_copyRequest_1(theId);
+  localBrowseRequest(document.getElementById("browsingDirId").value);
+}
+
   function handleFileSelect(evt) {
     var dpath = dzeui.bem_browsingDirGet_0().bems_toJsString();
     var files = evt.target.files; // FileList object
@@ -296,6 +302,16 @@ use class Dz:Eui {
         arg["path"] = path;
         HC.new(self).call(arg);
       }
+   }
+   
+   copyRequest(String path) {
+      String toName = HD.getElementById("copyNameId").value;
+      HD.getElementById("copyNameId").value = "";
+      Map arg = Map.new();
+      arg["action"] = "copyRequest";
+      arg["path"] = path;
+      arg["toName"] = toName;
+      HC.new(self).call(arg);
    }
    
    localBrowseResponse(Map arg) {

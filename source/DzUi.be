@@ -1871,6 +1871,34 @@ use class Dz:DzHandler {
      return(null);
    }
    
+   copyRequest(Map arg, request) Map {
+     log.log(lvl, "copy request");
+     String path = arg["path"];
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+     if (TS.notEmpty(path)) {
+       File dirFile = File.apNew(Encode:Hex.new().decode(path));
+       if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, accountName)) {
+         var dpath = dirFile.path.parent.copy();
+         dpath.addStep(arg["toName"])
+         if (app.checkWritePath(dpath, accountName)) {
+           log.log(lvl, "copying " + dirFile.path + " to " + dpath);
+           String rwbuf = String.new(4096);
+            IO:Writer outw = dpath.file.writer.open();
+            IO:Reader inr = dirFile.reader.open();
+            while (inr.readIntoBuffer(rwbuf) > 0) {
+              outw.write(rwbuf);
+            }
+            outw.close();
+            inr.close();
+          }
+       }
+     }
+     return(null);
+   }
+   
    localBrowseRequest(Map arg, request) Map {
      log.log(lvl, "in local browse req");
      String accountName = request.getSession("account.name");
@@ -1911,6 +1939,8 @@ use class Dz:DzHandler {
               dirListHtml += "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += "FILE " += p.name += "</a>";
               dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"deleteRequest('"
           += hex.encode(p.toString()) += "');\">DELETE</a>";
+          dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"copyRequest('"
+          += hex.encode(p.toString()) += "');\">COPY</a>";
               dirListHtml += "</p>";
             }
           }
