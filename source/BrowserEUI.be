@@ -59,6 +59,25 @@ class HE {
     return(res);
   }
   
+  checkedSet(Bool val) self {
+    emit(js) {
+    """
+    this.bevi_element.checked = beva_val.bevi_bool;
+    """
+    }
+  }
+  
+  checkedGet() Bool {
+    Bool res;
+    emit(js) {
+    """
+    bevl_res = new be_BEL_4_Base_BEC_5_4_LogicBool();
+    bevl_res.bevi_bool = this.bevi_element.checked;
+    """
+    }
+    return(res);
+  }
+  
   innerHTMLSet(String val) self {
     emit(js) {
     """

@@ -1854,6 +1854,23 @@ use class Dz:DzHandler {
       return(null);
    }
    
+   deleteRequest(Map arg, request) Map {
+     log.log(lvl, "del request");
+     String path = arg["path"];
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+     if (TS.notEmpty(path)) {
+       File dirFile = File.apNew(Encode:Hex.new().decode(path));
+       if (dirFile.exists && app.checkWritePath(dirFile.path, accountName)) {
+         log.log(lvl, "deleting " + dirFile.path);
+         dirFile.delete();
+       }
+     }
+     return(null);
+   }
+   
    localBrowseRequest(Map arg, request) Map {
      log.log(lvl, "in local browse req");
      String accountName = request.getSession("account.name");
@@ -1885,17 +1902,16 @@ use class Dz:DzHandler {
             File entry = dit.next;
             Path p = entry.path;
             if (entry.isDirectory) {
-              String fdurl = TS.quote + "#" + TS.quote;
-              String jsCall = "localBrowseRequest";
-              String fd = "DIR  ";
-              dirListHtml += "<p><a href=" + fdurl + " onclick=\"return " += jsCall += "('"
-          += hex.encode(p.toString()) += "');\">" += fd += p.name += "</a></p>";
+              dirListHtml += "<p>";
+              dirListHtml += "<a href=" + TS.quote + "#" + TS.quote + " onclick=\"return localBrowseRequest('"
+          += hex.encode(p.toString()) += "');\">" += "DIR  " += p.name += "</a>";
+              dirListHtml += "</p>";
             } else {
-              //fdurl = TS.quote + p.name + "?getPath=" + Encode:Hex.encode(p.toString()) + TS.quote;
-              //jsCall = "setPathToSend";
-              //p = p.copy().trimParents(2);
-              fd = "FILE ";
-              dirListHtml += "<p><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += fd += p.name += "</a></p>";
+              dirListHtml += "<p>";
+              dirListHtml += "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += "FILE " += p.name += "</a>";
+              dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"deleteRequest('"
+          += hex.encode(p.toString()) += "');\">DELETE</a>";
+              dirListHtml += "</p>";
             }
           }
           dit.close();

@@ -52,6 +52,12 @@ var localBrowseRequest = function(forId) {
   dzeui.bem_localBrowseRequest_1(theId);
 }
 
+var deleteRequest = function(forId) {
+  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
+  dzeui.bem_deleteRequest_1(theId);
+  localBrowseRequest(document.getElementById("browsingDirId").value);
+}
+
   function handleFileSelect(evt) {
     var dpath = dzeui.bem_browsingDirGet_0().bems_toJsString();
     var files = evt.target.files; // FileList object
@@ -61,7 +67,8 @@ var localBrowseRequest = function(forId) {
       req.setRequestHeader("Content-type", "application/octet-stream");
       req.send(f);
     }
-    
+    document.getElementById("files").value = '';
+    localBrowseRequest(document.getElementById("browsingDirId").value);
   }
 
 window.onload = startup;
@@ -278,6 +285,17 @@ use class Dz:Eui {
       arg["action"] = "localBrowseRequest";
       arg["path"] = path;
       HC.new(self).call(arg);
+   }
+   
+   deleteRequest(String path) {
+      Bool isChecked = HD.getElementById("confirmDeleteId").checked;
+      if (isChecked) {
+        HD.getElementById("confirmDeleteId").checked = false;
+        Map arg = Map.new();
+        arg["action"] = "deleteRequest";
+        arg["path"] = path;
+        HC.new(self).call(arg);
+      }
    }
    
    localBrowseResponse(Map arg) {
