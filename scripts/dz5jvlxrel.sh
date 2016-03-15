@@ -7,7 +7,7 @@ mkdir -p ../apprun/Data
 rm -rf ../apprun/App/Dz
 mkdir -p ../apprun/App/Dz
 
-java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/App/Dzd --buildPath ../apprun/App/Dz --emitLang jv -mainClass=Dz:Ui source/DzTest.be source/DzUi.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be
+java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/App/Dzd --buildPath ../apprun/App/Dz --emitLang jv  --outputPlatform linux -mainClass=Dz:Ui source/DzTest.be source/DzUi.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -15,7 +15,7 @@ javac -classpath extlibs/jetty/*:extlibs/hsqldb/*:extlibs/bcastlejv/*:extlibs/ja
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/base.txt --deployPath ../apprun/App/Dzd --buildPath ../apprun/App/Dz --emitLang js --ownProcess false -mainClass=Dz:Eui source/DzEui.be source/BrowserEUI.be
+java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/base.txt --deployPath ../apprun/App/Dzd --buildPath ../apprun/App/Dz --emitLang js --outputPlatform linux --ownProcess false -mainClass=Dz:Eui source/DzEui.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -46,4 +46,6 @@ cp extlibs/javamail/* ../apprun/App/Dz
 
 rm -rf ../apprun/App/Dz/Base
 
-./scripts/dz5jvrun.sh $*
+#./scripts/dz5jvrun.sh $*
+
+./scripts/relprep.sh
