@@ -1959,6 +1959,7 @@ use class Dz:DzHandler {
           piccmd = "App/Dz/upgrade.sh";
         }
         System:Command.new(piccmd).run();
+        System:Process.exit(0);
      }
      return(null);
    }
