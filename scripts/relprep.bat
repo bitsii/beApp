@@ -7,8 +7,10 @@ move ..\apprun\App\Dz\BEL_4_Base.js.1 ..\apprun\App\Dz\BEL_4_Base.js
 
 cd ..\apprun\App\Dz
 
-del ..\..\..\Dz.zip
+del ..\..\..\Dz.tgz
 
-zip ..\..\..\Dz.zip *
+tar -czvf ../Dz.tgz ./*
+
+move ..\Dz.tgz ..\..\..
 
 cd ..\..\..\app

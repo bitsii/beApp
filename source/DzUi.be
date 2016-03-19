@@ -1942,7 +1942,7 @@ use class Dz:DzHandler {
       throw(Alert.new("must be admin"));
      }
      if (TS.notEmpty(path)) {
-       Path dpath = Path.apNew("App/Dz.zip");
+       Path dpath = Path.apNew("App/Dz.tgz");
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
        log.log(lvl, "copying " + dirFile.path + " to " + dpath);
        String rwbuf = String.new(4096);
@@ -1959,7 +1959,7 @@ use class Dz:DzHandler {
           piccmd = "App/Dz/upgrade.sh";
         }
         System:Command.new(piccmd).run();
-        System:Process.exit(0);
+        System:Process.exit(4);
      }
      return(null);
    }

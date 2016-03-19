@@ -10,6 +10,8 @@ cd ../apprun/App/Dz
 
 rm -f ../../../Dz.zip
 
-zip ../../../Dz.zip *
+tar -czvf ../Dz.tgz ./*
+
+mv ../Dz.tgz ../../..
 
 cd ../../../app
