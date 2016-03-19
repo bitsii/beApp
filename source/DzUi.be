@@ -2025,7 +2025,7 @@ use class Dz:DzHandler {
               dirListHtml += "</p>";
             } else {
               dirListHtml += "<p>";
-              dirListHtml += "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += "FILE " += p.name += "</a>";
+              dirListHtml += "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += "FILE " += p.name += " " += entry.size += "</a>";
               dirListHtml += "&nbsp;<input type=\"checkbox\" id=\"FCB"
               += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\">";
               
