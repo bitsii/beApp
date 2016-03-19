@@ -282,6 +282,7 @@ use class Dz:Wui(Ui) {
        if (TS.notEmpty(rmtd) && rmtd == "PUT") {
          if (checkWritePath(imgfile.path, accountName)) {
            log.log(lvl, "put for " + imgfile.path);
+           if (imgfile.exists) { imgfile.delete(); }
             String rwbufE = String.new(4096);
             outw = imgfile.writer.open();
             inr = request.openInput();
@@ -1920,6 +1921,7 @@ use class Dz:DzHandler {
          dpath.addStep(arg["toName"])
          if (app.checkWritePath(dpath, accountName)) {
            log.log(lvl, "copying " + dirFile.path + " to " + dpath);
+           if (dpath.file.exists) { dpath.file.delete(); }
            String rwbuf = String.new(4096);
             IO:Writer outw = dpath.file.writer.open();
             IO:Reader inr = dirFile.reader.open();
@@ -1948,6 +1950,7 @@ use class Dz:DzHandler {
        try {
        app.lock.lock();
        log.log(lvl, "copying " + dirFile.path + " to " + dpath);
+       if (dpath.file.exists) { dpath.file.delete(); }
        String rwbuf = String.new(4096);
         IO:Writer outw = dpath.file.writer.open();
         IO:Reader inr = dirFile.reader.open();
@@ -1967,14 +1970,15 @@ use class Dz:DzHandler {
         }
         try {
         app.lock.lock();
+        Time:Sleep.sleepSeconds(1);
         System:Command.new(piccmd).run();
-        Time:Sleep.sleepSeconds(10);
         app.lock.unlock();
         } catch (e) {
 			app.lock.unlock();
         }
         try {
         app.lock.lock();
+        Time:Sleep.sleepSeconds(1);
         System:Process.exit(4);
         app.lock.unlock();
         } catch (e) {
