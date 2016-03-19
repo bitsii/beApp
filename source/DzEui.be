@@ -62,6 +62,11 @@ var copySelected = function() {
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
+var upgradeSelected = function() {
+  dzeui.bem_upgradeRequest_0();
+  localBrowseRequest(document.getElementById("browsingDirId").value);
+}
+
   function handleFileSelect(evt) {
     var dpath = dzeui.bem_browsingDirGet_0().bems_toJsString();
     var files = evt.target.files; // FileList object
@@ -353,6 +358,21 @@ use class Dz:Eui {
           arg["action"] = "copyRequest";
           arg["path"] = path;
           arg["toName"] = toName;
+          HC.new(self).call(arg);
+      }
+   }
+   
+   upgradeRequest() {
+      String ci = currentlyCheckedId;
+      if (TS.notEmpty(ci)) {
+        HD.getElementById(currentlyCheckedId).checked = false;
+        currentlyCheckedId = null;
+      }
+      if (TS.notEmpty(ci)) {
+          String path = ci.substring(3);
+          Map arg = Map.new();
+          arg["action"] = "upgradeRequest";
+          arg["path"] = path;
           HC.new(self).call(arg);
       }
    }

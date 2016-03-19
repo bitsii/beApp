@@ -1934,6 +1934,35 @@ use class Dz:DzHandler {
      return(null);
    }
    
+   upgradeRequest(Map arg, request) Map {
+     log.log(lvl, "upgrade request");
+     String path = arg["path"];
+     Account a = app.accountManager.getAccountForRequest(request);
+     unless (def(a) && a.perms.has("admin")) {
+      throw(Alert.new("must be admin"));
+     }
+     if (TS.notEmpty(path)) {
+       Path dpath = Path.apNew("App/Dz.zip");
+       File dirFile = File.apNew(Encode:Hex.new().decode(path));
+       log.log(lvl, "copying " + dirFile.path + " to " + dpath);
+       String rwbuf = String.new(4096);
+        IO:Writer outw = dpath.file.writer.open();
+        IO:Reader inr = dirFile.reader.open();
+        while (inr.readIntoBuffer(rwbuf) > 0) {
+          outw.write(rwbuf);
+        }
+        outw.close();
+        inr.close();
+        if (System:CurrentPlatform.name == "mswin") {
+          String piccmd = "App\\Dz\\upgrade.bat";
+        } else {
+          piccmd = "App/Dz/upgrade.sh";
+        }
+        System:Command.new(piccmd).run();
+     }
+     return(null);
+   }
+   
    localBrowseRequest(Map arg, request) Map {
      log.log(lvl, "in local browse req");
      String accountName = request.getSession("account.name");
