@@ -42,7 +42,7 @@ copy /y scripts\dzrun.sh ..\apprun\App\Dz
 copy /y scripts\dzcmdrs.sh ..\apprun\App\Dz
 copy /y scripts\dzcmd.sh ..\apprun\App\Dz
 copy /y source\Dz*.html ..\apprun\App\Dz
-copy /y source\Dz*.js ..\apprun\App\Dz
+copy /y source\Version.txt ..\apprun\App\Dz
 copy /y extlibs\jetty\* ..\apprun\App\Dz
 copy /y extlibs\hsqldb\* ..\apprun\App\Dz
 copy /y extlibs\bcastlejv\* ..\apprun\App\Dz

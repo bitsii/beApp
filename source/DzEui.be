@@ -52,15 +52,13 @@ var localBrowseRequest = function(forId) {
   dzeui.bem_localBrowseRequest_1(theId);
 }
 
-var deleteRequest = function(forId) {
-  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
-  dzeui.bem_deleteRequest_1(theId);
+var deleteSelected = function() {
+  dzeui.bem_deleteRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
-var copyRequest = function(forId) {
-  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
-  dzeui.bem_copyRequest_1(theId);
+var copySelected = function() {
+  dzeui.bem_copyRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
@@ -76,6 +74,18 @@ var copyRequest = function(forId) {
     document.getElementById("files").value = '';
     localBrowseRequest(document.getElementById("browsingDirId").value);
   }
+  
+function fileChecked(box) {
+  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(box.id);
+  if (box.checked) {
+    dzeui.bem_fileChecked_1(theId);
+    //alert("checked ".concat(box.id));
+  } else {
+    dzeui.bem_fileUnchecked_1(theId);
+    //alert("unchecked ".concat(box.id));
+  }
+  
+}
 
 window.onload = startup;
 """
@@ -85,7 +95,24 @@ use class Dz:Eui {
 
   new() self {
         properties {
+          String currentlyCheckedId;
         }
+    }
+    
+    fileChecked(String id) {
+      if (TS.notEmpty(id)) {
+        if (TS.notEmpty(currentlyCheckedId)) {
+          HD.getElementById(currentlyCheckedId).checked = false;
+        }
+        currentlyCheckedId = id;
+      }
+    }
+    
+    fileUnchecked(String id) {
+      if (TS.notEmpty(id)) {
+        HD.getElementById(currentlyCheckedId).checked = false;
+        currentlyCheckedId = null;
+      }
     }
     
     main() {
@@ -293,25 +320,41 @@ use class Dz:Eui {
       HC.new(self).call(arg);
    }
    
-   deleteRequest(String path) {
+   deleteRequest() {
       Bool isChecked = HD.getElementById("confirmDeleteId").checked;
+      HD.getElementById("confirmDeleteId").checked = false;
+      String ci = currentlyCheckedId;
+      if (TS.notEmpty(ci)) {
+        HD.getElementById(currentlyCheckedId).checked = false;
+        currentlyCheckedId = null;
+      }
       if (isChecked) {
-        HD.getElementById("confirmDeleteId").checked = false;
-        Map arg = Map.new();
-        arg["action"] = "deleteRequest";
-        arg["path"] = path;
-        HC.new(self).call(arg);
+        if (TS.notEmpty(ci)) {
+          String path = ci.substring(3);
+          Map arg = Map.new();
+          arg["action"] = "deleteRequest";
+          arg["path"] = path;
+          HC.new(self).call(arg);
+        }
       }
    }
    
-   copyRequest(String path) {
+   copyRequest() {
       String toName = HD.getElementById("copyNameId").value;
       HD.getElementById("copyNameId").value = "";
-      Map arg = Map.new();
-      arg["action"] = "copyRequest";
-      arg["path"] = path;
-      arg["toName"] = toName;
-      HC.new(self).call(arg);
+      String ci = currentlyCheckedId;
+      if (TS.notEmpty(ci)) {
+        HD.getElementById(currentlyCheckedId).checked = false;
+        currentlyCheckedId = null;
+      }
+      if (TS.notEmpty(ci)) {
+          String path = ci.substring(3);
+          Map arg = Map.new();
+          arg["action"] = "copyRequest";
+          arg["path"] = path;
+          arg["toName"] = toName;
+          HC.new(self).call(arg);
+      }
    }
    
    localBrowseResponse(Map arg) {

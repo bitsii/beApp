@@ -39,6 +39,7 @@ cp scripts/dzrun.sh ../apprun/App/Dz
 cp scripts/dzcmdrs.sh ../apprun/App/Dz
 cp scripts/dzcmd.sh ../apprun/App/Dz
 cp source/Dz*.html ../apprun/App/Dz
+cp source/Version.txt ../apprun/App/Dz
 cp extlibs/jetty/* ../apprun/App/Dz
 cp extlibs/hsqldb/* ../apprun/App/Dz
 cp extlibs/bcastlejv/* ../apprun/App/Dz

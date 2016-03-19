@@ -1246,8 +1246,6 @@ use class Dz:Ui {
         Background bg = Background.new();
         OLocker links = OLocker.new();
         DzHandler requestHandler;
-        Int majorVer = 1;
-        Int minorVer = 1;
       }
       
       requestHandler = DzHandler.new();
@@ -1515,13 +1513,50 @@ use class Dz:Ui {
       return(am);
     }
     
+    assureVers() {
+      vars {
+        Int majorVer;
+        Int minorVer;
+      }
+      if (undef(majorVer) || undef(minorVer)) {
+        Path adz = Path.apNew("App/Dz").file.absPath;
+        adz.addStep("Version.txt");
+        String vers = adz.file.contents;
+        
+        vers = vers.swap("\r", "\n");
+        log.log(lvl, "vers " + vers);
+        var vera = vers.split("\n");
+        log.log(lvl, "vera " + vera.first);
+        var verb = vera.first.split(".");
+        log.log(lvl, "verbf " + verb.first);
+        log.log(lvl, "verbs " + verb.second);
+        
+        //majorVer = 1;
+        //minorVer = 1;
+        
+        majorVer = Int.new(verb.first);
+        minorVer = Int.new(verb.second);
+      }
+    }
+    
+    majorVerGet() Int {
+      assureVers();
+      return(majorVer);
+    }
+    
+    minorVerGet() Int {
+      assureVers();
+      return(minorVer);
+    
+    }
+    
     loggedIn(Account a, Map res, Map arg, request) {
       res["action"] = "updateResponse";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["camLinks"] = requestHandler.camLinksForAccount(a);
       res["cmdLinks"] = requestHandler.cmdLinksForAccount(a);
-      res["appVersion"] = majorVer.toString() + "." + minorVer.toString();
+      res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
       res["deviceName"] = self.deviceName;
       log.log(lvl, "CamLinks " + res["camLinks"]);
       return(res);
@@ -1937,10 +1972,14 @@ use class Dz:DzHandler {
             } else {
               dirListHtml += "<p>";
               dirListHtml += "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += "FILE " += p.name += "</a>";
-              dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"deleteRequest('"
-          += hex.encode(p.toString()) += "');\">DELETE</a>";
-          dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"copyRequest('"
-          += hex.encode(p.toString()) += "');\">COPY</a>";
+              dirListHtml += "&nbsp;<input type=\"checkbox\" id=\"FCB"
+              += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\">";
+              
+              //dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"deleteRequest('"
+              //+= hex.encode(p.toString()) += "');\">DELETE</a>";
+              //dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"copyRequest('"
+              //+= hex.encode(p.toString()) += "');\">COPY</a>";
+            
               dirListHtml += "</p>";
             }
           }
