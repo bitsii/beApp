@@ -1944,6 +1944,9 @@ use class Dz:DzHandler {
      if (TS.notEmpty(path)) {
        Path dpath = Path.apNew("App/Dz.tgz");
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
+       var e;
+       try {
+       app.lock.lock();
        log.log(lvl, "copying " + dirFile.path + " to " + dpath);
        String rwbuf = String.new(4096);
         IO:Writer outw = dpath.file.writer.open();
@@ -1953,13 +1956,30 @@ use class Dz:DzHandler {
         }
         outw.close();
         inr.close();
+        app.lock.unlock();
+        } catch (e) {
+          app.lock.unlock();
+        }
         if (System:CurrentPlatform.name == "mswin") {
           String piccmd = "App\\Dz\\upgrade.bat";
         } else {
           piccmd = "App/Dz/upgrade.sh";
         }
+        try {
+        app.lock.lock();
         System:Command.new(piccmd).run();
+        Time:Sleep.sleepSeconds(10);
+        app.lock.unlock();
+        } catch (e) {
+			app.lock.unlock();
+        }
+        try {
+        app.lock.lock();
         System:Process.exit(4);
+        app.lock.unlock();
+        } catch (e) {
+			app.lock.unlock();
+        }
      }
      return(null);
    }

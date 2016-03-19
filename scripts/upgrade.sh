@@ -1,10 +1,5 @@
 #!/bin/bash
 
-mkdir -p App/Dz.bak
-rm -f App/Dz.bak/*
-cp App/Dz/* App/Dz.bak
-cd App/Dz
-tar -xzvf ../Dz.tgz
+echo `pwd` > /tmp/upgrade.out
 
-cd ../..
-./App/Dz/postupgrade.sh
+./App/Dz/upgrade2.sh 2>/tmp/upgrade.err >>/tmp/upgrade.out

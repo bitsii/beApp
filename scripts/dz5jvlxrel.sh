@@ -35,6 +35,7 @@ cp scripts/uppic.bat ../apprun/App/Dz
 cp scripts/upgrade.bat ../apprun/App/Dz
 cp scripts/postupgrade.bat ../apprun/App/Dz
 cp scripts/upgrade.sh ../apprun/App/Dz
+cp scripts/upgrade2.sh ../apprun/App/Dz
 cp scripts/postupgrade.sh ../apprun/App/Dz
 cp scripts/getcams.sh ../apprun/App/Dz
 cp scripts/getcams.bat ../apprun/App/Dz

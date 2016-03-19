@@ -8,7 +8,7 @@ mv ../apprun/App/Dz/BEL_4_Base.js.1 ../apprun/App/Dz/BEL_4_Base.js
 
 cd ../apprun/App/Dz
 
-rm -f ../../../Dz.zip
+rm -f ../../../Dz.tgz
 
 tar -czvf ../Dz.tgz ./*
 

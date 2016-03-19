@@ -38,6 +38,7 @@ copy /y scripts\uppic.sh ..\apprun\App\Dz
 copy /y scripts\upgrade.bat ..\apprun\App\Dz
 copy /y scripts\postupgrade.bat ..\apprun\App\Dz
 copy /y scripts\upgrade.sh ..\apprun\App\Dz
+copy /y scripts\upgrade2.sh ..\apprun\App\Dz
 copy /y scripts\postupgrade.sh ..\apprun\App\Dz
 copy /y scripts\getcams.bat ..\apprun\App\Dz
 copy /y scripts\getcams.sh ..\apprun\App\Dz
