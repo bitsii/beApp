@@ -265,13 +265,18 @@ use class Dz:Wui(Ui) {
        if (TS.notEmpty(ln) && TS.notEmpty(lp)) {
           log.log(lvl, "doing svc login");
           Account a = self.accountManager.getAccount(ln);
-          if (def(a)) {
+          if (def(a) && preLoginCheck(request)) {
             log.log(lvl, "Found account " + ln);
             if (a.checkPass(lp)) {
               log.log(lvl, "svc login ok");
               request.putSession("account.name", ln);
+              goodLogin(request);
               accountName = ln;
+            } else {
+              badLogin(request);
             }
+          } else {
+            badLogin(request);
           }
         }
      }
@@ -1246,6 +1251,8 @@ use class Dz:Ui {
         Lock lock = Lock.new();
         Background bg = Background.new();
         OLocker links = OLocker.new();
+        OLocker lastLoginBad = OLocker.new(false);
+        CLocker badIps = CLocker.new(Map.new());
         DzHandler requestHandler;
       }
       
@@ -1259,6 +1266,21 @@ use class Dz:Ui {
       bg.app = self;
       //bg.startBackground();
       
+  }
+  
+  preLoginCheck(request) Bool {
+    if (lastLoginBad.o) {
+      Time:Sleep.sleepSeconds(5);
+    }
+    return(true);
+  }
+  
+  goodLogin(request) {
+    lastLoginBad.o = false;
+  }
+  
+  badLogin(request) {
+    lastLoginBad.o = true;
   }
   
   updateNetAddresses() {
@@ -2007,6 +2029,8 @@ use class Dz:DzHandler {
       if (dirFile.exists && app.checkReadPath(dirFile.path, accountName)) {
         dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
         dirListHtml += "<p>Listing for " += dirFile.path.toString() += "</p>";
+        dirListHtml += "<p><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(dirFile.path.toString()) += "');return false;\">DIR  . </a></p>";
         IO:File:Path parent = dirFile.path.parent;
         if (def(parent) && TS.notEmpty(parent.toString())) {
         dirListHtml += "<p><a href=\"#\" onclick=\"localBrowseRequest('"
@@ -2276,7 +2300,7 @@ use class Dz:DzHandler {
 
   loginRequest(Map arg, request) {
     Account a = app.accountManager.getAccount(arg["accountName"]);
-    if (def(a)) {
+    if (def(a) && app.preLoginCheck(request)) {
       log.log(lvl, "Found account " + arg["accountName"]);
       if (a.checkPass(arg["accountPass"])) {
         log.log(lvl, "Login ok");
@@ -2284,18 +2308,21 @@ use class Dz:DzHandler {
         Map res = Map.new();
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
+        app.goodLogin(request);
         return(app.loggedIn(a, res, arg, request));
       } else {
         log.log(lvl, "Login notok");
+        app.badLogin(request);
       }
     } else {
       log.log(lvl, "No such account " + arg["accountName"]);
+      app.badLogin(request);
     }
     return(logoutRequest(arg, request));
   }
   
   logoutRequest(Map arg, request) {
-    request.putSession("account.name", "");
+    request.deleteSession();
     Map res = Map.new();
     res["action"] = "logoutResponse";
     return(res);
