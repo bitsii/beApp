@@ -47,7 +47,15 @@ h5.luiForm {
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
 <p><a href="#" onclick="dzeui.bem_logout_0();return false;">Logout</a></p>
-<p><a id="showDevsId" href="#" onclick="dzeui.bem_showDevLinks_0();return false;">Linked Devices</a></p>
+<p><a href="#" onclick="dzeui.bem_showAccountSettings_0();return false;">Account Settings</a></p>
+<div id="accountSettingsDiv" style="display: none;">
+<p><a href="#" onclick="dzeui.bem_hideAccountSettings_0();return false;">Close Account Settings</a></p>
+<p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
+<p><a href="#" onclick="dzeui.bem_changePassRequest_0();return false;">Change Password</a></p>
+</div>
+<!--<p><a id="showDevsId" href="#" onclick="dzeui.bem_showDevLinks_0();return false;">Linked Devices</a></p>
 <div id="devsDiv"></div>
 <p><a href="#" onclick="dzeui.bem_hideDevLinks_0();return false;">Close Linked Devices</a></p>
 <div id="offerDevLinkDiv" style="display: none;">
@@ -57,12 +65,12 @@ h5.luiForm {
 <p><label class="luiForm">Repeat Password</label><input type="password" id="offerPass2"</input></p>
 <p><a href="#" onclick="dzeui.bem_offerLink_0();return false;">Send Link Offer</a></p>
 </form>
-</div>
+</div>-->
 <p><a id="showAdminId" href="#" onclick="dzeui.bem_showAdmin_0();return false;" style="display: none;">Administration</a></p>
 <div id="admindiv" style="display: none;">
 <p><a id="hideAdminId" href="#" onclick="dzeui.bem_hideAdmin_0();return false;" >Close Administration</a></p>
 <p><a id="detectCamsId" href="#" onclick="dzeui.bem_detectCams_0();return false;" >Detect WebCams</a></p>
-<p><a id="tryThingId" href="#" onclick="dzeui.bem_tryThing_0();return false;">Try Thing</a></p>
+<!--<p><a id="tryThingId" href="#" onclick="dzeui.bem_tryThing_0();return false;">Try Thing</a></p>-->
 <p><a id="restartId" href="#" onclick="dzeui.bem_restart_0();return false;">Restart</a></p>
 <p><a id="showConfigId" href="#" onclick="dzeui.bem_showConfig_0();return false;">Show Configuration</a></p>
 </div>

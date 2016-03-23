@@ -139,6 +139,14 @@ use class Dz:Eui {
       arg["action"] = "restartRequest";
       HC.new(self).call(arg);
    }
+   
+   showAccountSettings() {
+     HD.getElementById("accountSettingsDiv").display = "block";
+   }
+   
+   hideAccountSettings() {
+     HD.getElementById("accountSettingsDiv").display = "none";
+   }
     
     updateImage(String cam) {
       Map arg = Map.new();
@@ -255,7 +263,8 @@ use class Dz:Eui {
    
    updateResponse(Map arg) {
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
-      String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
+      //String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
+      String lmsg = "Welcome to " + arg["deviceName"] + " on Version " + arg["appVersion"];
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
@@ -307,6 +316,22 @@ use class Dz:Eui {
       Map arg = Map.new();
       arg["action"] = "detectCamsRequest";
       HC.new(self).call(arg);
+   }
+   
+   changePassRequest() {
+    String op = HD.getElementById("changePassOld").value;
+    String np = HD.getElementById("changePassNew").value;
+    String np2 = HD.getElementById("changePassNew2").value;
+    HD.getElementById("changePassOld").value = "";
+    HD.getElementById("changePassNew").value = "";
+    HD.getElementById("changePassNew2").value = "";
+    if (np == np2) {
+    Map arg = Map.new();
+    arg["action"] = "changePassRequest";
+    arg["oldPass"] = op;
+    arg["newPass"] = np;
+    HC.new(self).call(arg);
+    }
    }
    
    localBrowseRequest() {

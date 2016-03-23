@@ -1252,7 +1252,6 @@ use class Dz:Ui {
         Background bg = Background.new();
         OLocker links = OLocker.new();
         OLocker lastLoginBad = OLocker.new(false);
-        CLocker badIps = CLocker.new(Map.new());
         DzHandler requestHandler;
       }
       
@@ -1835,6 +1834,16 @@ use class Dz:DzHandler {
       //res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
       res["imghtm"] = "<img src=\"../../" + picFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
       return(res);
+   }
+   
+   changePassRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      unless (TS.notEmpty(arg["newPass"]) && a.checkPass(arg["oldPass"])) {
+        log.log(lvl, "incorrect old pass");
+        return(null);
+      }
+      a.pass = arg["newPass"];
+      app.accountManager.updateAccount(a);
    }
    
    detectCamsRequest(Map arg, request) {
