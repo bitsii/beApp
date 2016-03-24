@@ -1840,7 +1840,7 @@ use class Dz:DzHandler {
       Account a = app.accountManager.getAccountForRequest(request);
       unless (TS.notEmpty(arg["newPass"]) && a.checkPass(arg["oldPass"])) {
         log.log(lvl, "incorrect old pass");
-        return(null);
+        throw(Alert.new("Old password incorrect"));
       }
       a.pass = arg["newPass"];
       app.accountManager.updateAccount(a);

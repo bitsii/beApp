@@ -125,6 +125,7 @@ use class Dz:Eui {
     }
     
     handleCallback(String res) {
+      hideFail();
       HC.new(self).handleCallback(res);
     }
     
@@ -331,6 +332,8 @@ use class Dz:Eui {
     arg["oldPass"] = op;
     arg["newPass"] = np;
     HC.new(self).call(arg);
+    } else {
+      fail("New passwords don't match");
     }
    }
    
@@ -367,6 +370,21 @@ use class Dz:Eui {
           HC.new(self).call(arg);
         }
       }
+   }
+   
+   failResponse(Map arg) {
+    fail(arg["reason"]);
+   }
+   
+   fail(String r) {
+     if (TS.notEmpty(r)) {
+      HD.getElementById("failMessageDiv").innerHTML = r;
+      HD.getElementById("failDiv").display = "block";
+     }
+   }
+   
+   hideFail() {
+     HD.getElementById("failDiv").display = "none";
    }
    
    copyRequest() {
