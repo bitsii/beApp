@@ -1973,10 +1973,14 @@ use class Dz:DzHandler {
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
        if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, accountName)) {
-         var dpath = dirFile.path.parent.copy();
-         dpath.addStep(arg["toName"])
+         var dpath = Path.apNew(arg["toName"]);
+         dpath = dirFile.path.parent.copy() + dpath;
+         log.log(lvl, "precheck write " + dpath);
          if (app.checkWritePath(dpath, accountName)) {
            log.log(lvl, "copying " + dirFile.path + " to " + dpath);
+           if (dpath.parent.file.exists!) {
+             dpath.parent.file.makeDirs();
+           }
            if (dpath.file.exists) { dpath.file.delete(); }
            String rwbuf = String.new(4096);
             IO:Writer outw = dpath.file.writer.open();
