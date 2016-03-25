@@ -1846,6 +1846,31 @@ use class Dz:DzHandler {
       app.accountManager.updateAccount(a);
    }
    
+   showImapRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      unless (a.perms.has("admin")) {
+        throw(Alert.new("Must be administrator"));
+      }
+      Map res = Map.new();
+      res["action"] = "showImapResponse";
+      res["imapAccount"] = app.configManager.get("imap.user");
+      res["imapEndpoint"] = app.configManager.get("imap.endpoint");
+      return(res);
+   }
+   
+   imapSettingsRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      unless (a.perms.has("admin")) {
+        throw(Alert.new("Must be administrator"));
+      }
+      app.configManager.put("imap.user", arg["imapAccount"]);
+      app.configManager.put("imap.endpoint", arg["imapEndpoint"]);
+      app.configManager.put("imap.pass", arg["imapPass"]);
+      Map res = Map.new();
+      res["action"] = "hideImapResponse";
+      return(res);
+   }
+   
    detectCamsRequest(Map arg, request) {
       Account a = app.accountManager.getAccountForRequest(request);
       unless (a.perms.has("admin")) {
