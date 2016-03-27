@@ -253,6 +253,7 @@ use class Dz:Wui(Ui) {
 
    handleWeb(request) {
      //log.log(lvl, "in hw");
+     checkRequest(request);
      String accountName = request.getSession("account.name");
      String rmtd = request.inputMethod;
      //log.log(lvl, "rmtd is " + rmtd);
@@ -1267,6 +1268,23 @@ use class Dz:Ui {
       
   }
   
+  badRequest(request) {
+  
+  }
+  
+  checkRequest(request) {
+  
+  }
+  
+  requestFromAdmin(request) Bool {
+    Account a = self.accountManager.getAccountForRequest(request);
+    if (def(a) && a.perms.has("admin")) {
+      return(true);
+    }
+    badRequest(request);
+    return(false);
+  }
+  
   preLoginCheck(request) Bool {
     if (lastLoginBad.o) {
       Time:Sleep.sleepSeconds(5);
@@ -1279,6 +1297,7 @@ use class Dz:Ui {
   }
   
   badLogin(request) {
+    badRequest(request);
     lastLoginBad.o = true;
   }
   
@@ -1484,6 +1503,7 @@ use class Dz:Ui {
   
 
   handleWeb(request, Map arg) {
+    checkRequest(request);
         try {
             String aname = arg.get("action");
             if (undef(aname) || aname.ends("Request")!) {
@@ -1659,24 +1679,24 @@ use class Dz:CmdUi(Ui) {
       }
       if (TS.isEmpty(mode) || mode == "help") {
         log.log(lvl, "Help");
-        log.log(lvl, "listLogins, createAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         foreach (String login in self.accountManager.getLogins()) {
           log.log(lvl, "Account login " + login);
         }
       }
-      if (TS.notEmpty(mode) && mode == "createAccount") {
+      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
         String user = args[2];
         String pass = args[3];
-        log.log(lvl, "Creating Account " + user);
+        log.log(lvl, "Putting Account " + user);
         Account ac = Account.new();
         ac.user = user;
         ac.pass = pass;
         if (args.length > 4) {
           ac.permsString = args[4];
         }
-        self.accountManager.createAccount(ac);
+        self.accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
@@ -1690,7 +1710,7 @@ use class Dz:CmdUi(Ui) {
         log.log(lvl, "Set Perms " + user);
         ac = self.accountManager.getAccount(user);
         ac.permsString = ps;
-        self.accountManager.updateAccount(ac);
+        self.accountManager.putAccount(ac);
         log.log(lvl, "Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
@@ -1699,7 +1719,7 @@ use class Dz:CmdUi(Ui) {
         log.log(lvl, "Set Pass " + user);
         ac = self.accountManager.getAccount(user);
         ac.pass = pass;
-        self.accountManager.updateAccount(ac);
+        self.accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
@@ -1749,16 +1769,14 @@ use class Dz:DzHandler {
      }
      
   tryThingRequest(Map arg, request) Map {
-     Account a = app.accountManager.getAccountForRequest(request);
-     if (def(a) && a.perms.has("admin")) {
+     if (app.requestFromAdmin(request)) {
         app.updateNetAddresses();
      }
      return(null);
    }
    
    restartRequest(Map arg, request) Map {
-     Account a = app.accountManager.getAccountForRequest(request);
-     if (def(a) && a.perms.has("admin")) {
+     if (app.requestFromAdmin(request)) {
         log.log(lvl, "Restarting as requested, will have exit code 3");
         System:Process.exit(3);
      }
@@ -1843,12 +1861,11 @@ use class Dz:DzHandler {
         throw(Alert.new("Old password incorrect"));
       }
       a.pass = arg["newPass"];
-      app.accountManager.updateAccount(a);
+      app.accountManager.putAccount(a);
    }
    
    showImapRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
-      unless (a.perms.has("admin")) {
+      unless (app.requestFromAdmin(request)) {
         throw(Alert.new("Must be administrator"));
       }
       Map res = Map.new();
@@ -1859,8 +1876,7 @@ use class Dz:DzHandler {
    }
    
    imapSettingsRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
-      unless (a.perms.has("admin")) {
+      unless (app.requestFromAdmin(request)) {
         throw(Alert.new("Must be administrator"));
       }
       app.configManager.put("imap.user", arg["imapAccount"]);
@@ -1872,12 +1888,11 @@ use class Dz:DzHandler {
    }
    
    detectCamsRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
-      unless (a.perms.has("admin")) {
+      unless (app.requestFromAdmin(request)) {
         log.log(lvl, "Account not admin, not detecting cams");
         return(null);
       }
-      //TODO for real, ls /dev/video* with a script into a file
+      Account a = app.accountManager.getAccountForRequest(request);
       updateCams();
       Map res = Map.new();
       res["action"] = "updateResponse";
@@ -2000,7 +2015,7 @@ use class Dz:DzHandler {
      log.log(lvl, "upgrade request");
      String path = arg["path"];
      Account a = app.accountManager.getAccountForRequest(request);
-     unless (def(a) && a.perms.has("admin")) {
+     unless (app.requestFromAdmin(request)) {
       throw(Alert.new("must be admin"));
      }
      if (TS.notEmpty(path)) {
@@ -2148,8 +2163,7 @@ use class Dz:DzHandler {
    }
    
    showDevLinksRequest(Map arg, request) Map {
-     Account a = app.accountManager.getAccountForRequest(request);
-     if (def(a) && a.perms.has("admin")) {
+     if (app.requestFromAdmin(request)) {
        //String devLinks = "<p><a href=\"#\" onclick=\"dzeui.bem_offerDevLink_0();return false;\">Send Link Offer</a></p>";
        Map res = Map.new();
        res["action"] = "showDevLinksResponse";
@@ -2161,7 +2175,7 @@ use class Dz:DzHandler {
    
    offerLinkRequest(Map arg, request) Map {
      Account a = app.accountManager.getAccountForRequest(request);
-     if (def(a) && a.perms.has("admin")) {
+     if (app.requestFromAdmin(request)) {
        log.log(lvl, "In offer link request");
        String offerEmail = arg["offerEmail"];
        String offerPass1 = arg["offerPass1"];
@@ -2275,8 +2289,7 @@ use class Dz:DzHandler {
    }
    
    showConfigRequest(Map arg, request) Map {
-     Account a = app.accountManager.getAccountForRequest(request);
-     if (def(a) && a.perms.has("admin")) {
+     if (app.requestFromAdmin(request)) {
        String conf = String.new();
       conf += "<a href=\"#\" onclick=\"dzeui.bem_hideConfig_0();return false;\">Hide Configuration</a>";
        Map ecm = app.configManager.getMap();
@@ -2300,8 +2313,7 @@ use class Dz:DzHandler {
    }
    
    updateConfigRequest(Map arg, request) Map {
-     Account a = app.accountManager.getAccountForRequest(request);
-     if (def(a) && a.perms.has("admin")) {
+     if (app.requestFromAdmin(request)) {
       log.log(lvl, "update for " + arg["configKey"] + " value " + arg["configValue"]);
       app.configManager.put(arg["configKey"], arg["configValue"]);
       return(showConfigRequest(arg, request));
@@ -2310,8 +2322,7 @@ use class Dz:DzHandler {
    }
    
    deleteConfigRequest(Map arg, request) Map {
-     Account a = app.accountManager.getAccountForRequest(request);
-     if (def(a) && a.perms.has("admin")) {
+     if (app.requestFromAdmin(request)) {
       log.log(lvl, "delete for " + arg["configKey"]);
       app.configManager.delete(arg["configKey"]);
       return(showConfigRequest(arg, request));
@@ -2448,7 +2459,7 @@ use class Dz:AccountTest(Assert) {
     am.deleteAccount(atest);
     Account a = am.getAccount(atest.user);
     assertNull(a);
-    am.createAccount(atest);
+    am.putAccount(atest);
     a = am.getAccount(atest.user);
     assertNotNull(a);
     assertFalse(a.perms.has("admin"));
@@ -2457,7 +2468,7 @@ use class Dz:AccountTest(Assert) {
     a.pass = "yo";
     assertTrue(a.checkPass("yo"));
     a.perms.put("admin");
-    am.updateAccount(a);
+    am.putAccount(a);
     a = am.getAccount(a.user);
     assertEqual(a.user, "test");
     assertTrue(a.checkPass("yo"));

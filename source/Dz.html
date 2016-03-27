@@ -73,6 +73,15 @@ h5.luiForm {
 <p><a id="showAdminId" href="#" onclick="dzeui.bem_showAdmin_0();return false;" style="display: none;">Administration</a></p>
 <div id="admindiv" style="display: none;">
 <p><a id="hideAdminId" href="#" onclick="dzeui.bem_hideAdmin_0();return false;" >Close Administration</a></p>
+<p><a id="showAccountAdminId" href="#" onclick="dzeui.bem_showAccountAdminRequest_0();return false;">Show Account Administration</a></p>
+<div id="accountAdminDiv" style="display: none;">
+<p><a href="#" onclick="dzeui.bem_hideAccountAdmin_0();return false;">Close Account Administration</a></p>
+<p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
+<p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
+<p><a href="#" onclick="dzeui.bem_saveAccountRequest_0();return false;">Save Account</a></p>
+</div>
 <p><a href="#" onclick="dzeui.bem_showImapRequest_0();return false;">Imap Settings</a></p>
 <div id="imapSettingsDiv" style="display: none;">
 <p><a href="#" onclick="dzeui.bem_hideImapResponse_1();return false;">Close Imap Settings</a></p>

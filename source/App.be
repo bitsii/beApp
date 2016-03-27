@@ -80,11 +80,7 @@ use class App:AccountManager {
     kvDb.delete(prefix + a.user);
   }
   
-  createAccount(Account a) {
-    kvDb.put(prefix + a.user, mar.marshall(a.toMap()));
-  }
-  
-  updateAccount(Account a) {
+  putAccount(Account a) {
     kvDb.put(prefix + a.user, mar.marshall(a.toMap()));
   }
   

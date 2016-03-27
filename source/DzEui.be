@@ -148,6 +148,29 @@ use class Dz:Eui {
    hideAccountSettings() {
      HD.getElementById("accountSettingsDiv").display = "none";
    }
+
+   showAccountAdminRequest() {
+     HD.getElementById("accountAdminDiv").display = "block";
+   }
+   
+   hideAccountAdmin() {
+     HD.getElementById("accountAdminDiv").display = "none";
+   }
+   
+   saveAccountRequest() {
+     Map arg = Map.new();
+     arg["action"] = "saveAccountRequest";
+     arg["accountName"] = HD.getElementById("aadminName").value;
+     String pass = HD.getElementById("aadminPass").value;
+     if (TS.notEmpty(pass)) {
+       String pass2 = HD.getElementById("aadminPass2").value;
+       if (pass != pass2) {
+        fail("Account Admin passwords don't match");
+       }
+       arg["accountPass"] = pass;
+     }
+     HC.new(self).call(arg);
+   }
    
    showImapRequest() {
       Map arg = Map.new();
