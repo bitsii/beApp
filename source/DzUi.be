@@ -288,6 +288,9 @@ use class Dz:Wui(Ui) {
        if (TS.notEmpty(rmtd) && rmtd == "PUT") {
          if (checkWritePath(imgfile.path, accountName)) {
            log.log(lvl, "put for " + imgfile.path);
+           if (imgfile.path.parent.file.exists!) {
+            imgfile.path.parent.file.makeDirs();
+           }
            if (imgfile.exists) { imgfile.delete(); }
             String rwbufE = String.new(4096);
             outw = imgfile.writer.open();
@@ -1864,6 +1867,68 @@ use class Dz:DzHandler {
       app.accountManager.putAccount(a);
    }
    
+   showAccountAdminRequest(Map arg, request) {
+      unless (app.requestFromAdmin(request)) {
+        throw(Alert.new("Must be administrator"));
+      }
+      String accountLinks = String.new();
+      Array logins = app.accountManager.getLogins();
+      foreach (String login in logins) {
+        accountLinks += "<p><a href=\"#\" onclick=\"loadAccount('" += login += "'\">Modify " += login += "</a></p>";
+      }
+      Map res = Map.new();
+      res["action"] = "showAccountAdminResponse";
+      res["accountLinks"] = accountLinks;
+      return(res);
+   }
+   
+   deleteAccountRequest(Map arg, request) {
+      unless (app.requestFromAdmin(request)) {
+        throw(Alert.new("Must be administrator"));
+      }
+      Account a = app.accountManager.getAccount(arg["accountName"]);
+      if (def(a)) {
+        if (a.user == app.accountManager.getAccountForRequest(request).user) {
+          throw(Alert.new("Cannot delete own account"));
+        }
+      }
+      app.accountManager.deleteAccount(a);
+      return(showAccountAdminRequest(arg, request));
+  }
+      
+   
+   saveAccountRequest(Map arg, request) {
+      unless (app.requestFromAdmin(request)) {
+        throw(Alert.new("Must be administrator"));
+      }
+      Account a = app.accountManager.getAccount(arg["accountName"]);
+      if (undef(a)) {
+        log.log(lvl, arg["accountName"] + " not found, creating new");
+        a = Account.new();
+        a.user = arg["accountName"];
+      } else {
+        if (a.user == app.accountManager.getAccountForRequest(request).user) {
+          throw(Alert.new("Cannot change own account"));
+        }
+        log.log(lvl, arg["accountName"] + " found, use existing");
+      }
+      if (TS.notEmpty(arg["accountPass"])) {
+        log.log(lvl, "pass set, changing");
+        a.pass = arg["accountPass"];
+      }
+      if (arg["admin"]) {
+        a.perms.put("admin");
+      } else {
+        a.perms.delete("admin");
+      }
+      if (arg["allcam"]) {
+        a.perms.put("allcam");
+      } else {
+        a.perms.delete("allcam");
+      }
+      app.accountManager.putAccount(a);
+   }
+   
    showImapRequest(Map arg, request) {
       unless (app.requestFromAdmin(request)) {
         throw(Alert.new("Must be administrator"));
@@ -2079,8 +2144,8 @@ use class Dz:DzHandler {
         File dirFile = File.apNew(hex.decode(path));
       }
       String dirListHtml = String.new();
+      dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
       if (dirFile.exists && app.checkReadPath(dirFile.path, accountName)) {
-        dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
         dirListHtml += "<p>Listing for " += dirFile.path.toString() += "</p>";
         dirListHtml += "<p><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(dirFile.path.toString()) += "');return false;\">DIR  . </a></p>";

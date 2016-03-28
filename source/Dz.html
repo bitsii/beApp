@@ -80,7 +80,8 @@ h5.luiForm {
 <p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
 <p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
 <p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
-<p><a href="#" onclick="dzeui.bem_saveAccountRequest_0();return false;">Save Account</a></p>
+<p><a href="#" onclick="dzeui.bem_saveAccountRequest_0();return false;">Save Account</a>&nbsp;Confirm account Deletion <input type="checkbox" id="confirmAccountDelete"/><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="deleteAccount();return false;"></p>
+<div id="accountLinksDiv"></div>
 </div>
 <p><a href="#" onclick="dzeui.bem_showImapRequest_0();return false;">Imap Settings</a></p>
 <div id="imapSettingsDiv" style="display: none;">

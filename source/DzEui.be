@@ -57,6 +57,10 @@ var deleteSelected = function() {
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
+var deleteAccount = function() {
+  dzeui.bem_deleteAccountRequest_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new(document.getElementById("aadminName").value));
+}
+
 var copySelected = function() {
   dzeui.bem_copyRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
@@ -150,25 +154,52 @@ use class Dz:Eui {
    }
 
    showAccountAdminRequest() {
+     Map arg = Map.new();
+     arg["action"] = "showAccountAdminRequest";
+     HC.new(self).call(arg);
+   }
+   
+   deleteAccountRequest(String accountName) {
+     unless (HD.getElementById("confirmAccountDelete").checked) {
+      return(fail("Must confirm account deletion"));
+     }
+     HD.getElementById("confirmAccountDelete").checked = false;
+     Map arg = Map.new();
+     arg["action"] = "deleteAccountRequest";
+     arg["accountName"] = accountName;
+     hideAccountAdmin();
+     HC.new(self).call(arg);
+   }
+   
+   showAccountAdminResponse(Map arg) {
      HD.getElementById("accountAdminDiv").display = "block";
+     HD.getElementById("accountLinksDiv").innerHTML = arg["accountLinks"];
    }
    
    hideAccountAdmin() {
      HD.getElementById("accountAdminDiv").display = "none";
+     HD.getElementById("aadminName").value = "";
+     HD.getElementById("aadminPass").value = "";
+     HD.getElementById("aadminPass2").value = "";
+     HD.getElementById("aadminIsAdmin").checked = false;
+     HD.getElementById("aadminIsWebcam").checked = false;
    }
    
    saveAccountRequest() {
      Map arg = Map.new();
      arg["action"] = "saveAccountRequest";
      arg["accountName"] = HD.getElementById("aadminName").value;
+     arg["admin"] = HD.getElementById("aadminIsAdmin").checked;
+     arg["allcam"] = HD.getElementById("aadminIsWebcam").checked;
      String pass = HD.getElementById("aadminPass").value;
      if (TS.notEmpty(pass)) {
        String pass2 = HD.getElementById("aadminPass2").value;
        if (pass != pass2) {
-        fail("Account Admin passwords don't match");
+        return(fail("Account Admin passwords don't match"));
        }
        arg["accountPass"] = pass;
      }
+     hideAccountAdmin();
      HC.new(self).call(arg);
    }
    
@@ -336,6 +367,11 @@ use class Dz:Eui {
      HD.getElementById("loginmsgdiv").innerHTML = "";
      HD.getElementById("logindiv").display = "block";
      HD.getElementById("loggedindiv").display = "none";
+     hideAccountSettings();
+     hideAccountAdmin();
+     hideConfig();
+     hideAdmin();
+     hideFail();
    }
    
    clearImage() {
