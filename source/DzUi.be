@@ -1867,6 +1867,24 @@ use class Dz:DzHandler {
       app.accountManager.putAccount(a);
    }
    
+   loadAccountRequest(Map arg, request) {
+      unless (app.requestFromAdmin(request)) {
+        throw(Alert.new("Must be administrator"));
+      }
+      Account a = app.accountManager.getAccount(arg["accountName"]);
+      if (def(a)) {
+        Map res = Map.new();
+        res["action"] = "loadAccountResponse";
+        res["accountName"] = a.user;
+        res["admin"] = a.perms.has("admin");
+        res["allcam"] = a.perms.has("allcam");
+        return(res);
+      } elif (true) {
+        throw(Alert.new("No such account"));
+      }
+      return(null);
+   }
+   
    showAccountAdminRequest(Map arg, request) {
       unless (app.requestFromAdmin(request)) {
         throw(Alert.new("Must be administrator"));
@@ -1874,7 +1892,7 @@ use class Dz:DzHandler {
       String accountLinks = String.new();
       Array logins = app.accountManager.getLogins();
       foreach (String login in logins) {
-        accountLinks += "<p><a href=\"#\" onclick=\"loadAccount('" += login += "'\">Modify " += login += "</a></p>";
+        accountLinks += "<p><a href=\"#\" onclick=\"loadAccountRequest('" += login += "');return false;\">Modify " += login += "</a></p>";
       }
       Map res = Map.new();
       res["action"] = "showAccountAdminResponse";
@@ -2136,6 +2154,7 @@ use class Dz:DzHandler {
      }
       Encode:Hex hex = Encode:Hex.new();
       Encode:Url urle = Encode:Url.new();
+      Encode:Html htmle = Encode:Html.new();
       Map ret = Map.new();
       String path = arg["path"];
       if (TS.isEmpty(path)) {
@@ -2146,13 +2165,14 @@ use class Dz:DzHandler {
       String dirListHtml = String.new();
       dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
       if (dirFile.exists && app.checkReadPath(dirFile.path, accountName)) {
-        dirListHtml += "<p>Listing for " += dirFile.path.toString() += "</p>";
-        dirListHtml += "<p><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(dirFile.path.toString()) += "');return false;\">DIR  . </a></p>";
+        dirListHtml += "<p>Listing for " += htmle.encode(dirFile.path.toString()) += "</p>";
+        dirListHtml += "<table>";
+        dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(dirFile.path.toString()) += "');return false;\">.</a></td></tr>";
         IO:File:Path parent = dirFile.path.parent;
         if (def(parent) && TS.notEmpty(parent.toString())) {
-        dirListHtml += "<p><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(parent.toString()) += "');return false;\">DIR  .. </a></p>";
+        dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(parent.toString()) += "');return false;\">..</a></td></tr>";
         }
         if (dirFile.isDir) {
           var dit = dirFile.iterator;
@@ -2161,26 +2181,21 @@ use class Dz:DzHandler {
             File entry = dit.next;
             Path p = entry.path;
             if (entry.isDirectory) {
-              dirListHtml += "<p>";
-              dirListHtml += "<a href=" + TS.quote + "#" + TS.quote + " onclick=\"return localBrowseRequest('"
-          += hex.encode(p.toString()) += "');\">" += "DIR  " += p.name += "</a>";
-              dirListHtml += "</p>";
+              dirListHtml += "<tr>";
+              dirListHtml += "<td>DIR</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"return localBrowseRequest('"
+          += hex.encode(p.toString()) += "');\">" += htmle.encode(p.name) += "</a></td>";
+              dirListHtml += "</tr>";
             } else {
-              dirListHtml += "<p>";
-              dirListHtml += "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += "FILE " += p.name += " " += entry.size += "</a>";
-              dirListHtml += "&nbsp;<input type=\"checkbox\" id=\"FCB"
-              += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\">";
-              
-              //dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"deleteRequest('"
-              //+= hex.encode(p.toString()) += "');\">DELETE</a>";
-              //dirListHtml += "&nbsp;<a href=" + TS.quote + "#" + TS.quote + " onclick=\"copyRequest('"
-              //+= hex.encode(p.toString()) += "');\">COPY</a>";
-            
-              dirListHtml += "</p>";
+              dirListHtml += "<tr>";
+              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
+              dirListHtml += "<td><input type=\"checkbox\" id=\"FCB"
+              += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\"></td>";
+              dirListHtml += "</tr>";
             }
           }
           dit.close();
         }
+        dirListHtml += "</table>";
       }
       ret.put("action", "localBrowseResponse");
       ret.put("dirListHtml", dirListHtml);

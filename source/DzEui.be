@@ -52,6 +52,11 @@ var localBrowseRequest = function(forId) {
   dzeui.bem_localBrowseRequest_1(theId);
 }
 
+var loadAccountRequest = function(forId) {
+  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
+  dzeui.bem_loadAccountRequest_1(theId);
+}
+
 var deleteSelected = function() {
   dzeui.bem_deleteRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
@@ -176,13 +181,31 @@ use class Dz:Eui {
      HD.getElementById("accountLinksDiv").innerHTML = arg["accountLinks"];
    }
    
-   hideAccountAdmin() {
-     HD.getElementById("accountAdminDiv").display = "none";
+   clearAccountAdmin() {
      HD.getElementById("aadminName").value = "";
      HD.getElementById("aadminPass").value = "";
      HD.getElementById("aadminPass2").value = "";
      HD.getElementById("aadminIsAdmin").checked = false;
      HD.getElementById("aadminIsWebcam").checked = false;
+   }
+   
+   hideAccountAdmin() {
+     HD.getElementById("accountAdminDiv").display = "none";
+     clearAccountAdmin();
+   }
+   
+   loadAccountRequest(String accountName) {
+      clearAccountAdmin();
+      Map arg = Map.new();
+      arg["accountName"] = accountName;
+      arg["action"] = "loadAccountRequest";
+      HC.new(self).call(arg);
+   }
+   
+   loadAccountResponse(Map arg) {
+     HD.getElementById("aadminName").value = arg["accountName"];
+     HD.getElementById("aadminIsAdmin").checked = arg["admin"];
+     HD.getElementById("aadminIsWebcam").checked = arg["allcam"];
    }
    
    saveAccountRequest() {
@@ -199,7 +222,7 @@ use class Dz:Eui {
        }
        arg["accountPass"] = pass;
      }
-     hideAccountAdmin();
+     clearAccountAdmin();
      HC.new(self).call(arg);
    }
    
