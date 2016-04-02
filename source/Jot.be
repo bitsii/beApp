@@ -415,7 +415,7 @@ class Upnp {
       
       client.outputHeaders.put("SoapAction", "urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress");
       
-      client.method = "POST";
+      client.verb = "POST";
       String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'> <s:Body> <u:GetExternalIPAddress xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\" /> </s:Body> </s:Envelope>";
       client.openOutput().write(payload);
       String res = client.openInput().readString();
@@ -456,7 +456,7 @@ class Upnp {
       
       client.outputHeaders.put("SoapAction", "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping");
       
-      client.method = "POST";
+      client.verb = "POST";
       //String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'> <s:Body> <u:GetExternalIPAddress xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\" /> </s:Body> </s:Envelope>";
       
       String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'><s:Body><u:AddPortMapping xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\"><NewRemoteHost></NewRemoteHost> <NewExternalPort>" + external.toString() + "</NewExternalPort><NewProtocol>TCP</NewProtocol> <NewInternalPort>" + internal.toString() + "</NewInternalPort> <NewInternalClient>" + internalIP + "</NewInternalClient> <NewEnabled>1</NewEnabled> <NewPortMappingDescription>node:nat:upnp</NewPortMappingDescription> <NewLeaseDuration>" + duration.toString() + "</NewLeaseDuration> </u:AddPortMapping> </s:Body> </s:Envelope>";
@@ -886,7 +886,7 @@ private static void wakeOnLan(String hex) throws Exception
     Bool upRes = false;
     Web:Client client = Web:Client.new();
     client.url = "https://127.0.0.1:" + port + "/";
-    client.method = "POST";
+    client.verb = "POST";
     client.outputContentType =@ "application/json";
     String payload = Json:Marshaller.new().marshall(self.codeRequest);
     client.openOutput().write(payload).close();
@@ -1220,7 +1220,7 @@ private static void wakeOnLan(String hex) throws Exception
     var e;
     try {
       Web:Client client = Web:Client.new();
-      client.method = "GET";
+      client.verb = "GET";
       client.url = "http://checkip.dyndns.org/";
       String res = client.openInput().readString();
       client.close();
@@ -2673,7 +2673,7 @@ use class Ve:WebLui {
           log.log(lvl, "using output sesskey " + sesskey);
           client.outputHeaders.put("sesskey", sesskey);
         }
-        client.method = "POST";
+        client.verb = "POST";
         client.outputContentType =@ "application/json";
         String payload = Json:Marshaller.new().marshall(arg);
         log.log(lvl, "proxy payload is " + payload);
@@ -2877,7 +2877,7 @@ use class Ve:WebLui {
             Web:Client:CertificateManager.validateCertificates = false;
             Web:Client client = Web:Client.new();
             client.url = arg["gnsUrl"];
-            client.method = "POST";
+            client.verb = "POST";
             client.outputContentType =@ "application/json";
             String payload = Json:Marshaller.new().marshall(gnsReg);
             client.openOutput().write(payload).close();
@@ -3146,7 +3146,7 @@ use class Ve:WebLui {
         send.put("sendTs", Time:Interval.now().seconds);
         send.put("ifaces", app.ifaces);
         client.outputHeaders["send"] = app.encrypt(link, send);
-        client.method = "POST";
+        client.verb = "POST";
         client.outputContentType =@ "application/octet-stream";
         
         try {
@@ -3314,7 +3314,7 @@ use class Ve:DisLui {
           String url =  "https://duckdns.org/update/" + duckDomain + "/" + duckToken;
           Web:Client client = Web:Client.new();
           Web:Client:CertificateManager.validateCertificates = false;
-          client.method = "GET";
+          client.verb = "GET";
           client.url = url;
           String res = client.openInput().readString();
           client.close();
@@ -3336,7 +3336,7 @@ use class Ve:DisLui {
             Web:Client:CertificateManager.validateCertificates = false;
             client = Web:Client.new();
             client.url = gwurl;
-            client.method = "POST";
+            client.verb = "POST";
             client.outputContentType =@ "application/json";
             String payload = Json:Marshaller.new().marshall(gnsReq);
             client.openOutput().write(payload).close();
@@ -3424,7 +3424,7 @@ use class Ve:DisLui {
       String port = app.configs.get("web", "port");
       Web:Client client = Web:Client.new();
       client.url = "https://127.0.0.1:" + port + "/";
-      client.method = "POST";
+      client.verb = "POST";
       client.outputContentType =@ "application/json";
       String payload = Json:Marshaller.new().marshall(app.codeRequest);
       log.log(lvl, "payload is " + payload);
@@ -4917,7 +4917,7 @@ class Ve:LuiTest(Test:Assertions) {
         Web:Client client = Web:Client.new();
         client.url = "https://127.0.0.1:10000/vk/Vk";
         //client.url = "http://google.com:8080/vk/Vk";
-        client.method = "POST";
+        client.verb = "POST";
         client.outputContentType =@ "application/json";
         String payload = Json:Marshaller.new().marshall("hai");
         ("payload is " + payload).print();

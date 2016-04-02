@@ -431,7 +431,7 @@ use class Web:Client {
     new() self {
         properties {
             String outputContentType;
-            String method;
+            String verb;
             IO:Writer outputWriter;
             IO:Reader inputReader;
             String url;
@@ -518,8 +518,8 @@ use class Web:Client {
       outputWriter = IO:Writer.new();
       emit(cs) {
         """
-        if (bevp_method != null) {
-            bevi_request.Method = bevp_method.bems_toCsString();
+        if (bevp_verb != null) {
+            bevi_request.Method = bevp_verb.bems_toCsString();
         }
         bevp_outputWriter.bevi_os = bevi_request.GetRequestStream();
         if (bevl_ssl != null) {
@@ -532,8 +532,8 @@ use class Web:Client {
         }
         emit(jv) {
         """
-		    if (bevp_method != null) {
-            bevi_conn.setRequestMethod(bevp_method.bems_toJvString());
+		    if (bevp_verb != null) {
+            bevi_conn.setRequestMethod(bevp_verb.bems_toJvString());
         }
         bevi_conn.setDoOutput(true);
         bevp_outputWriter.bevi_os = bevi_conn.getOutputStream();
