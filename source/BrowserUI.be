@@ -63,7 +63,7 @@ use UI:WebBrowser as WeBr;
 class UI:WebBrowser {
 
   new() self {
-    vars {
+    properties {
       Bool haveSetup = false;
       String title = "WebBrowser";
       Int height = 500;
@@ -377,7 +377,7 @@ class CM {
 
   //bevs_inst
   default() self {
-    vars {
+    properties {
       Bool checkHosts = true;
       Bool validateCertificates = true;
       Bool validateHosts = true;
@@ -556,7 +556,7 @@ use class Web:Client {
     }
     
     openInput() IO:Reader {
-        vars {
+        properties {
           Map inputHeaders = Map.new();
         }
         String ihkey;
@@ -715,7 +715,7 @@ use class Web:SessionManager {
   }
   
   new(_sessions, String _keyName) self {
-    vars {
+    properties {
       var sessions = _sessions;
       String keyName = _keyName;
       Int keyLen = 16;

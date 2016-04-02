@@ -70,7 +70,7 @@ use class Web:Server {
   }
   
   init() {
-    vars {
+    properties {
       Int port = 8080;
       var app;
       Bool ssl = false;
@@ -153,7 +153,7 @@ use class Web:Server {
       } else {
         bt = "http://+:" += port.toString() + "/";
       }
-      vars {
+      properties {
         String listenerPrefix = bt;
       }
     }
@@ -496,7 +496,7 @@ use class Web:ScriptRequest {
    }
    
    getSession(String name) String {
-     vars {
+     properties {
        var sessionManager;
      }
      if (def(sessionManager)) {

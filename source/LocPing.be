@@ -101,7 +101,7 @@ use class App:LocPing {
     }
     
     configManagerGet() KvDb {
-      vars {
+      properties {
         KvDb configManager;
       }
       if (undef(configManager)) {
@@ -142,7 +142,7 @@ use class App:LocPing {
    }
    
    pathsGet() App:Paths {
-    vars {
+    properties {
       App:Paths paths;
     }
     if (undef(paths)) {

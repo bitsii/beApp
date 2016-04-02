@@ -108,7 +108,7 @@ window.onload = startup;
 use class Dz:Eui {
 
   new() self {
-        properties {
+        fields {
           String currentlyCheckedId;
         }
     }

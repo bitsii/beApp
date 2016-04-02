@@ -103,7 +103,7 @@ public static class MainActivity extends AppCompatActivity {
    }
    
    setupStuff() {
-     vars {
+     properties {
         IO:Log log = IO:Log.new();
         //Int lvl = log.debug;
         Int lvl = log.info;

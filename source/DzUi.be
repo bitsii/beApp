@@ -31,7 +31,7 @@ use App:Alert;
 use class Dz:Lui(Ui) {
 
   new() self {
-        properties {
+        fields {
           WeBr webr;
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
         }
@@ -96,7 +96,7 @@ use class Dz:Wui(Ui) {
   }
 
   new() self {
-        properties {
+        fields {
         }
         super.new();
         bg.startBackground();
@@ -117,7 +117,7 @@ use class Dz:Wui(Ui) {
       vw.sslPath = cerPath;
       vw.app = self;
       vw.gzipOutput = true;
-      vars {
+      fields {
         System:Thread myThread = System:Thread.new(vw);
       }
       log.log(lvl, "Starting Web");
@@ -191,7 +191,7 @@ use class Dz:Wui(Ui) {
               );
     """
     }
-    vars {
+    fields {
       String certificateThumbprint;
     }
     log.log(lvl, "certificateThumbprint " + certificateThumbprint);
@@ -353,7 +353,7 @@ use class Net:Interface {
  new(String _description, String _macAddress, String _name, 
      String _status, 
      String _address) self {
-   properties {
+   fields {
      String description = _description;
      String macAddress = _macAddress;
      String name = _name;
@@ -632,7 +632,7 @@ use Net:UPnP as Upnp;
 class Upnp {
 
   new() self {
-    vars {
+    fields {
       String netGw;
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
@@ -681,7 +681,7 @@ class Upnp {
   }
   
   deviceURLGet() String {
-    vars {
+    fields {
       String deviceURL;
     }
     if (def(deviceURL)) {
@@ -794,7 +794,7 @@ class Upnp {
     
     controlURLGet() String {
       var e;
-      vars {
+      fields {
         String controlURL;
       }
       if (def(controlURL)) {
@@ -856,7 +856,7 @@ class Upnp {
     }
     
     internalIPGet() {
-      vars {
+      fields {
         String internalIP;
       }
       if (def(internalIP)) {
@@ -911,7 +911,7 @@ use class Dz:DnsUpdate {
 
   new() self {
   
-    vars {
+    fields {
       String duckDomain;
       String duckToken;
       var app;
@@ -964,7 +964,7 @@ use class Dz:UpnpUpdate {
 
   new() self {
   
-    vars {
+    fields {
       var app;
       Int lvl;
       IO:Log log;
@@ -1117,7 +1117,7 @@ use class Dz:UpnpUpdate {
   }
   
   init() {
-    vars {
+    fields {
       String gw;
       String intAddress;
       String extAddress;
@@ -1177,7 +1177,7 @@ use class Dz:UpnpUpdate {
 use class Dz:Background {
 
   new() self {
-    vars {
+    fields {
       var app;
       Int lvl;
       IO:Log log;
@@ -1209,7 +1209,7 @@ use class Dz:Background {
   }
   
   startBackground() {
-    vars {
+    fields {
       System:Thread myThread;
       Int sleepTime = 500;
     }
@@ -1248,7 +1248,7 @@ import javax.mail.Flags.Flag;
 use class Dz:Ui {
 
   new() self {
-      properties {
+      fields {
         IO:Log log = IO:Log.new();
         log.level = log.info;
         Int lvl = log.level;
@@ -1406,7 +1406,7 @@ use class Dz:Ui {
   }
   
   deviceNameGet() String {
-    vars {
+    fields {
       String deviceName;
     }
     if (TS.isEmpty(deviceName)) {
@@ -1420,7 +1420,7 @@ use class Dz:Ui {
   }
   
   deviceIdGet() String {
-    vars {
+    fields {
       String deviceId;
     }
     if (TS.isEmpty(deviceId)) {
@@ -1434,7 +1434,7 @@ use class Dz:Ui {
   }
   
   internalPortGet() String {
-      vars {
+      fields {
         String intPort;
       }
       if (TS.isEmpty(intPort)) {
@@ -1450,7 +1450,7 @@ use class Dz:Ui {
     }
     
     externalPortGet() String {
-      vars {
+      fields {
         String extPort;
       }
       if (TS.isEmpty(extPort)) {
@@ -1466,7 +1466,7 @@ use class Dz:Ui {
     }
   
   pathsGet() App:Paths {
-    vars {
+    fields {
       App:Paths paths;
     }
     if (undef(paths)) {
@@ -1476,7 +1476,7 @@ use class Dz:Ui {
   }
   
   configManagerGet() CLocker {
-    vars {
+    fields {
       CLocker configManager;
     }
     if (undef(configManager)) {
@@ -1490,7 +1490,7 @@ use class Dz:Ui {
   }
   
   sessionManagerGet() Web:SessionManager {
-    vars {
+    fields {
       Web:SessionManager sessionDb;
     }
     if (undef(sessionDb)) {
@@ -1549,7 +1549,7 @@ use class Dz:Ui {
     }
     
     accountManagerGet() AccountManager {
-      properties {
+      fields {
         AccountManager am;
       }
       if (undef(am)) {
@@ -1559,7 +1559,7 @@ use class Dz:Ui {
     }
     
     assureVers() {
-      vars {
+      fields {
         Int majorVer;
         Int minorVer;
       }
@@ -1645,7 +1645,7 @@ use class Dz:Ui {
 use class Dz:CmdUi(Ui) {
 
   new() self {
-        properties {
+        fields {
           WeBr webr;
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
         }
@@ -1764,7 +1764,7 @@ use Crypto:Symmetric as Crypt;
 use class Dz:DzHandler {
 
      new() self {
-       properties {
+       fields {
           IO:Log log;
           Int lvl;
           var app;

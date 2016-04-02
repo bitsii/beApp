@@ -66,7 +66,7 @@ class RS {
   //(keep a "last used" time for all ops)
   
   new(_db, String _tableName, Array _cols) self {
-    vars {
+    properties {
       var db = _db;
       String tableName = _tableName;
       Array cols = _cols;
@@ -251,7 +251,7 @@ use Net:UPnP as Upnp;
 class Upnp {
 
   new(String _netGw) self {
-    vars {
+    properties {
       String netGw = _netGw;
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
@@ -259,7 +259,7 @@ class Upnp {
   }
   
   deviceURLGet() String {
-    vars {
+    properties {
       String deviceURL;
     }
     if (def(deviceURL)) {
@@ -371,7 +371,7 @@ class Upnp {
     
     controlURLGet() String {
       var e;
-      vars {
+      properties {
         String controlURL;
       }
       if (def(controlURL)) {
@@ -432,7 +432,7 @@ class Upnp {
     }
     
     internalIPGet() {
-      vars {
+      properties {
         String internalIP;
       }
       if (def(internalIP)) {
@@ -499,7 +499,7 @@ class NetMulti {
   }
 
   new() self {
-    vars {
+    properties {
       Int timeout = 500;
       Int port = 3000;
       String group = "239.192.100.100";
@@ -1068,7 +1068,7 @@ private static void wakeOnLan(String hex) throws Exception
   
   getSetupForward() Map {
     var e;
-    vars {
+    properties {
       Int nextGwTry;
     }
     try {
@@ -1251,7 +1251,7 @@ private static void wakeOnLan(String hex) throws Exception
     _cols.put(0, "P");
     _cols.put(1, "K");
     _cols.put(2, "V");
-    vars {
+    properties {
       OLocker webLuiL = OLocker.new();
       OLocker luiL = OLocker.new();
       OLocker disLuiL = OLocker.new();
@@ -1738,7 +1738,7 @@ use Db:ConcurrentRowStore as CRS;
 class CRS {
 
   new() self {
-    vars {
+    properties {
       var dbProvider;
       String tableName;
       Array cols;
@@ -1989,7 +1989,7 @@ class Encode:Html {
 use class Ve:WebLui {
 
   new(Ve:App _app) {
-    vars {
+    properties {
       Ve:App app = _app;
       OLocker vwL = OLocker.new();
       OLocker portL = OLocker.new();
@@ -2426,7 +2426,7 @@ use class Ve:WebLui {
     vw.ssl = true;
     vw.sslPath = cerPath;
     vw.app = self;
-    vars {
+    properties {
       System:Thread myThread = System:Thread.new(vw);
     }
     log.log(lvl, "Starting Web");
@@ -3264,7 +3264,7 @@ use class Ve:WebLui {
 
 use class Ve:DisLui {
   new(Ve:App _app) self {
-    vars {
+    properties {
       Ve:App app = _app;
       System:Thread myThread;
       OLocker run = OLocker.new(true);
@@ -3367,7 +3367,7 @@ use class Ve:DisLui {
   
   updateExternalAccess() {
     var e;
-    vars {
+    properties {
       String lastIp;
       Int checkInterval = 1200;
       //Int checkInterval = 10;
@@ -3482,7 +3482,7 @@ use class Ve:DisLui {
     Int lastSec = Time:Interval.now().seconds;
     if (undef(lastGCSec) || 
         Time:Interval.now().seconds - lastGCSec >= disTTL) {
-      vars {
+      properties {
         Int lastGCSec = lastSec;
       }
       for (iter = found.iterator;iter.hasNext;;) {
@@ -3578,7 +3578,7 @@ use class Ve:DisLui {
 
 use class Ve:NanLui {
   new(Ve:App _app) self {
-    vars {
+    properties {
       Ve:App app = _app;
       System:Thread myThread;
       OLocker run = OLocker.new(true);
@@ -3728,7 +3728,7 @@ use class Ve:Lui {
         log.log(lvl, "mode empty");
       }
       //mode = "test";
-      vars {
+      properties {
         OLocker startSvcs = OLocker.new(true);
         String startMode = mode;
       }
@@ -3737,7 +3737,7 @@ use class Ve:Lui {
           startSvcs.o = false;
         }
         if (args.length > 1) {
-          vars {
+          properties {
             String useGateway = args[1]; //only not prod
           }
         }
@@ -3798,7 +3798,7 @@ use class Ve:Lui {
          app.luiL.o = self;
          log = app.log;
          lvl = app.shlvl;
-         vars {
+         properties {
            Ve:WebLui webLui = Ve:WebLui.new(app); //my instance, for shared
            //ui logic
          }
@@ -4624,7 +4624,7 @@ use Crypto:Symmetric as Crypt;
 class Crypt {
 
   new() self {
-    vars {
+    properties {
       Int keyLength = 16;
       Int ivLength = 16;
     }
@@ -4981,7 +4981,7 @@ class Ve:LuiTest(Test:Assertions) {
   }
   
   dbGet() DbDb {
-    vars {
+    properties {
       DbDb pdb;
     }
     if (def(pdb)) {

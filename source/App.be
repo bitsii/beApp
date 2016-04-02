@@ -231,7 +231,7 @@ class AppEv {
   }
   
   default() {
-    vars {
+    properties {
       Map registry = Map.new();
     }
   }
@@ -257,7 +257,7 @@ use Crypto:Symmetric as Crypt;
 class Crypt {
 
   new() self {
-    vars {
+    properties {
       Int keyLength = 16;
       Int ivLength = 16;
     }

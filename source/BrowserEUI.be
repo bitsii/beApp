@@ -99,7 +99,7 @@ class HE {
 class HC {
 
   new(_callback) self {
-    vars {
+    properties {
       Json:Marshaller mar = Json:Marshaller.new();
       Json:Unmarshaller unmar = Json:Unmarshaller.new();
       var callback = _callback;
