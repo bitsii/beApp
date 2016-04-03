@@ -43,7 +43,7 @@ use UI:WebBrowserImpl as WebImp;
 class WebImp {
 
   new() self {
-    properties {
+    fields {
       var setupHandler;
       var webHandler;
     }
@@ -63,7 +63,7 @@ use UI:WebBrowser as WeBr;
 class UI:WebBrowser {
 
   new() self {
-    properties {
+    fields {
       Bool haveSetup = false;
       String title = "WebBrowser";
       Int height = 500;
@@ -179,7 +179,7 @@ class WfBr(WebImp) {
     
     new() self {
      
-     properties {
+     fields {
       Map session = Map.new();
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
@@ -377,7 +377,7 @@ class CM {
 
   //bevs_inst
   default() self {
-    properties {
+    fields {
       Bool checkHosts = true;
       Bool validateCertificates = true;
       Bool validateHosts = true;
@@ -429,7 +429,7 @@ use class Web:Client {
    }
 
     new() self {
-        properties {
+        fields {
             String outputContentType;
             String verb;
             IO:Writer outputWriter;
@@ -556,7 +556,7 @@ use class Web:Client {
     }
     
     openInput() IO:Reader {
-        properties {
+        fields {
           Map inputHeaders = Map.new();
         }
         String ihkey;
@@ -653,7 +653,7 @@ use class Web:Client {
 use class UI:BrowserScriptRequest {
 
     new(Map _session) self {
-        properties {
+        fields {
             Map session = _session;
             String contentIn;
             String contentOut;
@@ -676,7 +676,7 @@ use class UI:BrowserScriptRequest {
    }
    
    scriptArgJsonSet(String arg) {
-     properties {
+     fields {
        String scriptArgJson = arg;
      }
    }
@@ -690,7 +690,7 @@ use class UI:BrowserScriptRequest {
    }
    
    scriptReturnSet(ret) {
-     properties {
+     fields {
        String scriptReturnJson;
      }
      scriptReturnJson = mar.marshall(ret);
@@ -715,7 +715,7 @@ use class Web:SessionManager {
   }
   
   new(_sessions, String _keyName) self {
-    properties {
+    fields {
       var sessions = _sessions;
       String keyName = _keyName;
       Int keyLen = 16;

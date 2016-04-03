@@ -60,7 +60,7 @@ window.onload = startup;
 use class App:LocPing:LPBr {
 
   new() self {
-        properties {
+        fields {
         }
     }
     

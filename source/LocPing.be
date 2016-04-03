@@ -27,7 +27,7 @@ use App:Alert;
 use class MP:Hello {
 
      new() self {
-       properties {
+       fields {
           IO:Log log;
           Int lvl;
           var app;
@@ -48,7 +48,7 @@ use class MP:Hello {
 use class MP:LpHandler {
 
      new() self {
-       properties {
+       fields {
           IO:Log log;
           Int lvl;
           var app;
@@ -84,7 +84,7 @@ use class App:LocPing {
     
        
    new() self {
-        properties {
+        fields {
           WeBr webr;
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
           IO:Log log = IO:Log.new();
@@ -101,7 +101,7 @@ use class App:LocPing {
     }
     
     configManagerGet() KvDb {
-      properties {
+      fields {
         KvDb configManager;
       }
       if (undef(configManager)) {
@@ -142,7 +142,7 @@ use class App:LocPing {
    }
    
    pathsGet() App:Paths {
-    properties {
+    fields {
       App:Paths paths;
     }
     if (undef(paths)) {

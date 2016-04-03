@@ -70,7 +70,7 @@ use class Web:Server {
   }
   
   init() {
-    properties {
+    fields {
       Int port = 8080;
       var app;
       Bool ssl = false;
@@ -153,7 +153,7 @@ use class Web:Server {
       } else {
         bt = "http://+:" += port.toString() + "/";
       }
-      properties {
+      fields {
         String listenerPrefix = bt;
       }
     }
@@ -496,7 +496,7 @@ use class Web:ScriptRequest {
    }
    
    getSession(String name) String {
-     properties {
+     fields {
        var sessionManager;
      }
      if (def(sessionManager)) {
@@ -512,7 +512,7 @@ use class Web:ScriptRequest {
    }
 
     new() self {
-        properties {
+        fields {
             IO:Writer outputWriter;
             String outputContentType =@ "text/html"; //sensible default
             Bool outputOpened = false;
@@ -553,7 +553,7 @@ use class Web:ScriptRequest {
     }
     
     shouldGzipOutputGet() Bool {
-      properties {
+      fields {
         Bool gzipOutput;
       }
       if (def(gzipOutput) && gzipOutput) {
@@ -583,7 +583,7 @@ use class Web:ScriptRequest {
     }
     
     openInputReader() IO:Reader {
-      properties {
+      fields {
         IO:Reader inputReader;
       }
       inputReader = IO:Reader.new();

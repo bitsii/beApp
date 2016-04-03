@@ -46,7 +46,7 @@ use class App:Paths {
 use class App:AccountManager {
 
   new() self {
-    properties {
+    fields {
       var kvDb;
       String prefix;
       Json:Marshaller mar = Json:Marshaller.new();
@@ -95,14 +95,14 @@ use class App:AccountManager {
 use class App:Account {
 
   new() self {
-    properties {
+    fields {
       Set perms = Set.new();
     }
   }
 
   new(String _user, String _hashPass, String _salt, String _permsString) self {
     new();
-    properties {
+    fields {
       String user = _user;
       String pass = _hashPass;
       String salt = _salt;
@@ -231,7 +231,7 @@ class AppEv {
   }
   
   default() {
-    properties {
+    fields {
       Map registry = Map.new();
     }
   }
@@ -257,7 +257,7 @@ use Crypto:Symmetric as Crypt;
 class Crypt {
 
   new() self {
-    properties {
+    fields {
       Int keyLength = 16;
       Int ivLength = 16;
     }

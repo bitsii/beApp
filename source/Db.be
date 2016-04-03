@@ -41,13 +41,13 @@ public Connection bevi_trans = null;
 }
 
   new(String _db) self {
-    properties {
+    fields {
       String db = _db;
     }
   }
   
   pathNew(IO:File:Path _dbp) self {
-    properties {
+    fields {
       IO:File:Path dbp = _dbp;
     }
   }
@@ -224,7 +224,7 @@ public ResultSet bevi_res = null;
 }
   
    new(String _stmt, DbDb _db) self {
-     properties {
+     fields {
         String stmt = _stmt;
         DbDb db = _db;
         Bool nextWaiting = false;
@@ -233,7 +233,7 @@ public ResultSet bevi_res = null;
    
    new(String _stmt, DbDb _db, Array _vals) self {
      new(_stmt, _db);
-     properties {
+     fields {
       Array vals = _vals;
      }
    }
@@ -563,7 +563,7 @@ use Db:KeyValue as KvDb;
 class KvDb {
 
   new() self {
-    properties {
+    fields {
       DbDb db;
       String tableName;
     }

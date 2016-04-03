@@ -124,7 +124,7 @@ class FxBr(WebImp) {
    }
    
    setupStuff() {
-     properties {
+     fields {
         IO:Log log = IO:Log.new();
         //Int lvl = log.debug;
         Int lvl = log.info;
