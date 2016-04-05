@@ -230,7 +230,7 @@ class AppEv {
     return(registry.get(label));
   }
   
-  default() {
+  default() self {
     fields {
       Map registry = Map.new();
     }

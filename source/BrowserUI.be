@@ -41,16 +41,12 @@ using System.Diagnostics;
 
 use UI:WebBrowserImpl as WebImp;
 class WebImp {
-
-  new() self {
+  
+  setup() {
     fields {
       var setupHandler;
       var webHandler;
     }
-  }
-  
-  setup() {
-  
   }
   
   close() {
@@ -148,6 +144,8 @@ class WfBr(WebImp) {
      """
      }
    }
+   
+   
 
     default() self {
 
