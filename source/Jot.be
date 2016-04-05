@@ -888,11 +888,11 @@ private static void wakeOnLan(String hex) throws Exception
     client.url = "https://127.0.0.1:" + port + "/";
     client.verb = "POST";
     client.outputContentType =@ "application/json";
-    String payload = Json:Marshaller.new().marshall(self.codeRequest);
+    String payload = Json:Marshaller.marshall(self.codeRequest);
     client.openOutput().write(payload).close();
     String res = client.openInput().readString();
     client.close();
-    Map resMap = Json:Unmarshaller.new().unmarshall(res);
+    Map resMap = Json:Unmarshaller.unmarshall(res);
     if (TS.notEmpty(resMap["action"]) && resMap["action"] == "deviceCodeSuccessResponse") {
       String gotPrint = client.certificateThumbprint;
       if (TS.notEmpty(gotPrint)
@@ -1516,7 +1516,7 @@ private static void wakeOnLan(String hex) throws Exception
    }
   
   encrypt(Map rlink, Map lidReq) String {
-    String lidJson = Json:Marshaller.new().marshall(lidReq);
+    String lidJson = Json:Marshaller.marshall(lidReq);
     String fullSecret = rlink["secret"];
     String iv = fullSecret.substring(0, 16);
     String pass = fullSecret.substring(16);
@@ -1535,7 +1535,7 @@ private static void wakeOnLan(String hex) throws Exception
     log.log(lvl, " iv|" + iv + "| pass | " + pass + "|");
     Crypt crypt = Crypt.new();
     String lrs = crypt.decryptPassFromHex(iv, pass, clink);
-    Map lidRes = Json:Unmarshaller.new().unmarshall(lrs);
+    Map lidRes = Json:Unmarshaller.unmarshall(lrs);
     return(lidRes);
   }
   
@@ -1692,7 +1692,7 @@ private static void wakeOnLan(String hex) throws Exception
     }
     Array txts = Array.new();
     String dname = lid[1];
-    String payload = Json:Marshaller.new().marshall(lid);
+    String payload = Json:Marshaller.marshall(lid);
     String sha = Encode:Hex.encode(Digest:SHA256.digest(payload));
     String txt = dname + "-" + sha.substring(0, 4);
     txts += txt;
@@ -2043,14 +2043,14 @@ use class Ve:WebLui {
     offer["id"] = linkId;
     offer["name"] = arg["offerName"];
     offer["secret"] = secret;
-    String offers = Json:Marshaller.new().marshall(offer);
+    String offers = Json:Marshaller.marshall(offer);
     Crypt crypt = Crypt.new();
     String cryptedOffer = crypt.encryptPassToHex(iv, pass, offers);
     Map off = Map.new();
     off["name"] = arg["offerName"];
     off["iv"] = iv;
     off["offer"] = cryptedOffer;
-    String offs = Encode:Hex.new().encode(Json:Marshaller.new().marshall(off));
+    String offs = Encode:Hex.new().encode(Json:Marshaller.marshall(off));
     app.links.put(link["id"], link);
     app.accounts.put(account["accountName"], "LINK-" + link["name"], link["id"]);
     Map res = Map.new();
@@ -2068,7 +2068,7 @@ use class Ve:WebLui {
     if (TS.isEmpty(arg["acceptPassword"]) || TS.isEmpty(arg["acceptText"])) {
       throw(Alert.new("Link Password and Link Offer are required"));
     }
-    Map off = Json:Unmarshaller.new().unmarshall(Encode:Hex.new().decode(arg["acceptText"]));
+    Map off = Json:Unmarshaller.unmarshall(Encode:Hex.new().decode(arg["acceptText"]));
     log.log(lvl, "crypt ins " + off["iv"] + " " + off["offer"] + " " + arg["acceptPassword"]);
     Crypt crypt = Crypt.new();
     try {
@@ -2076,7 +2076,7 @@ use class Ve:WebLui {
     } catch (e) {
       throw(Alert.new("Link password incorrect, pls confirm and try again"));
     }
-    Map offer = Json:Unmarshaller.new().unmarshall(offers);
+    Map offer = Json:Unmarshaller.unmarshall(offers);
     if (TS.isEmpty(offer["id"]) || TS.isEmpty(offer["name"]) || TS.isEmpty(offer["secret"])) {
       throw(Alert.new("Malformed link offer"));
     }
@@ -2675,7 +2675,7 @@ use class Ve:WebLui {
         }
         client.verb = "POST";
         client.outputContentType =@ "application/json";
-        String payload = Json:Marshaller.new().marshall(arg);
+        String payload = Json:Marshaller.marshall(arg);
         log.log(lvl, "proxy payload is " + payload);
         for (Int i = 0;i < 3;i++=) {
           IO:Writer writer = client.openOutput();
@@ -2689,7 +2689,7 @@ use class Ve:WebLui {
             log.log(lvl, "thumbprint mismatch for proxy");
             Map prime = Map.new();
             prime["action"] = "primeRequest";
-            String primeLoad = Json:Marshaller.new().marshall(prime);
+            String primeLoad = Json:Marshaller.marshall(prime);
             writer.write(primeLoad).close();
             res = client.openInput().readString();
             client.close();
@@ -2723,7 +2723,7 @@ use class Ve:WebLui {
         //  log.log(lvl, "Got inputheader " + kv.key + " " + kv.value);
         //}
         
-        Map resm = Json:Unmarshaller.new().unmarshall(res);
+        Map resm = Json:Unmarshaller.unmarshall(res);
         
         Web:Client:CertificateManager.acceptedThumbprints.delete(pprint);
         } catch (e) {
@@ -2879,11 +2879,11 @@ use class Ve:WebLui {
             client.url = arg["gnsUrl"];
             client.verb = "POST";
             client.outputContentType =@ "application/json";
-            String payload = Json:Marshaller.new().marshall(gnsReg);
+            String payload = Json:Marshaller.marshall(gnsReg);
             client.openOutput().write(payload).close();
             String res = client.openInput().readString();
             client.close();
-            Map resMap = Json:Unmarshaller.new().unmarshall(res);
+            Map resMap = Json:Unmarshaller.unmarshall(res);
             if (resMap["action"] != "gnsRegisterSuccessResponse") {
               throw(Alert.new("GNS Registration failed"));
             }
@@ -3093,7 +3093,7 @@ use class Ve:WebLui {
       Map lidReq = Map.new();
       lidReq.put("rtype", "relinkrq");
       lidReq.put("linkId", link["id"]);
-      String lidJson = Json:Marshaller.new().marshall(lidReq);
+      String lidJson = Json:Marshaller.marshall(lidReq);
       NetMulti nm = NetMulti.new();
       nm.port = 1968;
       nm.group = "239.192.98.99";
@@ -3338,11 +3338,11 @@ use class Ve:DisLui {
             client.url = gwurl;
             client.verb = "POST";
             client.outputContentType =@ "application/json";
-            String payload = Json:Marshaller.new().marshall(gnsReq);
+            String payload = Json:Marshaller.marshall(gnsReq);
             client.openOutput().write(payload).close();
             res = client.openInput().readString();
             client.close();
-            Map resMap = Json:Unmarshaller.new().unmarshall(res);
+            Map resMap = Json:Unmarshaller.unmarshall(res);
             if (resMap["action"] != "gnsUpdateSuccessResponse") {
               log.log(lvl, "gns update failed");
               throw(Exception.new("GNS Update failed"));
@@ -3426,7 +3426,7 @@ use class Ve:DisLui {
       client.url = "https://127.0.0.1:" + port + "/";
       client.verb = "POST";
       client.outputContentType =@ "application/json";
-      String payload = Json:Marshaller.new().marshall(app.codeRequest);
+      String payload = Json:Marshaller.marshall(app.codeRequest);
       log.log(lvl, "payload is " + payload);
       client.openOutput().write(payload).close();
       
@@ -3435,7 +3435,7 @@ use class Ve:DisLui {
       String gotPrint = client.certificateThumbprint;
       client.close();
       client = null;
-      Map resMap = Json:Unmarshaller.new().unmarshall(res);
+      Map resMap = Json:Unmarshaller.unmarshall(res);
       if (TS.isEmpty(resMap["action"]) || resMap["action"] != "deviceCodeSuccessResponse") {
         throw(Exception.new("bad code in startWebInner"));
       }
@@ -3520,7 +3520,7 @@ use class Ve:DisLui {
     for (var iter = found.iterator;iter.hasNext;;) {
       var kv = iter.next;
       try {
-        Map lidRes = Json:Unmarshaller.new().unmarshall(kv.key);
+        Map lidRes = Json:Unmarshaller.unmarshall(kv.key);
         fips = kv.value;
         if (def(lidRes["rtype"])) {
           if (lidRes["rtype"] == "relinkrq") {
@@ -3538,7 +3538,7 @@ use class Ve:DisLui {
               lidReq.put("linkId", linkId);
               lidReq.put("link", lrs);
               lidReq.put("rtype", "relinkrs");
-              String lidJson = Json:Marshaller.new().marshall(lidReq);
+              String lidJson = Json:Marshaller.marshall(lidReq);
               nm.outputContent = lidJson;
               nm.outputContent = lidJson;
             }
@@ -4919,7 +4919,7 @@ class Ve:LuiTest(Test:Assertions) {
         //client.url = "http://google.com:8080/vk/Vk";
         client.verb = "POST";
         client.outputContentType =@ "application/json";
-        String payload = Json:Marshaller.new().marshall("hai");
+        String payload = Json:Marshaller.marshall("hai");
         ("payload is " + payload).print();
         client.openOutput().write(payload).close();
         
