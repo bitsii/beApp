@@ -412,7 +412,7 @@ class HsDb(DbDb) {
     super.open();
   }
   
-  copy() {
+  copy() self {
     return(HsDb.pathNew(dbp));
   }
   
@@ -440,7 +440,7 @@ class Db:Derby:Database(DbDb) {
     super.open();
   }
   
-  copy() {
+  copy() self {
     return(Derby.pathNew(dbp));
   }
 
@@ -468,7 +468,7 @@ class Db:Firebird:Database(DbDb) {
     super.open();
   }
   
-  copy() {
+  copy() self {
     return(FbDb.pathNew(dbp));
   }
   
