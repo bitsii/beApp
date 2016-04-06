@@ -2233,7 +2233,7 @@ use class Dz:DzHandler {
    
   cmdLinksForAccount(Account a) String {
      String cmdLinks = String.new();
-     Set ecm = app.configManager.getMap("CMD." + a.user + "!");
+     Map ecm = app.configManager.getMap("CMD." + a.user + "!");
      foreach (var kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
