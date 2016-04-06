@@ -1964,7 +1964,7 @@ class Alert(Exception) {
 
 class Encode:Html {
 
-  create() { }
+  create() self { }
     
   default() self { }
 
