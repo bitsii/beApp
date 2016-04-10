@@ -2180,11 +2180,11 @@ use class Dz:DzHandler {
           while (dit.hasNext) {
             File entry = dit.next;
             Path p = entry.path;
-            if (entry.isDirectory) {
+            if (entry.isDirectory || p.toString().ends(".jpg")) {
               dirListHtml += "<tr>";
               dirListHtml += "<td>DIR</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"return localBrowseRequest('"
           += hex.encode(p.toString()) += "');\">" += htmle.encode(p.name) += "</a></td>";
-              dirListHtml += "</tr>";
+              dirListHtml += "</tr>";   
             } else {
               dirListHtml += "<tr>";
               dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
@@ -2194,6 +2194,11 @@ use class Dz:DzHandler {
             }
           }
           dit.close();
+        } elif (dirFile.path.toString().ends(".jpg")) {
+          Map res = Map.new();
+          res["action"] = "updateImageResponse";
+          res["imghtm"] = "<img src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
+          return(res);
         }
         dirListHtml += "</table>";
       }
