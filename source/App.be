@@ -69,10 +69,12 @@ use class App:AccountManager {
   }
 
   getAccount(String user) {
-    String aj = kvDb.get(prefix + user);
-    if (TS.notEmpty(aj)) {
-      Account a = Account.mapNew(unmar.unmarshall(aj));
-    }
+    if (TS.notEmpty(user)) {
+		String aj = kvDb.get(prefix + user);
+		if (TS.notEmpty(aj)) {
+		  Account a = Account.mapNew(unmar.unmarshall(aj));
+		}
+	}
     return(a);
   }
   

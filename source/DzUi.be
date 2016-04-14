@@ -228,7 +228,11 @@ use class Dz:Wui(Ui) {
     return(isOk);
    }
    
-   checkReadPath(Path p, String accountName) Bool {
+   checkReadPath(Path p, request) Bool {
+    if (requestFromAdmin(request)) {
+      return(true);
+    }
+    String accountName = request.getSession("account.name");
     var e;
     Bool isOk = false;
     if (undef(accountName)) { accountName = ""; }
@@ -302,7 +306,7 @@ use class Dz:Wui(Ui) {
             outw.close();
             request.outputContent = "UPLOAD COMPLETE";
          }
-       } elif (checkReadPath(imgfile.path, accountName)) {
+       } elif (checkReadPath(imgfile.path, request)) {
          log.log(lvl, "imgfile " + imgfile.path);
          if (imgfile.exists) {
           String mtype;
@@ -960,6 +964,57 @@ use class Dz:DnsUpdate {
 
 }
 
+use class Dz:MotionUpdate {
+
+  new() self {
+  
+    fields {
+      Set mocams = Set.new();
+      var app;
+      Int lvl;
+      IO:Log log;
+      Int lastPoll = 0;
+      Int pollSecs = 20;
+    }
+  
+  }
+  
+  updateOnInterval() {
+    Int currSec = Time:Interval.now().seconds;
+    if (currSec - lastPoll > pollSecs) {
+      lastPoll = currSec;
+      doUpdate();
+    }
+  }
+  
+  doUpdate() {
+    log.log(lvl, "in mocams update");
+    getMocams();
+    foreach (String cp in mocams) {
+      log.log(lvl, cp + "is a mocam");
+    }
+  }
+  
+  getMocams() {
+    //log.log(lvl, "Doing getmocams");
+    mocams = Set.new();
+    String cps = app.configManager.get("cam.paths");
+    if (TS.notEmpty(cps)) {
+      foreach (String cp in cps.split(",")) {
+        String mcp = app.configManager.get("cam." + cp + ".motion");
+        if (TS.notEmpty(mcp) && Bool.new(mcp)) {
+          mocams.put(cp);
+        }
+      }
+    }
+  }
+  
+  init() {
+    getMocams();
+  }
+
+}
+
 use class Dz:UpnpUpdate {
 
   new() self {
@@ -1183,6 +1238,7 @@ use class Dz:Background {
       IO:Log log;
       DnsUpdate du = DnsUpdate.new();
       UpnpUpdate uu = UpnpUpdate.new();
+      MotionUpdate mu = MotionUpdate.new();
     }
   }
   
@@ -1190,6 +1246,7 @@ use class Dz:Background {
     //log.log(lvl, "Running tasks");
     du.updateOnInterval();
     uu.updateOnInterval();
+    mu.updateOnInterval();
   }
   
   main() {
@@ -1225,6 +1282,10 @@ use class Dz:Background {
     uu.lvl = lvl;
     uu.log = log;
     uu.init();
+    mu.app = app;
+    mu.lvl = lvl;
+    mu.log = log;
+    mu.init();
     myThread = System:Thread.new(self);
     myThread.start();
   }
@@ -2157,16 +2218,36 @@ use class Dz:DzHandler {
       Encode:Html htmle = Encode:Html.new();
       Map ret = Map.new();
       String path = arg["path"];
+      Bool adminLinks = false;
+      if (app.requestFromAdmin(request)) {
+        adminLinks = true;
+      }
       if (TS.isEmpty(path)) {
         dirFile = app.getHomeDir(request).file;
+        if (dirFile.exists!) {
+          dirFile.makeDirs();
+        }
       } else {
         File dirFile = File.apNew(hex.decode(path));
       }
       String dirListHtml = String.new();
       dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
-      if (dirFile.exists && app.checkReadPath(dirFile.path, accountName)) {
+      if (dirFile.exists && app.checkReadPath(dirFile.path, request)) {
         dirListHtml += "<p>Listing for " += htmle.encode(dirFile.path.toString()) += "</p>";
         dirListHtml += "<table>";
+        if (adminLinks) {
+          if (System:CurrentPlatform.name == "mswin") {
+            dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode("\\") += "');return false;\">ROOT</a></td></tr>";
+          } else {
+            dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode("/") += "');return false;\">ROOT</a></td></tr>";
+          }
+          dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(".") += "');return false;\">APPDIR</a></td></tr>";
+        }
+        dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>";
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(dirFile.path.toString()) += "');return false;\">.</a></td></tr>";
         IO:File:Path parent = dirFile.path.parent;
