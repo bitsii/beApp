@@ -229,7 +229,8 @@ use class Dz:Wui(Ui) {
    }
    
    checkReadPath(Path p, request) Bool {
-    if (requestFromAdmin(request)) {
+    Account a = self.accountManager.getAccountForRequest(request);
+    if (a.perms.has("admin")) {
       return(true);
     }
     String accountName = request.getSession("account.name");
@@ -246,6 +247,8 @@ use class Dz:Wui(Ui) {
       if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js"))) {
         isOk = true;
       } elif (def(h) && pas.begins(h.toString())) {
+        isOk = true;
+      } elif (a.perms.has("allcam") && pas.begins(Path.apNew("Shared/WebCam").file.absPath.toString())) {
         isOk = true;
       }
     } catch (e) {
@@ -970,6 +973,7 @@ use class Dz:MotionUpdate {
   
     fields {
       Set mocams = Set.new();
+      Set configuredMocams = Set.new();
       var app;
       Int lvl;
       IO:Log log;
@@ -990,9 +994,18 @@ use class Dz:MotionUpdate {
   doUpdate() {
     log.log(lvl, "in mocams update");
     getMocams();
+    if (mocams.contentsEqual(configuredMocams)!) {
+      configureMocams();
+    }
+  }
+  
+  configureMocams() {
+    //stop all motion
+    //make sure configs present
     foreach (String cp in mocams) {
       log.log(lvl, cp + "is a mocam");
     }
+    //start all motion
   }
   
   getMocams() {
@@ -2218,9 +2231,13 @@ use class Dz:DzHandler {
       Encode:Html htmle = Encode:Html.new();
       Map ret = Map.new();
       String path = arg["path"];
+      Account a = app.accountManager.getAccountForRequest(request);
       Bool adminLinks = false;
-      if (app.requestFromAdmin(request)) {
+      Bool camLinks = false;
+      if (a.perms.has("admin")) {
         adminLinks = true;
+      } elif (a.perms.has("allcam")) {
+        camLinks = true;
       }
       if (TS.isEmpty(path)) {
         dirFile = app.getHomeDir(request).file;
@@ -2245,6 +2262,10 @@ use class Dz:DzHandler {
           }
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(".") += "');return false;\">APPDIR</a></td></tr>";
+        }
+        if (adminLinks || camLinks) {
+          dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode("Shared/WebCam") += "');return false;\">WEBCAM</a></td></tr>";
         }
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>";
