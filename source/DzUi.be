@@ -1861,7 +1861,8 @@ use class Dz:DzHandler {
    }
 
      updateImageRequest(Map arg, request) {
-      Path pp = app.getHomeDir(request).addStep("WebCam");
+      //Path pp = app.getHomeDir(request).addStep("WebCam");
+      Path pp = Path.apNew("Shared/WebCam");
       String cam = arg["cam"];
       Account a = app.accountManager.getAccountForRequest(request);
       String an = a.user;
