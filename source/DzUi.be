@@ -1003,7 +1003,16 @@ use class Dz:MotionUpdate {
     //stop all motion
     //make sure configs present
     foreach (String cp in mocams) {
-      log.log(lvl, cp + "is a mocam");
+      log.log(lvl, cp + " is a mocam not setup yet");
+      Path p = Path.apNew(cp);
+      String mcn = p.steps.last;
+      log.log(lvl, "mocam name " + mcn);
+      Path confp = Path.apNew("Shared/WebCam/Config/MOCAM-" + mcn + ".conf");
+      if (confp.file.exists!) {
+        log.log(lvl, "no conf, creating " + confp);
+        //make copyfile work, apnew "App/Dz/MOCAM.conf"
+      }
+      configuredMocams.put(cp);
     }
     //start all motion
   }
