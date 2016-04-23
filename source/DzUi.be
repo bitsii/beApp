@@ -25,6 +25,8 @@ use Db:Derby:Database as Derby;
 use Db:HSQLDb:Database as HsDb;
 use System:Thread:Lock;
 use System:Thread:ContainerLocker as CLocker;
+use System:Command as Com;
+use Time:Sleep;
 
 use App:Alert;
 
@@ -36,7 +38,7 @@ use class Dz:Lui(Ui) {
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
         }
         super.new();
-        bg.startBackground();
+        bg.startBackground(); //normally on
     }
 
     main() {
@@ -99,7 +101,7 @@ use class Dz:Wui(Ui) {
         fields {
         }
         super.new();
-        bg.startBackground();
+        bg.startBackground(); //normally on
     }
     
     startWeb() {
@@ -230,7 +232,7 @@ use class Dz:Wui(Ui) {
    
    checkReadPath(Path p, request) Bool {
     Account a = self.accountManager.getAccountForRequest(request);
-    if (a.perms.has("admin")) {
+    if (def(a) && a.perms.has("admin")) {
       return(true);
     }
     String accountName = request.getSession("account.name");
@@ -1001,6 +1003,16 @@ use class Dz:MotionUpdate {
   
   configureMocams() {
     //stop all motion
+    if (System:CurrentPlatform.name == "mswin") {
+      Bool runit = false;
+    } else {
+      runit = true;
+    }
+    if (runit) {
+      Com.run("killall motion");
+      Sleep.sleepSeconds(3);
+      Com.run("killall -9 motion");
+    }
     //make sure configs present
     foreach (String cp in mocams) {
       log.log(lvl, cp + " is a mocam not setup yet");
@@ -1010,11 +1022,24 @@ use class Dz:MotionUpdate {
       Path confp = Path.apNew("Shared/WebCam/Config/MOCAM-" + mcn + ".conf");
       if (confp.file.exists!) {
         log.log(lvl, "no conf, creating " + confp);
-        //make copyfile work, apnew "App/Dz/MOCAM.conf"
+        Path.apNew("App/Dz/MOCAM.conf").file.copyFile(confp.file);
+        IO:File:Writer cw = confp.file.writer.openAppend();
+        cw.write("videodevice " + cp + "\n");
+        cw.write("target_dir Shared/WebCam\n");
+        Int intPorti = System:Random.getInt(Int.new(), 6000);
+        intPorti += 9001;
+        String currPortS = intPorti.toString();
+        app.configManager.put("cam." + cp + ".motionPort", currPortS);
+        cw.write("webcontrol_port " + currPortS);
+      }
+      //start it in background
+      String toRun = "App/Dz/motionrun.sh -c " + confp;
+      log.log(lvl, "motion torun " + toRun);
+      if (runit) {
+        Com.run(toRun);
       }
       configuredMocams.put(cp);
     }
-    //start all motion
   }
   
   getMocams() {
@@ -2186,7 +2211,7 @@ use class Dz:DzHandler {
       throw(Alert.new("must be admin"));
      }
      if (TS.notEmpty(path)) {
-       Path dpath = Path.apNew("App/Dz.tgz");
+       Path dpath = Path.apNew("App/Dz.zip");
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
        var e;
        try {
