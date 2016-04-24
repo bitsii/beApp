@@ -46,6 +46,8 @@ copy /y scripts\startdz.sh ..\apprun\App\Dz
 copy /y scripts\dzrun.sh ..\apprun\App\Dz
 copy /y scripts\dzcmdrs.sh ..\apprun\App\Dz
 copy /y scripts\dzcmd.sh ..\apprun\App\Dz
+copy /y scripts\motionrun.sh ..\apprun\App\Dz
+copy /y scripts\camclean.sh ..\apprun\App\Dz
 copy /y source\Dz*.html ..\apprun\App\Dz
 copy /y source\Version.txt ..\apprun\App\Dz
 copy /y source\MOCAM.conf ..\apprun\App\Dz

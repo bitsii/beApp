@@ -980,7 +980,9 @@ use class Dz:MotionUpdate {
       Int lvl;
       IO:Log log;
       Int lastPoll = 0;
-      Int pollSecs = 20;
+      Int pollSecs = 30;
+      Int lastClean = 0;
+      Int cleanSecs = 3600;
     }
   
   }
@@ -991,10 +993,27 @@ use class Dz:MotionUpdate {
       lastPoll = currSec;
       doUpdate();
     }
+    if (currSec - lastClean > cleanSecs) {
+      lastClean = currSec;
+      doClean();
+    }
+  }
+  
+  doClean() {
+    log.log(lvl, "in mocams clean");
+    String cps = app.configManager.get("cam.cleanDays");
+    if (TS.notEmpty(cps)) {
+      Int dz = Int.new(cps);
+      if (dz > 0) {
+        String cmd = "App/Dz/camclean.sh " + cps;
+        log.log(lvl, "running clean cmd " + cmd);
+        Com.run(cmd);
+      }
+    }
   }
   
   doUpdate() {
-    log.log(lvl, "in mocams update");
+    //log.log(lvl, "in mocams update");
     getMocams();
     if (mocams.contentsEqual(configuredMocams)!) {
       configureMocams();
@@ -1013,13 +1032,14 @@ use class Dz:MotionUpdate {
       Sleep.sleepSeconds(3);
       Com.run("killall -9 motion");
     }
+    configuredMocams = Set.new();
     //make sure configs present
     foreach (String cp in mocams) {
       log.log(lvl, cp + " is a mocam not setup yet");
       Path p = Path.apNew(cp);
       String mcn = p.steps.last;
       log.log(lvl, "mocam name " + mcn);
-      Path confp = Path.apNew("Shared/WebCam/Config/MOCAM-" + mcn + ".conf");
+      Path confp = Path.apNew("Data/Dz/WebCamConfig/MOCAM-" + mcn + ".conf");
       if (confp.file.exists!) {
         log.log(lvl, "no conf, creating " + confp);
         Path.apNew("App/Dz/MOCAM.conf").file.copyFile(confp.file);
@@ -1030,10 +1050,11 @@ use class Dz:MotionUpdate {
         intPorti += 9001;
         String currPortS = intPorti.toString();
         app.configManager.put("cam." + cp + ".motionPort", currPortS);
-        cw.write("webcontrol_port " + currPortS);
+        cw.write("webcontrol_port " + currPortS + "\n");
+        cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
       }
       //start it in background
-      String toRun = "App/Dz/motionrun.sh -c " + confp;
+      String toRun = "App/Dz/motionrun.sh " + confp;
       log.log(lvl, "motion torun " + toRun);
       if (runit) {
         Com.run(toRun);
@@ -1316,6 +1337,10 @@ use class Dz:Background {
     fields {
       System:Thread myThread;
       Int sleepTime = 500;
+    }
+    String bkdis = app.configManager.get("bk.disable");
+    if (TS.notEmpty(bkdis) && Bool.new(bkdis)) {
+      return(self);
     }
     Int _sleepTime = app.configManager.get("bk.sleepTime");
     if (def(_sleepTime) && _sleepTime > 0) {
@@ -1942,7 +1967,17 @@ use class Dz:DzHandler {
       if (tries <= 0) {
         throw(System:Exception.new("Unable to get a count option"));
       }
-      String picName = picBaseName + count + ".jpg";
+      String mcp = app.configManager.get("cam." + cam + ".motion");
+      if (TS.notEmpty(mcp) && Bool.new(mcp)) {
+        Bool isMo = true;
+      } else {
+        isMo = false;
+      }
+      if (isMo) {
+        picName = "lastsnap.jpg";
+      } else {
+        String picName = picBaseName + count + ".jpg";
+      }
       File picFile = pp.copy().addStep(picName).file;
       picFile.delete();
       if (System:CurrentPlatform.name == "mswin") {
@@ -1951,7 +1986,16 @@ use class Dz:DzHandler {
         piccmd = "App/Dz/uppic.sh";
       }
       log.log(lvl, "pic path " + picFile.path);
-      System:Command.new(piccmd + " " + cam + " " + picFile.path).run();
+      //curl http://127.0.0.1:10994/0/action/snapshot
+      if (isMo) {
+        mcp = app.configManager.get("cam." + cam + ".motionPort");
+        Web:Client client = Web:Client.new();
+        client.url = "http://127.0.0.1:" + mcp + "/0/action/snapshot";
+        String received = client.openInput().readString();
+        client.close();
+      } else {
+        System:Command.new(piccmd + " " + cam + " " + picFile.path).run();
+      }
       tries = 60;
       while (picFile.exists! && tries > 0) {
         Time:Sleep.sleepMilliseconds(500);
@@ -2318,9 +2362,16 @@ use class Dz:DzHandler {
             File entry = dit.next;
             Path p = entry.path;
             if (entry.isDirectory || p.toString().ends(".jpg")) {
+              if (entry.isDirectory) {
+                String tn = "DIR";
+                Int esz = 0;
+              } else {
+                tn = "PIC";
+                esz = entry.size;
+              }
               dirListHtml += "<tr>";
-              dirListHtml += "<td>DIR</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"return localBrowseRequest('"
-          += hex.encode(p.toString()) += "');\">" += htmle.encode(p.name) += "</a></td>";
+              dirListHtml += "<td>" + tn + "</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"return localBrowseRequest('"
+          += hex.encode(p.toString()) += "');\">" += htmle.encode(p.name) += "</a></td><td>" += esz += "</td>";
               dirListHtml += "</tr>";   
             } else {
               dirListHtml += "<tr>";

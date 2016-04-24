@@ -43,6 +43,8 @@ cp scripts/startdz.sh ../apprun/App/Dz
 cp scripts/dzrun.sh ../apprun/App/Dz
 cp scripts/dzcmdrs.sh ../apprun/App/Dz
 cp scripts/dzcmd.sh ../apprun/App/Dz
+cp scripts/motionrun.sh ../apprun/App/Dz
+cp scripts/camclean.sh ../apprun/App/Dz
 cp source/Dz*.html ../apprun/App/Dz
 cp source/Version.txt ../apprun/App/Dz
 cp source/MOCAM.conf ../apprun/App/Dz
