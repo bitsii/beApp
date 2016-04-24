@@ -210,7 +210,12 @@ use class Dz:Wui(Ui) {
 
    }
    
-   checkWritePath(Path p, String accountName) Bool {
+   checkWritePath(Path p, request) Bool {
+    Account a = self.accountManager.getAccountForRequest(request);
+    if (def(a) && a.perms.has("admin")) {
+      return(true);
+    }
+    String accountName = request.getSession("account.name");
     var e;
     Bool isOk = false;
     if (undef(accountName)) { accountName = ""; }
@@ -295,7 +300,7 @@ use class Dz:Wui(Ui) {
        log.log(lvl, "uri " + uri);
        File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
        if (TS.notEmpty(rmtd) && rmtd == "PUT") {
-         if (checkWritePath(imgfile.path, accountName)) {
+         if (checkWritePath(imgfile.path, request)) {
            log.log(lvl, "put for " + imgfile.path);
            if (imgfile.path.parent.file.exists!) {
             imgfile.path.parent.file.makeDirs();
@@ -1051,7 +1056,8 @@ use class Dz:MotionUpdate {
         String currPortS = intPorti.toString();
         app.configManager.put("cam." + cp + ".motionPort", currPortS);
         cw.write("webcontrol_port " + currPortS + "\n");
-        cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
+        //cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
+        cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M\n");
       }
       //start it in background
       String toRun = "App/Dz/motionrun.sh " + confp;
@@ -2206,7 +2212,7 @@ use class Dz:DzHandler {
      }
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
-       if (dirFile.exists && app.checkWritePath(dirFile.path, accountName)) {
+       if (dirFile.exists && app.checkWritePath(dirFile.path, request)) {
          log.log(lvl, "deleting " + dirFile.path);
          dirFile.delete();
        }
@@ -2223,11 +2229,11 @@ use class Dz:DzHandler {
      }
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
-       if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, accountName)) {
+       if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, request)) {
          var dpath = Path.apNew(arg["toName"]);
          dpath = dirFile.path.parent.copy() + dpath;
          log.log(lvl, "precheck write " + dpath);
-         if (app.checkWritePath(dpath, accountName)) {
+         if (app.checkWritePath(dpath, request)) {
            log.log(lvl, "copying " + dirFile.path + " to " + dpath);
            if (dpath.parent.file.exists!) {
              dpath.parent.file.makeDirs();
