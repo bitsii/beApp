@@ -1056,8 +1056,8 @@ use class Dz:MotionUpdate {
         String currPortS = intPorti.toString();
         app.configManager.put("cam." + cp + ".motionPort", currPortS);
         cw.write("webcontrol_port " + currPortS + "\n");
-        //cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
-        cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M\n");
+        cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
+        //cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M\n");
       }
       //start it in background
       String toRun = "App/Dz/motionrun.sh " + confp;
@@ -2295,7 +2295,7 @@ use class Dz:DzHandler {
         }
         try {
         app.lock.lock();
-        Time:Sleep.sleepSeconds(1);
+        Time:Sleep.sleepSeconds(10);
         System:Process.exit(4);
         app.lock.unlock();
         } catch (e) {
@@ -2367,21 +2367,19 @@ use class Dz:DzHandler {
           while (dit.hasNext) {
             File entry = dit.next;
             Path p = entry.path;
-            if (entry.isDirectory || p.toString().ends(".jpg")) {
-              if (entry.isDirectory) {
-                String tn = "DIR";
-                Int esz = 0;
-              } else {
-                tn = "PIC";
-                esz = entry.size;
-              }
+            if (entry.isDirectory) {
               dirListHtml += "<tr>";
-              dirListHtml += "<td>" + tn + "</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"return localBrowseRequest('"
-          += hex.encode(p.toString()) += "');\">" += htmle.encode(p.name) += "</a></td><td>" += esz += "</td>";
+              dirListHtml += "<td>DIR</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"localBrowseRequest('"
+          += hex.encode(p.toString()) += "');return false;\">" += htmle.encode(p.name) += "</a></td>";
               dirListHtml += "</tr>";   
             } else {
+              if (p.toString().ends(".jpg")) {
+                String jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
+              } else {
+                jscall = "";
+              }
               dirListHtml += "<tr>";
-              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
+              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + jscall + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
               dirListHtml += "<td><input type=\"checkbox\" id=\"FCB"
               += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\"></td>";
               dirListHtml += "</tr>";
