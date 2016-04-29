@@ -1694,7 +1694,7 @@ use class Dz:Ui {
     assureVers() {
       fields {
         Int majorVer = 4@;
-        Int minorVer = 1@;
+        Int minorVer = 3@;
       }
     }
     
