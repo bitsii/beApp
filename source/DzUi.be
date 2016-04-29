@@ -306,12 +306,9 @@ use class Dz:Wui(Ui) {
             imgfile.path.parent.file.makeDirs();
            }
            if (imgfile.exists) { imgfile.delete(); }
-            String rwbufE = String.new(4096);
             outw = imgfile.writer.open();
             inr = request.openInput();
-            while (inr.readIntoBuffer(rwbufE) > 0) {
-              outw.write(rwbufE);
-            }
+            inr.copyData(outw);
             request.closeInputReader();
             outw.close();
             request.outputContent = "UPLOAD COMPLETE";
@@ -330,12 +327,9 @@ use class Dz:Wui(Ui) {
             mtype = "application/octet-stream";
           }
           request.outputContentType = mtype;
-          String rwbuf = String.new(4096);
           IO:Writer outw = request.openOutput();
           IO:Reader inr = imgfile.reader.open();
-          while (inr.readIntoBuffer(rwbuf) > 0) {
-            outw.write(rwbuf);
-          }
+          inr.copyData(outw);
           request.closeOutputWriter();
           inr.close();
          }
@@ -1699,27 +1693,8 @@ use class Dz:Ui {
     
     assureVers() {
       fields {
-        Int majorVer;
-        Int minorVer;
-      }
-      if (undef(majorVer) || undef(minorVer)) {
-        Path adz = Path.apNew("App/Dz").file.absPath;
-        adz.addStep("Version.txt");
-        String vers = adz.file.contents;
-        
-        vers = vers.swap("\r", "\n");
-        log.log(lvl, "vers " + vers);
-        var vera = vers.split("\n");
-        log.log(lvl, "vera " + vera.first);
-        var verb = vera.first.split(".");
-        log.log(lvl, "verbf " + verb.first);
-        log.log(lvl, "verbs " + verb.second);
-        
-        //majorVer = 1;
-        //minorVer = 1;
-        
-        majorVer = Int.new(verb.first);
-        minorVer = Int.new(verb.second);
+        Int majorVer = 4@;
+        Int minorVer = 1@;
       }
     }
     
@@ -2239,12 +2214,9 @@ use class Dz:DzHandler {
              dpath.parent.file.makeDirs();
            }
            if (dpath.file.exists) { dpath.file.delete(); }
-           String rwbuf = String.new(4096);
             IO:Writer outw = dpath.file.writer.open();
             IO:Reader inr = dirFile.reader.open();
-            while (inr.readIntoBuffer(rwbuf) > 0) {
-              outw.write(rwbuf);
-            }
+            inr.copyData(outw);
             outw.close();
             inr.close();
           }
@@ -2268,12 +2240,9 @@ use class Dz:DzHandler {
        app.lock.lock();
        log.log(lvl, "copying " + dirFile.path + " to " + dpath);
        if (dpath.file.exists) { dpath.file.delete(); }
-       String rwbuf = String.new(4096);
         IO:Writer outw = dpath.file.writer.open();
         IO:Reader inr = dirFile.reader.open();
-        while (inr.readIntoBuffer(rwbuf) > 0) {
-          outw.write(rwbuf);
-        }
+        inr.copyData(outw);
         outw.close();
         inr.close();
         app.lock.unlock();
