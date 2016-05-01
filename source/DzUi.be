@@ -1798,6 +1798,12 @@ use class Dz:CmdUi(Ui) {
         log.log(lvl, "Help");
         log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
+      if (TS.notEmpty(mode) && mode == "portForward") {
+        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
+        pf.log = log;
+        pf.lvl = lvl;
+        pf.start();
+      }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         foreach (String login in self.accountManager.getLogins()) {
           log.log(lvl, "Account login " + login);

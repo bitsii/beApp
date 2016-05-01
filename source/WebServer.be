@@ -642,3 +642,61 @@ use class Web:ScriptRequest {
     }
 }
 
+use Net:Socket:Listener;
+use Net:Socket;
+use Net:Socket:Reader as SocketReader;
+use Net:Socket:Writer as SocketWriter;
+
+class Net:PortForward {
+   
+   new(String _localHost, Int _localPort, String _remoteHost, Int _remotePort) self {
+     fields {
+      String localHost = _localHost;
+      Int localPort = _localPort;
+      String remoteHost = _remoteHost;
+      Int remotePort = _remotePort;
+      IO:Log log = IO:Log.new();
+      Int lvl = log.debug;
+     }
+   }
+   
+   start() self {
+     log.log(lvl, "Listening on " + localHost + ":" + localPort + " forwarding to " + remoteHost + ":" + remotePort);
+     Listener l = Listener.new(localHost, localPort);
+     l.bind();
+     while (true) {
+      Socket loc = l.accept();
+      log.log(lvl, "Received connection");
+      Socket rem = Socket.new(remoteHost, remotePort);
+      log.log(lvl, "Connected Remotely");
+      ThinThread a = ThinThread.new(DataCopy.new(loc.reader, rem.writer));
+      ThinThread b = ThinThread.new(DataCopy.new(rem.reader, loc.writer));
+      log.log(lvl, "Starting Threads");
+      a.start();
+      b.start();
+      log.log(lvl, "Threads Started");
+     }
+   }
+   
+}
+
+use System:ThinThread;
+
+use Net:PortForward:DataCopy;
+
+class DataCopy {
+
+  new(IO:Reader _input, IO:Writer _output) self {
+    fields {
+      IO:Reader input = _input;
+      IO:Writer output = _output;
+    }
+  }
+  
+  main() {
+    input.copyData(output);
+  }
+
+}
+
+
