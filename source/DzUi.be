@@ -1694,7 +1694,7 @@ use class Dz:Ui {
     assureVers() {
       fields {
         Int majorVer = 4@;
-        Int minorVer = 3@;
+        Int minorVer = 4@;
       }
     }
     
@@ -2339,9 +2339,18 @@ use class Dz:DzHandler {
         if (dirFile.isDir) {
           var dit = dirFile.iterator;
           dit.open();
+          Array olist = Array.new();
+          Map omap = Map.new();
           while (dit.hasNext) {
             File entry = dit.next;
             Path p = entry.path;
+            olist += p.steps.last;
+            omap.put(p.steps.last, entry);
+          }
+          olist = olist.sort();
+          foreach (String ole in olist) {
+            entry = omap.get(ole);
+            p = entry.path;
             if (entry.isDirectory) {
               dirListHtml += "<tr>";
               dirListHtml += "<td>DIR</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"localBrowseRequest('"
