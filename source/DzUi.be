@@ -1050,7 +1050,7 @@ use class Dz:MotionUpdate {
         String currPortS = intPorti.toString();
         app.configManager.put("cam." + cp + ".motionPort", currPortS);
         cw.write("webcontrol_port " + currPortS + "\n");
-        cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
+        cw.write("picture_filename PICDIR_%Y-%m-%d_%H/PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
         //cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M\n");
       }
       //start it in background
@@ -1694,7 +1694,7 @@ use class Dz:Ui {
     assureVers() {
       fields {
         Int majorVer = 4@;
-        Int minorVer = 4@;
+        Int minorVer = 7@;
       }
     }
     
@@ -2330,11 +2330,11 @@ use class Dz:DzHandler {
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>";
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(dirFile.path.toString()) += "');return false;\">.</a></td></tr>";
+          += hex.encode(dirFile.path.toString()) += "');return false;\">.  (REFRESH)</a></td></tr>";
         IO:File:Path parent = dirFile.path.parent;
         if (def(parent) && TS.notEmpty(parent.toString())) {
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(parent.toString()) += "');return false;\">..</a></td></tr>";
+          += hex.encode(parent.toString()) += "');return false;\">.. (UP)</a></td></tr>";
         }
         if (dirFile.isDir) {
           var dit = dirFile.iterator;
