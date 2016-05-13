@@ -248,6 +248,12 @@ class AppEv {
 
 }
 
+emit(cs) {
+"""
+using System.Security.Cryptography;
+"""
+}
+
 emit(jv) {
 """
 import java.security.*;

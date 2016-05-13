@@ -19,31 +19,8 @@ use System:Random;
 use Text:Strings as TS;
 use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
-use Db:KeyValue as KvDb;
-use Db:HSQLDb:Database as HsDb;
 
 use App:Alert;
-
-use class MP:Hello {
-
-     new() self {
-       fields {
-          IO:Log log;
-          Int lvl;
-          var app;
-        }
-     }
-
-     sayHelloRequest(Map arg, request) {
-      "in say hello".print();
-      log.log(lvl, "In say hello");
-      Map res = Map.new();
-      res["action"] = "sayHelloResponse";
-      res["msg"] = "hello 1 " + System:Random.getString(3);
-      return(res);
-   }
-
-}
 
 use class MP:LpHandler {
 
@@ -54,25 +31,12 @@ use class MP:LpHandler {
           var app;
         }
      }
-
-     saveRequest(Map arg, request) {
-      log.log(lvl, "In save");
-      String locRcvUrl = arg["locRcvUrl"];
-      if (undef(locRcvUrl)) {
-        locRcvUrl = "";
-      }
-      app.configManager.put("locRcvUrl", locRcvUrl);
-    }
    
-     loadRequest(Map arg, request) {
-      log.log(lvl, "In load");
-      String locRcvUrl = app.configManager.get("locRcvUrl");
-      if (undef(locRcvUrl)) {
-        locRcvUrl = "";
-      }
+     hiRequest(Map arg, request) {
+      log.log(lvl, "In hi");
       Map res = Map.new();
-      res["action"] = "loadResponse";
-      res["locRcvUrl"] = locRcvUrl;
+      res["action"] = "hiResponse";
+      res["msg"] = "hello " + arg["who"];
       return(res);
     }
 
@@ -98,19 +62,6 @@ use class App:LocPing {
         requestHandler.lvl = lvl;
         requestHandler.app = self;
         
-    }
-    
-    configManagerGet() KvDb {
-      fields {
-        KvDb configManager;
-      }
-      if (undef(configManager)) {
-        Path db = self.paths.dataPath.addStep("LocPing").addStep("DDZDB");
-        //configManager = KvDb.new(Derby.pathNew(db), "CONFIG");
-        configManager = KvDb.new(HsDb.pathNew(db), "CONFIG");
-        configManager.createOpen();
-      }
-      return(configManager);
     }
     
     main() {

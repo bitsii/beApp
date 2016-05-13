@@ -33,18 +33,6 @@ var startup = function() {
   dzeui.bem_main_0();
 }
 
-var saveConfig = function() {
-  dzeui.bem_saveConfig_0();
-}
-
-var loadConfig = function() {
-  dzeui.bem_loadConfig_0();
-}
-
-var clearConfig = function() {
-  dzeui.bem_clearConfig_0();
-}
-
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
@@ -72,28 +60,14 @@ use class App:LocPing:LPBr {
       HC.new(self).handleCallback(res);
     }
    
-   saveConfig() {
+   hiRequest() {
       Map arg = Map.new();
-      arg["action"] = "saveRequest";
-      arg["locRcvUrl"] = HD.getElementById("locRcvUrl").value;
+      arg["action"] = "hiRequest";
+      arg["who"] = HD.getElementById("who").value;
       HC.new(self).call(arg);
    }
    
-   loadConfig() {
-      Map arg = Map.new();
-      arg["action"] = "loadRequest";
-      HC.new(self).call(arg);
-   }
-   
-   clearConfig() {
-      HD.getElementById("locRcvUrl").value = "";
-   }
-   
-   loadResponse(Map arg) {
-     HD.getElementById("locRcvUrl").value = arg["locRcvUrl"];
-   }
-   
-   sayHelloResponse(Map arg) {
+   hiResponse(Map arg) {
      HD.getElementById("msgdiv").innerHTML = arg["msg"];
    }
    
