@@ -115,7 +115,7 @@ class HC {
             && typeof(window.external.HandleCall) !== 'undefined') {
       var res = window.external.HandleCall(bevl_argjs.bems_toJsString());
       //document.getElementById("infotxt").value = res;
-      if (res !== null) {
+      if (res !== null && typeof(res) !== 'undefined') {
         bevl_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
         //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
       }

@@ -52,7 +52,10 @@ class WfBr(WebImp) {
     public WebBrowser bevi_webBrowser;
     
     public string HandleCall(string call) {
-      Console.WriteLine("hola");
+      BEC_4_6_TextString ret = bem_handleWeb_1(new BEC_4_6_TextString(call));
+      if (ret != null) {
+        return ret.bems_toCsString();
+      }
       return null;
     }
     
