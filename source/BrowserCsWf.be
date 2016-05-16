@@ -16,9 +16,29 @@ use Container:Set;
 
 emit(cs) {
 """
-//for ui
+
+using System;
 using System.Windows.Forms;
-using System.Drawing;
+using System.Security.Permissions;
+
+[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
+public class BeWebBrowser : Form
+{
+
+    [STAThread]
+    static void Main()
+    {
+        //add to csc /main:be.BEL_4_Base.BeWebBrowser
+        be.BEL_4_Base.BEL_4_Base.Main(new string[] {});
+    }
+    
+    public void BeRun() {
+      Application.EnableVisualStyles();
+      Application.Run(this);
+    }
+
+}
+
 """
 }
 
@@ -30,6 +50,12 @@ class WfBr(WebImp) {
    """
     public BeWebBrowser bevi_beWebBrowser;
     public WebBrowser bevi_webBrowser;
+    
+    public string HandleCall(string call) {
+      Console.WriteLine("hola");
+      return null;
+    }
+    
    """
    }
     
@@ -48,7 +74,17 @@ class WfBr(WebImp) {
     }
     
     setup() {
-      //I don't actually do anything here
+      emit(cs) {
+      """
+      bevi_beWebBrowser = new BeWebBrowser();
+      """
+      }
+      uiSetup();
+      emit(cs) {
+      """
+      bevi_beWebBrowser.BeRun();
+      """
+      }
     }
     
     titleGet() String {
@@ -110,7 +146,8 @@ class WfBr(WebImp) {
      
      bevi_beWebBrowser.Controls.AddRange(new Control[] {
             bevi_webBrowser });
-     bevi_beWebBrowser.ConnectWithScript(bevi_webBrowser, this);//winform or winform handler
+     //bevi_beWebBrowser.ConnectWithScript(bevi_webBrowser, this);//winform or winform handler
+     bevi_webBrowser.ObjectForScripting = this;
      """
      }
    }
