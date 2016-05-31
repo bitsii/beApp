@@ -838,8 +838,31 @@ class Upnp {
       }
       return(controlURL);
     }
-
+    
     externalIPGet() String {
+      String cmd = "upnpc -s";
+      String res = System:Command.new(cmd).open().output.readString();
+      //log.log(lvl, "res1 " + res);
+      if (TS.notEmpty(res)) {
+        Int rf = res.find("ExternalIPAddress = ");
+        if (def(rf)) {
+          rf += 20;
+          res = res.substring(rf, res.size);
+          //log.log(lvl, "res2 " + res);
+          rf = res.find("\n");
+          Int rf2 = res.find("\r");
+          if (rf2 < rf) {
+            rf = rf2;
+          }
+          res = res.substring(0, rf);
+          log.log(lvl, "res3 extipis " + res);
+          return(res);
+        }
+      }
+      return(null);
+    }
+
+    externalIPGetOld() String {
       String cu = self.controlURL;
       Web:Client client = Web:Client.new();
       client.url = cu;
@@ -882,6 +905,7 @@ class Upnp {
     }
     
     forwardPort(Int duration, Int external, Int internal, String internalIP) Bool {
+      if (true) { return(true); }
       var e;
       String cu = self.controlURL;
       Web:Client client = Web:Client.new();
