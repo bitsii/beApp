@@ -979,9 +979,9 @@ use class Dz:MotionUpdate {
       Int lvl;
       IO:Log log;
       Int lastPoll = 0;
-      Int pollSecs = 30;
+      Int pollSecs = 10800;
       Int lastClean = 0;
-      Int cleanSecs = 3600;
+      Int cleanSecs = 10800;
     }
   
   }
@@ -1014,9 +1014,7 @@ use class Dz:MotionUpdate {
   doUpdate() {
     //log.log(lvl, "in mocams update");
     getMocams();
-    if (mocams.contentsEqual(configuredMocams)!) {
-      configureMocams();
-    }
+    configureMocams();
   }
   
   configureMocams() {
@@ -1094,10 +1092,10 @@ use class Dz:UpnpUpdate {
       Int lastPoll = 0;
       Int lastUpdate = 0;
       Int lastFwd = 0;
-      Int pollSecs = 600;//how often to check for ip changes
-      Int uupdateSecs = 500;//how often to update upnp fwd
+      Int pollSecs = 1200;//how often to check for ip changes
+      Int uupdateSecs = 600;//how often to update upnp fwd
       Int fwdSecs = 7200;//fwd upnp for how long
-      Int forceUpdate = 21600;//imap force update (6hrs)
+      Int forceUpdate = 3600;//imap force update
       Bool disable = false;
     }
   
@@ -1122,9 +1120,11 @@ use class Dz:UpnpUpdate {
       
       Int currSec = Time:Interval.now().seconds;
       if (currSec - lastUpdate > forceUpdate) {
+        lastUpdate = currSec;
         update = true;
       }
       if (currSec - lastFwd > uupdateSecs) {
+        lastFwd = currSec;
         fwd = true;
       }
     
@@ -1147,7 +1147,6 @@ use class Dz:UpnpUpdate {
       
       if (TS.notEmpty(gwNow)) {
         if (TS.isEmpty(gw) || gwNow != gw) {
-          update = true;
           gw = gwNow;
           app.configManager.put("upnp.gw", gw);
         }
@@ -1155,7 +1154,6 @@ use class Dz:UpnpUpdate {
       
       if (TS.notEmpty(iaNow)) {
         if (TS.isEmpty(intAddress) || iaNow != intAddress) {
-          update = true;
           intAddress = iaNow;
           app.configManager.put("upnp.intAddress", intAddress);
         }
@@ -1163,20 +1161,17 @@ use class Dz:UpnpUpdate {
       
       if (TS.notEmpty(eaNow)) {
         if (TS.isEmpty(extAddress) || eaNow != extAddress) {
-          update = true;
           extAddress = eaNow;
           app.configManager.put("upnp.extAddress", extAddress);
         }
       }
       
       if (TS.isEmpty(intPort) || intPort != appIntPort) {
-        update = true;
         intPort = appIntPort;
         app.configManager.put("upnp.intPort", intPort);
       }
       
       if (TS.isEmpty(extPort) || extPort != appExtPort) {
-        update = true;
         extPort = appExtPort;
         app.configManager.put("upnp.extPort", extPort);
       }
@@ -1198,7 +1193,6 @@ use class Dz:UpnpUpdate {
             upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
           }
         }
-        lastFwd = currSec;
       }
 
       if (update) {
@@ -1234,7 +1228,6 @@ use class Dz:UpnpUpdate {
         jsl.put("extLink", extLink);
         app.links.o = jsl;
         app.updateNetAddresses();
-        lastUpdate = currSec;
       }
     }
   }
@@ -1694,7 +1687,7 @@ use class Dz:Ui {
     assureVers() {
       fields {
         Int majorVer = 4@;
-        Int minorVer = 7@;
+        Int minorVer = 12@;
       }
     }
     
