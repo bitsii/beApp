@@ -851,7 +851,7 @@ class Upnp {
           //log.log(lvl, "res2 " + res);
           rf = res.find("\n");
           Int rf2 = res.find("\r");
-          if (rf2 < rf) {
+          if (def(rf2) && rf2 < rf) {
             rf = rf2;
           }
           res = res.substring(0, rf);
@@ -905,6 +905,14 @@ class Upnp {
     }
     
     forwardPort(Int duration, Int external, Int internal, String internalIP) Bool {
+      //upnpc -a 192.168.99.100 5555 9999 TCP
+      String cmd = "upnpc -a " + internalIP + " " + internal + " " + external + " TCP";
+      String res = System:Command.new(cmd).open().output.readString();
+      log.log(lvl, "forwardPort result " + res);
+      return(true);
+    }
+      
+    forwardPortOld(Int duration, Int external, Int internal, String internalIP) Bool {
       if (true) { return(true); }
       var e;
       String cu = self.controlURL;
@@ -1467,10 +1475,6 @@ use class Dz:Ui {
         String endpoint = self.configManager.get("imap.endpoint");
         String user = self.configManager.get("imap.user");
         String pass = self.configManager.get("imap.pass");
-        String lastSub = self.configManager.get("imap.lastSubject");
-        if (TS.isEmpty(lastSub)) {
-          lastSub = null;
-        }
         String subf = self.configManager.get("imap.subFolder");
         if (undef(subf)) {
           subf = "GossaLinks";
@@ -1491,7 +1495,8 @@ use class Dz:Ui {
           msg += jsl.get("certThumbprintMsg");
         }
         msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
-        String subj = jsl.get("deviceName") + " " + Time:Interval.now().seconds;
+        String subjPref = "DeviceLinks " + jsl.get("deviceName") + " " + self.configManager.get("deviceId") + " ";
+        String subj = subjPref + Time:Interval.now().seconds;
         emit(jv) {
         """
         Properties props = new Properties();
@@ -1515,7 +1520,9 @@ use class Dz:Ui {
           //m.setFrom(new InternetAddress(from));
           //m.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
        
-          m.setSubject(bevl_subj.bems_toJvString());
+          String cs = bevl_subj.bems_toJvString();
+          
+          m.setSubject(cs);
           //m.setText(bevl_msg.bems_toJvString());
           m.setText(bevl_msg.bems_toJvString(), "utf-8", "html");
 
@@ -1524,16 +1531,16 @@ use class Dz:Ui {
           Message ms[] = {m};
           f.appendMessages(ms);
           
-          if (bevl_lastSub != null) {
+          if (bevl_subjPref != null) {
           
-            String ls = bevl_lastSub.bems_toJvString();
+            String ls = bevl_subjPref.bems_toJvString();
             
             Message[] messages = f.getMessages();
             if (messages != null) {
               for(int i = 0; i < messages.length; i++)
               {
                 String subj = messages[i].getSubject();
-                if (subj != null && subj.equals(ls)) {
+                if (subj != null && subj.startsWith(ls) && !subj.equals(cs)) {
                   System.out.println("deleting message");
                   messages[i].setFlag(Flag.DELETED, true);
                 }
@@ -1546,7 +1553,6 @@ use class Dz:Ui {
         """
         }
         log.log(lvl, "Done with imap stuff");
-        self.configManager.put("imap.lastSubject", subj);
       }
     } catch (e) {
       if(def(e)) {
@@ -1711,7 +1717,7 @@ use class Dz:Ui {
     assureVers() {
       fields {
         Int majorVer = 4@;
-        Int minorVer = 12@;
+        Int minorVer = 15@;
       }
     }
     
@@ -2110,8 +2116,14 @@ use class Dz:DzHandler {
       }
       Map res = Map.new();
       res["action"] = "showImapResponse";
-      res["imapAccount"] = app.configManager.get("imap.user");
-      res["imapEndpoint"] = app.configManager.get("imap.endpoint");
+      String user = app.configManager.get("imap.user");
+      if (TS.notEmpty(user)) {
+        res["imapAccount"] = user;
+      }
+      String ep = app.configManager.get("imap.endpoint");
+      if (TS.notEmpty(ep)) {
+        res["imapEndpoint"] = ep;
+      }
       return(res);
    }
    

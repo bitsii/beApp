@@ -233,8 +233,12 @@ use class Dz:Eui {
    }
    
    showImapResponse(Map arg) {
-     HD.getElementById("imapEndpoint").value = arg["imapEndpoint"];
-     HD.getElementById("imapAccount").value = arg["imapAccount"];
+     if (arg.has("imapEndpoint")) {
+      HD.getElementById("imapEndpoint").value = arg["imapEndpoint"];
+     }
+     if (arg.has("imapAccount")) {
+      HD.getElementById("imapAccount").value = arg["imapAccount"];
+     }
      HD.getElementById("imapSettingsDiv").display = "block";
    }
    

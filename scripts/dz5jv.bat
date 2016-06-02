@@ -56,7 +56,7 @@ copy /y extlibs\hsqldb\* ..\apprun\App\Dz
 copy /y extlibs\bcastlejv\* ..\apprun\App\Dz
 copy /y extlibs\javamail\* ..\apprun\App\Dz
 
-del /s /q ..\apprun\App\Dz\Base
-rmdir /s /q ..\apprun\App\Dz\Base
+rem del /s /q ..\apprun\App\Dz\Base
+rem rmdir /s /q ..\apprun\App\Dz\Base
 
 call scripts\dz5jvrun.bat %*
