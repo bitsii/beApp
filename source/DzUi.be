@@ -841,7 +841,7 @@ class Upnp {
     
     externalIPGet() String {
       String cmd = "upnpc -s";
-      String res = System:Command.new(cmd).open().output.readString();
+      String res = System:Command.new(cmd).open().output.readStringClose();
       //log.log(lvl, "res1 " + res);
       if (TS.notEmpty(res)) {
         Int rf = res.find("ExternalIPAddress = ");
@@ -907,7 +907,7 @@ class Upnp {
     forwardPort(Int duration, Int external, Int internal, String internalIP) Bool {
       //upnpc -a 192.168.99.100 5555 9999 TCP
       String cmd = "upnpc -a " + internalIP + " " + internal + " " + external + " TCP";
-      String res = System:Command.new(cmd).open().output.readString();
+      String res = System:Command.new(cmd).open().output.readStringClose();
       log.log(lvl, "forwardPort result " + res);
       return(true);
     }
@@ -2158,7 +2158,7 @@ use class Dz:DzHandler {
       } else {
         gccmd = "App/Dz/getcams.sh";
       }
-      String res = System:Command.new(gccmd).open().output.readString();
+      String res = System:Command.new(gccmd).open().output.readStringClose();
       log.log(lvl, "res from cmd " + res);
       if (TS.notEmpty(res)) {
         //res.swap("\r", "\n");
