@@ -267,7 +267,9 @@ use class Dz:Wui(Ui) {
 
    handleWeb(request) {
      //log.log(lvl, "in hw");
-     checkRequest(request);
+     unless (checkRequest(request)) {
+      return(null);
+     }
      String accountName = request.getSession("account.name");
      String rmtd = request.inputMethod;
      //log.log(lvl, "rmtd is " + rmtd);
@@ -1335,8 +1337,25 @@ use class Dz:Background {
     }
   }
   
+  runMyTasks() {
+    fields {
+      Int lastTrackClear;
+      Int clearSeconds =@ 7200;
+    }
+    if (def(lastTrackClear)) {
+      Int ns = Time:Interval.now().seconds;
+      if (ns - lastTrackClear > clearSeconds) {
+        app.trackingManager.clear();
+        lastTrackClear = ns;
+      }
+    } else {
+      lastTrackClear = 0;
+    }
+  }
+  
   runTasks() {
     //log.log(lvl, "Running tasks");
+    runMyTasks();
     du.updateOnInterval();
     uu.updateOnInterval();
     mu.updateOnInterval();
@@ -1433,8 +1452,61 @@ use class Dz:Ui {
   
   }
   
-  checkRequest(request) {
+  checkRequest(request) Bool {
   
+    Int maxBad =@ 15;
+    Int clearSecs =@ 180;
+    Int updateSecs =@ 30;
+  
+  /*
+    Int maxBad =@ 5;
+    Int clearSecs =@ 10;
+    Int updateSecs =@ 5;
+  */  
+  
+    Int ns = Time:Interval.now().seconds;
+    
+    String ip = request.remoteAddress;
+    if (TS.notEmpty(ip)) {
+      String ct = self.trackingManager.get("IP." + ip);
+      if (TS.notEmpty(ct)) {
+        String ltm = self.trackingManager.get("LB." + ip);
+        if (TS.notEmpty(ltm)) {
+          Int ltmi = Int.new(ltm);
+          if (ns - ltmi > clearSecs) {
+            log.log(lvl, "clear bad " + ip);
+            badcount = 0;
+          } else {
+            badcount = Int.new(ct);
+          }
+        } else {
+          Int badcount = Int.new(ct);
+        }
+      } else {
+        badcount = 0;
+      }
+    }
+    if (badcount > maxBad) {
+      log.log(lvl, "tomany bad " + ip);
+      if (def(ltmi) && ns - ltmi > updateSecs) {
+        log.log(lvl, "lp update");
+        self.trackingManager.put("LB." + ip, ns.toString());
+      } else {
+        log.log(lvl, "no update");
+      }
+      return(false);
+    }
+    String accountName = request.getSession("account.name");
+    if (TS.isEmpty(accountName)) {
+      badcount++=;
+      self.trackingManager.put("IP." + ip, badcount.toString());
+      self.trackingManager.put("LB." + ip, ns.toString());
+    } else {
+      self.trackingManager.delete("IP." + ip);
+      self.trackingManager.delete("LB." + ip);
+      //self.trackingManager.clear();
+    }
+    return(true);
   }
   
   requestFromAdmin(request) Bool {
@@ -1448,7 +1520,7 @@ use class Dz:Ui {
   
   preLoginCheck(request) Bool {
     if (lastLoginBad.o) {
-      Time:Sleep.sleepSeconds(5);
+      Time:Sleep.sleepSeconds(1);
     }
     return(true);
   }
@@ -1660,9 +1732,25 @@ use class Dz:Ui {
     return(sessionDb);
   }
   
+  trackingManagerGet() CLocker {
+    fields {
+      CLocker trackingManager;
+    }
+    if (undef(trackingManager)) {
+      Path db = self.paths.dataPath.addStep("Dz").addStep("TMDB");
+      KvDb trackingManagerKv = KvDb.new(HsDb.pathNew(db), "TRACKING");
+      trackingManagerKv.createOpen();
+      trackingManager = CLocker.new(trackingManagerKv);
+    }
+    return(trackingManager);
+  }
+  
+  
 
   handleWeb(request, Map arg) {
-    checkRequest(request);
+    unless (checkRequest(request)) {
+      return(null);
+     }
         try {
             String aname = arg.get("action");
             if (undef(aname) || aname.ends("Request")!) {
@@ -1717,7 +1805,7 @@ use class Dz:Ui {
     assureVers() {
       fields {
         Int majorVer = 4@;
-        Int minorVer = 15@;
+        Int minorVer = 16@;
       }
     }
     

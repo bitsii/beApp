@@ -754,6 +754,18 @@ class KvDb {
       throw(e);
     }
   }
+  
+  clear() {
+    try {
+      db.begin();
+      db.execute("DELETE FROM " + tableName);
+      db.commit();
+    } catch (var e) {
+      db.rollback();
+      dbFailed();
+      throw(e);
+    }
+  }
 
 }
 
