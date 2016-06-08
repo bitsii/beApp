@@ -287,6 +287,7 @@ use class Dz:Wui(Ui) {
             if (a.checkPass(lp)) {
               log.log(lvl, "svc login ok");
               request.putSession("account.name", ln);
+              request.putSession("ip", request.remoteAddress);
               goodLogin(request);
               accountName = ln;
             } else {
@@ -1454,19 +1455,27 @@ use class Dz:Ui {
   
   checkRequest(request) Bool {
   
-    Int maxBad =@ 15;
-    Int clearSecs =@ 180;
-    Int updateSecs =@ 30;
+    Int maxBad =@ 10;
+    Int clearSecs =@ 120;
+    Int updateSecs =@ 20;
   
   /*
     Int maxBad =@ 5;
     Int clearSecs =@ 10;
     Int updateSecs =@ 5;
-  */  
+  */
+    
+    String ip = request.remoteAddress;
+    String sip = request.getSession("ip");
+    String accountName = request.getSession("account.name");
+    if (TS.notEmpty(ip) && TS.notEmpty(sip) && TS.notEmpty(accountName)) {
+      if (ip == sip) {
+        return(true);
+      }
+    }
   
     Int ns = Time:Interval.now().seconds;
     
-    String ip = request.remoteAddress;
     if (TS.notEmpty(ip)) {
       String ct = self.trackingManager.get("IP." + ip);
       if (TS.notEmpty(ct)) {
@@ -1496,7 +1505,6 @@ use class Dz:Ui {
       }
       return(false);
     }
-    String accountName = request.getSession("account.name");
     if (TS.isEmpty(accountName)) {
       badcount++=;
       self.trackingManager.put("IP." + ip, badcount.toString());
@@ -2732,6 +2740,7 @@ use class Dz:DzHandler {
       if (a.checkPass(arg["accountPass"])) {
         log.log(lvl, "Login ok");
         request.putSession("account.name", arg["accountName"]);
+        request.putSession("ip", request.remoteAddress);
         Map res = Map.new();
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
