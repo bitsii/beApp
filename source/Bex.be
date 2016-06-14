@@ -44,7 +44,7 @@ use class Bex:BexHandler {
 
 use App:EventHandlers as AppEv;
 
-use class App:Bex {
+use class App:BrowserExample {
     
        
    new() self {

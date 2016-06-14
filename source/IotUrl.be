@@ -44,7 +44,7 @@ use class MP:LpHandler {
 
 use App:EventHandlers as AppEv;
 
-use class App:LocPing {
+use class App:IotUrl {
     
        
    new() self {
@@ -79,10 +79,10 @@ use class App:LocPing {
       
       String mypwd = System:Environment.getVariable("MYPWD");
       ifNotEmit(platDroid) {
-        webr.location = "file:///" + mypwd + "/App/LocPing/LocPing.html";
+        webr.location = "file:///" + mypwd + "/App/IotUrl/IotUrl.html";
       }
       ifEmit(platDroid) {
-        webr.location = "file:///android_asset/App/LocPing/LocPing.html";
+        webr.location = "file:///android_asset/App/IotUrl/IotUrl.html";
       }
       
       webr.setup();

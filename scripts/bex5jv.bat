@@ -6,7 +6,7 @@ del /s /q ..\apprun\App\Bex
 rmdir /s /q ..\apprun\App\Bex
 mkdir ..\apprun\App\Bex
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\Bex\d --buildPath ..\apprun\App\Bex --emitLang jv -mainClass=App:Bex --emitFlag foo source\Bex.be source\BrowserUI.be source\BrowserJvFx.be source\App.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\Bex\d --buildPath ..\apprun\App\Bex --emitLang jv -mainClass=App:BrowserExample --emitFlag foo source\Bex.be source\BrowserUI.be source\BrowserJvFx.be source\App.be
 
 javac ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\Bex\Base\target\jv\be\BEL_4_Base\*.java
 
