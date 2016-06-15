@@ -29,7 +29,7 @@ cd ..\..\app
 copy /y ..\apprun\App\IotUrl\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IotUrl
 copy /y source\IotUrl.html ..\apprun\App\IotUrl
 
-copy /y extlibs\hsqldb\* ..\apprun\App\IotUrl
+copy /y extlibs\IotUrl\* ..\apprun\App\IotUrl
 
 del /s /q ..\apprun\App\IotUrl\Base
 rmdir /s /q ..\apprun\App\IotUrl\Base

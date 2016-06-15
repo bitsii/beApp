@@ -6,7 +6,7 @@ del /s /q ..\apprun\App\IotUrl
 rmdir /s /q ..\apprun\App\IotUrl
 mkdir ..\apprun\App\IotUrl
 
-set ADAPPDIR=..\andrapp2
+set ADAPPDIR=..\iuad
 
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IotUrl\d --buildPath ..\apprun\App\IotUrl --emitLang jv --outputPlatform linux --emitFlag platDroid -mainClass=App:IotUrl source\IotUrl.be source\BrowserUI.be source\App.be source\BrowserJvAd.be
 

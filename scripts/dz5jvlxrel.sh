@@ -11,7 +11,7 @@ java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_j
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-javac -classpath extlibs/jetty/*:extlibs/hsqldb/*:extlibs/bcastlejv/*:extlibs/javamail/* ../be/system/jv/be/BELS_Base/*.java ../apprun/App/Dz/Base/target/jv/be/BEL_4_Base/*.java
+javac -classpath extlibs/Dz/* ../be/system/jv/be/BELS_Base/*.java ../apprun/App/Dz/Base/target/jv/be/BEL_4_Base/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -48,10 +48,7 @@ cp scripts/camclean.sh ../apprun/App/Dz
 cp source/Dz*.html ../apprun/App/Dz
 cp source/Version.txt ../apprun/App/Dz
 cp source/MOCAM.conf ../apprun/App/Dz
-cp extlibs/jetty/* ../apprun/App/Dz
-cp extlibs/hsqldb/* ../apprun/App/Dz
-cp extlibs/bcastlejv/* ../apprun/App/Dz
-cp extlibs/javamail/* ../apprun/App/Dz
+cp extlibs/Dz/* ../apprun/App/Dz
 
 rm -rf ../apprun/App/Dz/Base
 

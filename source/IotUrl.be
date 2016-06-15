@@ -36,7 +36,7 @@ use class MP:LpHandler {
       log.log(lvl, "In hi");
       Map res = Map.new();
       res["action"] = "hiResponse";
-      res["msg"] = "hello " + arg["who"];
+      res["msg"] = "hello2 " + arg["who"];
       return(res);
     }
 

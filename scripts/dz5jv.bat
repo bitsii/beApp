@@ -10,7 +10,7 @@ java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_j
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-javac -classpath extlibs\jetty\*;extlibs\hsqldb\*;extlibs\bcastlejv\*;extlibs\javamail\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\Dz\Base\target\jv\be\BEL_4_Base\*.java
+javac -classpath extlibs\Dz\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\Dz\Base\target\jv\be\BEL_4_Base\*.java
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
@@ -51,10 +51,7 @@ copy /y scripts\camclean.sh ..\apprun\App\Dz
 copy /y source\Dz*.html ..\apprun\App\Dz
 copy /y source\Version.txt ..\apprun\App\Dz
 copy /y source\MOCAM.conf ..\apprun\App\Dz
-copy /y extlibs\jetty\* ..\apprun\App\Dz
-copy /y extlibs\hsqldb\* ..\apprun\App\Dz
-copy /y extlibs\bcastlejv\* ..\apprun\App\Dz
-copy /y extlibs\javamail\* ..\apprun\App\Dz
+copy /y extlibs\Dz\* ..\apprun\App\Dz
 
 rem del /s /q ..\apprun\App\Dz\Base
 rem rmdir /s /q ..\apprun\App\Dz\Base

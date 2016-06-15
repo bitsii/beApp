@@ -29,7 +29,7 @@ cd ..\..\app
 copy /y ..\apprun\App\Bex\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\Bex
 copy /y source\Bex.html ..\apprun\App\Bex
 
-copy /y extlibs\hsqldb\* ..\apprun\App\Bex
+REM copy /y extlibs\Bex\* ..\apprun\App\Bex
 
 del /s /q ..\apprun\App\Bex\Base
 rmdir /s /q ..\apprun\App\Bex\Base
