@@ -6,11 +6,17 @@ del /s /q ..\apprun\App\IotUrl
 rmdir /s /q ..\apprun\App\IotUrl
 mkdir ..\apprun\App\IotUrl
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IotUrl\d --buildPath ..\apprun\App\IotUrl --emitLang jv -mainClass=App:IotUrl --emitFlag foo source\IotUrl.be source\BrowserUI.be source\BrowserJvFx.be source\App.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IotUrl\d --buildPath ..\apprun\App\IotUrl --emitLang jv -mainClass=App:IotUrl --emitFlag foo source\IotUrl.be source\BrowserUI.be source\BrowserJvFx.be source\App.be source\Db.be
+
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 javac ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\IotUrl\Base\target\jv\be\BEL_4_Base\*.java
 
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\App\IotUrl\d --buildPath ..\apprun\App\IotUrl --emitLang js --ownProcess false -mainClass=App:IotUrlBr source\IotUrlBr.be source\BrowserEUI.be
+
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 del ..\apprun\App\IotUrl\BEL_4_Base_lui_jv.jar
 cd ..\apprun\App\IotUrl\Base\target\jv

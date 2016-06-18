@@ -20,9 +20,13 @@ use Text:Strings as TS;
 use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
 
+use System:Thread:ContainerLocker as CLocker;
+use Db:KeyValue as KvDb;
+use Db:HSQLDb:Database as HsDb;
+
 use App:Alert;
 
-use class MP:LpHandler {
+use class IotUrl:IUHandler {
 
      new() self {
        fields {
@@ -39,6 +43,29 @@ use class MP:LpHandler {
       res["msg"] = "hello2 " + arg["who"];
       return(res);
     }
+    
+    showImapRequest(Map arg, request) {
+      Map res = Map.new();
+      res["action"] = "showImapResponse";
+      String user = app.configManager.get("imap.user");
+      if (TS.notEmpty(user)) {
+        res["imapAccount"] = user;
+      }
+      String ep = app.configManager.get("imap.endpoint");
+      if (TS.notEmpty(ep)) {
+        res["imapEndpoint"] = ep;
+      }
+      return(res);
+   }
+   
+   imapSettingsRequest(Map arg, request) {
+      app.configManager.put("imap.user", arg["imapAccount"]);
+      app.configManager.put("imap.endpoint", arg["imapEndpoint"]);
+      app.configManager.put("imap.pass", arg["imapPass"]);
+      Map res = Map.new();
+      res["action"] = "hideImapResponse";
+      return(res);
+   }
 
 }
 
@@ -54,14 +81,20 @@ use class App:IotUrl {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          LpHandler requestHandler;
+          IUHandler requestHandler;
+          Background bg = Background.new();
         }
         
-        requestHandler = LpHandler.new();
+        requestHandler = IUHandler.new();
         requestHandler.log = log;
         requestHandler.lvl = lvl;
         requestHandler.app = self;
         
+        bg.log = log;
+        bg.lvl = lvl;
+        bg.app = self;
+        bg.startBackground();
+                
     }
     
     main() {
@@ -136,5 +169,76 @@ use class App:IotUrl {
             request.scriptReturn = arg;
         }
     }
+    
+   configManagerGet() CLocker {
+    fields {
+      CLocker configManager;
+    }
+    if (undef(configManager)) {
+      Path db = self.paths.dataPath.addStep("IotUrl").addStep("IotUrlDbs");
+      KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
+      configManagerKv.createOpen();
+      configManager = CLocker.new(configManagerKv);
+    }
+    return(configManager);
+  }
+
+}
+
+use class Dz:Background {
+
+  new() self {
+    fields {
+      var app;
+      Int lvl;
+      IO:Log log;
+    }
+  }
+  
+  runMainTasks() {
+    log.log(lvl, "Run main tasks");
+  
+  }
+  
+  schedRunMainTasks() {
+    fields {
+      Int lastMainPoll;
+      Int mainPollSeconds =@ 300;
+    }
+    Int ns = Time:Interval.now().seconds;
+    if (undef(lastMainPoll) || (ns - lastMainPoll > mainPollSeconds)) {
+      lastMainPoll = ns;
+      runMainTasks();
+    }
+  }
+  
+  main() {
+    var e;
+    while (true) {
+      try {
+        schedRunMainTasks();
+      } catch (e) {
+        log.log(lvl, "Caught exception running tasks " + e);
+      }
+      try {          
+        Time:Sleep.sleepMilliseconds(sleepTime);
+      } catch (e) {
+        log.log(lvl, "Caught exception sleeping " + e);
+      }
+    }
+  }
+  
+  startBackground() {
+    fields {
+      System:Thread myThread;
+      Int sleepTime = 1000;
+    }
+    String bkdis = app.configManager.get("bk.disable");
+    if (TS.notEmpty(bkdis) && Bool.new(bkdis)) {
+      return(self);
+    }
+    myThread = System:Thread.new(self);
+    myThread.start();
+  }
 
 }

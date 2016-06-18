@@ -22,7 +22,7 @@ use Test:Assertions as Assert;
 
 use App:Alert;
 
-use class Bex:BexHandler {
+use class Bex:BHandler {
 
      new() self {
        fields {
@@ -54,10 +54,10 @@ use class App:BrowserExample {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          BexHandler requestHandler;
+          BHandler requestHandler;
         }
         
-        requestHandler = BexHandler.new();
+        requestHandler = BHandler.new();
         requestHandler.log = log;
         requestHandler.lvl = lvl;
         requestHandler.app = self;

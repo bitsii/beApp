@@ -71,4 +71,54 @@ use class App:IotUrlBr {
      HD.getElementById("msgdiv").innerHTML = arg["msg"];
    }
    
+   showImapRequest() {
+      Map arg = Map.new();
+      arg["action"] = "showImapRequest";
+      HC.new(self).call(arg);
+   }
+   
+   showImapResponse(Map arg) {
+     if (arg.has("imapEndpoint")) {
+      HD.getElementById("imapEndpoint").value = arg["imapEndpoint"];
+     }
+     if (arg.has("imapAccount")) {
+      HD.getElementById("imapAccount").value = arg["imapAccount"];
+     }
+     HD.getElementById("imapSettingsDiv").display = "block";
+   }
+   
+   hideImapResponse(Map arg) {
+     HD.getElementById("imapSettingsDiv").display = "none";
+   }
+   
+   imapSettingsRequest() {
+    String iac = HD.getElementById("imapAccount").value;
+    String iep = HD.getElementById("imapEndpoint").value;
+    String ip = HD.getElementById("imapPass").value;
+    String ip2 = HD.getElementById("imapPass2").value;
+    HD.getElementById("imapPass").value = "";
+    HD.getElementById("imapPass2").value = "";
+    if (ip == ip2) {
+    Map arg = Map.new();
+    arg["action"] = "imapSettingsRequest";
+    arg["imapAccount"] = iac;
+    arg["imapEndpoint"] = iep;
+    arg["imapPass"] = ip;
+    HC.new(self).call(arg);
+    } else {
+      fail("Passwords don't match");
+    }
+   }
+   
+   fail(String r) {
+     if (TS.notEmpty(r)) {
+      HD.getElementById("failMessageDiv").innerHTML = r;
+      HD.getElementById("failDiv").display = "block";
+     }
+   }
+   
+   hideFail() {
+     HD.getElementById("failDiv").display = "none";
+   }
+   
 }
