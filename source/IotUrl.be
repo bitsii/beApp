@@ -71,6 +71,19 @@ use class IotUrl:IUHandler {
 
 use App:EventHandlers as AppEv;
 
+emit(jv) {
+"""
+import java.util.Properties;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.Folder;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.Transport;
+import javax.mail.Message;
+import javax.mail.Flags.Flag;
+"""
+}
 use class App:IotUrl {
     
        
@@ -182,6 +195,77 @@ use class App:IotUrl {
     }
     return(configManager);
   }
+  
+  updateUrls() {
+    log.log(lvl, "updateUrls");
+    String user = self.configManager.get("imap.user");
+    String endpoint = self.configManager.get("imap.endpoint");
+    String pass = self.configManager.get("imap.pass");
+    if (TS.notEmpty(user) && TS.notEmpty(endpoint) && TS.notEmpty(pass)) {
+      log.log(lvl, "have imap info");
+      var e;
+      try {
+          String prot = self.configManager.get("imap.protocol");
+          if (TS.isEmpty(prot)) {
+            prot = "imaps";
+          }
+          String subf = self.configManager.get("imap.subFolder");
+          if (undef(subf)) {
+            subf = "GossaLinks";
+          } elif (TS.isEmpty(subf)) {
+            subf = null;
+          }
+          //Json:Unmarshaller unmar = Json:Unmarshaller.new();
+          //msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
+          String subjPref = "DeviceLinks ";
+          emit(jv) {
+          """
+          Properties props = new Properties();
+          props.setProperty("mail.store.protocol", bevl_prot.bems_toJvString());
+            Session session = Session.getDefaultInstance(props, null);
+            Store store = session.getStore(bevl_prot.bems_toJvString());
+            if (!store.isConnected()) {
+              store.connect(bevl_endpoint.bems_toJvString(), bevl_user.bems_toJvString(), bevl_pass.bems_toJvString());
+            }
+            Folder f = store.getFolder("Inbox");
+            if (bevl_subf != null) {
+              Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
+              if (!f2.exists()) {
+                f2.create(Folder.HOLDS_MESSAGES);
+              }
+              f = f2;
+            }
+            f.open(Folder.READ_WRITE);
+            
+            if (bevl_subjPref != null) {
+            
+              String ls = bevl_subjPref.bems_toJvString();
+              
+              Message[] messages = f.getMessages();
+              if (messages != null) {
+                for(int i = 0; i < messages.length; i++)
+                {
+                  String subj = messages[i].getSubject();
+                  if (subj != null && subj.startsWith(ls)) {
+                    System.out.println("found message");
+                    //messages[i].setFlag(Flag.DELETED, true);
+                  }
+                }
+              }            
+            }
+            
+            f.close(true);
+            store.close();
+          """
+          }
+          log.log(lvl, "Done with imap stuff");
+      } catch (e) {
+        if(def(e)) {
+          ("Exception during imap stuff " + e);
+        }
+      }
+    }
+  }
 
 }
 
@@ -197,7 +281,7 @@ use class Dz:Background {
   
   runMainTasks() {
     log.log(lvl, "Run main tasks");
-  
+    app.updateUrls();
   }
   
   schedRunMainTasks() {

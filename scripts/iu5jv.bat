@@ -10,7 +10,7 @@ java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_j
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-javac ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\IotUrl\Base\target\jv\be\BEL_4_Base\*.java
+javac -classpath extlibs\IotUrl\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\App\IotUrl\Base\target\jv\be\BEL_4_Base\*.java
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
