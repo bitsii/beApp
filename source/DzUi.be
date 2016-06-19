@@ -1259,6 +1259,7 @@ use class Dz:UpnpUpdate {
         jsl.put("extPort", extPort);
         jsl.put("gw", gw);
         jsl.put("deviceName", deviceName);
+        jsl.put("deviceId", app.configManager.get("deviceId"))
         jsl.put("intLink", intLink);
         jsl.put("extLink", extLink);
         app.links.o = jsl;
@@ -1813,7 +1814,7 @@ use class Dz:Ui {
     assureVers() {
       fields {
         Int majorVer = 4@;
-        Int minorVer = 16@;
+        Int minorVer = 17@;
       }
     }
     

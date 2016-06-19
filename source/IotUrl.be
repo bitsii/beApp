@@ -98,6 +98,7 @@ use class App:IotUrl {
           Int lvl = log.level;
           IUHandler requestHandler;
           Background bg = Background.new();
+          OLocker urls = OLocker.new();
         }
         
         requestHandler = IUHandler.new();
@@ -203,6 +204,7 @@ use class App:IotUrl {
     String user = self.configManager.get("imap.user");
     String endpoint = self.configManager.get("imap.endpoint");
     String pass = self.configManager.get("imap.pass");
+    Map nurls = Map.new();
     if (TS.notEmpty(user) && TS.notEmpty(endpoint) && TS.notEmpty(pass)) {
       log.log(lvl, "have imap info");
       var e;
@@ -292,7 +294,13 @@ use class App:IotUrl {
                 if (def(d)) {
                   con = con.substring(0, d);
                   //log.log(lvl, "final con " + con);
-                  Map lm = unmar.unmarshall(Encode:Hex.decode(con));
+                  String conjs = Encode:Hex.decode(con);
+                  log.log(lvl, "conjs " + conjs);
+                  Map lm = unmar.unmarshall(conjs);
+                  if (def(lm) && TS.notEmpty(lm["deviceId"])) {
+                    log.log(lvl, "putting into nurls " + lm["deviceId"]);
+                    nurls.put(lm["deviceId"], lm);
+                  }
                   //log.log(lvl, "done with unmar " + lm.get("extAddress"));
                 }
               }
@@ -300,6 +308,7 @@ use class App:IotUrl {
               log.log(lvl, "Exception during imap stuff " + e);
             }
           }
+          urls.o = nurls;
           log.log(lvl, "Done with imap stuff");
       } catch (e) {
         if(def(e)) {
