@@ -217,11 +217,12 @@ use class App:IotUrl {
           } elif (TS.isEmpty(subf)) {
             subf = null;
           }
-          //Json:Unmarshaller unmar = Json:Unmarshaller.new();
+          Json:Unmarshaller unmar = Json:Unmarshaller.new();
           //msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
           String subjPref = "DeviceLinks ";
           //Array froms = Array.new();
           Array contents = Array.new();
+          Array devices = Array.new();
           emit(jv) {
           """
           Properties props = new Properties();
@@ -281,12 +282,28 @@ use class App:IotUrl {
           """
           }
           foreach (String con in contents) {
-            log.log(lvl, "got con " + con);
+            //log.log(lvl, "got con " + con);
+            try {
+              String beg = "type=\"hidden\" value=\"";
+              Int d = con.find(beg);
+              if (def(d)) {
+                con = con.substring(d + beg.size);
+                d = con.find("\"");
+                if (def(d)) {
+                  con = con.substring(0, d);
+                  //log.log(lvl, "final con " + con);
+                  Map lm = unmar.unmarshall(Encode:Hex.decode(con));
+                  //log.log(lvl, "done with unmar " + lm.get("extAddress"));
+                }
+              }
+            } catch (e) {
+              log.log(lvl, "Exception during imap stuff " + e);
+            }
           }
           log.log(lvl, "Done with imap stuff");
       } catch (e) {
         if(def(e)) {
-          ("Exception during imap stuff " + e);
+          log.log(lvl, "Exception during imap stuff " + e);
         }
       }
     }
