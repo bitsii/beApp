@@ -21,6 +21,7 @@ use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
 
 use System:Thread:ContainerLocker as CLocker;
+use System:Thread:ObjectLocker as OLocker;
 use Db:KeyValue as KvDb;
 use Db:HSQLDb:Database as HsDb;
 
@@ -81,6 +82,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
 import javax.mail.Transport;
 import javax.mail.Message;
+import javax.mail.Address;
 import javax.mail.Flags.Flag;
 """
 }
@@ -218,6 +220,8 @@ use class App:IotUrl {
           //Json:Unmarshaller unmar = Json:Unmarshaller.new();
           //msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
           String subjPref = "DeviceLinks ";
+          //Array froms = Array.new();
+          Array contents = Array.new();
           emit(jv) {
           """
           Properties props = new Properties();
@@ -248,7 +252,25 @@ use class App:IotUrl {
                   String subj = messages[i].getSubject();
                   if (subj != null && subj.startsWith(ls)) {
                     System.out.println("found message");
-                    //messages[i].setFlag(Flag.DELETED, true);
+                    Message message = messages[i];
+                    if (message != null) {
+                      Address[] adda = message.getFrom();
+                      if (adda != null && adda.length > 0) {
+                        Address add = adda[0];
+                        if (add != null) {
+                          //String adds = add.toString();
+                          //System.out.println("address " + adds);
+                        }
+                      }
+                      Object con = message.getContent();
+                      if (con != null) {
+                        String mc = con.toString();
+                        if (mc != null) {
+                          //System.out.println("mc " + mc);
+                          bevl_contents.bem_addValue_1(new BEC_4_6_TextString(mc));
+                        }
+                      }
+                    }
                   }
                 }
               }            
@@ -257,6 +279,9 @@ use class App:IotUrl {
             f.close(true);
             store.close();
           """
+          }
+          foreach (String con in contents) {
+            log.log(lvl, "got con " + con);
           }
           log.log(lvl, "Done with imap stuff");
       } catch (e) {
@@ -292,6 +317,7 @@ use class Dz:Background {
     Int ns = Time:Interval.now().seconds;
     if (undef(lastMainPoll) || (ns - lastMainPoll > mainPollSeconds)) {
       lastMainPoll = ns;
+      //log.log(lvl, "updated lmp " + lastMainPoll + " " + ns);
       runMainTasks();
     }
   }
