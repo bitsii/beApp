@@ -40,6 +40,23 @@ var handleCallback = function(res) {
     }
 }
 
+var openIntLink = function(devid) {
+    var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(devid);
+    dzeui.bem_openIntLinkRequest_1(bevs_resjs);
+}
+
+var openExtLink = function(devid) {
+    var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(devid);
+    dzeui.bem_openExtLinkRequest_1(bevs_resjs);
+}
+
+var showADiv = function(divid) {
+  document.getElementById(divid).style.display = "block";
+}
+
+var hideADiv = function(divid) {
+  document.getElementById(divid).style.display = "none";
+}
 
 window.onload = startup;
 """
@@ -53,12 +70,39 @@ use class App:IotUrlBr {
     }
     
     main() {
-    
+      urlsRequest();
     }
     
     handleCallback(String res) {
       HC.new(self).handleCallback(res);
     }
+   
+   urlsRequest() {
+      Map arg = Map.new();
+      arg["action"] = "urlsRequest";
+      HC.new(self).call(arg);
+   }
+   
+   urlsResponse(Map arg) {
+     HD.getElementById("urlsHtmlDiv").innerHTML = arg["urlsHtml"];
+     HD.getElementById("urlsDiv").display = "block";
+   }
+   
+   openIntLinkRequest(String did) {
+      Map arg = Map.new();
+      arg["action"] = "openLinkRequest";
+      arg["deviceId"] = did;
+      arg["from"] = "int";
+      HC.new(self).call(arg);
+   }
+   
+   openExtLinkRequest(String did) {
+      Map arg = Map.new();
+      arg["action"] = "openLinkRequest";
+      arg["deviceId"] = did;
+      arg["from"] = "ext";
+      HC.new(self).call(arg);
+   }
    
    hiRequest() {
       Map arg = Map.new();

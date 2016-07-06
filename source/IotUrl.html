@@ -41,16 +41,21 @@ h5.luiForm {
 <div id="failDiv">
 <div id="failMessageDiv"></div>
 </div>
-<p><label>Hi to Who2 </label><input type="text" id="who" size="20" value=""></p>
-<p><button id="sayit" type="button" onclick="dzeui.bem_hiRequest_0();return false;">Say It</button></p>
-<p><a href="#" onclick="dzeui.bem_showImapRequest_0();return false;">Imap Settings</a></p>
+
+<div id="urlsDiv">
+<div id="urlsHtmlDiv"></div>
+</div>
+
+<!--<p><label>Hi to Who2 </label><input type="text" id="who" size="20" value=""></p>
+<p><button id="sayit" type="button" onclick="dzeui.bem_hiRequest_0();return false;">Say It</button></p>-->
+<p><a href="#" onclick="dzeui.bem_showImapRequest_0();return false;">Coordinator Settings</a></p>
 <div id="imapSettingsDiv" style="display: none;">
-<p><a href="#" onclick="dzeui.bem_hideImapResponse_1();return false;">Close Imap Settings</a></p>
+<p><a href="#" onclick="dzeui.bem_hideImapResponse_1();return false;">Close Coordinator Settings</a></p>
 <p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
 <p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
 <p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
 <p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
-<p><a href="#" onclick="dzeui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
+<p><a href="#" onclick="dzeui.bem_imapSettingsRequest_0();return false;">Save Coordinator Settings</a></p>
 </div>
 </body>
 </html>

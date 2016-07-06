@@ -1232,8 +1232,11 @@ use class Dz:UpnpUpdate {
 
       if (update) {
         log.log(lvl, "Updating imap");
-        String intLink = "<a href=\"https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html\">Internal Link, use on same network as the device is on.</a>";
-        String extLink = "<a href=\"https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html\">External Link, use from the internet or outside the network the device is on.</a>";
+        String deviceId = app.configManager.get("deviceId");
+        String intUrl = "https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html";
+        String extUrl = "https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html";
+        String intLink = "<a href=\"" + intUrl + "\">" + deviceName + " " + deviceId + " internal Link, use on same network as the device is on.</a>";
+        String extLink = "<a href=\"" + extUrl + "\">" + deviceName + " " + deviceId + " external Link, use from the internet or outside the network the device is on.</a>";
         Map jsl = Map.new();
         if (TS.notEmpty(exPorts)) {
           String extraPortsMsg = String.new();
@@ -1259,9 +1262,11 @@ use class Dz:UpnpUpdate {
         jsl.put("extPort", extPort);
         jsl.put("gw", gw);
         jsl.put("deviceName", deviceName);
-        jsl.put("deviceId", app.configManager.get("deviceId"))
+        jsl.put("deviceId", deviceId)
         jsl.put("intLink", intLink);
         jsl.put("extLink", extLink);
+        jsl.put("intUrl", intUrl);
+        jsl.put("extUrl", extUrl);
         app.links.o = jsl;
         app.updateNetAddresses();
       }
@@ -1569,6 +1574,8 @@ use class Dz:Ui {
         String json = mar.marshall(jsl);
         log.log(lvl, "links json " + json);
         String msg = "<p>" + jsl.get("extLink") + "</p>\n<p>" + jsl.get("intLink") + "</p>\n";
+        msg += "<p>External (Internet) address " += jsl.get("extAddress") += ", web user interface on external port " += jsl.get("extPort") += "</p>";
+        msg += "<p>Internal address " += jsl.get("intAddress") += ", web user interface on internal port " += jsl.get("intPort") += "</p>";
         if (TS.notEmpty(jsl.get("extraPortsMsg"))) {
           msg += jsl.get("extraPortsMsg");
         }
@@ -1814,7 +1821,7 @@ use class Dz:Ui {
     assureVers() {
       fields {
         Int majorVer = 4@;
-        Int minorVer = 17@;
+        Int minorVer = 18@;
       }
     }
     

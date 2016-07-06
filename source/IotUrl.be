@@ -10,6 +10,7 @@ use Math:Int;
 use System:Exception;
 use Container:Array;
 use Container:Map;
+use Container:Map:MapNode as MNode;
 use Container:Set;
 use Container:LinkedList;
 use Container:Queue;
@@ -66,6 +67,51 @@ use class IotUrl:IUHandler {
       Map res = Map.new();
       res["action"] = "hideImapResponse";
       return(res);
+   }
+   
+   urlsRequest(Map arg, request) {
+      Map urls = app.urlsMap;
+      String uh = String.new();
+      foreach (MNode kv in urls) {
+          //uh += "<p>" += kv.value["intLink"] += "</p>";
+          //uh += "<p>" += kv.value["extLink"] += "</p>";
+          
+          String extLink = "<p><a href=\"#\" onclick=\"openExtLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the internet or outside the network the device is on</a></p>";
+          
+          String intLink = "<p><a href=\"#\" onclick=\"openIntLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the same network the device is on</a></p>";
+          
+          uh += intLink;
+          
+          String ldiv = "shLinkDiv" + kv.value["deviceId"];
+          uh += "<p><a href=\"#\" onclick=\"showADiv('" += ldiv += "');return false;\">+" += kv.value["deviceName"] += "</a></p>";
+          uh += "<div id=\"" += ldiv += "\" style=\"display: none;\">";
+          uh += "<p><a href=\"#\" onclick=\"hideADiv('" += ldiv += "');return false;\">-" += kv.value["deviceName"] += "</a></p>";
+          uh += extLink;
+          uh += intLink;
+          uh += "</div>";
+      }
+      Map res = Map.new();
+      res["action"] = "urlsResponse";
+      res["urlsHtml"] = uh;
+      return(res);
+   }
+   
+   openLinkRequest(Map arg, request) {
+    log.log(lvl, "Open link request " + arg["deviceId"] + " from " + arg["from"]);
+    Map urlsm = app.urls.o;
+    if (def(urlsm)) {
+      Map md = urlsm.get(arg["deviceId"]);
+      if (def(md)) {
+        if (arg["from"] == "int") {
+          String tourl = md["intUrl"];
+        } else {
+          tourl = md["extUrl"];
+        }
+        log.log(lvl, "opening in browser: " + tourl);
+        UI:ExternalBrowser.openToUrl(tourl);
+      }
+    }
+    return(null);
    }
 
 }
@@ -199,7 +245,38 @@ use class App:IotUrl {
     return(configManager);
   }
   
+  fakeUrls() {
+    log.log(lvl, "fakeUrls");
+    Map furls = Map.new();
+    Map furl = Map.new();
+    furl.put("deviceId", "did");
+    furl.put("deviceName", "dname");
+    String intUrl = "https://127.0.0.1:5000/App/Dz/Dz.html";
+    String extUrl = "https://10.10.10.10:5000/App/Dz/Dz.html";
+    String intLink = "<a href=\"" + intUrl + "\">dname did internal Link, use on same network as the device is on.</a>";
+    String extLink = "<a href=\"" + extUrl + "\">dname did external Link, use from the internet or outside the network the device is on.</a>";
+    furl.put("intLink", intLink);
+    furl.put("extLink", extLink);
+    furl.put("intUrl", intUrl);
+    furl.put("extUrl", extUrl);
+    furls.put(furl["deviceId"], furl);
+    urls.o = furls;
+  }
+  
+  urlsMapGet() Map {
+    Map urlsm = urls.o;
+    if (undef(urlsm) || urlsm.isEmpty) {
+      updateUrls();
+      urlsm = urls.o;
+    }
+    return(urlsm);
+  }
+  
   updateUrls() {
+    if (false) {
+      fakeUrls();
+      return(self);
+    }
     log.log(lvl, "updateUrls");
     String user = self.configManager.get("imap.user");
     String endpoint = self.configManager.get("imap.endpoint");
@@ -305,14 +382,14 @@ use class App:IotUrl {
                 }
               }
             } catch (e) {
-              log.log(lvl, "Exception during imap stuff " + e);
+             log.log(lvl, "Exception during imap stuff " );
             }
           }
           urls.o = nurls;
           log.log(lvl, "Done with imap stuff");
       } catch (e) {
         if(def(e)) {
-          log.log(lvl, "Exception during imap stuff " + e);
+          log.log(lvl, "Exception during imap stuff ");
         }
       }
     }
@@ -332,7 +409,9 @@ use class Dz:Background {
   
   runMainTasks() {
     log.log(lvl, "Run main tasks");
-    app.updateUrls();
+    try {
+      app.updateUrls();
+    } catch (var e) { }
   }
   
   schedRunMainTasks() {
@@ -341,10 +420,17 @@ use class Dz:Background {
       Int mainPollSeconds =@ 300;
     }
     Int ns = Time:Interval.now().seconds;
+    /*if (undef(lastMainPoll)) { log.log(lvl, "lmp null"); } else {
+      log.log(lvl, "lmp " + lastMainPoll);
+      }*/
     if (undef(lastMainPoll) || (ns - lastMainPoll > mainPollSeconds)) {
       lastMainPoll = ns;
       //log.log(lvl, "updated lmp " + lastMainPoll + " " + ns);
-      runMainTasks();
+      try {
+        runMainTasks();
+      } catch (var e) {
+        log.log(lvl, "except in runMainTasks" + e);
+      }
     }
   }
   
@@ -365,6 +451,7 @@ use class Dz:Background {
   }
   
   startBackground() {
+    //log.log(lvl, "start background");
     fields {
       System:Thread myThread;
       Int sleepTime = 1000;
