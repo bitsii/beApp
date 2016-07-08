@@ -76,11 +76,19 @@ use class IotUrl:IUHandler {
           //uh += "<p>" += kv.value["intLink"] += "</p>";
           //uh += "<p>" += kv.value["extLink"] += "</p>";
           
+          String mygw = Net:Gateway.defaultAddress;
+          
+          log.log(lvl, "dev gw is " + kv.value["gw"] + " mygw " + mygw);
+          
           String extLink = "<p><a href=\"#\" onclick=\"openExtLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the internet or outside the network the device is on</a></p>";
           
           String intLink = "<p><a href=\"#\" onclick=\"openIntLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the same network the device is on</a></p>";
           
-          uh += intLink;
+          if (def(mygw) && def(kv.value["gw"]) && mygw == kv.value["gw"]) {
+            uh += intLink;
+          } else {
+            uh += extLink;
+          }
           
           String ldiv = "shLinkDiv" + kv.value["deviceId"];
           uh += "<p><a href=\"#\" onclick=\"showADiv('" += ldiv += "');return false;\">+" += kv.value["deviceName"] += "</a></p>";

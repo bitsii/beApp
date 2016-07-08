@@ -42,6 +42,50 @@ use class App:Paths {
 
 }
 
+use Net:Gateway as Gw;
+
+class Gw {
+
+  default() self {  }
+  
+  defaultAddressGet() String {
+    
+    System:Command sc = System:Command.new("netstat -rn").open();
+    String res = sc.output.readString();
+    sc.close();
+    
+    //log.log(lvl, "netstat output " + res);
+    
+    if (System:CurrentPlatform.name == "mswin") {
+      Int fz = res.find("0.0.0.0"); //win
+    } else {
+      fz = 0;
+    }
+    if (def(fz)) {
+      Int fz2 = res.find("0.0.0.0", fz + 1);
+      if (def(fz2)) {
+        fz = fz2;
+      }
+      fz += 7;
+      res = res.substring(fz);
+      Bool started = false;
+      String accum = String.new();
+      foreach (String s in res.biter) {
+        if (s == " ") {
+          if (started) {
+            break;
+          }
+        } else {
+          started = true;
+          accum += s;
+        }
+      }
+    }
+    return(accum);
+  }
+
+}
+
 //logic
 use class App:AccountManager {
 

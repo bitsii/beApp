@@ -22,6 +22,9 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
+
+import android.content.Intent;
+import android.net.Uri;
 """
 }
 
@@ -46,9 +49,19 @@ emit(jv) {
 """
 public static class MainActivity extends AppCompatActivity {
 
-    public static MainActivity mainActivity;
+    public static volatile MainActivity mainActivity;
     
     public WebView mWebView;
+    
+    public static void openExternalBrowserToUrl(String toUrl) {
+    
+      Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(toUrl));
+      browserIntent.setFlags( 
+                Intent.FLAG_ACTIVITY_NEW_TASK 
+                | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS); 
+      mainActivity.startActivity(browserIntent);
+      
+    }
 
     protected void postCreate() {
         WebSettings webSettings = mWebView.getSettings();

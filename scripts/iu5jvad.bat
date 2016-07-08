@@ -8,7 +8,7 @@ mkdir ..\apprun\App\IotUrl
 
 set ADAPPDIR=..\iuad
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IotUrl\d --buildPath ..\apprun\App\IotUrl --emitLang jv --outputPlatform linux --emitFlag platDroid -mainClass=App:IotUrl source\IotUrl.be source\BrowserUI.be source\App.be source\BrowserJvAd.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IotUrl\d --buildPath ..\apprun\App\IotUrl --emitLang jv --outputPlatform linux --emitFlag platDroid -mainClass=App:IotUrl source\IotUrl.be source\BrowserUI.be source\App.be source\BrowserJvAd.be source\Db.be
 
 java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\App\IotUrl\d --buildPath ..\apprun\App\IotUrl --emitLang js --emitFlag platDroid --ownProcess false -mainClass=App:IotUrlBr source\IotUrlBr.be source\BrowserEUI.be
 
