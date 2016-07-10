@@ -168,6 +168,7 @@ use class Dz:Eui {
    
    hideAccountSettings() {
      HD.getElementById("accountSettingsDiv").display = "none";
+     HD.getElementById("sessionsListDiv").display = "none";
    }
 
    showAccountAdminRequest() {
@@ -458,8 +459,10 @@ use class Dz:Eui {
    }
    
    showSessionsResponse(Map arg) {
-    HD.getElementById("sessionsListDiv").innerHTML = arg["sessionsList"];
-    HD.getElementById("sessionsListDiv").display = "block";
+    if (TS.notEmpty(arg["sessionsList"])) {
+      HD.getElementById("sessionsListDiv").innerHTML = arg["sessionsList"];
+      HD.getElementById("sessionsListDiv").display = "block";
+    }
    }
    
    imapSettingsRequest() {

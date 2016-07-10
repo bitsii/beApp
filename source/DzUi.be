@@ -1750,24 +1750,37 @@ use class Dz:Ui {
     return(sessionDb);
   }
   
-  getSessionsForAccount(Account a) {
+  getSessionsForAccount(Account a) String {
     //a.user
+    String res = String.new();
     String accountName = a.user;
     Map all = self.sessionManager.sessions.getMap();
     foreach (var kv in all) {
       if (kv.key.ends("account.name") && kv.value == accountName) {
         log.log(lvl, "Found session " + kv.key);
         var kp = kv.key.split(".");
-        String ip = self.sessionManager.sessions.get(kp.first + ".ip");
-        if (def(ip)) {
-          log.log(lvl, "sess ip " + ip);
-        }
+        String sessLabel = String.new();
         String name = self.sessionManager.sessions.get(kp.first + ".session.name");
         if (def(name)) {
           log.log(lvl, "sess name " + name);
+          sessLabel += "Session named " += name;
+        }
+        String ip = self.sessionManager.sessions.get(kp.first + ".ip");
+        if (def(ip)) {
+          log.log(lvl, "sess ip " + ip);
+          if (TS.notEmpty(sessLabel)) {
+            sessLabel += " from ";
+          } else {
+            sessLabel += "Session from "
+          }
+          sessLabel += "IP Address " + ip;
+        }
+        if (TS.notEmpty(sessLabel)) {
+          res += "<p><a href=\"#\">" += sessLabel += "</p>";
         }
       }
     }
+    return(res);
   }
   
   trackingManagerGet() CLocker {
@@ -2283,8 +2296,10 @@ use class Dz:DzHandler {
    
    showSessionsRequest(Map arg, request) {
       Account a = app.accountManager.getAccountForRequest(request);
-      app.getSessionsForAccount(a);
-      return(null);
+      Map res = Map.new();
+      res["action"] = "showSessionsResponse";
+      res["sessionsList"] = app.getSessionsForAccount(a);
+      return(res);
    }
    
    detectCamsRequest(Map arg, request) {
