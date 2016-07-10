@@ -30,6 +30,14 @@ class HD {
   getElementById(String id) {
     return(HE.new(id));
   }
+  
+  reload() {
+    emit(js) {
+    """
+    location.reload();
+    """
+    }
+  }
 }
 
 class HE {

@@ -150,6 +150,18 @@ use class Dz:Eui {
       HC.new(self).call(arg);
    }
    
+   clearAllSessions() {
+      Map arg = Map.new();
+      arg["action"] = "clearAllSessionsRequest";
+      HC.new(self).call(arg);
+   }
+   
+   clearAllTracking() {
+      Map arg = Map.new();
+      arg["action"] = "clearAllTrackingRequest";
+      HC.new(self).call(arg);
+   }
+   
    showAccountSettings() {
      HD.getElementById("accountSettingsDiv").display = "block";
    }
@@ -334,17 +346,15 @@ use class Dz:Eui {
    }
    
    login() {
-      login(HD.getElementById("accountName").value, HD.getElementById("accountPass").value);
-   }
-   
-   login(String loginName, String loginPass) {
       clearImage();
       Map arg = Map.new();
       arg["action"] = "loginRequest";
-      arg["accountName"] = loginName;
-      arg["accountPass"] = loginPass;
+      arg["accountName"] = HD.getElementById("accountName").value;
+      arg["accountPass"] = HD.getElementById("accountPass").value;
+      arg["sessionName"] = HD.getElementById("sessionName").value;
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
+      HD.getElementById("sessionName").value = "";
       HC.new(self).call(arg);
    }
    
@@ -399,6 +409,7 @@ use class Dz:Eui {
      hideConfig();
      hideAdmin();
      hideFail();
+     HD.reload();
    }
    
    clearImage() {
@@ -438,6 +449,17 @@ use class Dz:Eui {
     } else {
       fail("New passwords don't match");
     }
+   }
+   
+   showSessionsRequest() {
+    Map arg = Map.new();
+    arg["action"] = "showSessionsRequest";
+    HC.new(self).call(arg);
+   }
+   
+   showSessionsResponse(Map arg) {
+    HD.getElementById("sessionsListDiv").innerHTML = arg["sessionsList"];
+    HD.getElementById("sessionsListDiv").display = "block";
    }
    
    imapSettingsRequest() {

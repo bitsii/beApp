@@ -352,10 +352,10 @@ use class Web:ScriptRequest {
    }
    
    setOutputCookie(String name, String value, String path) {
-     setOutputCookie(name, value, path, true);
+     setOutputCookie(name, value, path, true, false);
    }
    
-   setOutputCookie(String name, String value, String path, Bool httpOnly) {
+   setOutputCookie(String name, String value, String path, Bool httpOnly, Bool longTerm) {
      emit(cs) {
      """
      Cookie toAdd = new Cookie(beva_name.bems_toCsString(), beva_value.bems_toCsString());
@@ -369,6 +369,9 @@ use class Web:ScriptRequest {
        toAdd.setPath(beva_path.bems_toJvString());
      }
      toAdd.setHttpOnly(beva_httpOnly.bevi_bool);
+     if (beva_longTerm.bevi_bool) {
+       toAdd.setMaxAge(157680000);//5 years
+     }
      bevi_res.addCookie(toAdd);
      """
      }

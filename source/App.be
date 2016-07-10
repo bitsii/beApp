@@ -194,7 +194,7 @@ use class App:Account {
   
   checkPass(String _pass) Bool {
     _pass = passToHash(_pass, salt);
-    if (_pass == pass) {
+    if (def(_pass) && _pass == pass) {
       return(true);
     }
     return(false);

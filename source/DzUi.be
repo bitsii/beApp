@@ -118,7 +118,7 @@ use class Dz:Wui(Ui) {
       vw.ssl = true;
       vw.sslPath = cerPath;
       vw.app = self;
-      vw.gzipOutput = true;
+      //vw.gzipOutput = true;//security issues
       fields {
         System:Thread myThread = System:Thread.new(vw);
       }
@@ -1461,8 +1461,8 @@ use class Dz:Ui {
   
   checkRequest(request) Bool {
   
-    Int maxBad =@ 10;
-    Int clearSecs =@ 120;
+    Int maxBad =@ 20;
+    Int clearSecs =@ 40;
     Int updateSecs =@ 20;
   
   /*
@@ -1502,7 +1502,7 @@ use class Dz:Ui {
       }
     }
     if (badcount > maxBad) {
-      log.log(lvl, "tomany bad " + ip);
+      log.log(lvl, "toomany bad " + ip);
       if (def(ltmi) && ns - ltmi > updateSecs) {
         log.log(lvl, "lp update");
         self.trackingManager.put("LB." + ip, ns.toString());
@@ -1512,6 +1512,7 @@ use class Dz:Ui {
       return(false);
     }
     if (TS.isEmpty(accountName)) {
+      log.log(lvl, "upping bad");
       badcount++=;
       self.trackingManager.put("IP." + ip, badcount.toString());
       self.trackingManager.put("LB." + ip, ns.toString());
@@ -1534,7 +1535,8 @@ use class Dz:Ui {
   
   preLoginCheck(request) Bool {
     if (lastLoginBad.o) {
-      Time:Sleep.sleepSeconds(1);
+      Int slptime = System:Random.getInt(Int.new(), 500);
+      Time:Sleep.sleepMilliseconds(slptime);
     }
     return(true);
   }
@@ -1746,6 +1748,26 @@ use class Dz:Ui {
     }
     ("got sessionmanager").print();
     return(sessionDb);
+  }
+  
+  getSessionsForAccount(Account a) {
+    //a.user
+    String accountName = a.user;
+    Map all = self.sessionManager.sessions.getMap();
+    foreach (var kv in all) {
+      if (kv.key.ends("account.name") && kv.value == accountName) {
+        log.log(lvl, "Found session " + kv.key);
+        var kp = kv.key.split(".");
+        String ip = self.sessionManager.sessions.get(kp.first + ".ip");
+        if (def(ip)) {
+          log.log(lvl, "sess ip " + ip);
+        }
+        String name = self.sessionManager.sessions.get(kp.first + ".session.name");
+        if (def(name)) {
+          log.log(lvl, "sess name " + name);
+        }
+      }
+    }
   }
   
   trackingManagerGet() CLocker {
@@ -2027,8 +2049,24 @@ use class Dz:DzHandler {
    
    restartRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-        log.log(lvl, "Restarting as requested, will have exit code 3");
+        log.log(lvl, "Restarting as requested, will have exit code 3 by login " + app.accountManager.getAccountForRequest(request).user);
         System:Process.exit(3);
+     }
+     return(null);
+   }
+   
+   clearAllSessionsRequest(Map arg, request) Map {
+     if (app.requestFromAdmin(request)) {
+        log.log(lvl, "Clearing all sessions request by login " + app.accountManager.getAccountForRequest(request).user);
+        app.sessionManager.sessions.clear();
+     }
+     return(null);
+   }
+   
+   clearAllTrackingRequest(Map arg, request) Map {
+     if (app.requestFromAdmin(request)) {
+        log.log(lvl, "Clearing all tracking requested by login "  + app.accountManager.getAccountForRequest(request).user);
+        app.trackingManager.clear();
      }
      return(null);
    }
@@ -2241,6 +2279,12 @@ use class Dz:DzHandler {
       Map res = Map.new();
       res["action"] = "hideImapResponse";
       return(res);
+   }
+   
+   showSessionsRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      app.getSessionsForAccount(a);
+      return(null);
    }
    
    detectCamsRequest(Map arg, request) {
@@ -2749,6 +2793,9 @@ use class Dz:DzHandler {
         log.log(lvl, "Login ok");
         request.putSession("account.name", arg["accountName"]);
         request.putSession("ip", request.remoteAddress);
+        if (TS.notEmpty(arg["sessionName"])) {
+          request.putSession("session.name", arg["sessionName"]);
+        }
         Map res = Map.new();
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
@@ -2766,9 +2813,11 @@ use class Dz:DzHandler {
   }
   
   logoutRequest(Map arg, request) {
+    //log.log(lvl, "logging out");
     request.deleteSession();
     Map res = Map.new();
     res["action"] = "logoutResponse";
+    //log.log(lvl, "logged out, returning");
     return(res);
   }
 

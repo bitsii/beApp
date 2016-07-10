@@ -45,6 +45,7 @@ h5.luiForm {
 <form>
 <p><label class="luiForm">Account Name</label><input type="text" id="accountName"></input></p>
 <p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) dzeui.bem_login_0()"></input></p>
+<p><label class="luiForm">Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) dzeui.bem_login_0()"></input>(Optional, will stay logged in)</p>
 </form>
 <p><a href="#" onclick="dzeui.bem_login_0();return false;">Login</a></p>
 </div>
@@ -58,6 +59,8 @@ h5.luiForm {
 <p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
 <p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
 <p><a href="#" onclick="dzeui.bem_changePassRequest_0();return false;">Change Password</a></p>
+<p><a href="#" onclick="dzeui.bem_showSessionsRequest_0();return false;">Show account sessions</a></p>
+<div id="sessionsListDiv" style="display: none;"></div>
 </div>
 <!--<p><a id="showDevsId" href="#" onclick="dzeui.bem_showDevLinks_0();return false;">Linked Devices</a></p>
 <div id="devsDiv"></div>
@@ -95,6 +98,8 @@ h5.luiForm {
 <p><a id="detectCamsId" href="#" onclick="dzeui.bem_detectCams_0();return false;" >Detect WebCams</a></p>
 <!--<p><a id="tryThingId" href="#" onclick="dzeui.bem_tryThing_0();return false;">Try Thing</a></p>-->
 <p><a id="restartId" href="#" onclick="dzeui.bem_restart_0();return false;">Restart</a></p>
+<p><a id="restartId" href="#" onclick="dzeui.bem_clearAllSessions_0();return false;">Clear all sessions (Logs everyone out)</a></p>
+<p><a id="restartId" href="#" onclick="dzeui.bem_clearAllTracking_0();return false;">Clear all bad ip tracking</a></p>
 <p><a id="showConfigId" href="#" onclick="dzeui.bem_showConfig_0();return false;">Show Configuration</a></p>
 </div>
 <div id="configsDiv"></div>

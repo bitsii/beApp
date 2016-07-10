@@ -586,8 +586,14 @@ use class Web:SessionManager {
     fields {
       var sessions = _sessions;
       String keyName = _keyName;
-      Int keyLen = 16;
+      Int keyLen = 64;
     }
+  }
+  
+  hashKey(String pass) String {
+    Digest:SHA256 ds = Digest:SHA256.new();
+    pass = ds.digestToHex(pass);
+    return(pass);
   }
   
   getSessionKey(request) String {
@@ -601,24 +607,33 @@ use class Web:SessionManager {
       //request.setOutputHeader(keyName, sk);
     } else {
       sk = System:Random.getString(keyLen);
-      until (sessions.getMap(sk + ".").isEmpty) {
+      until (sessions.getMap(hashKey(sk) + ".").isEmpty) {
         sk = System:Random.getString(keyLen);
       }
-      request.setOutputCookie(keyName, sk, "/");
+      request.setOutputCookie(keyName, sk, "/", true, true);
       //request.setOutputHeader(keyName, sk);
     }
-    return(sk);
+    String sko = hashKey(sk);
+    //("sko for sk " + sko + " " + sk).print();
+    return(sko);
   }
   
   deleteSession(request) {
     String sk = request.getInputCookie(keyName);
     if (TS.notEmpty(sk)) {
-      Map toDel = sessions.getMap(getSessionKey(request) + ".");
+      deleteSessionByKey(getSessionKey(request));
+    }
+    request.setOutputCookie(keyName, "", "/", true, true);
+  }
+  
+  deleteSessionByKey(String key) {
+    if (TS.notEmpty(key)) {
+      Map toDel = sessions.getMap(key + ".");
       foreach (var x in toDel) {
+        //("deleting session key " + x.key).print(); 
         sessions.delete(x.key);
       }
     }
-    request.setOutputCookie(keyName, "", "/");
   }
   
   getSession(request, String name) String {
