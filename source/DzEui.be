@@ -41,6 +41,11 @@ var handleCallback = function(res) {
     }
 }
 
+var endSession = function(forId) {
+  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
+  dzeui.bem_endSessionRequest_1(theId);
+}
+
 var updateConfig = function(forKey, forId) {
   var theKey = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forKey);
   var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
@@ -330,6 +335,13 @@ use class Dz:Eui {
       Map arg = Map.new();
       arg["action"] = "deleteConfigRequest";
       arg["configKey"] = theKey;
+      HC.new(self).call(arg);
+   }
+   
+   endSessionRequest(String theKey) {
+      Map arg = Map.new();
+      arg["action"] = "endSessionRequest";
+      arg["sessionKey"] = theKey;
       HC.new(self).call(arg);
    }
    

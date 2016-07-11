@@ -1776,7 +1776,8 @@ use class Dz:Ui {
           sessLabel += "IP Address " + ip;
         }
         if (TS.notEmpty(sessLabel)) {
-          res += "<p><a href=\"#\">" += sessLabel += "</p>";
+          res += "<p>" += sessLabel += " <a href=\"#\" onclick=\"endSession('"
+          += kp.first += "');return false;\">End Session (Log it out)</a></p>";
         }
       }
     }
@@ -2082,6 +2083,13 @@ use class Dz:DzHandler {
         app.trackingManager.clear();
      }
      return(null);
+   }
+   
+   endSessionRequest(Map arg, request) Map {
+     if (TS.notEmpty(arg["sessionKey"])) {
+      app.sessionManager.deleteSessionByKey(arg["sessionKey"]);
+     }
+     return(showSessionsRequest(arg, request));
    }
 
      updateImageRequest(Map arg, request) {
