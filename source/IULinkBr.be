@@ -25,29 +25,29 @@ use UI:HtmlDom:Call as HC;
 emit(js) {
 """
 
-var dzeui;
+var eui;
 //ui startup
 var startup = function() {
-  dzeui = new be_BEL_4_Base_BEC_3_8_AppIotUrlBr();
-  dzeui.bem_new_0();
-  dzeui.bem_main_0();
+  eui = new be_BEL_4_Base_BEC_3_8_AppIULinkBr();
+  eui.bem_new_0();
+  eui.bem_main_0();
 }
 
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
-      dzeui.bem_handleCallback_1(bevs_resjs);
+      eui.bem_handleCallback_1(bevs_resjs);
     }
 }
 
 var openIntLink = function(devid) {
     var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(devid);
-    dzeui.bem_openIntLinkRequest_1(bevs_resjs);
+    eui.bem_openIntLinkRequest_1(bevs_resjs);
 }
 
 var openExtLink = function(devid) {
     var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(devid);
-    dzeui.bem_openExtLinkRequest_1(bevs_resjs);
+    eui.bem_openExtLinkRequest_1(bevs_resjs);
 }
 
 var showADiv = function(divid) {
@@ -62,7 +62,7 @@ window.onload = startup;
 """
 }
 
-use class App:IotUrlBr {
+use class App:IULinkBr {
 
   new() self {
         fields {

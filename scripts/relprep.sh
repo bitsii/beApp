@@ -1,17 +1,17 @@
 #!/bin/bash
 
-uglifyjs ../apprun/App/Dz/BEL_4_Base.js > ../apprun/App/Dz/BEL_4_Base.js.1
+uglifyjs ../apprun/App/IUHub/BEL_4_Base.js > ../apprun/App/IUHub/BEL_4_Base.js.1
 
-rm -f ../apprun/App/Dz/BEL_4_Base.js
+rm -f ../apprun/App/IUHub/BEL_4_Base.js
 
-mv ../apprun/App/Dz/BEL_4_Base.js.1 ../apprun/App/Dz/BEL_4_Base.js
+mv ../apprun/App/IUHub/BEL_4_Base.js.1 ../apprun/App/IUHub/BEL_4_Base.js
 
-cd ../apprun/App/Dz
+cd ../apprun/App/IUHub
 
-rm -f ../../../Dz.zip
+rm -f ../../../IUHub.zip
 
-zip ../Dz.zip ./*
+zip ../IUHub.zip ./*
 
-mv ../Dz.zip ../../..
+mv ../IUHub.zip ../../..
 
 cd ../../../app

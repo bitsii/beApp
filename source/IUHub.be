@@ -30,7 +30,7 @@ use Time:Sleep;
 
 use App:Alert;
 
-use class Dz:Lui(Ui) {
+use class IUHub:Lui(Ui) {
 
   new() self {
         fields {
@@ -48,7 +48,7 @@ use class Dz:Lui(Ui) {
       webr.width = 320;
       
       String mypwd = System:Environment.getVariable("MYPWD");
-      webr.location = "file:///" + mypwd + "/App/Dz/Dz.html";
+      webr.location = "file:///" + mypwd + "/App/IUHub/IUHub.html";
       
       webr.setup();
    }
@@ -89,7 +89,7 @@ import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 """
 }
-use class Dz:Wui(Ui) {
+use class IUHub:Wui(Ui) {
 
   emit(jv) {
   """
@@ -143,7 +143,7 @@ use class Dz:Wui(Ui) {
     java.security.cert.Certificate cert;
     """
     }
-    Path cerPath = Path.apNew("Data/Dz/cert");
+    Path cerPath = Path.apNew("Data/IUHub/cert");
     String cerPathS = cerPath.toString();
     log.log(lvl, "cerPath " + cerPathS);
     if (cerPath.file.exists) {
@@ -158,6 +158,9 @@ use class Dz:Wui(Ui) {
     } else {
       log.log(lvl, "cer not exist");
       log.log(lvl, "Start gencert");
+      if (cerPath.parent.file.exists!) {
+        cerPath.parent.file.makeDirs();
+      }
       emit(jv) {
       """ 
       String domainName = "test";
@@ -246,7 +249,7 @@ use class Dz:Wui(Ui) {
     if (undef(accountName)) { accountName = ""; }
     try {
       Path pa = p.file.absPath;
-      Path adz = Path.apNew("App/Dz").file.absPath;
+      Path adz = Path.apNew("App/IUHub").file.absPath;
       if (TS.notEmpty(accountName)) {
         Path h = Path.apNew("Home/" + accountName).file.absPath;
       }
@@ -950,7 +953,7 @@ class Upnp {
 
 }
 
-use class Dz:DnsUpdate {
+use class IUHub:DnsUpdate {
 
   new() self {
   
@@ -1003,7 +1006,7 @@ use class Dz:DnsUpdate {
 
 }
 
-use class Dz:MotionUpdate {
+use class IUHub:MotionUpdate {
 
   new() self {
   
@@ -1039,7 +1042,7 @@ use class Dz:MotionUpdate {
     if (TS.notEmpty(cps)) {
       Int dz = Int.new(cps);
       if (dz > 0) {
-        String cmd = "App/Dz/camclean.sh " + cps;
+        String cmd = "App/IUHub/camclean.sh " + cps;
         log.log(lvl, "running clean cmd " + cmd);
         Com.run(cmd);
       }
@@ -1071,10 +1074,10 @@ use class Dz:MotionUpdate {
       Path p = Path.apNew(cp);
       String mcn = p.steps.last;
       log.log(lvl, "mocam name " + mcn);
-      Path confp = Path.apNew("Data/Dz/WebCamConfig/MOCAM-" + mcn + ".conf");
+      Path confp = Path.apNew("Data/IUHub/WebCamConfig/MOCAM-" + mcn + ".conf");
       if (confp.file.exists!) {
         log.log(lvl, "no conf, creating " + confp);
-        Path.apNew("App/Dz/MOCAM.conf").file.copyFile(confp.file);
+        Path.apNew("App/IUHub/MOCAM.conf").file.copyFile(confp.file);
         IO:File:Writer cw = confp.file.writer.openAppend();
         cw.write("videodevice " + cp + "\n");
         cw.write("target_dir Shared/WebCam\n");
@@ -1087,7 +1090,7 @@ use class Dz:MotionUpdate {
         //cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M\n");
       }
       //start it in background
-      String toRun = "App/Dz/motionrun.sh " + confp;
+      String toRun = "App/IUHub/motionrun.sh " + confp;
       log.log(lvl, "motion torun " + toRun);
       if (runit) {
         Com.run(toRun);
@@ -1116,7 +1119,7 @@ use class Dz:MotionUpdate {
 
 }
 
-use class Dz:UpnpUpdate {
+use class IUHub:UpnpUpdate {
 
   new() self {
   
@@ -1233,8 +1236,8 @@ use class Dz:UpnpUpdate {
       if (update) {
         log.log(lvl, "Updating imap");
         String deviceId = app.configManager.get("deviceId");
-        String intUrl = "https://" += intAddress += ":" += intPort += "/App/Dz/Dz.html";
-        String extUrl = "https://" += extAddress += ":" += extPort += "/App/Dz/Dz.html";
+        String intUrl = "https://" += intAddress += ":" += intPort += "/App/IUHub/IUHub.html";
+        String extUrl = "https://" += extAddress += ":" += extPort += "/App/IUHub/IUHub.html";
         String intLink = "<a href=\"" + intUrl + "\">" + deviceName + " " + deviceId + " internal Link, use on same network as the device is on.</a>";
         String extLink = "<a href=\"" + extUrl + "\">" + deviceName + " " + deviceId + " external Link, use from the internet or outside the network the device is on.</a>";
         Map jsl = Map.new();
@@ -1331,7 +1334,7 @@ use class Dz:UpnpUpdate {
 
 }
 
-use class Dz:Background {
+use class IUHub:Background {
 
   new() self {
     fields {
@@ -1429,7 +1432,7 @@ import javax.mail.Message;
 import javax.mail.Flags.Flag;
 """
 }
-use class Dz:Ui {
+use class IUHub:Ui {
 
   new() self {
       fields {
@@ -1440,10 +1443,10 @@ use class Dz:Ui {
         Background bg = Background.new();
         OLocker links = OLocker.new();
         OLocker lastLoginBad = OLocker.new(false);
-        DzHandler requestHandler;
+        HHandler requestHandler;
       }
       
-      requestHandler = DzHandler.new();
+      requestHandler = HHandler.new();
       requestHandler.log = log;
       requestHandler.lvl = lvl;
       requestHandler.app = self;
@@ -1856,8 +1859,8 @@ use class Dz:Ui {
     
     assureVers() {
       fields {
-        Int majorVer = 4@;
-        Int minorVer = 18@;
+        Int majorVer = 5@;
+        Int minorVer = 0@;
       }
     }
     
@@ -1905,7 +1908,7 @@ use class Dz:Ui {
         Wui.new().main();
       }
       if (mode == "test") {
-        Dz:Test.new().main();
+        IUHub:Test.new().main();
       }
       if (mode == "cmd") {
         CmdUi.new().main(args);
@@ -1919,7 +1922,7 @@ use class Dz:Ui {
 
 }
 
-use class Dz:CmdUi(Ui) {
+use class IUHub:CmdUi(Ui) {
 
   new() self {
         fields {
@@ -2044,7 +2047,7 @@ use class Dz:CmdUi(Ui) {
 }
 
 use Crypto:Symmetric as Crypt;
-use class Dz:DzHandler {
+use class IUHub:HHandler {
 
      new() self {
        fields {
@@ -2154,9 +2157,9 @@ use class Dz:DzHandler {
       File picFile = pp.copy().addStep(picName).file;
       picFile.delete();
       if (System:CurrentPlatform.name == "mswin") {
-        String piccmd = "App\\Dz\\uppic.bat";
+        String piccmd = "App\\IUHub\\uppic.bat";
       } else {
-        piccmd = "App/Dz/uppic.sh";
+        piccmd = "App/IUHub/uppic.sh";
       }
       log.log(lvl, "pic path " + picFile.path);
       //curl http://127.0.0.1:10994/0/action/snapshot
@@ -2325,9 +2328,9 @@ use class Dz:DzHandler {
    
    updateCams() {
       if (System:CurrentPlatform.name == "mswin") {
-        String gccmd = "App\\Dz\\getcams.bat";
+        String gccmd = "App\\IUHub\\getcams.bat";
       } else {
-        gccmd = "App/Dz/getcams.sh";
+        gccmd = "App/IUHub/getcams.sh";
       }
       String res = System:Command.new(gccmd).open().output.readStringClose();
       log.log(lvl, "res from cmd " + res);
@@ -2439,7 +2442,7 @@ use class Dz:DzHandler {
       throw(Alert.new("must be admin"));
      }
      if (TS.notEmpty(path)) {
-       Path dpath = Path.apNew("App/Dz.zip");
+       Path dpath = Path.apNew("App/IUHub.zip");
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
        var e;
        try {
@@ -2456,9 +2459,9 @@ use class Dz:DzHandler {
           app.lock.unlock();
         }
         if (System:CurrentPlatform.name == "mswin") {
-          String piccmd = "App\\Dz\\upgrade.bat";
+          String piccmd = "App\\IUHub\\upgrade.bat";
         } else {
-          piccmd = "App/Dz/upgrade.sh";
+          piccmd = "App/IUHub/upgrade.sh";
         }
         try {
         app.lock.lock();
@@ -2606,7 +2609,7 @@ use class Dz:DzHandler {
             clabel = Path.apNew(c).steps.last;
             app.configManager.put("cam." + c + ".label", clabel);
           }
-          camLinks += "<p><a href=\"#\" onclick=\"dzeui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
+          camLinks += "<p><a href=\"#\" onclick=\"eui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
         }
      }
      return(camLinks);
@@ -2618,14 +2621,14 @@ use class Dz:DzHandler {
      foreach (var kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
-      cmdLinks += "<p><a href=\"#\" onclick=\"dzeui.bem_runCommand_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
+      cmdLinks += "<p><a href=\"#\" onclick=\"eui.bem_runCommand_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
      }
      return(cmdLinks);
    }
    
    showDevLinksRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-       //String devLinks = "<p><a href=\"#\" onclick=\"dzeui.bem_offerDevLink_0();return false;\">Send Link Offer</a></p>";
+       //String devLinks = "<p><a href=\"#\" onclick=\"eui.bem_offerDevLink_0();return false;\">Send Link Offer</a></p>";
        Map res = Map.new();
        res["action"] = "showDevLinksResponse";
        //res["devLinks"] = devLinks;
@@ -2752,18 +2755,18 @@ use class Dz:DzHandler {
    showConfigRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
        String conf = String.new();
-      conf += "<a href=\"#\" onclick=\"dzeui.bem_hideConfig_0();return false;\">Hide Configuration</a>";
+      conf += "<a href=\"#\" onclick=\"eui.bem_hideConfig_0();return false;\">Hide Configuration</a>";
        Map ecm = app.configManager.getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
          foreach (var kv in ecm) {
            unless(kv.value.has("\"")) {
               String ckey = "configKey" + kv.key;
-              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"dzeui.bem_deleteConfig_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
+              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"eui.bem_deleteConfig_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
             }
          }
       }
-      conf += "<tr><td>Add New:&nbsp;<input type=\"text\" id=\"addConfigKeyId\" value=\"\"></td><td><a href=\"#\" onclick=\"dzeui.bem_addConfig_0();return false;\">+</a><input type=\"hidden\" id=\"addConfigValId\" value=\"\"></td></tr>";
+      conf += "<tr><td>Add New:&nbsp;<input type=\"text\" id=\"addConfigKeyId\" value=\"\"></td><td><a href=\"#\" onclick=\"eui.bem_addConfig_0();return false;\">+</a><input type=\"hidden\" id=\"addConfigValId\" value=\"\"></td></tr>";
       conf += "</table>";
        Map res = Map.new();
       res["action"] = "showConfigResponse";
@@ -2862,7 +2865,7 @@ use App:AccountManager;
    
 use Db:KeyValue as KvDb;
 
-use class Dz:ConfigTest(Assert) {
+use class IUHub:ConfigTest(Assert) {
   
   testConfig() {
     Ui ui = Ui.new();
@@ -2887,7 +2890,7 @@ use class Dz:ConfigTest(Assert) {
   
 }
 
-use class Dz:DzHandlerTest(Assert) {
+use class IUHub:HHandlerTest(Assert) {
   
   testCamUpdate() {
   
@@ -2895,7 +2898,7 @@ use class Dz:DzHandlerTest(Assert) {
     app.configManager.delete("cam.paths");
     app.configManager.delete("cam./dev/video0.label");
     app.configManager.delete("cam./dev/video1.label");
-    DzHandler mio = app.requestHandler;
+    HHandler mio = app.requestHandler;
     mio.updateCams();
     assertEqual(app.configManager.get("cam.paths"), "/dev/video0,/dev/video1");
     assertEqual(app.configManager.get("cam./dev/video0.label"), "video0");
@@ -2907,15 +2910,15 @@ use class Dz:DzHandlerTest(Assert) {
   }
   
   main() {
-    "Begin DzHandlerTest".print();
+    "Begin HHandlerTest".print();
     //testCamUpdate();
-    "End DzHandlerTest".print();
+    "End HHandlerTest".print();
   }
   
 }
 
 
-use class Dz:AccountTest(Assert) {
+use class IUHub:AccountTest(Assert) {
   
   testAccounts() {
     Ui ui = Ui.new();

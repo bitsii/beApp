@@ -25,18 +25,18 @@ use UI:HtmlDom:Call as HC;
 emit(js) {
 """
 
-var dzeui;
+var eui;
 //ui startup
 var startup = function() {
-  dzeui = new be_BEL_4_Base_BEC_3_5_AppBexBr();
-  dzeui.bem_new_0();
-  dzeui.bem_main_0();
+  eui = new be_BEL_4_Base_BEC_3_5_AppBexBr();
+  eui.bem_new_0();
+  eui.bem_main_0();
 }
 
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
-      dzeui.bem_handleCallback_1(bevs_resjs);
+      eui.bem_handleCallback_1(bevs_resjs);
     }
 }
 

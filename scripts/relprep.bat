@@ -1,16 +1,16 @@
 
-call uglifyjs ..\apprun\App\Dz\BEL_4_Base.js > ..\apprun\App\Dz\BEL_4_Base.js.1
+call uglifyjs ..\apprun\App\IUHub\BEL_4_Base.js > ..\apprun\App\IUHub\BEL_4_Base.js.1
 
-del /q ..\apprun\App\Dz\BEL_4_Base.js
+del /q ..\apprun\App\IUHub\BEL_4_Base.js
 
-move ..\apprun\App\Dz\BEL_4_Base.js.1 ..\apprun\App\Dz\BEL_4_Base.js
+move ..\apprun\App\IUHub\BEL_4_Base.js.1 ..\apprun\App\IUHub\BEL_4_Base.js
 
-cd ..\apprun\App\Dz
+cd ..\apprun\App\IUHub
 
-del ..\..\..\Dz.zip
+del ..\..\..\IUHub.zip
 
-zip ../Dz.zip ./*
+zip ../IUHub.zip ./*
 
-move ..\Dz.zip ..\..\..
+move ..\IUHub.zip ..\..\..
 
 cd ..\..\..\app

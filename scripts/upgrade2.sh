@@ -2,19 +2,19 @@
 
 sleep 2
 
-mkdir -p App/Dz.bak
-rm -f App/Dz.bak/*
-cp App/Dz/* App/Dz.bak
-cd App/Dz
+mkdir -p App/IUHub.bak
+rm -f App/IUHub.bak/*
+cp App/IUHub/* App/IUHub.bak
+cd App/IUHub
 
-unzip -t ../Dz.zip
+unzip -t ../IUHub.zip
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-unzip -o ../Dz.zip
+unzip -o ../IUHub.zip
 chmod +x *.sh
 
 cd ../..
 sleep 1
-./App/Dz/postupgrade.sh
+./App/IUHub/postupgrade.sh
 sleep 1

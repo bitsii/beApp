@@ -25,64 +25,64 @@ use UI:HtmlDom:Call as HC;
 emit(js) {
 """
 
-var dzeui;
+var eui;
 //ui startup
 var startup = function() {
-  dzeui = new be_BEL_4_Base_BEC_2_3_DzEui();
-  dzeui.bem_new_0();
-  dzeui.bem_main_0();
-  dzeui.bem_startup_0();
+  eui = new be_BEL_4_Base_BEC_5_3_IUHubEui();
+  eui.bem_new_0();
+  eui.bem_main_0();
+  eui.bem_startup_0();
 }
 
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
-      dzeui.bem_handleCallback_1(bevs_resjs);
+      eui.bem_handleCallback_1(bevs_resjs);
     }
 }
 
 var endSession = function(forId) {
   var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
-  dzeui.bem_endSessionRequest_1(theId);
+  eui.bem_endSessionRequest_1(theId);
 }
 
 var updateConfig = function(forKey, forId) {
   var theKey = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forKey);
   var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
-  dzeui.bem_updateConfig_2(theKey, theId);
+  eui.bem_updateConfig_2(theKey, theId);
 }
 
 var localBrowseRequest = function(forId) {
   var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
-  dzeui.bem_localBrowseRequest_1(theId);
+  eui.bem_localBrowseRequest_1(theId);
 }
 
 var loadAccountRequest = function(forId) {
   var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(forId);
-  dzeui.bem_loadAccountRequest_1(theId);
+  eui.bem_loadAccountRequest_1(theId);
 }
 
 var deleteSelected = function() {
-  dzeui.bem_deleteRequest_0();
+  eui.bem_deleteRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
 var deleteAccount = function() {
-  dzeui.bem_deleteAccountRequest_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new(document.getElementById("aadminName").value));
+  eui.bem_deleteAccountRequest_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new(document.getElementById("aadminName").value));
 }
 
 var copySelected = function() {
-  dzeui.bem_copyRequest_0();
+  eui.bem_copyRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
 var upgradeSelected = function() {
-  dzeui.bem_upgradeRequest_0();
+  eui.bem_upgradeRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
   function handleFileSelect(evt) {
-    var dpath = dzeui.bem_browsingDirGet_0().bems_toJsString();
+    var dpath = eui.bem_browsingDirGet_0().bems_toJsString();
     var files = evt.target.files; // FileList object
     for (var i = 0, f; f = files[i]; i++) {
       var req = new XMLHttpRequest();
@@ -97,10 +97,10 @@ var upgradeSelected = function() {
 function fileChecked(box) {
   var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(box.id);
   if (box.checked) {
-    dzeui.bem_fileChecked_1(theId);
+    eui.bem_fileChecked_1(theId);
     //alert("checked ".concat(box.id));
   } else {
-    dzeui.bem_fileUnchecked_1(theId);
+    eui.bem_fileUnchecked_1(theId);
     //alert("unchecked ".concat(box.id));
   }
   
@@ -110,7 +110,7 @@ window.onload = startup;
 """
 }
 
-use class Dz:Eui {
+use class IUHub:Eui {
 
   new() self {
         fields {

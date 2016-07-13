@@ -1,9 +1,9 @@
 
-mkdir App\Dz.bak
-del /s /q App\Dz.bak\*.*
-copy /y App\Dz\*.* App\Dz.bak
-cd App\Dz
-unzip -o ..\Dz.zip
+mkdir App\IUHub.bak
+del /s /q App\IUHub.bak\*.*
+copy /y App\IUHub\*.* App\IUHub.bak
+cd App\IUHub
+unzip -o ..\IUHub.zip
 
 cd ..\..
-call App\Dz\postupgrade.bat
+call App\IUHub\postupgrade.bat

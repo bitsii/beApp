@@ -23,15 +23,15 @@ use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
 
-use class Dz:Test(Assert) {
+use class IUHub:Test(Assert) {
  
   main() {
     "Begin Dz Test".print();
     try {
       //Db:Relational:Test.new().main();
-      Dz:AccountTest.new().main();
-      Dz:ConfigTest.new().main();
-      Dz:DzHandlerTest.new().main();
+      IUHub:AccountTest.new().main();
+      IUHub:ConfigTest.new().main();
+      IUHub:HHandlerTest.new().main();
     } catch (var e) {
       "Exception during test".print();
       e.print();

@@ -28,7 +28,7 @@ use Db:HSQLDb:Database as HsDb;
 
 use App:Alert;
 
-use class IotUrl:IUHandler {
+use class IULink:IUHandler {
 
      new() self {
        fields {
@@ -140,7 +140,7 @@ import javax.mail.Address;
 import javax.mail.Flags.Flag;
 """
 }
-use class App:IotUrl {
+use class App:IULink {
     
        
    new() self {
@@ -182,10 +182,10 @@ use class App:IotUrl {
       
       String mypwd = System:Environment.getVariable("MYPWD");
       ifNotEmit(platDroid) {
-        webr.location = "file:///" + mypwd + "/App/IotUrl/IotUrl.html";
+        webr.location = "file:///" + mypwd + "/App/IULink/IULink.html";
       }
       ifEmit(platDroid) {
-        webr.location = "file:///android_asset/App/IotUrl/IotUrl.html";
+        webr.location = "file:///android_asset/App/IULink/IULink.html";
       }
       
       webr.setup();
@@ -245,7 +245,7 @@ use class App:IotUrl {
       CLocker configManager;
     }
     if (undef(configManager)) {
-      Path db = self.paths.dataPath.addStep("IotUrl").addStep("IotUrlDbs");
+      Path db = self.paths.dataPath.addStep("IULink").addStep("IULinkDbs");
       KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
       configManagerKv.createOpen();
       configManager = CLocker.new(configManagerKv);
@@ -259,8 +259,8 @@ use class App:IotUrl {
     Map furl = Map.new();
     furl.put("deviceId", "did");
     furl.put("deviceName", "dname");
-    String intUrl = "https://127.0.0.1:5000/App/Dz/Dz.html";
-    String extUrl = "https://10.10.10.10:5000/App/Dz/Dz.html";
+    String intUrl = "https://127.0.0.1:5000/App/IUHub/IUHub.html";
+    String extUrl = "https://10.10.10.10:5000/App/IUHub/IUHub.html";
     String intLink = "<a href=\"" + intUrl + "\">dname did internal Link, use on same network as the device is on.</a>";
     String extLink = "<a href=\"" + extUrl + "\">dname did external Link, use from the internet or outside the network the device is on.</a>";
     furl.put("intLink", intLink);
@@ -405,7 +405,7 @@ use class App:IotUrl {
 
 }
 
-use class Dz:Background {
+use class IUHub:Background {
 
   new() self {
     fields {
