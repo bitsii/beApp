@@ -300,7 +300,7 @@ use class App:IULink {
           }
           String subf = self.configManager.get("imap.subFolder");
           if (undef(subf)) {
-            subf = "GossaLinks";
+            subf = "IotUrls";
           } elif (TS.isEmpty(subf)) {
             subf = null;
           }

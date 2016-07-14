@@ -1130,12 +1130,27 @@ use class IUHub:UpnpUpdate {
           String extraPortsMsg = String.new();
           foreach (ep in exPorts.split(",")) {
             currPortS = app.configManager.get("upnp.extraPort." + ep + ".externalPort");
+            String httpsPath = app.configManager.get("upnp.extraPort." + ep + ".httpsPath");
+            String appName = app.configManager.get("upnp.extraPort." + ep + ".appName");
             if (TS.notEmpty(currPortS)) {
-              extraPortsMsg += "<p>External ip " += extAddress += " and port " += currPortS += " directed to port " += ep += "</p>";
+              if (TS.notEmpty(appName)) {
+                extraPortsMsg += "Begin Application " += appName += ":";
+                jsl.put("extraPortAppName:" + ep, appName);
+              }
+              extraPortsMsg += "<p>External ip " += extAddress += " port " += currPortS += " directed to internal ip " += intAddress += " port " += ep += "</p>";
+              if (TS.notEmpty(httpsPath)) {
+                extraPortsMsg += "<p>External url <a href=\"https://" += extAddress += ":" += currPortS += httpsPath += "\">https://" += extAddress += ":" += currPortS += httpsPath += "</a></p>";
+                extraPortsMsg += "<p>Internal url <a href=\"https://" += intAddress += ":" += ep += httpsPath += "\">https://" += intAddress += ":" += ep += httpsPath += "</a></p>";
+                jsl.put("extraPortHttpsPath:" + ep, httpsPath);
+              }
+              if (TS.notEmpty(appName)) {
+                extraPortsMsg += "End Application " += appName;
+              }
               jsl.put("extraPort:" + ep, currPortS);
             }
           }
           jsl.put("extraPortsMsg", extraPortsMsg);
+          jsl.put("extraPorts", exPorts);
         }
         log.log(lvl, "intLink " + intLink);
         log.log(lvl, "extLink " + extLink);
@@ -1447,7 +1462,7 @@ use class IUHub:Ui {
         String pass = self.configManager.get("imap.pass");
         String subf = self.configManager.get("imap.subFolder");
         if (undef(subf)) {
-          subf = "GossaLinks";
+          subf = "IotUrls";
         } elif (TS.isEmpty(subf)) {
           subf = null;
         }
