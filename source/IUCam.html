@@ -62,17 +62,6 @@ h5.luiForm {
 <p><a href="#" onclick="eui.bem_showSessionsRequest_0();return false;">Show account sessions</a></p>
 <div id="sessionsListDiv" style="display: none;"></div>
 </div>
-<!--<p><a id="showDevsId" href="#" onclick="eui.bem_showDevLinks_0();return false;">Linked Devices</a></p>
-<div id="devsDiv"></div>
-<p><a href="#" onclick="eui.bem_hideDevLinks_0();return false;">Close Linked Devices</a></p>
-<div id="offerDevLinkDiv" style="display: none;">
-<form>
-<p><label class="luiForm">Offer to Email</label><input type="text" id="offerEmail"></input></p>
-<p><label class="luiForm">Link Password</label><input type="password" id="offerPass1"</input></p>
-<p><label class="luiForm">Repeat Password</label><input type="password" id="offerPass2"</input></p>
-<p><a href="#" onclick="eui.bem_offerLink_0();return false;">Send Link Offer</a></p>
-</form>
-</div>-->
 <p><a id="showAdminId" href="#" onclick="eui.bem_showAdmin_0();return false;" style="display: none;">Administration</a></p>
 <div id="admindiv" style="display: none;">
 <p><a id="hideAdminId" href="#" onclick="eui.bem_hideAdmin_0();return false;" >Close Administration</a></p>
@@ -82,18 +71,10 @@ h5.luiForm {
 <p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
 <p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
 <p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
+<p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
 <p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="eui.bem_saveAccountRequest_0();return false;">&nbsp;Confirm account Deletion <input type="checkbox" id="confirmAccountDelete"/><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="deleteAccount();return false;"></p>
-<div id="accountLinksDiv"></div>
 </div>
-<p><a href="#" onclick="eui.bem_showImapRequest_0();return false;">Imap Settings</a></p>
-<div id="imapSettingsDiv" style="display: none;">
-<p><a href="#" onclick="eui.bem_hideImapResponse_1();return false;">Close Imap Settings</a></p>
-<p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
-<p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
-<p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
-<p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
-<p><a href="#" onclick="eui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
-</div>
+<p><a id="detectCamsId" href="#" onclick="eui.bem_detectCams_0();return false;" >Detect WebCams</a></p>
 <!--<p><a id="tryThingId" href="#" onclick="eui.bem_tryThing_0();return false;">Try Thing</a></p>-->
 <p><a id="restartId" href="#" onclick="eui.bem_restart_0();return false;">Restart</a></p>
 <p><a id="restartId" href="#" onclick="eui.bem_clearAllSessions_0();return false;">Clear all sessions (Logs everyone out)</a></p>
@@ -101,21 +82,13 @@ h5.luiForm {
 <p><a id="showConfigId" href="#" onclick="eui.bem_showConfig_0();return false;">Show Configuration</a></p>
 </div>
 <div id="configsDiv"></div>
-<div id="cmdLinksDiv"></div>
+<div id="camLinksDiv"></div>
 <p><a href="#" id="clearPicId" onclick="eui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
 <div id="imgdiv"></div>
 <p><a id="localBrowseId" href="#" onclick="eui.bem_localBrowseRequest_0();return false;">Browse Files</a></p>
 <div id="browseFilesDiv" style="display: none;">
 <p><a id="localBrowseId" href="#" onclick="eui.bem_closeFileBrowser_0();return false;">Close File Browser</a></p>
-<p>Upload a File <input type="file" id="files" name="files[]" multiple /></p>
-<p>Confirm file deletion <input type="checkbox" id="confirmDeleteId"/><input id="deleteSubmit" type="submit" value="Delete Selected File" onclick="deleteSelected();return false;"></p>
-<p><label class="luiForm">Copy to Name</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy Selected File" onclick="copySelected();return false;"></p>
-<p><input id="upgradeSubmit" type="submit" value="Upgrade Using Selected File" onclick="upgradeSelected();return false;"></p>
 <div id="localBrowseListDiv"></div>
-</div>
-<script>
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
-</script>
 </div>
 </body>
 </html>

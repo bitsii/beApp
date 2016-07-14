@@ -33,24 +33,17 @@ del /s *.class
 cd ..\..\app
 
 copy /y ..\apprun\App\IUHub\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUHub
-copy /y scripts\uppic.bat ..\apprun\App\IUHub
-copy /y scripts\uppic.sh ..\apprun\App\IUHub
 copy /y scripts\upgrade.bat ..\apprun\App\IUHub
 copy /y scripts\postupgrade.bat ..\apprun\App\IUHub
 copy /y scripts\upgrade.sh ..\apprun\App\IUHub
 copy /y scripts\upgrade2.sh ..\apprun\App\IUHub
 copy /y scripts\postupgrade.sh ..\apprun\App\IUHub
-copy /y scripts\getcams.bat ..\apprun\App\IUHub
-copy /y scripts\getcams.sh ..\apprun\App\IUHub
 copy /y scripts\startiuh.sh ..\apprun\App\IUHub
 copy /y scripts\iuhrun.sh ..\apprun\App\IUHub
 copy /y scripts\iuhcmdrs.sh ..\apprun\App\IUHub
 copy /y scripts\iuhcmd.sh ..\apprun\App\IUHub
-copy /y scripts\motionrun.sh ..\apprun\App\IUHub
-copy /y scripts\camclean.sh ..\apprun\App\IUHub
 copy /y source\IUHub*.html ..\apprun\App\IUHub
 copy /y source\Version.txt ..\apprun\App\IUHub
-copy /y source\MOCAM.conf ..\apprun\App\IUHub
 copy /y extlibs\IUHub\* ..\apprun\App\IUHub
 
 del /s /q ..\apprun\App\IUHub\Base

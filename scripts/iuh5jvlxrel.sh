@@ -30,24 +30,17 @@ cd ../../../app
 find ../be/system -name "*.class" -exec rm {} \;
 
 cp ../apprun/App/IUHub/Base/target/js/be/BEL_4_Base/BEL_4_Base.js ../apprun/App/IUHub
-cp scripts/uppic.sh ../apprun/App/IUHub
-cp scripts/uppic.bat ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp scripts/postupgrade.bat ../apprun/App/IUHub
 cp scripts/upgrade.sh ../apprun/App/IUHub
 cp scripts/upgrade2.sh ../apprun/App/IUHub
 cp scripts/postupgrade.sh ../apprun/App/IUHub
-cp scripts/getcams.sh ../apprun/App/IUHub
-cp scripts/getcams.bat ../apprun/App/IUHub
 cp scripts/startiuh.sh ../apprun/App/IUHub
 cp scripts/iuhrun.sh ../apprun/App/IUHub
 cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
-cp scripts/motionrun.sh ../apprun/App/IUHub
-cp scripts/camclean.sh ../apprun/App/IUHub
 cp source/IUHub*.html ../apprun/App/IUHub
 cp source/Version.txt ../apprun/App/IUHub
-cp source/MOCAM.conf ../apprun/App/IUHub
 cp extlibs/IUHub/* ../apprun/App/IUHub
 
 rm -rf ../apprun/App/IUHub/Base

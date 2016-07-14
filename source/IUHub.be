@@ -258,8 +258,6 @@ use class IUHub:Wui(Ui) {
         isOk = true;
       } elif (def(h) && pas.begins(h.toString())) {
         isOk = true;
-      } elif (a.perms.has("allcam") && pas.begins(Path.apNew("Shared/WebCam").file.absPath.toString())) {
-        isOk = true;
       }
     } catch (e) {
       log.log(lvl, "Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
@@ -1006,119 +1004,6 @@ use class IUHub:DnsUpdate {
 
 }
 
-use class IUHub:MotionUpdate {
-
-  new() self {
-  
-    fields {
-      Set mocams = Set.new();
-      Set configuredMocams = Set.new();
-      var app;
-      Int lvl;
-      IO:Log log;
-      Int lastPoll = 0;
-      Int pollSecs = 10800;
-      Int lastClean = 0;
-      Int cleanSecs = 10800;
-    }
-  
-  }
-  
-  updateOnInterval() {
-    Int currSec = Time:Interval.now().seconds;
-    if (currSec - lastPoll > pollSecs) {
-      lastPoll = currSec;
-      doUpdate();
-    }
-    if (currSec - lastClean > cleanSecs) {
-      lastClean = currSec;
-      doClean();
-    }
-  }
-  
-  doClean() {
-    log.log(lvl, "in mocams clean");
-    String cps = app.configManager.get("cam.cleanDays");
-    if (TS.notEmpty(cps)) {
-      Int dz = Int.new(cps);
-      if (dz > 0) {
-        String cmd = "App/IUHub/camclean.sh " + cps;
-        log.log(lvl, "running clean cmd " + cmd);
-        Com.run(cmd);
-      }
-    }
-  }
-  
-  doUpdate() {
-    //log.log(lvl, "in mocams update");
-    getMocams();
-    configureMocams();
-  }
-  
-  configureMocams() {
-    //stop all motion
-    if (System:CurrentPlatform.name == "mswin") {
-      Bool runit = false;
-    } else {
-      runit = true;
-    }
-    if (runit) {
-      Com.run("killall motion");
-      Sleep.sleepSeconds(3);
-      Com.run("killall -9 motion");
-    }
-    configuredMocams = Set.new();
-    //make sure configs present
-    foreach (String cp in mocams) {
-      log.log(lvl, cp + " is a mocam not setup yet");
-      Path p = Path.apNew(cp);
-      String mcn = p.steps.last;
-      log.log(lvl, "mocam name " + mcn);
-      Path confp = Path.apNew("Data/IUHub/WebCamConfig/MOCAM-" + mcn + ".conf");
-      if (confp.file.exists!) {
-        log.log(lvl, "no conf, creating " + confp);
-        Path.apNew("App/IUHub/MOCAM.conf").file.copyFile(confp.file);
-        IO:File:Writer cw = confp.file.writer.openAppend();
-        cw.write("videodevice " + cp + "\n");
-        cw.write("target_dir Shared/WebCam\n");
-        Int intPorti = System:Random.getInt(Int.new(), 6000);
-        intPorti += 9001;
-        String currPortS = intPorti.toString();
-        app.configManager.put("cam." + cp + ".motionPort", currPortS);
-        cw.write("webcontrol_port " + currPortS + "\n");
-        cw.write("picture_filename PICDIR_%Y-%m-%d_%H/PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
-        //cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M\n");
-      }
-      //start it in background
-      String toRun = "App/IUHub/motionrun.sh " + confp;
-      log.log(lvl, "motion torun " + toRun);
-      if (runit) {
-        Com.run(toRun);
-      }
-      configuredMocams.put(cp);
-    }
-  }
-  
-  getMocams() {
-    //log.log(lvl, "Doing getmocams");
-    mocams = Set.new();
-    String cps = app.configManager.get("cam.paths");
-    if (TS.notEmpty(cps)) {
-      foreach (String cp in cps.split(",")) {
-        String mcp = app.configManager.get("cam." + cp + ".motion");
-        if (TS.notEmpty(mcp) && Bool.new(mcp)) {
-          mocams.put(cp);
-        }
-      }
-    }
-  }
-  
-  init() {
-    getMocams();
-  }
-
-}
-
 use class IUHub:UpnpUpdate {
 
   new() self {
@@ -1343,7 +1228,6 @@ use class IUHub:Background {
       IO:Log log;
       DnsUpdate du = DnsUpdate.new();
       UpnpUpdate uu = UpnpUpdate.new();
-      MotionUpdate mu = MotionUpdate.new();
     }
   }
   
@@ -1368,7 +1252,6 @@ use class IUHub:Background {
     runMyTasks();
     du.updateOnInterval();
     uu.updateOnInterval();
-    mu.updateOnInterval();
   }
   
   main() {
@@ -1408,10 +1291,6 @@ use class IUHub:Background {
     uu.lvl = lvl;
     uu.log = log;
     uu.init();
-    mu.app = app;
-    mu.lvl = lvl;
-    mu.log = log;
-    mu.init();
     myThread = System:Thread.new(self);
     myThread.start();
   }
@@ -1464,7 +1343,7 @@ use class IUHub:Ui {
   
   checkRequest(request) Bool {
   
-    Int maxBad =@ 20;
+    Int maxBad =@ 40;
     Int clearSecs =@ 40;
     Int updateSecs =@ 20;
   
@@ -1729,7 +1608,7 @@ use class IUHub:Ui {
       CLocker configManager;
     }
     if (undef(configManager)) {
-      Path db = self.paths.dataPath.addStep("Dz").addStep("DDZDB");
+      Path db = self.paths.dataPath.addStep("IUHub").addStep("CONFDB");
       //KvDb configManagerKv = KvDb.new(Derby.pathNew(db), "CONFIG");
       KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
       configManagerKv.createOpen();
@@ -1743,7 +1622,7 @@ use class IUHub:Ui {
       Web:SessionManager sessionDb;
     }
     if (undef(sessionDb)) {
-      Path db = self.paths.dataPath.addStep("Dz").addStep("SESSDB");
+      Path db = self.paths.dataPath.addStep("IUHub").addStep("SESSDB");
       //KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
       KvDb sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
       sessionDbKv.createOpen();
@@ -1792,7 +1671,7 @@ use class IUHub:Ui {
       CLocker trackingManager;
     }
     if (undef(trackingManager)) {
-      Path db = self.paths.dataPath.addStep("Dz").addStep("TMDB");
+      Path db = self.paths.dataPath.addStep("IUHub").addStep("TMDB");
       KvDb trackingManagerKv = KvDb.new(HsDb.pathNew(db), "TRACKING");
       trackingManagerKv.createOpen();
       trackingManager = CLocker.new(trackingManagerKv);
@@ -1879,11 +1758,9 @@ use class IUHub:Ui {
       res["action"] = "updateResponse";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
-      res["camLinks"] = requestHandler.camLinksForAccount(a);
       res["cmdLinks"] = requestHandler.cmdLinksForAccount(a);
       res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
       res["deviceName"] = self.deviceName;
-      log.log(lvl, "CamLinks " + res["camLinks"]);
       return(res);
     }
     
@@ -2094,97 +1971,6 @@ use class IUHub:HHandler {
      }
      return(showSessionsRequest(arg, request));
    }
-
-     updateImageRequest(Map arg, request) {
-      //Path pp = app.getHomeDir(request).addStep("WebCam");
-      Path pp = Path.apNew("Shared/WebCam");
-      String cam = arg["cam"];
-      Account a = app.accountManager.getAccountForRequest(request);
-      String an = a.user;
-      unless (camOkForAccount(cam, a)) {
-        throw(Exception.new("Account " + an + " not authorized for cam " + cam));
-      }
-      if (pp.file.exists!) {
-        pp.file.makeDirs();
-      }
-      String countKey = "image.count." + cam + "." + an;
-      String c = app.configManager.get(countKey);
-      if (def(c)) {
-        log.log(lvl, "count def " + c);
-        count = Int.new(c);
-      } else {
-        log.log(lvl, "count undef");
-        Int count = 0;
-        app.configManager.put(countKey, count.toString());
-      }
-      String rv = app.configManager.get("cam." + cam + ".label");
-      if (undef(rv)) {
-        rv = System:Random.getString(6);
-      }
-      String myhn = System:Environment.getVariable("MYHN");
-      String picBaseName = "Pic-" + myhn + "-" + rv + "-";
-      Int tries = 5;
-      String maxPicsS = app.configManager.get("cam." + cam + ".maxPics");
-      if (TS.notEmpty(maxPicsS)) {
-        maxPics = Int.new(maxPicsS);
-      } else {
-        Int maxPics = 4;
-      }
-      Bool updatedCount = false;
-      while (tries > 0 && updatedCount!) {
-        count = Int.new(app.configManager.get(countKey));
-        tries--=;
-        Int nxcount = count++;
-        if (nxcount > maxPics) {
-          nxcount = 0;
-        }
-        updatedCount = app.configManager.testAndPut(countKey, count.toString(), nxcount.toString());
-      }
-      if (tries <= 0) {
-        throw(System:Exception.new("Unable to get a count option"));
-      }
-      String mcp = app.configManager.get("cam." + cam + ".motion");
-      if (TS.notEmpty(mcp) && Bool.new(mcp)) {
-        Bool isMo = true;
-      } else {
-        isMo = false;
-      }
-      if (isMo) {
-        picName = "lastsnap.jpg";
-      } else {
-        String picName = picBaseName + count + ".jpg";
-      }
-      File picFile = pp.copy().addStep(picName).file;
-      picFile.delete();
-      if (System:CurrentPlatform.name == "mswin") {
-        String piccmd = "App\\IUHub\\uppic.bat";
-      } else {
-        piccmd = "App/IUHub/uppic.sh";
-      }
-      log.log(lvl, "pic path " + picFile.path);
-      //curl http://127.0.0.1:10994/0/action/snapshot
-      if (isMo) {
-        mcp = app.configManager.get("cam." + cam + ".motionPort");
-        Web:Client client = Web:Client.new();
-        client.url = "http://127.0.0.1:" + mcp + "/0/action/snapshot";
-        String received = client.openInput().readString();
-        client.close();
-      } else {
-        System:Command.new(piccmd + " " + cam + " " + picFile.path).run();
-      }
-      tries = 60;
-      while (picFile.exists! && tries > 0) {
-        Time:Sleep.sleepMilliseconds(500);
-        tries--=;
-      }
-      Time:Sleep.sleepMilliseconds(500);
-      log.log(lvl, "In load image");
-      Map res = Map.new();
-      res["action"] = "updateImageResponse";
-      //res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
-      res["imghtm"] = "<img src=\"../../" + picFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
-      return(res);
-   }
    
    changePassRequest(Map arg, request) {
       Account a = app.accountManager.getAccountForRequest(request);
@@ -2206,7 +1992,6 @@ use class IUHub:HHandler {
         res["action"] = "loadAccountResponse";
         res["accountName"] = a.user;
         res["admin"] = a.perms.has("admin");
-        res["allcam"] = a.perms.has("allcam");
         return(res);
       } elif (true) {
         throw(Alert.new("No such account"));
@@ -2268,11 +2053,6 @@ use class IUHub:HHandler {
       } else {
         a.perms.delete("admin");
       }
-      if (arg["allcam"]) {
-        a.perms.put("allcam");
-      } else {
-        a.perms.delete("allcam");
-      }
       app.accountManager.putAccount(a);
    }
    
@@ -2311,63 +2091,6 @@ use class IUHub:HHandler {
       res["action"] = "showSessionsResponse";
       res["sessionsList"] = app.getSessionsForAccount(a);
       return(res);
-   }
-   
-   detectCamsRequest(Map arg, request) {
-      unless (app.requestFromAdmin(request)) {
-        log.log(lvl, "Account not admin, not detecting cams");
-        return(null);
-      }
-      Account a = app.accountManager.getAccountForRequest(request);
-      updateCams();
-      Map res = Map.new();
-      res["action"] = "updateResponse";
-      res["camLinks"] = app.requestHandler.camLinksForAccount(a);
-      return(res);
-   }
-   
-   updateCams() {
-      if (System:CurrentPlatform.name == "mswin") {
-        String gccmd = "App\\IUHub\\getcams.bat";
-      } else {
-        gccmd = "App/IUHub/getcams.sh";
-      }
-      String res = System:Command.new(gccmd).open().output.readStringClose();
-      log.log(lvl, "res from cmd " + res);
-      if (TS.notEmpty(res)) {
-        //res.swap("\r", "\n");
-        String cres = String.new();
-        foreach (String v in res.split("\n")) {
-          log.log(lvl, "v is " + v);
-          if (TS.notEmpty(v)) {
-            if (v.ends("\r")) {
-              log.log(lvl, "ends r");
-              v = v.substring(0, v.size - 1);
-              log.log(lvl, "now |" + v + "|");
-            }
-            if (TS.notEmpty(cres)) {
-              log.log(lvl, "cres v is " + cres);
-              cres += ",";
-              log.log(lvl, "cres v v is " + cres);
-            }
-            cres += v;
-            log.log(lvl, "v v v cres is " + cres);
-          }
-        }
-        log.log(lvl, "commares " + cres);
-        updateCams(cres);
-      }
-   }
-   
-   getCams() Set {
-      Set ecm = Set.new();
-      String ecps = app.configManager.get("cam.paths");
-      if (def(ecps)) {
-        foreach (String cp in ecps.split(",")) {
-          ecm.put(cp);
-        }
-      }
-      return(ecm);
    }
    
    runCommandRequest(Map arg, request) {
@@ -2496,11 +2219,8 @@ use class IUHub:HHandler {
       String path = arg["path"];
       Account a = app.accountManager.getAccountForRequest(request);
       Bool adminLinks = false;
-      Bool camLinks = false;
       if (a.perms.has("admin")) {
         adminLinks = true;
-      } elif (a.perms.has("allcam")) {
-        camLinks = true;
       }
       if (TS.isEmpty(path)) {
         dirFile = app.getHomeDir(request).file;
@@ -2525,10 +2245,6 @@ use class IUHub:HHandler {
           }
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(".") += "');return false;\">APPDIR</a></td></tr>";
-        }
-        if (adminLinks || camLinks) {
-          dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode("Shared/WebCam") += "');return false;\">WEBCAM</a></td></tr>";
         }
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>";
@@ -2585,35 +2301,6 @@ use class IUHub:HHandler {
       ret.put("dirListHtml", dirListHtml);
       return(ret);
     }
-   
-   updateCams(String dcs) {
-      app.configManager.delete("cam.paths");
-      app.configManager.put("cam.paths", dcs);
-   }
-   
-   camOkForAccount(String c, Account a) {
-    if (a.perms.has("admin") || a.perms.has("allcam") || 
-        a.perms.has("cam." + c)) {
-      return(true);
-    }
-    return(false);
-   }
-   
-   camLinksForAccount(Account a) String {
-     String camLinks = String.new();
-     Set ecm = getCams();
-     foreach (String c in ecm) {
-       if (camOkForAccount(c, a)) {
-          String clabel = app.configManager.get("cam." + c + ".label");
-          if (TS.isEmpty(clabel)) {
-            clabel = Path.apNew(c).steps.last;
-            app.configManager.put("cam." + c + ".label", clabel);
-          }
-          camLinks += "<p><a href=\"#\" onclick=\"eui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
-        }
-     }
-     return(camLinks);
-   }
    
   cmdLinksForAccount(Account a) String {
      String cmdLinks = String.new();
@@ -2891,27 +2578,9 @@ use class IUHub:ConfigTest(Assert) {
 }
 
 use class IUHub:HHandlerTest(Assert) {
-  
-  testCamUpdate() {
-  
-    Ui app = Ui.new();
-    app.configManager.delete("cam.paths");
-    app.configManager.delete("cam./dev/video0.label");
-    app.configManager.delete("cam./dev/video1.label");
-    HHandler mio = app.requestHandler;
-    mio.updateCams();
-    assertEqual(app.configManager.get("cam.paths"), "/dev/video0,/dev/video1");
-    assertEqual(app.configManager.get("cam./dev/video0.label"), "video0");
     
-    mio.updateCams();
-    assertEqual(app.configManager.get("cam.paths"), "/dev/video0,/dev/video1");
-    assertEqual(app.configManager.get("cam./dev/video1.label"), "video1");
-    
-  }
-  
   main() {
     "Begin HHandlerTest".print();
-    //testCamUpdate();
     "End HHandlerTest".print();
   }
   

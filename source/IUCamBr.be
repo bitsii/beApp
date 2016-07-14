@@ -28,7 +28,7 @@ emit(js) {
 var eui;
 //ui startup
 var startup = function() {
-  eui = new be_BEL_4_Base_BEC_5_3_IUHubEui();
+  eui = new be_BEL_4_Base_BEC_5_3_IUCamEui();
   eui.bem_new_0();
   eui.bem_main_0();
   eui.bem_startup_0();
@@ -62,76 +62,19 @@ var loadAccountRequest = function(forId) {
   eui.bem_loadAccountRequest_1(theId);
 }
 
-var deleteSelected = function() {
-  eui.bem_deleteRequest_0();
-  localBrowseRequest(document.getElementById("browsingDirId").value);
-}
-
 var deleteAccount = function() {
   eui.bem_deleteAccountRequest_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new(document.getElementById("aadminName").value));
-}
-
-var copySelected = function() {
-  eui.bem_copyRequest_0();
-  localBrowseRequest(document.getElementById("browsingDirId").value);
-}
-
-var upgradeSelected = function() {
-  eui.bem_upgradeRequest_0();
-  localBrowseRequest(document.getElementById("browsingDirId").value);
-}
-
-  function handleFileSelect(evt) {
-    var dpath = eui.bem_browsingDirGet_0().bems_toJsString();
-    var files = evt.target.files; // FileList object
-    for (var i = 0, f; f = files[i]; i++) {
-      var req = new XMLHttpRequest();
-      req.open("PUT", "/".concat(dpath.concat("/".concat(escape(f.name)))));
-      req.setRequestHeader("Content-type", "application/octet-stream");
-      req.send(f);
-    }
-    document.getElementById("files").value = '';
-    localBrowseRequest(document.getElementById("browsingDirId").value);
-  }
-  
-function fileChecked(box) {
-  var theId = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(box.id);
-  if (box.checked) {
-    eui.bem_fileChecked_1(theId);
-    //alert("checked ".concat(box.id));
-  } else {
-    eui.bem_fileUnchecked_1(theId);
-    //alert("unchecked ".concat(box.id));
-  }
-  
 }
 
 window.onload = startup;
 """
 }
 
-use class IUHub:Eui {
+use class IUCam:Eui {
 
   new() self {
         fields {
-          String currentlyCheckedId;
         }
-    }
-    
-    fileChecked(String id) {
-      if (TS.notEmpty(id)) {
-        if (TS.notEmpty(currentlyCheckedId)) {
-          HD.getElementById(currentlyCheckedId).checked = false;
-        }
-        currentlyCheckedId = id;
-      }
-    }
-    
-    fileUnchecked(String id) {
-      if (TS.notEmpty(id)) {
-        HD.getElementById(currentlyCheckedId).checked = false;
-        currentlyCheckedId = null;
-      }
     }
     
     main() {
@@ -204,6 +147,7 @@ use class IUHub:Eui {
      HD.getElementById("aadminPass").value = "";
      HD.getElementById("aadminPass2").value = "";
      HD.getElementById("aadminIsAdmin").checked = false;
+     HD.getElementById("aadminIsWebcam").checked = false;
    }
    
    hideAccountAdmin() {
@@ -222,6 +166,7 @@ use class IUHub:Eui {
    loadAccountResponse(Map arg) {
      HD.getElementById("aadminName").value = arg["accountName"];
      HD.getElementById("aadminIsAdmin").checked = arg["admin"];
+     HD.getElementById("aadminIsWebcam").checked = arg["allcam"];
    }
    
    saveAccountRequest() {
@@ -229,6 +174,7 @@ use class IUHub:Eui {
      arg["action"] = "saveAccountRequest";
      arg["accountName"] = HD.getElementById("aadminName").value;
      arg["admin"] = HD.getElementById("aadminIsAdmin").checked;
+     arg["allcam"] = HD.getElementById("aadminIsWebcam").checked;
      String pass = HD.getElementById("aadminPass").value;
      if (TS.notEmpty(pass)) {
        String pass2 = HD.getElementById("aadminPass2").value;
@@ -240,25 +186,12 @@ use class IUHub:Eui {
      clearAccountAdmin();
      HC.new(self).call(arg);
    }
-   
-   showImapRequest() {
+       
+    updateImage(String cam) {
       Map arg = Map.new();
-      arg["action"] = "showImapRequest";
+      arg["action"] = "updateImageRequest";
+      arg["cam"] = cam;
       HC.new(self).call(arg);
-   }
-   
-   showImapResponse(Map arg) {
-     if (arg.has("imapEndpoint")) {
-      HD.getElementById("imapEndpoint").value = arg["imapEndpoint"];
-     }
-     if (arg.has("imapAccount")) {
-      HD.getElementById("imapAccount").value = arg["imapAccount"];
-     }
-     HD.getElementById("imapSettingsDiv").display = "block";
-   }
-   
-   hideImapResponse(Map arg) {
-     HD.getElementById("imapSettingsDiv").display = "none";
    }
    
    showConfig() {
@@ -275,41 +208,8 @@ use class IUHub:Eui {
      HD.getElementById("configsDiv").innerHTML = "";
    }
    
-   showDevLinks() {
-      Map arg = Map.new();
-      arg["action"] = "showDevLinksRequest";
-      HC.new(self).call(arg);
-   }
-   
-   showDevLinksResponse(Map arg) {
-     //HD.getElementById("devsDiv").innerHTML = arg["devs"];
-     HD.getElementById("offerDevLinkDiv").display = "block";
-   }
-   
-   hideDevLinks() {
-     HD.getElementById("offerDevLinkDiv").display = "none";
-   }
-   
    browsingDirGet() {
      return(Encode:Hex.decode(HD.getElementById("browsingDirId").value));
-   }
-   
-   offerLink() {
-    //HD.getElementById("devsDiv").innerHTML = arg["devs"];
-    //HD.getElementById("offerDevLinkDiv").display = "block";
-    Map arg = Map.new();
-    arg["action"] = "offerLinkRequest";
-    arg["offerEmail"] = HD.getElementById("offerEmail").value;
-    arg["offerPass1"] = HD.getElementById("offerPass1").value;
-    arg["offerPass2"] = HD.getElementById("offerPass2").value;
-    HC.new(self).call(arg);
-   }
-   
-   runCommand(String key) {
-      Map arg = Map.new();
-      arg["action"] = "runCommandRequest";
-      arg["cmdKey"] = key;
-      HC.new(self).call(arg);
    }
    
    updateConfig(String theKey, String theId) {
@@ -380,8 +280,8 @@ use class IUHub:Eui {
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
     }
-    if (arg.has("cmdLinks")) {
-      HD.getElementById("cmdLinksDiv").innerHTML = arg["cmdLinks"];
+    if (arg.has("camLinks")) {
+      HD.getElementById("camLinksDiv").innerHTML = arg["camLinks"];
     }
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
@@ -426,6 +326,12 @@ use class IUHub:Eui {
      HD.getElementById("showAdminId").display = "block";
    }
    
+   detectCams() {
+      Map arg = Map.new();
+      arg["action"] = "detectCamsRequest";
+      HC.new(self).call(arg);
+   }
+   
    changePassRequest() {
     String op = HD.getElementById("changePassOld").value;
     String np = HD.getElementById("changePassNew").value;
@@ -457,25 +363,6 @@ use class IUHub:Eui {
     }
    }
    
-   imapSettingsRequest() {
-    String iac = HD.getElementById("imapAccount").value;
-    String iep = HD.getElementById("imapEndpoint").value;
-    String ip = HD.getElementById("imapPass").value;
-    String ip2 = HD.getElementById("imapPass2").value;
-    HD.getElementById("imapPass").value = "";
-    HD.getElementById("imapPass2").value = "";
-    if (ip == ip2) {
-    Map arg = Map.new();
-    arg["action"] = "imapSettingsRequest";
-    arg["imapAccount"] = iac;
-    arg["imapEndpoint"] = iep;
-    arg["imapPass"] = ip;
-    HC.new(self).call(arg);
-    } else {
-      fail("Passwords don't match");
-    }
-   }
-   
    localBrowseRequest() {
      HD.getElementById("browseFilesDiv").display = "block";
      localBrowseRequest("");
@@ -492,25 +379,6 @@ use class IUHub:Eui {
       HC.new(self).call(arg);
    }
    
-   deleteRequest() {
-      Bool isChecked = HD.getElementById("confirmDeleteId").checked;
-      HD.getElementById("confirmDeleteId").checked = false;
-      String ci = currentlyCheckedId;
-      if (TS.notEmpty(ci)) {
-        HD.getElementById(currentlyCheckedId).checked = false;
-        currentlyCheckedId = null;
-      }
-      if (isChecked) {
-        if (TS.notEmpty(ci)) {
-          String path = ci.substring(3);
-          Map arg = Map.new();
-          arg["action"] = "deleteRequest";
-          arg["path"] = path;
-          HC.new(self).call(arg);
-        }
-      }
-   }
-   
    failResponse(Map arg) {
     fail(arg["reason"]);
    }
@@ -524,39 +392,6 @@ use class IUHub:Eui {
    
    hideFail() {
      HD.getElementById("failDiv").display = "none";
-   }
-   
-   copyRequest() {
-      String toName = HD.getElementById("copyNameId").value;
-      HD.getElementById("copyNameId").value = "";
-      String ci = currentlyCheckedId;
-      if (TS.notEmpty(ci)) {
-        HD.getElementById(currentlyCheckedId).checked = false;
-        currentlyCheckedId = null;
-      }
-      if (TS.notEmpty(ci)) {
-          String path = ci.substring(3);
-          Map arg = Map.new();
-          arg["action"] = "copyRequest";
-          arg["path"] = path;
-          arg["toName"] = toName;
-          HC.new(self).call(arg);
-      }
-   }
-   
-   upgradeRequest() {
-      String ci = currentlyCheckedId;
-      if (TS.notEmpty(ci)) {
-        HD.getElementById(currentlyCheckedId).checked = false;
-        currentlyCheckedId = null;
-      }
-      if (TS.notEmpty(ci)) {
-          String path = ci.substring(3);
-          Map arg = Map.new();
-          arg["action"] = "upgradeRequest";
-          arg["path"] = path;
-          HC.new(self).call(arg);
-      }
    }
    
    localBrowseResponse(Map arg) {
