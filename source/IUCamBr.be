@@ -300,14 +300,6 @@ use class IUCam:Eui {
    }
    
    logoutResponse(Map arg) {
-     HD.getElementById("loginmsgdiv").innerHTML = "";
-     HD.getElementById("logindiv").display = "block";
-     HD.getElementById("loggedindiv").display = "none";
-     hideAccountSettings();
-     hideAccountAdmin();
-     hideConfig();
-     hideAdmin();
-     hideFail();
      HD.reload();
    }
    

@@ -168,18 +168,32 @@ use class IUHub:Eui {
    }
    
    showAccountSettings() {
-     HD.getElementById("accountSettingsDiv").display = "block";
+     if (HD.getElementById("accountSettingsDiv").display == "block") {
+       hideAccountSettings();
+     } else {
+       HD.getElementById("accountSettingsDiv").display = "block";
+       if (def(perms) && perms.has("admin")) {
+        showAdmin();
+       }
+     }
    }
    
    hideAccountSettings() {
      HD.getElementById("accountSettingsDiv").display = "none";
      HD.getElementById("sessionsListDiv").display = "none";
+     if (def(perms) && perms.has("admin")) {
+      hideAdmin();
+     }
    }
 
    showAccountAdminRequest() {
-     Map arg = Map.new();
-     arg["action"] = "showAccountAdminRequest";
-     HC.new(self).call(arg);
+     if (HD.getElementById("accountAdminDiv").display == "block") {
+       hideAccountAdmin();
+     } else {
+       Map arg = Map.new();
+       arg["action"] = "showAccountAdminRequest";
+       HC.new(self).call(arg);
+     }
    }
    
    deleteAccountRequest(String accountName) {
@@ -242,9 +256,13 @@ use class IUHub:Eui {
    }
    
    showImapRequest() {
+     if (HD.getElementById("imapSettingsDiv").display == "block") {
+      HD.getElementById("imapSettingsDiv").display = "none";
+     } else {
       Map arg = Map.new();
       arg["action"] = "showImapRequest";
       HC.new(self).call(arg);
+     }
    }
    
    showImapResponse(Map arg) {
@@ -262,9 +280,13 @@ use class IUHub:Eui {
    }
    
    showConfig() {
-      Map arg = Map.new();
-      arg["action"] = "showConfigRequest";
-      HC.new(self).call(arg);
+      if (TS.notEmpty(HD.getElementById("configsDiv").innerHTML)) {
+        hideConfig();
+      } else {
+        Map arg = Map.new();
+        arg["action"] = "showConfigRequest";
+        HC.new(self).call(arg);
+      }
    }
    
    showConfigResponse(Map arg) {
@@ -373,6 +395,9 @@ use class IUHub:Eui {
    }
    
    updateResponse(Map arg) {
+     fields {
+       Set perms = Set.new();
+     }
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
       //String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
       String lmsg = "Welcome to " + arg["deviceName"] + " on Version " + arg["appVersion"];
@@ -385,7 +410,6 @@ use class IUHub:Eui {
     }
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
-      Set perms = Set.new();
       if (TS.notEmpty(permsString)) {
         foreach (String perm in permsString.split(",")) {
           perms.put(perm);
@@ -400,14 +424,6 @@ use class IUHub:Eui {
    }
    
    logoutResponse(Map arg) {
-     HD.getElementById("loginmsgdiv").innerHTML = "";
-     HD.getElementById("logindiv").display = "block";
-     HD.getElementById("loggedindiv").display = "none";
-     hideAccountSettings();
-     hideAccountAdmin();
-     hideConfig();
-     hideAdmin();
-     hideFail();
      HD.reload();
    }
    
@@ -445,9 +461,13 @@ use class IUHub:Eui {
    }
    
    showSessionsRequest() {
-    Map arg = Map.new();
-    arg["action"] = "showSessionsRequest";
-    HC.new(self).call(arg);
+    if (HD.getElementById("sessionsListDiv").display == "block") {
+      HD.getElementById("sessionsListDiv").display = "none";
+    } else {
+      Map arg = Map.new();
+      arg["action"] = "showSessionsRequest";
+      HC.new(self).call(arg);
+    }
    }
    
    showSessionsResponse(Map arg) {
@@ -477,8 +497,12 @@ use class IUHub:Eui {
    }
    
    localBrowseRequest() {
-     HD.getElementById("browseFilesDiv").display = "block";
-     localBrowseRequest("");
+     if (HD.getElementById("browseFilesDiv").display == "block") {
+      closeFileBrowser();
+     } else {
+      HD.getElementById("browseFilesDiv").display = "block";
+      localBrowseRequest("");
+     }
    }
    
    closeFileBrowser() {

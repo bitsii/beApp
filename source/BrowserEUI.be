@@ -94,12 +94,32 @@ class HE {
     }
   }
   
+  innerHTMLGet() String {
+    String res;
+    emit(js) {
+    """
+    bevl_res = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(this.bevi_element.innerHTML);
+    """
+    }
+    return(res);
+  }
+  
   displaySet(String val) self {
     emit(js) {
     """
     this.bevi_element.style.display = beva_val.bems_toJsString();
     """
     }
+  }
+  
+  displayGet() String {
+    String res;
+    emit(js) {
+    """
+    bevl_res = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(this.bevi_element.style.display);
+    """
+    }
+    return(res);
   }
   
 }

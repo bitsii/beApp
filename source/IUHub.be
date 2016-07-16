@@ -2457,7 +2457,6 @@ use class IUHub:HHandler {
    showConfigRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
        String conf = String.new();
-      conf += "<a href=\"#\" onclick=\"eui.bem_hideConfig_0();return false;\">Hide Configuration</a>";
        Map ecm = app.configManager.getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
