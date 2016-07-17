@@ -116,9 +116,13 @@ use class App:IULinkBr {
    }
    
    showImapRequest() {
+     if (HD.getElementById("imapSettingsDiv").display == "block") {
+      HD.getElementById("imapSettingsDiv").display = "none";
+     } else {
       Map arg = Map.new();
       arg["action"] = "showImapRequest";
       HC.new(self).call(arg);
+     }
    }
    
    showImapResponse(Map arg) {

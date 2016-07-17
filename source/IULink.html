@@ -48,11 +48,15 @@ h5.luiForm {
 
 <!--<p><label>Hi to Who2 </label><input type="text" id="who" size="20" value=""></p>
 <p><button id="sayit" type="button" onclick="eui.bem_hiRequest_0();return false;">Say It</button></p>-->
-<p><a href="#" onclick="eui.bem_showImapRequest_0();return false;">Coordinator Settings</a></p>
+
+<table><tr>
+<td><a href="#" onclick="eui.bem_showImapRequest_0();return false;">Settings</a></td>
+</tr></table>
+
 <div id="imapSettingsDiv" style="display: none;">
-<p><a href="#" onclick="eui.bem_hideImapResponse_1();return false;">Close Coordinator Settings</a></p>
-<p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
-<p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
+<p>Coordinator Imap Settings</p>
+<p><label class="luiForm">Endpoint</label><input type="text" id="imapEndpoint"</input></p>
+<p><label class="luiForm">Account</label><input type="text" id="imapAccount"</input></p>
 <p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
 <p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
 <p><a href="#" onclick="eui.bem_imapSettingsRequest_0();return false;">Save Coordinator Settings</a></p>
