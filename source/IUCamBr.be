@@ -111,18 +111,32 @@ use class IUCam:Eui {
    }
    
    showAccountSettings() {
-     HD.getElementById("accountSettingsDiv").display = "block";
+     if (HD.getElementById("accountSettingsDiv").display == "block") {
+       hideAccountSettings();
+     } else {
+       HD.getElementById("accountSettingsDiv").display = "block";
+       if (def(perms) && perms.has("admin")) {
+        showAdmin();
+       }
+     }
    }
    
    hideAccountSettings() {
      HD.getElementById("accountSettingsDiv").display = "none";
      HD.getElementById("sessionsListDiv").display = "none";
+     if (def(perms) && perms.has("admin")) {
+      hideAdmin();
+     }
    }
 
    showAccountAdminRequest() {
-     Map arg = Map.new();
-     arg["action"] = "showAccountAdminRequest";
-     HC.new(self).call(arg);
+     if (HD.getElementById("accountAdminDiv").display == "block") {
+       hideAccountAdmin();
+     } else {
+       Map arg = Map.new();
+       arg["action"] = "showAccountAdminRequest";
+       HC.new(self).call(arg);
+     }
    }
    
    deleteAccountRequest(String accountName) {
@@ -195,9 +209,13 @@ use class IUCam:Eui {
    }
    
    showConfig() {
-      Map arg = Map.new();
-      arg["action"] = "showConfigRequest";
-      HC.new(self).call(arg);
+      if (TS.notEmpty(HD.getElementById("configsDiv").innerHTML)) {
+        hideConfig();
+      } else {
+        Map arg = Map.new();
+        arg["action"] = "showConfigRequest";
+        HC.new(self).call(arg);
+      }
    }
    
    showConfigResponse(Map arg) {
@@ -273,6 +291,9 @@ use class IUCam:Eui {
    }
    
    updateResponse(Map arg) {
+     fields {
+       Set perms = Set.new();
+     }
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
       //String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
       String lmsg = "Welcome to " + arg["deviceName"] + " on Version " + arg["appVersion"];
@@ -285,17 +306,12 @@ use class IUCam:Eui {
     }
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
-      Set perms = Set.new();
       if (TS.notEmpty(permsString)) {
         foreach (String perm in permsString.split(",")) {
           perms.put(perm);
         }
       }
-      HD.getElementById("showAdminId").display = "none";
       HD.getElementById("admindiv").display = "none";
-      if (perms.has("admin")) {
-        HD.getElementById("showAdminId").display = "block";
-      }
     }
    }
    
@@ -310,12 +326,10 @@ use class IUCam:Eui {
    
    showAdmin() { 
      HD.getElementById("admindiv").display = "block";
-     HD.getElementById("showAdminId").display = "none";
    }
    
    hideAdmin() {
      HD.getElementById("admindiv").display = "none";
-     HD.getElementById("showAdminId").display = "block";
    }
    
    detectCams() {

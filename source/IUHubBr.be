@@ -415,11 +415,7 @@ use class IUHub:Eui {
           perms.put(perm);
         }
       }
-      HD.getElementById("showAdminId").display = "none";
       HD.getElementById("admindiv").display = "none";
-      if (perms.has("admin")) {
-        HD.getElementById("showAdminId").display = "block";
-      }
     }
    }
    
@@ -434,12 +430,10 @@ use class IUHub:Eui {
    
    showAdmin() { 
      HD.getElementById("admindiv").display = "block";
-     HD.getElementById("showAdminId").display = "none";
    }
    
    hideAdmin() {
      HD.getElementById("admindiv").display = "none";
-     HD.getElementById("showAdminId").display = "block";
    }
    
    changePassRequest() {
