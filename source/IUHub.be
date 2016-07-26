@@ -30,14 +30,14 @@ use Time:Sleep;
 
 use App:Alert;
 
-use class IUHub:Lui(Ui) {
+use class IUHub:LUI(UI) {
 
-  new() self {
+  new(_plugin) self {
         fields {
           WeBr webr;
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
         }
-        super.new();
+        super.new(_plugin);
         bg.startBackground(); //normally on
     }
 
@@ -89,7 +89,7 @@ import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 """
 }
-use class IUHub:Wui(Ui) {
+use class IUHub:WUI(UI) {
 
   emit(jv) {
   """
@@ -97,10 +97,10 @@ use class IUHub:Wui(Ui) {
   """
   }
 
-  new() self {
+  new(_plugin) self {
         fields {
         }
-        super.new();
+        super.new(_plugin);
         bg.startBackground(); //normally on
     }
     
@@ -1326,24 +1326,20 @@ import javax.mail.Message;
 import javax.mail.Flags.Flag;
 """
 }
-use class IUHub:Ui {
+use class IU:UI {
 
-  new() self {
+  new(_plugin) self {
       fields {
-        IO:Log log = IO:Log.new();
-        log.level = log.info;
-        Int lvl = log.level;
+        IO:Log log = _plugin.log;
+        Int lvl = _plugin.lvl;
         Lock lock = Lock.new();
         Background bg = Background.new();
         OLocker links = OLocker.new();
         OLocker lastLoginBad = OLocker.new(false);
-        HHandler requestHandler;
+        var plugin = _plugin;
       }
       
-      requestHandler = HHandler.new();
-      requestHandler.log = log;
-      requestHandler.lvl = lvl;
-      requestHandler.app = self;
+      plugin.app = self;
       
       bg.log = log;
       bg.lvl = lvl;
@@ -1715,8 +1711,8 @@ use class IUHub:Ui {
             Array args = Array.new(2);
             args[0] = arg;
             args[1] = request;
-            if (requestHandler.can(aname, args.length)) {
-              var res = requestHandler.invoke(aname, args);
+            if (plugin.can(aname, args.length)) {
+              var res = plugin.invoke(aname, args);
             }
             request.scriptReturn = res;
         } catch (var e) {
@@ -1773,39 +1769,11 @@ use class IUHub:Ui {
       res["action"] = "updateResponse";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
-      res["cmdLinks"] = requestHandler.cmdLinksForAccount(a);
+      res["cmdLinks"] = plugin.cmdLinksForAccount(a);
       res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
       res["deviceName"] = self.deviceName;
       return(res);
     }
-    
-    main() {
-      Array args = System:Process.new().args;
-
-      Web:Client:CertificateManager.validateHosts = false;
-
-      if (args.length > 0) {
-        String mode = args[0]; //ui, svc, both, [absent]
-        log.log(lvl, "mode " + mode);
-      } else {
-        log.log(lvl, "mode empty");
-      }
-      if (TS.isEmpty(mode)) {
-        mode = "wui";
-      }
-      if (mode == "lui") {
-        Lui.new().main();
-      }
-      if (mode == "wui") {
-        Wui.new().main();
-      }
-      if (mode == "test") {
-        IUHub:Test.new().main();
-      }
-      if (mode == "cmd") {
-        CmdUi.new().main(args);
-      }
-   }
    
    doUpnp() {
       log.log(lvl, "upnping not");
@@ -1814,139 +1782,17 @@ use class IUHub:Ui {
 
 }
 
-use class IUHub:CmdUi(Ui) {
-
-  new() self {
-        fields {
-          WeBr webr;
-          UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
-        }
-        super.new();
-    }
-    
-    main() {
-      main(System:Process.new().args);
-    }
-    
-    main(Array args) {
-      outerMain(System:Process.new().args);
-      try {
-        self.configManager.close();
-      } catch (var e) {
-        log.log(lvl, "Exception closing db in CmdUi, error is " + e);
-      }
-    }
-    
-    outerMain(Array args) {
-      try {
-        innerMain(System:Process.new().args);
-      } catch (var e) {
-        log.log(lvl, "Exception in CmdUi, error is " + e);
-      }
-    }
-
-    innerMain(Array args) {
-      if (args.length > 1) {
-        String mode = args[1]; //ui, svc, both, [absent]
-        log.log(lvl, "cmd " + mode);
-      } else {
-        log.log(lvl, "cmd empty");
-      }
-      if (TS.isEmpty(mode) || mode == "help") {
-        log.log(lvl, "Help");
-        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
-      }
-      if (TS.notEmpty(mode) && mode == "portForward") {
-        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.log = log;
-        pf.lvl = lvl;
-        pf.start();
-      }
-      if (TS.notEmpty(mode) && mode == "listLogins") {
-        foreach (String login in self.accountManager.getLogins()) {
-          log.log(lvl, "Account login " + login);
-        }
-      }
-      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
-        String user = args[2];
-        String pass = args[3];
-        log.log(lvl, "Putting Account " + user);
-        Account ac = Account.new();
-        ac.user = user;
-        ac.pass = pass;
-        if (args.length > 4) {
-          ac.permsString = args[4];
-        }
-        self.accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "getAccount") {
-        user = args[2];
-        log.log(lvl, "Get Account " + user);
-        ac = self.accountManager.getAccount(user);
-        log.log(lvl, "Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPermsString") {
-        user = args[2];
-        String ps = args[3];
-        log.log(lvl, "Set Perms " + user);
-        ac = self.accountManager.getAccount(user);
-        ac.permsString = ps;
-        self.accountManager.putAccount(ac);
-        log.log(lvl, "Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPass") {
-        user = args[2];
-        pass = args[3];
-        log.log(lvl, "Set Pass " + user);
-        ac = self.accountManager.getAccount(user);
-        ac.pass = pass;
-        self.accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteAccount") {
-        user = args[2];
-        log.log(lvl, "Deleting Account " + user);
-        ac = self.accountManager.getAccount(user);
-        if (def(ac)) {
-          self.accountManager.deleteAccount(ac);
-          log.log(lvl, "Deleted account " + user);
-        } else {
-          log.log(lvl, "No such account for deletion " + user);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "updateConfig") {
-        String key = args[2];
-        String value = args[3];
-        log.log(lvl, "Updating config " + key + " " + value);
-        self.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "showConfig") {
-        foreach (var kv in self.configManager.getMap()) {
-          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "createConfig") {
-        key = args[2];
-        value = args[3];
-        log.log(lvl, "Creating config " + key + " " + value);
-        self.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteConfig") {
-        key = args[2];
-        log.log(lvl, "Deleting config " + key);
-        self.configManager.delete(key);
-      }
-    }
-}
-
 use Crypto:Symmetric as Crypt;
-use class IUHub:HHandler {
+use class IUHub:HubPlugin {
 
      new() self {
        fields {
-          IO:Log log;
-          Int lvl;
+          IO:Log log = IO:Log.new();
+          log.level = log.info;
+          Int lvl = log.level;
           var app;
         }
+        
      }
      
   tryThingRequest(Map arg, request) Map {
@@ -2547,6 +2393,151 @@ use class IUHub:HHandler {
     //log.log(lvl, "logged out, returning");
     return(res);
   }
+  
+  main() {
+      main(System:Process.new().args);
+    }
+    
+    main(Array args) {
+      outerMain(System:Process.new().args);
+      /*try {
+        app.configManager.close();
+      } catch (var e) {
+        log.log(lvl, "Exception closing db in CmdUI, error is " + e);
+      }*/
+    }
+    
+    outerMain(Array args) {
+      try {
+        innerMain(System:Process.new().args);
+      } catch (var e) {
+        log.log(lvl, "Exception in CmdUI, error is " + e);
+      }
+    }
+    
+    innerMain(Array args) {
+
+      Web:Client:CertificateManager.validateHosts = false;
+
+      if (args.length > 0) {
+        String mode = args[0]; //ui, svc, both, [absent]
+        log.log(lvl, "mode " + mode);
+      } else {
+        log.log(lvl, "mode empty");
+      }
+      if (TS.isEmpty(mode)) {
+        mode = "wui";
+      }
+      if (mode == "lui") {
+        LUI.new(self).main();
+      }
+      if (mode == "wui") {
+        WUI.new(self).main();
+      }
+      if (mode == "test") {
+        IUHub:Test.new().main();
+      }
+      if (mode == "cmd") {
+        cmdMain(args);
+      }
+    }
+
+    cmdMain(Array args) {
+      UI ui = UI.new(self);
+      
+      if (args.length > 1) {
+        String mode = args[1]; //ui, svc, both, [absent]
+        log.log(lvl, "cmd " + mode);
+      } 
+      if (TS.isEmpty(mode)) {
+        log.log(lvl, "cmd empty");
+      }
+      if (mode == "help") {
+        log.log(lvl, "Help");
+        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+      }
+      if (TS.notEmpty(mode) && mode == "portForward") {
+        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
+        pf.log = log;
+        pf.lvl = lvl;
+        pf.start();
+      }
+      if (TS.notEmpty(mode) && mode == "listLogins") {
+        foreach (String login in ui.accountManager.getLogins()) {
+          log.log(lvl, "Account login " + login);
+        }
+      }
+      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
+        String user = args[2];
+        String pass = args[3];
+        log.log(lvl, "Putting Account " + user);
+        Account ac = Account.new();
+        ac.user = user;
+        ac.pass = pass;
+        if (args.length > 4) {
+          ac.permsString = args[4];
+        }
+        ui.accountManager.putAccount(ac);
+      }
+      if (TS.notEmpty(mode) && mode == "getAccount") {
+        user = args[2];
+        log.log(lvl, "Get Account " + user);
+        ac = ui.accountManager.getAccount(user);
+        log.log(lvl, "Account " + ac);
+      }
+      if (TS.notEmpty(mode) && mode == "setPermsString") {
+        user = args[2];
+        String ps = args[3];
+        log.log(lvl, "Set Perms " + user);
+        ac = ui.accountManager.getAccount(user);
+        ac.permsString = ps;
+        ui.accountManager.putAccount(ac);
+        log.log(lvl, "Account " + ac);
+      }
+      if (TS.notEmpty(mode) && mode == "setPass") {
+        user = args[2];
+        pass = args[3];
+        log.log(lvl, "Set Pass " + user);
+        ac = ui.accountManager.getAccount(user);
+        ac.pass = pass;
+        ui.accountManager.putAccount(ac);
+      }
+      if (TS.notEmpty(mode) && mode == "deleteAccount") {
+        user = args[2];
+        log.log(lvl, "Deleting Account " + user);
+        ac = ui.accountManager.getAccount(user);
+        if (def(ac)) {
+          ui.accountManager.deleteAccount(ac);
+          log.log(lvl, "Deleted account " + user);
+        } else {
+          log.log(lvl, "No such account for deletion " + user);
+        }
+      }
+      if (TS.notEmpty(mode) && mode == "updateConfig") {
+        String key = args[2];
+        String value = args[3];
+        log.log(lvl, "Updating config " + key + " " + value);
+        ui.configManager.put(key, value);
+      }
+      if (TS.notEmpty(mode) && mode == "showConfig") {
+        foreach (var kv in ui.configManager.getMap()) {
+          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
+        }
+      }
+      if (TS.notEmpty(mode) && mode == "createConfig") {
+        key = args[2];
+        value = args[3];
+        log.log(lvl, "Creating config " + key + " " + value);
+        ui.configManager.put(key, value);
+      }
+      if (TS.notEmpty(mode) && mode == "deleteConfig") {
+        key = args[2];
+        log.log(lvl, "Deleting config " + key);
+        ui.configManager.delete(key);
+      }
+      ui.configManager.close();
+    }
+    
 
 
 }
@@ -2569,7 +2560,7 @@ use Db:KeyValue as KvDb;
 use class IUHub:ConfigTest(Assert) {
   
   testConfig() {
-    Ui ui = Ui.new();
+    UI ui = UI.new();
     KvDb cm = ui.configManager.container;
     cm.delete("test.blarg");
     assertNull(cm.get("test.blarg"));
@@ -2591,11 +2582,11 @@ use class IUHub:ConfigTest(Assert) {
   
 }
 
-use class IUHub:HHandlerTest(Assert) {
+use class IUHub:HubPluginTest(Assert) {
     
   main() {
-    "Begin HHandlerTest".print();
-    "End HHandlerTest".print();
+    "Begin HubPluginTest".print();
+    "End HubPluginTest".print();
   }
   
 }
@@ -2604,7 +2595,7 @@ use class IUHub:HHandlerTest(Assert) {
 use class IUHub:AccountTest(Assert) {
   
   testAccounts() {
-    Ui ui = Ui.new();
+    UI ui = UI.new();
     Account atest = Account.new();
     atest.user = "test";
     atest.pass = "pass";

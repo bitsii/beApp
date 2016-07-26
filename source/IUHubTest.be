@@ -31,7 +31,7 @@ use class IUHub:Test(Assert) {
       //Db:Relational:Test.new().main();
       IUHub:AccountTest.new().main();
       IUHub:ConfigTest.new().main();
-      IUHub:HHandlerTest.new().main();
+      //IUHub:HHandlerTest.new().main();
     } catch (var e) {
       "Exception during test".print();
       e.print();

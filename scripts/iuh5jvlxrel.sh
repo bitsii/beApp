@@ -7,7 +7,7 @@ mkdir -p ../apprun/Data
 rm -rf ../apprun/App/IUHub
 mkdir -p ../apprun/App/IUHub
 
-java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/App/IUHubd --buildPath ../apprun/App/IUHub --emitLang jv  --outputPlatform linux -mainClass=IUHub:Ui source/IUHubTest.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be
+java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/App/IUHubd --buildPath ../apprun/App/IUHub --emitLang jv  --outputPlatform linux -mainClass=IUHub:HubPlugin source/IUHubTest.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
