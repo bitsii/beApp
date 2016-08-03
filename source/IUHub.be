@@ -30,7 +30,7 @@ use Time:Sleep;
 
 use App:Alert;
 
-use class IUHub:LUI(UI) {
+use class App:AuthenticatedLocalApp(AuthedApp) {
 
   new(_plugin) self {
         fields {
@@ -89,7 +89,7 @@ import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 """
 }
-use class IUHub:WUI(UI) {
+use class App:AuthenticatedWebApp(AuthedApp) {
 
   emit(jv) {
   """
@@ -1312,6 +1312,7 @@ use class IUHub:Background {
 
 }
 
+use App:AuthenticatedApp as AuthedApp;
 use System:Thread:ObjectLocker as OLocker;
 emit(jv) {
 """
@@ -1326,7 +1327,7 @@ import javax.mail.Message;
 import javax.mail.Flags.Flag;
 """
 }
-use class IU:UI {
+class AuthedApp {
 
   new(_plugin) self {
       fields {
@@ -2429,10 +2430,10 @@ use class IUHub:HubPlugin {
         mode = "wui";
       }
       if (mode == "lui") {
-        LUI.new(self).main();
+        AuthenticatedLocalApp.new(self).main();
       }
       if (mode == "wui") {
-        WUI.new(self).main();
+        AuthenticatedWebApp.new(self).main();
       }
       if (mode == "test") {
         IUHub:Test.new().main();
@@ -2443,7 +2444,7 @@ use class IUHub:HubPlugin {
     }
 
     cmdMain(Array args) {
-      UI ui = UI.new(self);
+      AuthedApp ui = AuthedApp.new(self);
       
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
@@ -2560,7 +2561,7 @@ use Db:KeyValue as KvDb;
 use class IUHub:ConfigTest(Assert) {
   
   testConfig() {
-    UI ui = UI.new();
+    AuthedApp ui = AuthedApp.new();
     KvDb cm = ui.configManager.container;
     cm.delete("test.blarg");
     assertNull(cm.get("test.blarg"));
@@ -2595,7 +2596,7 @@ use class IUHub:HubPluginTest(Assert) {
 use class IUHub:AccountTest(Assert) {
   
   testAccounts() {
-    UI ui = UI.new();
+    AuthedApp ui = AuthedApp.new();
     Account atest = Account.new();
     atest.user = "test";
     atest.pass = "pass";

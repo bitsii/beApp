@@ -1,0 +1,120 @@
+
+=====
+=====
+
+move some app things to hub plugin
+  plugins and plugin get, plugin is first
+  get cert path from plugin (data path/ssl cert)
+  checkReadPath uses plugins for unsecured access check (push into there)
+  local app gets initial page from first plugin
+  
+bring cam into hub, multiple plugins, generalize
+get local mode working
+pull the client one (android, etc) in as well
+put all in one project, share the auth and sessions dbs (?config?)
+
+android
+  save values in db and show on load
+  js poll to update/refresh button - show when doing
+ 
+activation for cam
+
+scripts to pull down extlibs
+android javamail
+step by step instructions for setting up android env
+
+section to add cam perms to accounts under cam setup  
+
+easy setup
+  step by step install instructions for noobs
+  url for script to do the rest
+  
+lang stuff
+______________
+
+video and voice
+password sync/ vault
+contact sync
+bookmark sync
+text backup
+location tracking/find phone
+move cert stuff out of app (to webserver?, or sharable place...)
+
+home automation
+
+have a sync adapter/ios background thing that updates on occasion
+also working in c# windows imap  
+xamarin studio uwp - xamarin forms
+ios
+ 
+only send on change of ext port or ip (make this work better)
+have timing and force update options for both email and folder saved
+
+easy install home-assistant.io openhab https://github.com/domoticz/domoticz
+  port fwd, admin acct
+
+imap coordinator as-is for links/entry (hub)
+also sends emails (see offerLinkRequest) - list of email addresses which are updated (comma sep)
+  put in code (sha with time, nonce, shared secret) also check who email is from and retain that
+  on first use call with code and get a token (only allowed once) so later compromise not a problem
+  check ssl sig
+  used from then on
+  hub sends on change, time preiod, demand
+  link scans on occasion or demand
+______________
+
+______________
+
+duckdns (for fixed port)
+totally online option for hub - dreamhost
+  host own imap
+  no-upnp option ssh tunnel
+______________
+
+
+wake attached computer
+  dhcp serv and mac get?
+  just mac enough to wake (no dhcp/ip needed?)
+
+______________
+
+
+sharing urls with other apps
+  first urls javafx, android, cs (win, ios)
+    empty ui (hi, back/forth) all (add extra compile config info for csc)
+    db for config all
+    imap all
+    links all (then open in native browser all)
+    dump no longer really implemented contentGet in browsers
+
+  expose way to let apps get the info (they may choose to), with docs & way to 
+  add to app
+
+______________
+
+filemanager/sync - seafile, pydio, owncloud (needs port forward/intents/app changes)
+filemanager, remote access
+
+other app support
+  desktop - static port forward, shared files
+  android - port forward and intents
+  ios - sharing (pita, uipasteboard*? url(back and forth)*? extension?)
+    url-url example - https://kotikan.com/blog/item/passing-data-between-ios-apps
+    receive call url
+    paste into pasteboard, or just callback
+    callback
+    (only do this if last one in pasteboard no workie, or age, or empty)
+
+______________
+
+______________
+
+Debt/Bugs:
+
+keep last update time and create time for sessions
+delete unnamed sessions after some idle time (named too, diff time?)
+have a login time for session, user agent for session?
+something is causing the background to run when hitting the dz url first time
+  put in a stack trace to see why
+for end session check if same user first
+second cookie to bypass bad ip check, single fail invalidates
