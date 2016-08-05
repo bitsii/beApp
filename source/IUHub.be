@@ -48,7 +48,7 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
       webr.width = 320;
       
       String mypwd = System:Environment.getVariable("MYPWD");
-      webr.location = "file:///" + mypwd + "/App/IUHub/IUHub.html";
+      webr.location = "file:///" + mypwd + self.plugin.homePage;
       
       webr.setup();
    }
@@ -1791,6 +1791,7 @@ use class IUHub:HubPlugin {
           Int lvl = log.level;
           var app;
           String name = "IUHub";
+          String homePage = "/App/IUHub/IUHub.html";
         }
         
      }

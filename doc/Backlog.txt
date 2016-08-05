@@ -2,12 +2,8 @@
 =====
 =====
 
-move some app things to hub plugin
-  local app gets initial page from first plugin
-
 move app classes to app, get cam and link working that way, have an auto-login option for stand alone link
 multiple plugins (pluginGet for first, can in order), generalize
-get local mode working
 put all in one project, share the auth and sessions dbs (?config?) (also link and cam separate)
 
 android
