@@ -143,7 +143,8 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     java.security.cert.Certificate cert;
     """
     }
-    Path cerPath = Path.apNew("Data/IUHub/cert");
+    //Path cerPath = Path.apNew("Data/IUHub/cert");
+    Path cerPath = self.paths.dataPath.addStep(self.plugin.name).addStep("cert");
     String cerPathS = cerPath.toString();
     log.log(lvl, "cerPath " + cerPathS);
     if (cerPath.file.exists) {
@@ -196,9 +197,6 @@ use class App:AuthenticatedWebApp(AuthedApp) {
               );
     """
     }
-    fields {
-      String certificateThumbprint;
-    }
     log.log(lvl, "certificateThumbprint " + certificateThumbprint);
     return(cerPathS);
   }
@@ -249,12 +247,11 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     if (undef(accountName)) { accountName = ""; }
     try {
       Path pa = p.file.absPath;
-      Path adz = Path.apNew("App/IUHub").file.absPath;
       if (TS.notEmpty(accountName)) {
         Path h = Path.apNew("Home/" + accountName).file.absPath;
       }
       String pas = pa.toString();
-      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js"))) {
+      if (self.plugin.checkPublicReadPath(pa, request)) {
         isOk = true;
       } elif (def(h) && pas.begins(h.toString())) {
         isOk = true;
@@ -1338,6 +1335,7 @@ class AuthedApp {
         OLocker links = OLocker.new();
         OLocker lastLoginBad = OLocker.new(false);
         var plugin = _plugin;
+        String certificateThumbprint;
       }
       
       plugin.app = self;
@@ -1792,6 +1790,7 @@ use class IUHub:HubPlugin {
           log.level = log.info;
           Int lvl = log.level;
           var app;
+          String name = "IUHub";
         }
         
      }
@@ -1809,6 +1808,15 @@ use class IUHub:HubPlugin {
         System:Process.exit(3);
      }
      return(null);
+   }
+   
+   checkPublicReadPath(Path pa, request) Bool {
+      String pas = pa.toString();
+      Path adz = Path.apNew("App/" + self.name).file.absPath;
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js"))) {
+        return(true);
+      }
+      return(false);
    }
    
    clearAllSessionsRequest(Map arg, request) Map {

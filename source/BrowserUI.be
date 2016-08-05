@@ -567,6 +567,10 @@ use class UI:BrowserScriptRequest {
    deleteSession() {
      session.clear();
    }
+   
+   remoteAddressGet() {
+    return("local_browser");
+   }
     
 }
 

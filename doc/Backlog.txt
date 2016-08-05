@@ -3,15 +3,12 @@
 =====
 
 move some app things to hub plugin
-  plugins and plugin get, plugin is first
-  get cert path from plugin (data path/ssl cert)
-  checkReadPath uses plugins for unsecured access check (push into there)
   local app gets initial page from first plugin
-  
-bring cam into hub, multiple plugins, generalize
+
+move app classes to app, get cam and link working that way, have an auto-login option for stand alone link
+multiple plugins (pluginGet for first, can in order), generalize
 get local mode working
-pull the client one (android, etc) in as well
-put all in one project, share the auth and sessions dbs (?config?)
+put all in one project, share the auth and sessions dbs (?config?) (also link and cam separate)
 
 android
   save values in db and show on load
