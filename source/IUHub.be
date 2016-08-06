@@ -570,34 +570,6 @@ class AuthedApp {
     }
   }
   
-  deviceNameGet() String {
-    fields {
-      String deviceName;
-    }
-    if (TS.isEmpty(deviceName)) {
-      deviceName = self.configManager.get("deviceName");
-      if (TS.isEmpty(deviceName)) {
-        deviceName = "Device-" + System:Random.getString(4);
-        self.configManager.put("deviceName", deviceName);
-      }
-    }
-    return(deviceName);
-  }
-  
-  deviceIdGet() String {
-    fields {
-      String deviceId;
-    }
-    if (TS.isEmpty(deviceId)) {
-      deviceId = self.configManager.get("deviceId");
-      if (TS.isEmpty(deviceId)) {
-        deviceId = System:Random.getString(16);
-        self.configManager.put("deviceId", deviceId);
-      }
-    }
-    return(deviceId);
-  }
-  
   internalPortGet() String {
       fields {
         String intPort;
@@ -657,13 +629,21 @@ class AuthedApp {
   sessionManagerGet() Web:SessionManager {
     fields {
       Web:SessionManager sessionDb;
+      String sessionId;
+    }
+    if (undef(sessionId)) {
+      sessionId = self.configManager.get("auth.sessionId");
+      if (TS.isEmpty(sessionId)) {
+        sessionId = System:Random.getString(16);
+        self.configManager.put("auth.sessionId", sessionId);
+      }
     }
     if (undef(sessionDb)) {
       Path db = self.paths.dataPath.addStep("IUHub").addStep("SESSDB");
       //KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
       KvDb sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
       sessionDbKv.createOpen();
-      sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv), "GsSess" + self.deviceId);
+      sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv), "GsSess" + sessionId);
     }
     ("got sessionmanager").print();
     return(sessionDb);
@@ -716,8 +696,6 @@ class AuthedApp {
     return(trackingManager);
   }
   
-  
-
   handleWeb(request, Map arg) {
     unless (checkRequest(request)) {
       return(null);
@@ -776,39 +754,10 @@ class AuthedApp {
       return(am);
     }
     
-    assureVers() {
-      fields {
-        Int majorVer = 5@;
-        Int minorVer = 0@;
-      }
-    }
-    
-    majorVerGet() Int {
-      assureVers();
-      return(majorVer);
-    }
-    
-    minorVerGet() Int {
-      assureVers();
-      return(minorVer);
-    
-    }
-    
     loggedIn(Account a, Map res, Map arg, request) {
-      res["action"] = "updateResponse";
-      res["justLoggedIn"] = true;
-      res["permsString"] = a.permsString;
-      res["cmdLinks"] = plugin.cmdLinksForAccount(a);
-      res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
-      res["deviceName"] = self.deviceName;
-      return(res);
+      return(self.plugin.loggedIn(a, res, arg, request));
     }
-   
-   doUpnp() {
-      log.log(lvl, "upnping not");
-      
-   }
-
+    
 }
 
 
@@ -1655,7 +1604,7 @@ use class IUHub:UpnpUpdate {
     
     appIntPort = app.internalPort;
     appExtPort = app.externalPort;
-    deviceName = app.deviceName;
+    deviceName = app.plugin.deviceName;
     
     String disables = app.configManager.get("upnp.disable");
     if (TS.notEmpty(disables) && disables == "true") {
@@ -2186,6 +2135,62 @@ use class IUHub:HubPlugin {
         
      }
      
+  deviceNameGet() String {
+    fields {
+      String deviceName;
+    }
+    if (TS.isEmpty(deviceName)) {
+      deviceName = app.configManager.get("deviceName");
+      if (TS.isEmpty(deviceName)) {
+        deviceName = "Device-" + System:Random.getString(4);
+        app.configManager.put("deviceName", deviceName);
+      }
+    }
+    return(deviceName);
+  }
+  
+  deviceIdGet() String {
+    fields {
+      String deviceId;
+    }
+    if (TS.isEmpty(deviceId)) {
+      deviceId = app.configManager.get("deviceId");
+      if (TS.isEmpty(deviceId)) {
+        deviceId = System:Random.getString(16);
+        app.configManager.put("deviceId", deviceId);
+      }
+    }
+    return(deviceId);
+  }
+  
+  loggedIn(Account a, Map res, Map arg, request) {
+      res["action"] = "updateResponse";
+      res["justLoggedIn"] = true;
+      res["permsString"] = a.permsString;
+      res["cmdLinks"] = cmdLinksForAccount(a);
+      res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
+      res["deviceName"] = self.deviceName;
+      return(res);
+    }
+    
+    assureVers() {
+      fields {
+        Int majorVer = 5@;
+        Int minorVer = 0@;
+      }
+    }
+    
+    majorVerGet() Int {
+      assureVers();
+      return(majorVer);
+    }
+    
+    minorVerGet() Int {
+      assureVers();
+      return(minorVer);
+    
+    }
+
   tryThingRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
         app.updateNetAddresses();
@@ -2323,121 +2328,6 @@ use class IUHub:HubPlugin {
        res["action"] = "showDevLinksResponse";
        //res["devLinks"] = devLinks;
        return(res);
-     }
-     return(null);
-   }
-   
-   offerLinkRequest(Map arg, request) Map {
-     Account a = app.accountManager.getAccountForRequest(request);
-     if (app.requestFromAdmin(request)) {
-       log.log(lvl, "In offer link request");
-       String offerEmail = arg["offerEmail"];
-       String offerPass1 = arg["offerPass1"];
-       String offerPass2 = arg["offerPass2"];
-       if (TS.isEmpty(offerEmail)) {
-        throw(Alert.new("offerEmail is required"));
-       }
-       if (undef(offerPass1)) {
-         offerPass1 = "";
-       }
-       if (undef(offerPass2)) {
-         offerPass2 = "";
-       }
-       if (offerPass1 != offerPass2) {
-        throw(Alert.new("offer passwords do not match"));
-       }
-       String offerPass = offerPass1;
-       String linkEmail = offerEmail;
-       
-       log.log(lvl, "offer link " + offerEmail + " " + offerPass);
-       
-      /*
-      in envelope - subject has action type and device name and link id, from address
-      in body - encr seed, link id, how protected (pass, none, ?token), in encr blob [ sender (verif), linkId (verif), cert thumb, shared secret (offer only), token (offer only) ]
-      */
-       
-       Json:Marshaller mar = Json:Marshaller.new();
-       
-       //from address
-       String linkId = System:Random.getString(16);
-       String linkToken = System:Random.getString(32);
-       String linkSecret = System:Random.getString(32);
-       String seed = System:Random.getString(24);
-       
-       String subj = "GOS LinkOffer " + linkId + " !" + app.deviceName + "!";
-       Map inner =  Map.new();
-       inner["linkId"] = linkId;
-       inner["linkToken"] = linkToken;
-       inner["linkSecret"] = linkSecret;
-       inner["linkEmail"] = linkEmail;
-       
-       Map outer = Map.new();
-       outer["seed"] = seed;
-       outer["linkId"] = linkId;
-       outer["protectedBy"] = "password";
-       
-       //save it to conf
-       app.configManager.put("link." + linkId + ".token", linkToken);
-       app.configManager.put("link." + linkId + ".secret", linkSecret);
-       app.configManager.put("link." + linkId + ".email", linkEmail);
-       
-       //password protect it
-       outer["inner"] = Crypt.new().encryptPassToHex(seed, seed + offerPass, mar.marshall(inner));
-       String offerOut = mar.marshall(outer);
-       log.log(lvl, "offerOut " + offerOut);
-       String offerOutHex = Encode:Hex.encode(offerOut); 
-       String msg = "<p>" + offerOutHex + "</p>"
-       //email it
-       
-       
-       String user = app.configManager.get("smtp.user");
-       if (TS.isEmpty(user)) {
-        user = app.configManager.get("imap.user");
-       }
-       String pass = app.configManager.get("smtp.pass");
-       if (TS.isEmpty(pass)) {
-        pass = app.configManager.get("imap.pass");
-       }
-       
-       String endpoint = app.configManager.get("smtp.endpoint");
-       String port = app.configManager.get("smtp.port");
-       String email = app.configManager.get("smtp.fromEmail");
-       
-       //"smtp.gmail.com"
-       //"587"
-       
-       emit(jv) {
-        """
-      String user = bevl_user.bems_toJvString();
-      String pass = bevl_pass.bems_toJvString();
-      
-      Properties props = new Properties();
-      props.put("mail.smtp.starttls.enable", true);
-      props.put("mail.smtp.host", bevl_endpoint.bems_toJvString());
-      props.put("mail.smtp.user", user);
-      props.put("mail.smtp.password", pass);
-      props.put("mail.smtp.port", bevl_port.bems_toJvString());
-      props.put("mail.smtp.auth", true);
-    
-      Session session = Session.getInstance(props,
-      new javax.mail.Authenticator() {
-          protected javax.mail.PasswordAuthentication  getPasswordAuthentication() {
-          return new javax.mail.PasswordAuthentication(
-                      user, pass);
-                  }
-      });
-
-			MimeMessage message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(bevl_email.bems_toJvString()));
-			message.setRecipients(Message.RecipientType.TO,
-				InternetAddress.parse(bevl_email.bems_toJvString()));
-			message.setSubject(bevl_subj.bems_toJvString());
-			message.setText(bevl_msg.bems_toJvString(), "utf-8", "html");
-
-			Transport.send(message);
-        """
-        }
-        log.log(lvl, "Sent Invite");
      }
      return(null);
    }

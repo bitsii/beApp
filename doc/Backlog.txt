@@ -3,6 +3,7 @@
 =====
 
 there are still things in app (version, etc) which belong in plugin, go through it
+authedapp still has hub in paths (get form plugin name)
 move background to plugin, have a startup or something (or just have it be a plugin)
 
 move app classes to app, get cam and link working that way, have an auto-login option for stand alone link
