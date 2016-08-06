@@ -2,8 +2,10 @@
 =====
 =====
 
+there are still things in app (version, etc) which belong in plugin, go through it
+move background to plugin, have a startup or something (or just have it be a plugin)
+
 move app classes to app, get cam and link working that way, have an auto-login option for stand alone link
-multiple plugins (pluginGet for first, can in order), generalize
 put all in one project, share the auth and sessions dbs (?config?) (also link and cam separate)
 
 android
