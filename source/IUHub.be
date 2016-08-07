@@ -38,7 +38,6 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
         }
         super.new(_plugins, log, lvl);
-        bg.startBackground(); //normally on
     }
 
     main() {
@@ -91,7 +90,6 @@ use class App:AuthenticatedWebApp(AuthedApp) {
         fields {
         }
         super.new(_plugins, log, lvl);
-        bg.startBackground(); //normally on
     }
     
     startWeb() {
@@ -303,8 +301,6 @@ class AuthedApp {
         IO:Log log = _log;
         Int lvl = _lvl;
         Lock lock = Lock.new();
-        Background bg = Background.new();
-        OLocker links = OLocker.new();
         OLocker lastLoginBad = OLocker.new(false);
         String certificateThumbprint;
       }
@@ -313,12 +309,10 @@ class AuthedApp {
         pl.app = self;
         pl.log = log;
         pl.lvl = lvl;
+        if (pl.can("start", 0)) {
+          pl.start();
+        }
       }
-      
-      bg.log = log;
-      bg.lvl = lvl;
-      bg.app = self;
-      //bg.startBackground();
       
   }
   
@@ -469,107 +463,6 @@ class AuthedApp {
     lastLoginBad.o = true;
   }
   
-  updateNetAddresses() {
-    log.log(lvl, "In doimap");
-    var e;
-    try {
-      Map jsl = links.o;
-      if(def(jsl) && jsl.notEmpty) {
-        String prot = self.configManager.get("imap.protocol");
-        if (TS.isEmpty(prot)) {
-          prot = "imaps";
-        }
-        String endpoint = self.configManager.get("imap.endpoint");
-        String user = self.configManager.get("imap.user");
-        String pass = self.configManager.get("imap.pass");
-        String subf = self.configManager.get("imap.subFolder");
-        if (undef(subf)) {
-          subf = "IotUrls";
-        } elif (TS.isEmpty(subf)) {
-          subf = null;
-        }
-        if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
-          return(null);
-        }
-        Json:Marshaller mar = Json:Marshaller.new();
-        String json = mar.marshall(jsl);
-        log.log(lvl, "links json " + json);
-        String msg = "<p>" + jsl.get("extLink") + "</p>\n<p>" + jsl.get("intLink") + "</p>\n";
-        msg += "<p>External (Internet) address " += jsl.get("extAddress") += ", web user interface on external port " += jsl.get("extPort") += "</p>";
-        msg += "<p>Internal address " += jsl.get("intAddress") += ", web user interface on internal port " += jsl.get("intPort") += "</p>";
-        if (TS.notEmpty(jsl.get("extraPortsMsg"))) {
-          msg += jsl.get("extraPortsMsg");
-        }
-        if (TS.notEmpty(jsl.get("certThumbprintMsg"))) {
-          msg += jsl.get("certThumbprintMsg");
-        }
-        msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
-        String subjPref = "DeviceLinks " + jsl.get("deviceName") + " " + self.configManager.get("deviceId") + " ";
-        String subj = subjPref + Time:Interval.now().seconds;
-        emit(jv) {
-        """
-        Properties props = new Properties();
-        props.setProperty("mail.store.protocol", bevl_prot.bems_toJvString());
-          Session session = Session.getDefaultInstance(props, null);
-          Store store = session.getStore(bevl_prot.bems_toJvString());
-          if (!store.isConnected()) {
-            store.connect(bevl_endpoint.bems_toJvString(), bevl_user.bems_toJvString(), bevl_pass.bems_toJvString());
-          }
-          Folder f = store.getFolder("Inbox");
-          if (bevl_subf != null) {
-            Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
-            if (!f2.exists()) {
-              f2.create(Folder.HOLDS_MESSAGES);
-            }
-            f = f2;
-          }
-          f.open(Folder.READ_WRITE);
-          
-          MimeMessage m = new MimeMessage(session);
-          //m.setFrom(new InternetAddress(from));
-          //m.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-       
-          String cs = bevl_subj.bems_toJvString();
-          
-          m.setSubject(cs);
-          //m.setText(bevl_msg.bems_toJvString());
-          m.setText(bevl_msg.bems_toJvString(), "utf-8", "html");
-
-          
-          m.setFlag(Flag.DRAFT, true);
-          Message ms[] = {m};
-          f.appendMessages(ms);
-          
-          if (bevl_subjPref != null) {
-          
-            String ls = bevl_subjPref.bems_toJvString();
-            
-            Message[] messages = f.getMessages();
-            if (messages != null) {
-              for(int i = 0; i < messages.length; i++)
-              {
-                String subj = messages[i].getSubject();
-                if (subj != null && subj.startsWith(ls) && !subj.equals(cs)) {
-                  System.out.println("deleting message");
-                  messages[i].setFlag(Flag.DELETED, true);
-                }
-              }
-            }            
-          }
-          
-          f.close(true);
-          store.close();
-        """
-        }
-        log.log(lvl, "Done with imap stuff");
-      }
-    } catch (e) {
-      if(def(e)) {
-        ("Exception during imap update " + e);
-      }
-    }
-  }
-  
   webPortGet() String {
       fields {
         String intPort;
@@ -601,7 +494,7 @@ class AuthedApp {
       CLocker configManager;
     }
     if (undef(configManager)) {
-      Path db = self.paths.dataPath.addStep("IUHub").addStep("CONFDB");
+      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("CONFDB");
       //KvDb configManagerKv = KvDb.new(Derby.pathNew(db), "CONFIG");
       KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
       configManagerKv.createOpen();
@@ -623,7 +516,7 @@ class AuthedApp {
       }
     }
     if (undef(sessionDb)) {
-      Path db = self.paths.dataPath.addStep("IUHub").addStep("SESSDB");
+      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("SESSDB");
       //KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
       KvDb sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
       sessionDbKv.createOpen();
@@ -672,7 +565,7 @@ class AuthedApp {
       CLocker trackingManager;
     }
     if (undef(trackingManager)) {
-      Path db = self.paths.dataPath.addStep("IUHub").addStep("TMDB");
+      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("TMDB");
       KvDb trackingManagerKv = KvDb.new(HsDb.pathNew(db), "TRACKING");
       trackingManagerKv.createOpen();
       trackingManager = CLocker.new(trackingManagerKv);
@@ -1562,8 +1455,8 @@ use class IUHub:UpnpUpdate {
         jsl.put("extLink", extLink);
         jsl.put("intUrl", intUrl);
         jsl.put("extUrl", extUrl);
-        app.links.o = jsl;
-        app.updateNetAddresses();
+        app.plugin.links.o = jsl;
+        app.plugin.updateNetAddresses();
       }
     }
   }
@@ -2128,9 +2021,18 @@ use class IUHub:HubPlugin {
           var app;
           String name = "IUHub";
           String homePage = "/App/IUHub/IUHub.html";
+          OLocker links = OLocker.new();
+          Background bg = Background.new();
         }
         
      }
+     
+     start() {
+      bg.log = log;
+      bg.lvl = lvl;
+      bg.app = app;
+      bg.startBackground();
+    }
      
   deviceNameGet() String {
     fields {
@@ -2187,10 +2089,111 @@ use class IUHub:HubPlugin {
       return(minorVer);
     
     }
+    
+  updateNetAddresses() {
+    log.log(lvl, "In doimap");
+    var e;
+    try {
+      Map jsl = links.o;
+      if(def(jsl) && jsl.notEmpty) {
+        String prot = app.configManager.get("imap.protocol");
+        if (TS.isEmpty(prot)) {
+          prot = "imaps";
+        }
+        String endpoint = app.configManager.get("imap.endpoint");
+        String user = app.configManager.get("imap.user");
+        String pass = app.configManager.get("imap.pass");
+        String subf = app.configManager.get("imap.subFolder");
+        if (undef(subf)) {
+          subf = "IotUrls";
+        } elif (TS.isEmpty(subf)) {
+          subf = null;
+        }
+        if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
+          return(null);
+        }
+        Json:Marshaller mar = Json:Marshaller.new();
+        String json = mar.marshall(jsl);
+        log.log(lvl, "links json " + json);
+        String msg = "<p>" + jsl.get("extLink") + "</p>\n<p>" + jsl.get("intLink") + "</p>\n";
+        msg += "<p>External (Internet) address " += jsl.get("extAddress") += ", web user interface on external port " += jsl.get("extPort") += "</p>";
+        msg += "<p>Internal address " += jsl.get("intAddress") += ", web user interface on internal port " += jsl.get("intPort") += "</p>";
+        if (TS.notEmpty(jsl.get("extraPortsMsg"))) {
+          msg += jsl.get("extraPortsMsg");
+        }
+        if (TS.notEmpty(jsl.get("certThumbprintMsg"))) {
+          msg += jsl.get("certThumbprintMsg");
+        }
+        msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
+        String subjPref = "DeviceLinks " + jsl.get("deviceName") + " " + app.configManager.get("deviceId") + " ";
+        String subj = subjPref + Time:Interval.now().seconds;
+        emit(jv) {
+        """
+        Properties props = new Properties();
+        props.setProperty("mail.store.protocol", bevl_prot.bems_toJvString());
+          Session session = Session.getDefaultInstance(props, null);
+          Store store = session.getStore(bevl_prot.bems_toJvString());
+          if (!store.isConnected()) {
+            store.connect(bevl_endpoint.bems_toJvString(), bevl_user.bems_toJvString(), bevl_pass.bems_toJvString());
+          }
+          Folder f = store.getFolder("Inbox");
+          if (bevl_subf != null) {
+            Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
+            if (!f2.exists()) {
+              f2.create(Folder.HOLDS_MESSAGES);
+            }
+            f = f2;
+          }
+          f.open(Folder.READ_WRITE);
+          
+          MimeMessage m = new MimeMessage(session);
+          //m.setFrom(new InternetAddress(from));
+          //m.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+       
+          String cs = bevl_subj.bems_toJvString();
+          
+          m.setSubject(cs);
+          //m.setText(bevl_msg.bems_toJvString());
+          m.setText(bevl_msg.bems_toJvString(), "utf-8", "html");
 
+          
+          m.setFlag(Flag.DRAFT, true);
+          Message ms[] = {m};
+          f.appendMessages(ms);
+          
+          if (bevl_subjPref != null) {
+          
+            String ls = bevl_subjPref.bems_toJvString();
+            
+            Message[] messages = f.getMessages();
+            if (messages != null) {
+              for(int i = 0; i < messages.length; i++)
+              {
+                String subj = messages[i].getSubject();
+                if (subj != null && subj.startsWith(ls) && !subj.equals(cs)) {
+                  System.out.println("deleting message");
+                  messages[i].setFlag(Flag.DELETED, true);
+                }
+              }
+            }            
+          }
+          
+          f.close(true);
+          store.close();
+        """
+        }
+        log.log(lvl, "Done with imap stuff");
+      }
+    } catch (e) {
+      if(def(e)) {
+        ("Exception during imap update " + e);
+      }
+    }
+  }
+  
   tryThingRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-        app.updateNetAddresses();
+        updateNetAddresses();
      }
      return(null);
    }

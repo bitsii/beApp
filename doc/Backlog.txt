@@ -2,13 +2,19 @@
 =====
 =====
 
-move updateNetAddresses to plugin
-authedapp still has hub in paths (get form plugin name)
-move background to plugin, have a startup or something (or just have it be a plugin)
-
 move app classes to app, get cam and link working that way, have an auto-login option for stand alone link
 put all in one project, share the auth and sessions dbs (?config?) (also link and cam separate)
 
+easy to do devel
+  a devel plugin
+  edit, build, install, etc on page (online code editor)
+    build button
+    build output
+    edit area
+easy setup
+  step by step install instructions for noobs
+  url for script to do the rest
+  
 android
   save values in db and show on load
   js poll to update/refresh button - show when doing
@@ -20,10 +26,6 @@ android javamail
 step by step instructions for setting up android env
 
 section to add cam perms to accounts under cam setup  
-
-easy setup
-  step by step install instructions for noobs
-  url for script to do the rest
   
 lang stuff
 ______________
