@@ -96,7 +96,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     
     startWeb() {
       var e;
-      String ports = self.internalPort;
+      String ports = self.webPort;
       Int port = Int.new(ports);
       String cerPath = assureCert(port);
       //portL.o = port;
@@ -570,7 +570,7 @@ class AuthedApp {
     }
   }
   
-  internalPortGet() String {
+  webPortGet() String {
       fields {
         String intPort;
       }
@@ -584,22 +584,6 @@ class AuthedApp {
         }
       }
       return(intPort);
-    }
-    
-    externalPortGet() String {
-      fields {
-        String extPort;
-      }
-      if (TS.isEmpty(extPort)) {
-        extPort = self.configManager.get("wui.extPort");
-        if (TS.isEmpty(extPort)) {
-          Int extPorti = System:Random.getInt(Int.new(), 6000);
-          extPorti += 3000;
-          extPort = extPorti.toString();
-          self.configManager.put("wui.extPort", extPort);
-        }
-      }
-      return(extPort);
     }
   
   pathsGet() App:Paths {
@@ -1584,6 +1568,19 @@ use class IUHub:UpnpUpdate {
     }
   }
   
+    externalPortGet() String {
+      if (TS.isEmpty(extPort)) {
+        extPort = app.configManager.get("wui.extPort");
+        if (TS.isEmpty(extPort)) {
+          Int extPorti = System:Random.getInt(Int.new(), 6000);
+          extPorti += 3000;
+          extPort = extPorti.toString();
+          app.configManager.put("wui.extPort", extPort);
+        }
+      }
+      return(extPort);
+    }
+  
   init() {
     fields {
       String gw;
@@ -1602,8 +1599,8 @@ use class IUHub:UpnpUpdate {
     intPort = app.configManager.get("upnp.intPort");
     extPort = app.configManager.get("upnp.extPort");
     
-    appIntPort = app.internalPort;
-    appExtPort = app.externalPort;
+    appIntPort = app.webPort;
+    appExtPort = self.externalPort;
     deviceName = app.plugin.deviceName;
     
     String disables = app.configManager.get("upnp.disable");

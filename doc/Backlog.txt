@@ -2,7 +2,7 @@
 =====
 =====
 
-there are still things in app (version, etc) which belong in plugin, go through it
+move updateNetAddresses to plugin
 authedapp still has hub in paths (get form plugin name)
 move background to plugin, have a startup or something (or just have it be a plugin)
 
