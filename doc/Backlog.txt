@@ -2,7 +2,8 @@
 =====
 =====
 
-move app classes to app, get cam and link working that way, have an auto-login option for stand alone link
+get cam and link working
+have an auto-login option for stand alone link
 put all in one project, share the auth and sessions dbs (?config?) (also link and cam separate)
 
 easy to do devel
