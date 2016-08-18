@@ -2,9 +2,13 @@
 =====
 =====
 
-get cam and link working
+have a combined option (big hub)
+link from hub to cam based on config
+deliver
+get link working
+hub perm forward port
+hub perm reverse forward port (for noupnp option)
 have an auto-login option for stand alone link
-put all in one project, share the auth and sessions dbs (?config?) (also link and cam separate)
 
 easy to do devel
   a devel plugin

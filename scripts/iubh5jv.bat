@@ -6,7 +6,7 @@ del /s /q ..\apprun\App\IUHub
 rmdir /s /q ..\apprun\App\IUHub
 mkdir ..\apprun\App\IUHub
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang jv --outputPlatform linux -mainClass=IUHub:HubStart source\IUHubTest.be source\IUHub.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang jv -mainClass=IUHub:BigHubStart source\IUHubTest.be source\IUHub.be source\IUCam.be source\IUBigHub.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
@@ -14,7 +14,7 @@ javac -classpath extlibs\IUHub\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\A
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUHub:Eui source\IUHubBr.be source\BrowserEUI.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui source\IUHubBr.be source\BrowserEUI.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
@@ -46,8 +46,7 @@ copy /y source\IUHub*.html ..\apprun\App\IUHub
 copy /y source\Version.txt ..\apprun\App\IUHub
 copy /y extlibs\IUHub\* ..\apprun\App\IUHub
 
-del /s /q ..\apprun\App\IUHub\Base
-rmdir /s /q ..\apprun\App\IUHub\Base
-call scripts\relprep.bat
+rem del /s /q ..\apprun\App\IUHub\Base
+rem rmdir /s /q ..\apprun\App\IUHub\Base
 
-REM call scripts\iuh5jvrun.bat %*
+call scripts\iuh5jvrun.bat %*

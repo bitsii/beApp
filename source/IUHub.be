@@ -30,614 +30,9 @@ use Time:Sleep;
 
 use App:Alert;
 
-use class App:AuthenticatedLocalApp(AuthedApp) {
-
-  new(_plugins, log, lvl) self {
-        fields {
-          WeBr webr;
-          UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
-        }
-        super.new(_plugins, log, lvl);
-    }
-
-    main() {
-      webr = WeBr.new();
-      webr.webHandler = self;
-      webr.height = 450;
-      webr.width = 320;
-      
-      String mypwd = System:Environment.getVariable("MYPWD");
-      webr.location = "file:///" + mypwd + self.plugin.homePage;
-      
-      webr.setup();
-   }
-
-   initWeb() {
-
-   }
-
-   handleWeb(request) {
-     
-     Map arg = request.scriptArg;
-     return(super.handleWeb(request, arg));
-   }
-
-}
-
-emit(jv) {
-"""
-import java.security.*;
-import javax.crypto.*;
-import javax.crypto.spec.*;
-import java.io.*;
-import java.sql.*;
-import org.bouncycastle.x509.*;
-import java.math.BigInteger;
-import java.security.cert.X509Certificate;
-import org.bouncycastle.jce.X509Principal;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-"""
-}
-use class App:AuthenticatedWebApp(AuthedApp) {
-
-  emit(jv) {
-  """
-  static { Security.addProvider(new BouncyCastleProvider());  }
-  """
-  }
-
-  new(_plugins, log, lvl) self {
-        fields {
-        }
-        super.new(_plugins, log, lvl);
-    }
-    
-    startWeb() {
-      var e;
-      String ports = self.webPort;
-      Int port = Int.new(ports);
-      String cerPath = assureCert(port);
-      //portL.o = port;
-      
-      Web:Server vw = Web:Server.new(self.sessionManager);
-      
-      //vwL.o = vw;
-      vw.port = port;
-      vw.ssl = true;
-      vw.sslPath = cerPath;
-      vw.app = self;
-      //vw.gzipOutput = true;//security issues
-      fields {
-        System:Thread myThread = System:Thread.new(vw);
-      }
-      log.log(lvl, "Starting Web");
-      myThread.start();
-    }
-    
-    
-  assureCert(Int port) String {
-    ifEmit(jv) {
-      return(assureCertJv(port));
-    }
-  }
-  
-  handleStartWeb() {
-    log.log(lvl, "In handleStartWeb!!");
-  }
-  
-  assureCertJv(Int port) String {
-    emit(jv) {
-    """
-    java.security.cert.Certificate cert;
-    """
-    }
-    //Path cerPath = Path.apNew("Data/IUHub/cert");
-    Path cerPath = self.paths.dataPath.addStep(self.plugin.name).addStep("cert");
-    String cerPathS = cerPath.toString();
-    log.log(lvl, "cerPath " + cerPathS);
-    if (cerPath.file.exists) {
-      log.log(lvl, "cer exist");
-      emit(jv) {
-      """
-      KeyStore privateKS = KeyStore.getInstance("JKS");
-      privateKS.load( new FileInputStream(bevl_cerPathS.bems_toJvString()), "kp".toCharArray());
-      cert = privateKS.getCertificate("jetty");
-      """
-      }
-    } else {
-      log.log(lvl, "cer not exist");
-      log.log(lvl, "Start gencert");
-      if (cerPath.parent.file.exists!) {
-        cerPath.parent.file.makeDirs();
-      }
-      emit(jv) {
-      """ 
-      String domainName = "test";
-      KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-      keyPairGenerator.initialize(1024);
-      KeyPair KPair = keyPairGenerator.generateKeyPair();
-      X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();
-      v3CertGen.setSerialNumber(BigInteger.valueOf(new SecureRandom().nextInt(Integer.MAX_VALUE)));
-          v3CertGen.setIssuerDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
-          v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-          v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365*10)));
-          v3CertGen.setSubjectDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
-      v3CertGen.setPublicKey(KPair.getPublic());
-      v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption"); 
-      X509Certificate PKCertificate = v3CertGen.generateX509Certificate(KPair.getPrivate());
-      
-      KeyStore privateKS = KeyStore.getInstance("JKS");
-      privateKS.load(null);
-      privateKS.setKeyEntry("jetty", KPair.getPrivate(),
-                     //new char[]{'e', 'n', 't', 'r', 'y', 'p', 'a', 's', 's'},
-                     "kp".toCharArray(),
-                     new java.security.cert.Certificate[]{PKCertificate});
-      privateKS.store( new FileOutputStream(bevl_cerPathS.bems_toJvString()), "kp".toCharArray());
-      cert = privateKS.getCertificate("jetty");
-      """
-      }
-      log.log(lvl, "End gencert");
-    }
-    emit(jv) {
-    """
-    bevp_certificateThumbprint = new BEC_4_6_TextString(
-                 BEC_3_6_18_WebClientCertificateManager.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
-              );
-    """
-    }
-    log.log(lvl, "certificateThumbprint " + certificateThumbprint);
-    return(cerPathS);
-  }
-  
-    main() {
-      Array args = System:Process.new().args;
-
-      startWeb();
-   }
-
-   initWeb() {
-
-   }
-   
-   handleWeb(request) {
-     //log.log(lvl, "in hw");
-     unless (checkRequest(request)) {
-      return(null);
-     }
-     String accountName = request.getSession("account.name");
-     String rmtd = request.inputMethod;
-     //log.log(lvl, "rmtd is " + rmtd);
-     if (TS.isEmpty(rmtd) || rmtd != "PUT") {
-        Map arg = request.scriptArg;
-     }
-     if (TS.isEmpty(accountName)) {
-       String ln = request.getParameter("accountName");
-       String lp = request.getParameter("accountPass");
-       if (TS.notEmpty(ln) && TS.notEmpty(lp)) {
-          log.log(lvl, "doing svc login");
-          Account a = self.accountManager.getAccount(ln);
-          if (def(a) && preLoginCheck(request)) {
-            log.log(lvl, "Found account " + ln);
-            if (a.checkPass(lp)) {
-              log.log(lvl, "svc login ok");
-              request.putSession("account.name", ln);
-              request.putSession("ip", request.remoteAddress);
-              goodLogin(request);
-              accountName = ln;
-            } else {
-              badLogin(request);
-            }
-          } else {
-            badLogin(request);
-          }
-        }
-     }
-     if (undef(arg)) {
-       String uri = request.uri;
-       log.log(lvl, "uri " + uri);
-       File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
-       if (TS.notEmpty(rmtd) && rmtd == "PUT") {
-         if (checkWritePath(imgfile.path, request)) {
-           log.log(lvl, "put for " + imgfile.path);
-           if (imgfile.path.parent.file.exists!) {
-            imgfile.path.parent.file.makeDirs();
-           }
-           if (imgfile.exists) { imgfile.delete(); }
-            outw = imgfile.writer.open();
-            inr = request.openInput();
-            inr.copyData(outw);
-            request.closeInputReader();
-            outw.close();
-            request.outputContent = "UPLOAD COMPLETE";
-         }
-       } elif (checkReadPath(imgfile.path, request)) {
-         log.log(lvl, "imgfile " + imgfile.path);
-         if (imgfile.exists) {
-          String mtype;
-          if (uri.ends(".html")) {
-            mtype = "text/html";
-          } elif (uri.ends(".jpg")) {
-            mtype = "image/jpeg";
-          } elif (uri.ends(".js")) {
-            mtype = "text/javascript";
-          } else {
-            mtype = "application/octet-stream";
-          }
-          request.outputContentType = mtype;
-          IO:Writer outw = request.openOutput();
-          IO:Reader inr = imgfile.reader.open();
-          inr.copyData(outw);
-          request.closeOutputWriter();
-          inr.close();
-         }
-       }
-      return(null);
-     }
-     return(super.handleWeb(request, arg));
-   }
-
-}
-
+use App:AuthenticatedLocalApp;
+use App:AuthenticatedWebApp;
 use App:AuthenticatedApp as AuthedApp;
-emit(jv) {
-"""
-import java.util.Properties;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.Folder;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.Transport;
-import javax.mail.Message;
-import javax.mail.Flags.Flag;
-"""
-}
-class AuthedApp {
-
-  new(_plugins, _log, _lvl) self {
-      fields {
-        Array plugins = _plugins;
-        var plugin = plugins.first;
-        IO:Log log = _log;
-        Int lvl = _lvl;
-        Lock lock = Lock.new();
-        OLocker lastLoginBad = OLocker.new(false);
-        String certificateThumbprint;
-      }
-      
-      foreach (var pl in plugins) {
-        pl.app = self;
-        pl.log = log;
-        pl.lvl = lvl;
-        if (pl.can("start", 0)) {
-          pl.start();
-        }
-      }
-      
-  }
-  
-  badRequest(request) {
-  
-  }
-  
-  checkRequest(request) Bool {
-  
-    Int maxBad =@ 40;
-    Int clearSecs =@ 40;
-    Int updateSecs =@ 20;
-  
-  /*
-    Int maxBad =@ 5;
-    Int clearSecs =@ 10;
-    Int updateSecs =@ 5;
-  */
-    
-    String ip = request.remoteAddress;
-    String sip = request.getSession("ip");
-    String accountName = request.getSession("account.name");
-    if (TS.notEmpty(ip) && TS.notEmpty(sip) && TS.notEmpty(accountName)) {
-      if (ip == sip) {
-        return(true);
-      }
-    }
-  
-    Int ns = Time:Interval.now().seconds;
-    
-    if (TS.notEmpty(ip)) {
-      String ct = self.trackingManager.get("IP." + ip);
-      if (TS.notEmpty(ct)) {
-        String ltm = self.trackingManager.get("LB." + ip);
-        if (TS.notEmpty(ltm)) {
-          Int ltmi = Int.new(ltm);
-          if (ns - ltmi > clearSecs) {
-            log.log(lvl, "clear bad " + ip);
-            badcount = 0;
-          } else {
-            badcount = Int.new(ct);
-          }
-        } else {
-          Int badcount = Int.new(ct);
-        }
-      } else {
-        badcount = 0;
-      }
-    }
-    if (badcount > maxBad) {
-      log.log(lvl, "toomany bad " + ip);
-      if (def(ltmi) && ns - ltmi > updateSecs) {
-        log.log(lvl, "lp update");
-        self.trackingManager.put("LB." + ip, ns.toString());
-      } else {
-        log.log(lvl, "no update");
-      }
-      return(false);
-    }
-    if (TS.isEmpty(accountName)) {
-      log.log(lvl, "upping bad");
-      badcount++=;
-      self.trackingManager.put("IP." + ip, badcount.toString());
-      self.trackingManager.put("LB." + ip, ns.toString());
-    } else {
-      self.trackingManager.delete("IP." + ip);
-      self.trackingManager.delete("LB." + ip);
-      //self.trackingManager.clear();
-    }
-    return(true);
-  }
-  
-  checkWritePath(Path p, request) Bool {
-    Account a = self.accountManager.getAccountForRequest(request);
-    if (def(a) && a.perms.has("admin")) {
-      return(true);
-    }
-    String accountName = request.getSession("account.name");
-    var e;
-    Bool isOk = false;
-    if (undef(accountName)) { accountName = ""; }
-    try {
-      Path pa = p.file.absPath;
-      if (TS.notEmpty(accountName)) {
-        Path h = Path.apNew("Home/" + accountName).file.absPath;
-      }
-      String pas = pa.toString();
-      if (def(h) && pas.begins(h.toString())) {
-        isOk = true;
-      }
-    } catch (e) {
-      log.log(lvl, "Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
-    }
-    //log.log(lvl, "checkPath isOk " + isOk);
-    return(isOk);
-   }
-   
-   checkReadPath(Path p, request) Bool {
-    Account a = self.accountManager.getAccountForRequest(request);
-    if (def(a) && a.perms.has("admin")) {
-      return(true);
-    }
-    String accountName = request.getSession("account.name");
-    var e;
-    Bool isOk = false;
-    if (undef(accountName)) { accountName = ""; }
-    try {
-      Path pa = p.file.absPath;
-      if (TS.notEmpty(accountName)) {
-        Path h = Path.apNew("Home/" + accountName).file.absPath;
-      }
-      String pas = pa.toString();
-      if (self.plugin.checkPublicReadPath(pa, request)) {
-        isOk = true;
-      } elif (def(h) && pas.begins(h.toString())) {
-        isOk = true;
-      }
-    } catch (e) {
-      log.log(lvl, "Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
-    }
-    //log.log(lvl, "checkPath isOk " + isOk);
-    return(isOk);
-   }
-  
-  requestFromAdmin(request) Bool {
-    Account a = self.accountManager.getAccountForRequest(request);
-    if (def(a) && a.perms.has("admin")) {
-      return(true);
-    }
-    badRequest(request);
-    return(false);
-  }
-  
-  preLoginCheck(request) Bool {
-    if (lastLoginBad.o) {
-      Int slptime = System:Random.getInt(Int.new(), 500);
-      Time:Sleep.sleepMilliseconds(slptime);
-    }
-    return(true);
-  }
-  
-  goodLogin(request) {
-    lastLoginBad.o = false;
-  }
-  
-  badLogin(request) {
-    badRequest(request);
-    lastLoginBad.o = true;
-  }
-  
-  webPortGet() String {
-      fields {
-        String intPort;
-      }
-      if (TS.isEmpty(intPort)) {
-        intPort = self.configManager.get("wui.port");
-        if (TS.isEmpty(intPort)) {
-          Int intPorti = System:Random.getInt(Int.new(), 6000);
-          intPorti += 3000;
-          intPort = intPorti.toString();
-          self.configManager.put("wui.port", intPort);
-        }
-      }
-      return(intPort);
-    }
-  
-  pathsGet() App:Paths {
-    fields {
-      App:Paths paths;
-    }
-    if (undef(paths)) {
-      paths = App:Paths.new();
-    }
-    return(paths);
-  }
-  
-  configManagerGet() CLocker {
-    fields {
-      CLocker configManager;
-    }
-    if (undef(configManager)) {
-      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("CONFDB");
-      //KvDb configManagerKv = KvDb.new(Derby.pathNew(db), "CONFIG");
-      KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
-      configManagerKv.createOpen();
-      configManager = CLocker.new(configManagerKv);
-    }
-    return(configManager);
-  }
-  
-  sessionManagerGet() Web:SessionManager {
-    fields {
-      Web:SessionManager sessionDb;
-      String sessionId;
-    }
-    if (undef(sessionId)) {
-      sessionId = self.configManager.get("auth.sessionId");
-      if (TS.isEmpty(sessionId)) {
-        sessionId = System:Random.getString(16);
-        self.configManager.put("auth.sessionId", sessionId);
-      }
-    }
-    if (undef(sessionDb)) {
-      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("SESSDB");
-      //KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
-      KvDb sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
-      sessionDbKv.createOpen();
-      sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv), "GsSess" + sessionId);
-    }
-    ("got sessionmanager").print();
-    return(sessionDb);
-  }
-  
-  getSessionsForAccount(Account a) String {
-    //a.user
-    String res = String.new();
-    String accountName = a.user;
-    Map all = self.sessionManager.sessions.getMap();
-    foreach (var kv in all) {
-      if (kv.key.ends("account.name") && kv.value == accountName) {
-        log.log(lvl, "Found session " + kv.key);
-        var kp = kv.key.split(".");
-        String sessLabel = String.new();
-        String name = self.sessionManager.sessions.get(kp.first + ".session.name");
-        if (def(name)) {
-          log.log(lvl, "sess name " + name);
-          sessLabel += "Session named " += name;
-        }
-        String ip = self.sessionManager.sessions.get(kp.first + ".ip");
-        if (def(ip)) {
-          log.log(lvl, "sess ip " + ip);
-          if (TS.notEmpty(sessLabel)) {
-            sessLabel += " from ";
-          } else {
-            sessLabel += "Session from "
-          }
-          sessLabel += "IP Address " + ip;
-        }
-        if (TS.notEmpty(sessLabel)) {
-          res += "<p>" += sessLabel += " <a href=\"#\" onclick=\"endSession('"
-          += kp.first += "');return false;\">End Session (Log it out)</a></p>";
-        }
-      }
-    }
-    return(res);
-  }
-  
-  trackingManagerGet() CLocker {
-    fields {
-      CLocker trackingManager;
-    }
-    if (undef(trackingManager)) {
-      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("TMDB");
-      KvDb trackingManagerKv = KvDb.new(HsDb.pathNew(db), "TRACKING");
-      trackingManagerKv.createOpen();
-      trackingManager = CLocker.new(trackingManagerKv);
-    }
-    return(trackingManager);
-  }
-  
-  handleWeb(request, Map arg) {
-    unless (checkRequest(request)) {
-      return(null);
-     }
-        try {
-            String aname = arg.get("action");
-            if (undef(aname) || aname.ends("Request")!) {
-              throw(Exception.new("Invalid request"));
-            }
-            String accountName = request.getSession("account.name");
-            if (TS.isEmpty(accountName)) {
-              unless (aname == "loginRequest") {
-                return(null);
-              }
-            }
-            log.log(lvl, "here");
-            Array args = Array.new(2);
-            args[0] = arg;
-            args[1] = request;
-            foreach (var pl in plugins) {
-              if (pl.can(aname, args.length)) {
-                var res = pl.invoke(aname, args);
-                break;
-              }
-            }
-            request.scriptReturn = res;
-        } catch (var e) {
-           arg = Map.new();
-           log.log(lvl, "Caught exception during handleWeb B");
-           if (def(e)) {
-            log.log(lvl, "Error was " + e);
-           }
-            arg["action"] = "failResponse";
-            if (e.sameClass(Alert.new()@)) {
-              arg["reason"] = e.description;
-            } else {
-              arg["reason"] = "Sorry, unable to handle request";
-            }
-            request.scriptReturn = arg;
-        }
-    }
-    
-    getHomeDir(request) Path {
-      String accountName = request.getSession("account.name");
-      Path homeDir = Path.apNew("Home/" + accountName);
-      return(homeDir);
-    }
-    
-    accountManagerGet() AccountManager {
-      fields {
-        AccountManager am;
-      }
-      if (undef(am)) {
-        am = AccountManager.new(self.configManager, "ACCOUNTS.");
-      }
-      return(am);
-    }
-    
-    loggedIn(Account a, Map res, Map arg, request) {
-      return(self.plugin.loggedIn(a, res, arg, request));
-    }
-    
-}
-
-
 
 emit(jv) {
 """
@@ -1610,32 +1005,216 @@ use class IUHub:Background {
 
 }
 
+use class IUHub:HubStart {
+
+   new() self {
+      fields {
+          IO:Log log = IO:Log.new();
+          log.level = log.info;
+          Int lvl = log.level;
+        }
+    }
+
+  main() {
+      main(System:Process.new().args);
+    }
+    
+    main(Array args) {
+      outerMain(System:Process.new().args);
+      /*try {
+        app.configManager.close();
+      } catch (var e) {
+        log.log(lvl, "Exception closing db in CmdUI, error is " + e);
+      }*/
+    }
+    
+    outerMain(Array args) {
+      try {
+        innerMain(System:Process.new().args);
+      } catch (var e) {
+        log.log(lvl, "Exception in CmdUI, error is " + e);
+      }
+    }
+    
+    innerMain(Array args) {
+
+      Web:Client:CertificateManager.validateHosts = false;
+
+      if (args.length > 0) {
+        String mode = args[0]; //ui, svc, both, [absent]
+        log.log(lvl, "mode " + mode);
+      } else {
+        log.log(lvl, "mode empty");
+      }
+      if (TS.isEmpty(mode)) {
+        mode = "wui";
+      }
+      if (mode == "lui" || mode == "wui" || mode == "cmd") {
+        log.log(lvl, "making hub");
+        HubPlugin hub = HubPlugin.new();
+        if (mode == "cmd") {
+          hub.runBackground = false;
+        }
+        hub.log = log;
+        hub.lvl = lvl;
+        log.log(lvl, "adding plugins");
+        Array plugins = Array.new();
+        plugins += hub;
+        plugins += App:AuthPlugin.new();
+        plugins += App:ConfigPlugin.new();
+        plugins += App:FileManagerPlugin.new();
+        if (mode == "lui") {
+          AuthenticatedLocalApp.new(plugins, log, lvl).main();
+        }
+        if (mode == "wui") {
+          AuthenticatedWebApp.new(plugins, log, lvl).main();
+        }        
+        if (mode == "cmd") {
+          cmdMain(args, plugins);
+        }
+      }
+      if (mode == "test") {
+        IUHub:Test.new().main();
+      }
+    }
+
+    cmdMain(Array args, plugins) {
+      AuthedApp ui = AuthedApp.new(plugins, log, lvl);
+      
+      if (args.length > 1) {
+        String mode = args[1]; //ui, svc, both, [absent]
+        log.log(lvl, "cmd " + mode);
+      } 
+      if (TS.isEmpty(mode)) {
+        log.log(lvl, "cmd empty");
+      }
+      if (mode == "help") {
+        log.log(lvl, "Help");
+        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+      }
+      if (TS.notEmpty(mode) && mode == "portForward") {
+        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
+        pf.log = log;
+        pf.lvl = lvl;
+        pf.start();
+      }
+      if (TS.notEmpty(mode) && mode == "listLogins") {
+        foreach (String login in ui.accountManager.getLogins()) {
+          log.log(lvl, "Account login " + login);
+        }
+      }
+      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
+        String user = args[2];
+        String pass = args[3];
+        log.log(lvl, "Putting Account " + user);
+        Account ac = Account.new();
+        ac.user = user;
+        ac.pass = pass;
+        if (args.length > 4) {
+          ac.permsString = args[4];
+        }
+        ui.accountManager.putAccount(ac);
+      }
+      if (TS.notEmpty(mode) && mode == "getAccount") {
+        user = args[2];
+        log.log(lvl, "Get Account " + user);
+        ac = ui.accountManager.getAccount(user);
+        log.log(lvl, "Account " + ac);
+      }
+      if (TS.notEmpty(mode) && mode == "setPermsString") {
+        user = args[2];
+        String ps = args[3];
+        log.log(lvl, "Set Perms " + user);
+        ac = ui.accountManager.getAccount(user);
+        ac.permsString = ps;
+        ui.accountManager.putAccount(ac);
+        log.log(lvl, "Account " + ac);
+      }
+      if (TS.notEmpty(mode) && mode == "setPass") {
+        user = args[2];
+        pass = args[3];
+        log.log(lvl, "Set Pass " + user);
+        ac = ui.accountManager.getAccount(user);
+        ac.pass = pass;
+        ui.accountManager.putAccount(ac);
+      }
+      if (TS.notEmpty(mode) && mode == "deleteAccount") {
+        user = args[2];
+        log.log(lvl, "Deleting Account " + user);
+        ac = ui.accountManager.getAccount(user);
+        if (def(ac)) {
+          ui.accountManager.deleteAccount(ac);
+          log.log(lvl, "Deleted account " + user);
+        } else {
+          log.log(lvl, "No such account for deletion " + user);
+        }
+      }
+      if (TS.notEmpty(mode) && mode == "updateConfig") {
+        String key = args[2];
+        String value = args[3];
+        log.log(lvl, "Updating config " + key + " " + value);
+        ui.configManager.put(key, value);
+      }
+      if (TS.notEmpty(mode) && mode == "showConfig") {
+        foreach (var kv in ui.configManager.getMap()) {
+          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
+        }
+      }
+      if (TS.notEmpty(mode) && mode == "createConfig") {
+        key = args[2];
+        value = args[3];
+        log.log(lvl, "Creating config " + key + " " + value);
+        ui.configManager.put(key, value);
+      }
+      if (TS.notEmpty(mode) && mode == "deleteConfig") {
+        key = args[2];
+        log.log(lvl, "Deleting config " + key);
+        ui.configManager.delete(key);
+      }
+      ui.configManager.close();
+    }
+
+}
+
 
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
-
+emit(jv) {
+"""
+import java.util.Properties;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.Folder;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.Transport;
+import javax.mail.Message;
+import javax.mail.Flags.Flag;
+"""
+}
 use class IUHub:HubPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log;
+          Int lvl;
           var app;
           String name = "IUHub";
           String homePage = "/App/IUHub/IUHub.html";
           OLocker links = OLocker.new();
           Background bg = Background.new();
+          Bool runBackground = true;
         }
-        
      }
      
      start() {
+      if (runBackground) {
       bg.log = log;
       bg.lvl = lvl;
       bg.app = app;
       bg.startBackground();
+      }
     }
      
   deviceNameGet() String {
@@ -1936,159 +1515,6 @@ use class IUHub:HubPlugin {
      return(null);
    }
    
-  main() {
-      main(System:Process.new().args);
-    }
-    
-    main(Array args) {
-      outerMain(System:Process.new().args);
-      /*try {
-        app.configManager.close();
-      } catch (var e) {
-        log.log(lvl, "Exception closing db in CmdUI, error is " + e);
-      }*/
-    }
-    
-    outerMain(Array args) {
-      try {
-        innerMain(System:Process.new().args);
-      } catch (var e) {
-        log.log(lvl, "Exception in CmdUI, error is " + e);
-      }
-    }
-    
-    innerMain(Array args) {
-
-      Web:Client:CertificateManager.validateHosts = false;
-
-      if (args.length > 0) {
-        String mode = args[0]; //ui, svc, both, [absent]
-        log.log(lvl, "mode " + mode);
-      } else {
-        log.log(lvl, "mode empty");
-      }
-      if (TS.isEmpty(mode)) {
-        mode = "wui";
-      }
-      if (mode == "lui" || mode == "wui" || mode == "cmd") {
-        Array plugins = Array.new();
-        plugins += self;
-        plugins += App:AuthPlugin.new();
-        plugins += App:ConfigPlugin.new();
-        plugins += App:FileManagerPlugin.new();
-        if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins, log, lvl).main();
-        }
-        if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins, log, lvl).main();
-        }        
-        if (mode == "cmd") {
-          cmdMain(args, plugins);
-        }
-      }
-      if (mode == "test") {
-        IUHub:Test.new().main();
-      }
-    }
-
-    cmdMain(Array args, plugins) {
-      AuthedApp ui = AuthedApp.new(plugins, log, lvl);
-      
-      if (args.length > 1) {
-        String mode = args[1]; //ui, svc, both, [absent]
-        log.log(lvl, "cmd " + mode);
-      } 
-      if (TS.isEmpty(mode)) {
-        log.log(lvl, "cmd empty");
-      }
-      if (mode == "help") {
-        log.log(lvl, "Help");
-        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
-      }
-      if (TS.notEmpty(mode) && mode == "portForward") {
-        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.log = log;
-        pf.lvl = lvl;
-        pf.start();
-      }
-      if (TS.notEmpty(mode) && mode == "listLogins") {
-        foreach (String login in ui.accountManager.getLogins()) {
-          log.log(lvl, "Account login " + login);
-        }
-      }
-      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
-        String user = args[2];
-        String pass = args[3];
-        log.log(lvl, "Putting Account " + user);
-        Account ac = Account.new();
-        ac.user = user;
-        ac.pass = pass;
-        if (args.length > 4) {
-          ac.permsString = args[4];
-        }
-        ui.accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "getAccount") {
-        user = args[2];
-        log.log(lvl, "Get Account " + user);
-        ac = ui.accountManager.getAccount(user);
-        log.log(lvl, "Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPermsString") {
-        user = args[2];
-        String ps = args[3];
-        log.log(lvl, "Set Perms " + user);
-        ac = ui.accountManager.getAccount(user);
-        ac.permsString = ps;
-        ui.accountManager.putAccount(ac);
-        log.log(lvl, "Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPass") {
-        user = args[2];
-        pass = args[3];
-        log.log(lvl, "Set Pass " + user);
-        ac = ui.accountManager.getAccount(user);
-        ac.pass = pass;
-        ui.accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteAccount") {
-        user = args[2];
-        log.log(lvl, "Deleting Account " + user);
-        ac = ui.accountManager.getAccount(user);
-        if (def(ac)) {
-          ui.accountManager.deleteAccount(ac);
-          log.log(lvl, "Deleted account " + user);
-        } else {
-          log.log(lvl, "No such account for deletion " + user);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "updateConfig") {
-        String key = args[2];
-        String value = args[3];
-        log.log(lvl, "Updating config " + key + " " + value);
-        ui.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "showConfig") {
-        foreach (var kv in ui.configManager.getMap()) {
-          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "createConfig") {
-        key = args[2];
-        value = args[3];
-        log.log(lvl, "Creating config " + key + " " + value);
-        ui.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteConfig") {
-        key = args[2];
-        log.log(lvl, "Deleting config " + key);
-        ui.configManager.delete(key);
-      }
-      ui.configManager.close();
-    }
-    
-
-
 }
 
 use Email:Imap;
