@@ -32,7 +32,7 @@ cd ..\be\system
 del /s *.class
 cd ..\..\app
 
-copy /y ..\apprun\App\IUCam\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUCam
+copy /y ..\apprun\App\IUCam\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUCam\IUCam_BEL_4_Base.js
 copy /y scripts\uppic.bat ..\apprun\App\IUCam
 copy /y scripts\uppic.sh ..\apprun\App\IUCam
 copy /y scripts\getcams.bat ..\apprun\App\IUCam

@@ -45,6 +45,18 @@ cp extlibs/IUHub/* ../apprun/App/IUHub
 
 rm -rf ../apprun/App/IUHub/Base
 
-#./scripts/iuh5jvrun.sh $*
+uglifyjs ../apprun/App/IUHub/BEL_4_Base.js > ../apprun/App/IUHub/BEL_4_Base.js.1
 
-./scripts/relprep.sh
+rm -f ../apprun/App/IUHub/BEL_4_Base.js
+
+mv ../apprun/App/IUHub/BEL_4_Base.js.1 ../apprun/App/IUHub/BEL_4_Base.js
+
+cd ../apprun/App/IUHub
+
+rm -f ../../../IUHub.zip
+
+zip ../IUHub.zip ./*
+
+mv ../IUHub.zip ../../..
+
+cd ../../../app

@@ -453,7 +453,7 @@ use class IUCam:CamPlugin {
       res["action"] = "updateResponse";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
-      //res["cmdLinks"] = cmdLinksForAccount(a);
+      res["actionLinks"] = getActionLinks(a, arg, request);
       res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
       res["deviceName"] = self.deviceName;
       return(res);
@@ -587,7 +587,7 @@ use class IUCam:CamPlugin {
       updateCams();
       Map res = Map.new();
       res["action"] = "updateResponse";
-      res["camLinks"] = camLinksForAccount(a);
+      res["actionLinks"] = getActionLinks(a, arg, request);
       return(res);
    }
    
@@ -648,8 +648,8 @@ use class IUCam:CamPlugin {
     return(false);
    }
    
-   camLinksForAccount(Account a) String {
-     String camLinks = String.new();
+   getActionLinks(Account a, Map arg, request) String {
+     String actionLinks = String.new();
      Set ecm = getCams();
      foreach (String c in ecm) {
        if (camOkForAccount(c, a)) {
@@ -658,10 +658,14 @@ use class IUCam:CamPlugin {
             clabel = Path.apNew(c).steps.last;
             app.configManager.put("cam." + c + ".label", clabel);
           }
-          camLinks += "<p><a href=\"#\" onclick=\"eui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
+          actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
         }
      }
-     return(camLinks);
+     String showCam = app.configManager.get("PLUGIN.hub");
+     if (TS.notEmpty(showCam) && showCam == "enabled") {
+       actionLinks += "<p><a href=\"IUHub.html\">Go to IUHub</a></p>";
+     }
+     return(actionLinks);
    }
 
 }

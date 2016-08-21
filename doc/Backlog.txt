@@ -2,16 +2,25 @@
 =====
 =====
 
-have a combined option (big hub)
-link from hub to cam based on config
+setup dev pi
 deliver
-get link working
+
+link hubbed
+link, w multiple sources
+service oriented ip alongside imap (in link)
+
 hub perm forward port
 hub perm reverse forward port (for noupnp option)
-have an auto-login option for stand alone link
 
+libs et all
 easy to do devel
   a devel plugin
+
+call it
+
+have an auto-login option for stand alone link
+
+devel plugin
   edit, build, install, etc on page (online code editor)
     build button
     build output
@@ -19,7 +28,8 @@ easy to do devel
 easy setup
   step by step install instructions for noobs
   url for script to do the rest
-  
+
+get link working  
 android
   save values in db and show on load
   js poll to update/refresh button - show when doing

@@ -18,6 +18,10 @@ java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_j
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang js --ownProcess false -mainClass=IUCam:Eui source\IUCamBr.be source\BrowserEUI.be
+
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 del ..\apprun\App\IUHub\BEL_4_Base_lui_jv.jar
 cd ..\apprun\App\IUHub\Base\target\jv
 jar -cf ..\..\..\BEL_4_Base_lui_jv.jar .
@@ -32,7 +36,8 @@ cd ..\be\system
 del /s *.class
 cd ..\..\app
 
-copy /y ..\apprun\App\IUHub\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUHub
+REM hub
+copy /y ..\apprun\App\IUHub\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUHub\IUHub_BEL_4_Base.js
 copy /y scripts\upgrade.bat ..\apprun\App\IUHub
 copy /y scripts\postupgrade.bat ..\apprun\App\IUHub
 copy /y scripts\upgrade.sh ..\apprun\App\IUHub
@@ -45,6 +50,23 @@ copy /y scripts\iuhcmd.sh ..\apprun\App\IUHub
 copy /y source\IUHub*.html ..\apprun\App\IUHub
 copy /y source\Version.txt ..\apprun\App\IUHub
 copy /y extlibs\IUHub\* ..\apprun\App\IUHub
+
+REM cam
+copy /y ..\apprun\App\IUCam\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUHub\IUCam_BEL_4_Base.js
+copy /y scripts\uppic.bat ..\apprun\App\IUHub
+copy /y scripts\uppic.sh ..\apprun\App\IUHub
+copy /y scripts\getcams.bat ..\apprun\App\IUHub
+copy /y scripts\getcams.sh ..\apprun\App\IUHub
+REM copy /y scripts\startiuc.sh ..\apprun\App\IUHub
+REM copy /y scripts\iucrun.sh ..\apprun\App\IUHub
+REM copy /y scripts\iuccmdrs.sh ..\apprun\App\IUHub
+REM copy /y scripts\iuccmd.sh ..\apprun\App\IUHub
+copy /y scripts\motionrun.sh ..\apprun\App\IUHub
+copy /y scripts\camclean.sh ..\apprun\App\IUHub
+copy /y source\IUCam*.html ..\apprun\App\IUHub
+copy /y source\Version.txt ..\apprun\App\IUHub
+copy /y source\MOCAM.conf ..\apprun\App\IUHub
+copy /y extlibs\IUCam\* ..\apprun\App\IUHub
 
 rem del /s /q ..\apprun\App\IUHub\Base
 rem rmdir /s /q ..\apprun\App\IUHub\Base

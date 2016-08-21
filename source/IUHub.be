@@ -1249,7 +1249,7 @@ use class IUHub:HubPlugin {
       res["action"] = "updateResponse";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
-      res["cmdLinks"] = cmdLinksForAccount(a);
+      res["actionLinks"] = getActionLinks(a, arg, request);
       res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
       res["deviceName"] = self.deviceName;
       return(res);
@@ -1493,15 +1493,19 @@ use class IUHub:HubPlugin {
      return(null);
    }
    
-  cmdLinksForAccount(Account a) String {
-     String cmdLinks = String.new();
+  getActionLinks(Account a, Map arg, request) String {
+     String actionLinks = String.new();
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
      foreach (var kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
-      cmdLinks += "<p><a href=\"#\" onclick=\"eui.bem_runCommand_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
+      actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_runCommand_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
      }
-     return(cmdLinks);
+     String showCam = app.configManager.get("PLUGIN.cam");
+     if (TS.notEmpty(showCam) && showCam == "enabled") {
+       actionLinks += "<p><a href=\"IUCam.html\">Go to IUCam</a></p>";
+     }
+     return(actionLinks);
    }
    
    showDevLinksRequest(Map arg, request) Map {

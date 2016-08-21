@@ -118,6 +118,13 @@ use class IUHub:Eui {
         }
     }
     
+    handleCallOut(Map arg) {
+      if (def(arg)) {
+        arg["plugin"] = "hub";
+      }
+      HC.new(self).call(arg);
+    }
+    
     fileChecked(String id) {
       if (TS.notEmpty(id)) {
         if (TS.notEmpty(currentlyCheckedId)) {
@@ -146,25 +153,25 @@ use class IUHub:Eui {
     tryThing() {
       Map arg = Map.new();
       arg["action"] = "tryThingRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    restart() {
       Map arg = Map.new();
       arg["action"] = "restartRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    clearAllSessions() {
       Map arg = Map.new();
       arg["action"] = "clearAllSessionsRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    clearAllTracking() {
       Map arg = Map.new();
       arg["action"] = "clearAllTrackingRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    showAccountSettings() {
@@ -192,7 +199,7 @@ use class IUHub:Eui {
      } else {
        Map arg = Map.new();
        arg["action"] = "showAccountAdminRequest";
-       HC.new(self).call(arg);
+       handleCallOut(arg);
      }
    }
    
@@ -205,7 +212,7 @@ use class IUHub:Eui {
      arg["action"] = "deleteAccountRequest";
      arg["accountName"] = accountName;
      hideAccountAdmin();
-     HC.new(self).call(arg);
+     handleCallOut(arg);
    }
    
    showAccountAdminResponse(Map arg) {
@@ -230,7 +237,7 @@ use class IUHub:Eui {
       Map arg = Map.new();
       arg["accountName"] = accountName;
       arg["action"] = "loadAccountRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    loadAccountResponse(Map arg) {
@@ -252,7 +259,7 @@ use class IUHub:Eui {
        arg["accountPass"] = pass;
      }
      clearAccountAdmin();
-     HC.new(self).call(arg);
+     handleCallOut(arg);
    }
    
    showImapRequest() {
@@ -261,7 +268,7 @@ use class IUHub:Eui {
      } else {
       Map arg = Map.new();
       arg["action"] = "showImapRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
      }
    }
    
@@ -285,7 +292,7 @@ use class IUHub:Eui {
       } else {
         Map arg = Map.new();
         arg["action"] = "showConfigRequest";
-        HC.new(self).call(arg);
+        handleCallOut(arg);
       }
    }
    
@@ -300,7 +307,7 @@ use class IUHub:Eui {
    showDevLinks() {
       Map arg = Map.new();
       arg["action"] = "showDevLinksRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    showDevLinksResponse(Map arg) {
@@ -324,14 +331,14 @@ use class IUHub:Eui {
     arg["offerEmail"] = HD.getElementById("offerEmail").value;
     arg["offerPass1"] = HD.getElementById("offerPass1").value;
     arg["offerPass2"] = HD.getElementById("offerPass2").value;
-    HC.new(self).call(arg);
+    handleCallOut(arg);
    }
    
    runCommand(String key) {
       Map arg = Map.new();
       arg["action"] = "runCommandRequest";
       arg["cmdKey"] = key;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    updateConfig(String theKey, String theId) {
@@ -339,21 +346,21 @@ use class IUHub:Eui {
       arg["action"] = "updateConfigRequest";
       arg["configKey"] = theKey;
       arg["configValue"] = HD.getElementById(theId).value;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    deleteConfig(String theKey) {
       Map arg = Map.new();
       arg["action"] = "deleteConfigRequest";
       arg["configKey"] = theKey;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    endSessionRequest(String theKey) {
       Map arg = Map.new();
       arg["action"] = "endSessionRequest";
       arg["sessionKey"] = theKey;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    addConfig() {
@@ -366,7 +373,7 @@ use class IUHub:Eui {
       arg["action"] = "checkLoggedInRequest";
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    login() {
@@ -379,14 +386,14 @@ use class IUHub:Eui {
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       HD.getElementById("sessionName").value = "";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    logout() {
       clearImage();
       Map arg = Map.new();
       arg["action"] = "logoutRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    updateImageResponse(Map arg) {
@@ -405,8 +412,8 @@ use class IUHub:Eui {
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
     }
-    if (arg.has("cmdLinks")) {
-      HD.getElementById("cmdLinksDiv").innerHTML = arg["cmdLinks"];
+    if (arg.has("actionLinks")) {
+      HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
@@ -448,7 +455,7 @@ use class IUHub:Eui {
     arg["action"] = "changePassRequest";
     arg["oldPass"] = op;
     arg["newPass"] = np;
-    HC.new(self).call(arg);
+    handleCallOut(arg);
     } else {
       fail("New passwords don't match");
     }
@@ -460,7 +467,7 @@ use class IUHub:Eui {
     } else {
       Map arg = Map.new();
       arg["action"] = "showSessionsRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
     }
    }
    
@@ -484,7 +491,7 @@ use class IUHub:Eui {
     arg["imapAccount"] = iac;
     arg["imapEndpoint"] = iep;
     arg["imapPass"] = ip;
-    HC.new(self).call(arg);
+    handleCallOut(arg);
     } else {
       fail("Passwords don't match");
     }
@@ -507,7 +514,7 @@ use class IUHub:Eui {
       Map arg = Map.new();
       arg["action"] = "localBrowseRequest";
       arg["path"] = path;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    deleteRequest() {
@@ -524,7 +531,7 @@ use class IUHub:Eui {
           Map arg = Map.new();
           arg["action"] = "deleteRequest";
           arg["path"] = path;
-          HC.new(self).call(arg);
+          handleCallOut(arg);
         }
       }
    }
@@ -558,7 +565,7 @@ use class IUHub:Eui {
           arg["action"] = "copyRequest";
           arg["path"] = path;
           arg["toName"] = toName;
-          HC.new(self).call(arg);
+          handleCallOut(arg);
       }
    }
    
@@ -573,7 +580,7 @@ use class IUHub:Eui {
           Map arg = Map.new();
           arg["action"] = "upgradeRequest";
           arg["path"] = path;
-          HC.new(self).call(arg);
+          handleCallOut(arg);
       }
    }
    

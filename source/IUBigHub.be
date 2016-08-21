@@ -34,6 +34,7 @@ use App:AuthenticatedLocalApp;
 use App:AuthenticatedWebApp;
 use App:AuthenticatedApp as AuthedApp;
 use IUHub:HubPlugin;
+use IUCam:CamPlugin;
 
 emit(jv) {
 """
@@ -93,9 +94,16 @@ use class IUHub:BigHubStart {
         }
         hub.log = log;
         hub.lvl = lvl;
+        CamPlugin cam = CamPlugin.new();
+        if (mode == "cmd") {
+          cam.runBackground = false;
+        }
+        cam.log = log;
+        cam.lvl = lvl;
         log.log(lvl, "adding plugins");
         Array plugins = Array.new();
         plugins += hub;
+        plugins += cam;
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
         plugins += App:FileManagerPlugin.new();
@@ -210,6 +218,7 @@ use class IUHub:BigHubStart {
       ui.configManager.close();
     }
 
+
 }
 
 use System:Thread:ObjectLocker as OLocker;
@@ -217,6 +226,27 @@ use System:Thread:ObjectLocker as OLocker;
 use Crypto:Symmetric as Crypt;
 use class IUHub:BigHubPlugin(HubPlugin) {
 
+    
+    loggedIn(Account a, Map res, Map arg, request) {
+      res["action"] = "updateResponse";
+      res["justLoggedIn"] = true;
+      res["permsString"] = a.permsString;
+      res["actionLinks"] = getActionLinks(a, arg, request);
+      res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
+      res["deviceName"] = self.deviceName;
+      return(res);
+    }
+    
+    getActionLinks(Account a, Map arg, request) String {
+     if (TS.notEmpty(arg["plugin"]) && arg["plugin"] == "cam") {
+      return(self.cam.getActionLinks(a, arg, request));
+     }
+     return(super.getActionLinks(a, arg, request));
+   }
+    
+    camGet() CamPlugin {
+      return(app.plugins[1]);
+    }
      
    
 }

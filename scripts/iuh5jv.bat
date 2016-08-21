@@ -32,7 +32,7 @@ cd ..\be\system
 del /s *.class
 cd ..\..\app
 
-copy /y ..\apprun\App\IUHub\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUHub
+copy /y ..\apprun\App\IUHub\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUHub\IUHub_BEL_4_Base.js
 copy /y scripts\upgrade.bat ..\apprun\App\IUHub
 copy /y scripts\postupgrade.bat ..\apprun\App\IUHub
 copy /y scripts\upgrade.sh ..\apprun\App\IUHub

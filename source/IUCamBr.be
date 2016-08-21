@@ -81,6 +81,13 @@ use class IUCam:Eui {
     
     }
     
+    handleCallOut(Map arg) {
+      if (def(arg)) {
+        arg["plugin"] = "cam";
+      }
+      HC.new(self).call(arg);
+    }
+    
     handleCallback(String res) {
       hideFail();
       HC.new(self).handleCallback(res);
@@ -89,25 +96,25 @@ use class IUCam:Eui {
     tryThing() {
       Map arg = Map.new();
       arg["action"] = "tryThingRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    restart() {
       Map arg = Map.new();
       arg["action"] = "restartRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    clearAllSessions() {
       Map arg = Map.new();
       arg["action"] = "clearAllSessionsRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    clearAllTracking() {
       Map arg = Map.new();
       arg["action"] = "clearAllTrackingRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    showAccountSettings() {
@@ -135,7 +142,7 @@ use class IUCam:Eui {
      } else {
        Map arg = Map.new();
        arg["action"] = "showAccountAdminRequest";
-       HC.new(self).call(arg);
+       handleCallOut(arg);
      }
    }
    
@@ -148,7 +155,7 @@ use class IUCam:Eui {
      arg["action"] = "deleteAccountRequest";
      arg["accountName"] = accountName;
      hideAccountAdmin();
-     HC.new(self).call(arg);
+     handleCallOut(arg);
    }
    
    showAccountAdminResponse(Map arg) {
@@ -174,7 +181,7 @@ use class IUCam:Eui {
       Map arg = Map.new();
       arg["accountName"] = accountName;
       arg["action"] = "loadAccountRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    loadAccountResponse(Map arg) {
@@ -198,14 +205,14 @@ use class IUCam:Eui {
        arg["accountPass"] = pass;
      }
      clearAccountAdmin();
-     HC.new(self).call(arg);
+     handleCallOut(arg);
    }
        
     updateImage(String cam) {
       Map arg = Map.new();
       arg["action"] = "updateImageRequest";
       arg["cam"] = cam;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    showConfig() {
@@ -214,7 +221,7 @@ use class IUCam:Eui {
       } else {
         Map arg = Map.new();
         arg["action"] = "showConfigRequest";
-        HC.new(self).call(arg);
+        handleCallOut(arg);
       }
    }
    
@@ -235,21 +242,21 @@ use class IUCam:Eui {
       arg["action"] = "updateConfigRequest";
       arg["configKey"] = theKey;
       arg["configValue"] = HD.getElementById(theId).value;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    deleteConfig(String theKey) {
       Map arg = Map.new();
       arg["action"] = "deleteConfigRequest";
       arg["configKey"] = theKey;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    endSessionRequest(String theKey) {
       Map arg = Map.new();
       arg["action"] = "endSessionRequest";
       arg["sessionKey"] = theKey;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    addConfig() {
@@ -262,7 +269,7 @@ use class IUCam:Eui {
       arg["action"] = "checkLoggedInRequest";
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    login() {
@@ -275,14 +282,14 @@ use class IUCam:Eui {
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       HD.getElementById("sessionName").value = "";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    logout() {
       clearImage();
       Map arg = Map.new();
       arg["action"] = "logoutRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    updateImageResponse(Map arg) {
@@ -301,8 +308,8 @@ use class IUCam:Eui {
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
     }
-    if (arg.has("camLinks")) {
-      HD.getElementById("camLinksDiv").innerHTML = arg["camLinks"];
+    if (arg.has("actionLinks")) {
+      HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
@@ -335,7 +342,7 @@ use class IUCam:Eui {
    detectCams() {
       Map arg = Map.new();
       arg["action"] = "detectCamsRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    changePassRequest() {
@@ -350,7 +357,7 @@ use class IUCam:Eui {
     arg["action"] = "changePassRequest";
     arg["oldPass"] = op;
     arg["newPass"] = np;
-    HC.new(self).call(arg);
+    handleCallOut(arg);
     } else {
       fail("New passwords don't match");
     }
@@ -359,7 +366,7 @@ use class IUCam:Eui {
    showSessionsRequest() {
     Map arg = Map.new();
     arg["action"] = "showSessionsRequest";
-    HC.new(self).call(arg);
+    handleCallOut(arg);
    }
    
    showSessionsResponse(Map arg) {
@@ -382,7 +389,7 @@ use class IUCam:Eui {
       Map arg = Map.new();
       arg["action"] = "localBrowseRequest";
       arg["path"] = path;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    failResponse(Map arg) {
