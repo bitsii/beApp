@@ -31,6 +31,7 @@ var startup = function() {
   eui = new be_BEL_4_Base_BEC_3_8_AppIULinkBr();
   eui.bem_new_0();
   eui.bem_main_0();
+  eui.bem_startup_0();
 }
 
 var handleCallback = function(res) {
@@ -73,6 +74,13 @@ use class App:IULinkBr {
       urlsRequest();
     }
     
+    handleCallOut(Map arg) {
+      if (def(arg)) {
+        arg["plugin"] = "link";
+      }
+      HC.new(self).call(arg);
+    }
+    
     handleCallback(String res) {
       HC.new(self).handleCallback(res);
     }
@@ -80,7 +88,7 @@ use class App:IULinkBr {
    urlsRequest() {
       Map arg = Map.new();
       arg["action"] = "urlsRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    urlsResponse(Map arg) {
@@ -93,7 +101,7 @@ use class App:IULinkBr {
       arg["action"] = "openLinkRequest";
       arg["deviceId"] = did;
       arg["from"] = "int";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    openExtLinkRequest(String did) {
@@ -101,14 +109,14 @@ use class App:IULinkBr {
       arg["action"] = "openLinkRequest";
       arg["deviceId"] = did;
       arg["from"] = "ext";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    hiRequest() {
       Map arg = Map.new();
       arg["action"] = "hiRequest";
       arg["who"] = HD.getElementById("who").value;
-      HC.new(self).call(arg);
+      handleCallOut(arg);
    }
    
    hiResponse(Map arg) {
@@ -121,7 +129,7 @@ use class App:IULinkBr {
      } else {
       Map arg = Map.new();
       arg["action"] = "showImapRequest";
-      HC.new(self).call(arg);
+      handleCallOut(arg);
      }
    }
    
@@ -152,10 +160,14 @@ use class App:IULinkBr {
     arg["imapAccount"] = iac;
     arg["imapEndpoint"] = iep;
     arg["imapPass"] = ip;
-    HC.new(self).call(arg);
+    handleCallOut(arg);
     } else {
       fail("Passwords don't match");
     }
+   }
+   
+   failResponse(Map arg) {
+    fail(arg["reason"]);
    }
    
    fail(String r) {
@@ -167,6 +179,57 @@ use class App:IULinkBr {
    
    hideFail() {
      HD.getElementById("failDiv").display = "none";
+   }
+   
+   login() {
+      Map arg = Map.new();
+      arg["action"] = "loginRequest";
+      arg["accountName"] = HD.getElementById("accountName").value;
+      arg["accountPass"] = HD.getElementById("accountPass").value;
+      arg["sessionName"] = HD.getElementById("sessionName").value;
+      HD.getElementById("accountName").value = "";
+      HD.getElementById("accountPass").value = "";
+      HD.getElementById("sessionName").value = "";
+      handleCallOut(arg);
+   }
+   
+   logout() {
+      Map arg = Map.new();
+      arg["action"] = "logoutRequest";
+      handleCallOut(arg);
+   }
+   
+   updateResponse(Map arg) {
+     fields {
+       Set perms = Set.new();
+     }
+     if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
+      //String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
+      String lmsg = "Welcome to " + arg["deviceName"] + " on Version " + arg["appVersion"];
+      HD.getElementById("loginmsgdiv").innerHTML = lmsg;
+      HD.getElementById("logindiv").display = "none";
+      HD.getElementById("loggedindiv").display = "block";
+    }
+    if (arg.has("actionLinks")) {
+      HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
+    }
+    if (arg.has("permsString")) {
+      String permsString = arg["permsString"];
+      if (TS.notEmpty(permsString)) {
+        foreach (String perm in permsString.split(",")) {
+          perms.put(perm);
+        }
+      }
+      HD.getElementById("admindiv").display = "none";
+    }
+   }
+   
+   startup() {
+      Map arg = Map.new();
+      arg["action"] = "checkLoggedInRequest";
+      HD.getElementById("accountName").value = "";
+      HD.getElementById("accountPass").value = "";
+      handleCallOut(arg);
    }
    
 }

@@ -5,16 +5,20 @@
 setup dev pi
 deliver
 
-link hubbed
-link, w multiple sources
-service oriented ip alongside imap (in link)
+link hubbed, with background updates, multiple sources
+  js rename
+service oriented ip alongside imap (in hub, link)
 
-hub perm forward port
-hub perm reverse forward port (for noupnp option)
+alternate to upnp for getting into network
+  ?ssh, own?
 
-libs et all
+libs
+
+link android ios background
+
 easy to do devel
   a devel plugin
+et all
 
 call it
 
@@ -28,11 +32,6 @@ devel plugin
 easy setup
   step by step install instructions for noobs
   url for script to do the rest
-
-get link working  
-android
-  save values in db and show on load
-  js poll to update/refresh button - show when doing
  
 activation for cam
 

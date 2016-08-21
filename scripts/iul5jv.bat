@@ -6,7 +6,7 @@ del /s /q ..\apprun\App\IULink
 rmdir /s /q ..\apprun\App\IULink
 mkdir ..\apprun\App\IULink
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IULink\d --buildPath ..\apprun\App\IULink --emitLang jv -mainClass=App:IULink --emitFlag foo source\IULink.be source\BrowserUI.be source\BrowserJvFx.be source\App.be source\Db.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IULink\d --buildPath ..\apprun\App\IULink --emitLang jv -mainClass=IULink:LinkStart --emitFlag foo source\IULink.be source\BrowserUI.be source\BrowserJvFx.be source\App.be source\Db.be source\WebServer.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 

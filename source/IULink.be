@@ -10,7 +10,6 @@ use Math:Int;
 use System:Exception;
 use Container:Array;
 use Container:Map;
-use Container:Map:MapNode as MNode;
 use Container:Set;
 use Container:LinkedList;
 use Container:Queue;
@@ -20,112 +19,263 @@ use System:Random;
 use Text:Strings as TS;
 use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
-
-use System:Thread:ContainerLocker as CLocker;
-use System:Thread:ObjectLocker as OLocker;
-use Db:KeyValue as KvDb;
+use Db:Relational:Database as DbDb;
+use Db:Relational:Statement as DbSt;
+use Db:Derby:Database as Derby;
 use Db:HSQLDb:Database as HsDb;
+use System:Thread:Lock;
+use System:Thread:ContainerLocker as CLocker;
+use System:Command as Com;
+use Time:Sleep;
+
+use Container:Map:MapNode as MNode;
 
 use App:Alert;
 
-use class IULink:IUHandler {
+emit(jv) {
+"""
+//import java.io.*;
+//import java.net.*;
+"""
+}
 
-     new() self {
-       fields {
-          IO:Log log;
-          Int lvl;
-          var app;
-        }
-     }
-   
-     hiRequest(Map arg, request) {
-      log.log(lvl, "In hi");
-      Map res = Map.new();
-      res["action"] = "hiResponse";
-      res["msg"] = "hello2 " + arg["who"];
-      return(res);
+use class IULink:Background {
+
+  new(LinkPlugin _link) self {
+    fields {
+      var app;
+      Int lvl;
+      IO:Log log;
+      LinkPlugin link = _link;
     }
-    
-    showImapRequest(Map arg, request) {
-      Map res = Map.new();
-      res["action"] = "showImapResponse";
-      String user = app.configManager.get("imap.user");
-      if (TS.notEmpty(user)) {
-        res["imapAccount"] = user;
+  }
+  
+  runMyTasks() {
+    fields {
+      Int lastLinkUpdate;
+      Int linkUpdateSeconds =@ 300;
+    }
+    if (def(lastLinkUpdate)) {
+      Int ns = Time:Interval.now().seconds;
+      if (ns - lastLinkUpdate > linkUpdateSeconds) {
+        //do it to it
+        link.updateUrls();
+        lastLinkUpdate = ns;
       }
-      String ep = app.configManager.get("imap.endpoint");
-      if (TS.notEmpty(ep)) {
-        res["imapEndpoint"] = ep;
+    } else {
+      lastLinkUpdate = 0;
+    }
+  }
+  
+  runTasks() {
+    //log.log(lvl, "Running tasks");
+    runMyTasks();
+  }
+  
+  main() {
+    var e;
+    while (true) {
+      try {
+        runTasks();
+      } catch (e) {
+        log.log(lvl, "Caught exception running tasks " + e);
       }
-      return(res);
-   }
-   
-   imapSettingsRequest(Map arg, request) {
-      app.configManager.put("imap.user", arg["imapAccount"]);
-      app.configManager.put("imap.endpoint", arg["imapEndpoint"]);
-      app.configManager.put("imap.pass", arg["imapPass"]);
-      Map res = Map.new();
-      res["action"] = "hideImapResponse";
-      return(res);
-   }
-   
-   urlsRequest(Map arg, request) {
-      Map urls = app.urlsMap;
-      String uh = String.new();
-      foreach (MNode kv in urls) {
-          //uh += "<p>" += kv.value["intLink"] += "</p>";
-          //uh += "<p>" += kv.value["extLink"] += "</p>";
-          
-          String mygw = Net:Gateway.defaultAddress;
-          
-          log.log(lvl, "dev gw is " + kv.value["gw"] + " mygw " + mygw);
-          
-          String extLink = "<p><a href=\"#\" onclick=\"openExtLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the internet or outside the network the device is on</a></p>";
-          
-          String intLink = "<p><a href=\"#\" onclick=\"openIntLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the same network the device is on</a></p>";
-          
-          if (def(mygw) && def(kv.value["gw"]) && mygw == kv.value["gw"]) {
-            uh += intLink;
-          } else {
-            uh += extLink;
-          }
-          
-          String ldiv = "shLinkDiv" + kv.value["deviceId"];
-          uh += "<p><a href=\"#\" onclick=\"showADiv('" += ldiv += "');return false;\">+" += kv.value["deviceName"] += "</a></p>";
-          uh += "<div id=\"" += ldiv += "\" style=\"display: none;\">";
-          uh += "<p><a href=\"#\" onclick=\"hideADiv('" += ldiv += "');return false;\">-" += kv.value["deviceName"] += "</a></p>";
-          uh += extLink;
-          uh += intLink;
-          uh += "</div>";
-      }
-      Map res = Map.new();
-      res["action"] = "urlsResponse";
-      res["urlsHtml"] = uh;
-      return(res);
-   }
-   
-   openLinkRequest(Map arg, request) {
-    log.log(lvl, "Open link request " + arg["deviceId"] + " from " + arg["from"]);
-    Map urlsm = app.urls.o;
-    if (def(urlsm)) {
-      Map md = urlsm.get(arg["deviceId"]);
-      if (def(md)) {
-        if (arg["from"] == "int") {
-          String tourl = md["intUrl"];
-        } else {
-          tourl = md["extUrl"];
-        }
-        log.log(lvl, "opening in browser: " + tourl);
-        UI:ExternalBrowser.openToUrl(tourl);
+      try {          
+        Time:Sleep.sleepMilliseconds(sleepTime);
+      } catch (e) {
+        log.log(lvl, "Caught exception sleeping " + e);
       }
     }
-    return(null);
-   }
+  }
+  
+  startBackground() {
+    fields {
+      System:Thread myThread;
+      Int sleepTime = 60;
+    }
+    String bkdis = app.configManager.get("LINK.bk.disable");
+    if (TS.notEmpty(bkdis) && Bool.new(bkdis)) {
+      return(self);
+    }
+    Int _sleepTime = app.configManager.get("LINK.bk.sleepTime");
+    if (def(_sleepTime) && _sleepTime > 0) {
+      sleepTime = _sleepTime;
+    }
+    myThread = System:Thread.new(self);
+    myThread.start();
+  }
 
 }
 
-use App:EventHandlers as AppEv;
+use App:AuthenticatedLocalApp;
+use App:AuthenticatedWebApp;
+use App:AuthenticatedApp as AuthedApp;
 
+use class IULink:LinkStart {
+
+   new() self {
+      fields {
+          IO:Log log = IO:Log.new();
+          log.level = log.info;
+          Int lvl = log.level;
+        }
+    }
+
+  main() {
+      main(System:Process.new().args);
+    }
+    
+    main(Array args) {
+      outerMain(System:Process.new().args);
+      /*try {
+        app.configManager.close();
+      } catch (var e) {
+        log.log(lvl, "Exception closing db in CmdUI, error is " + e);
+      }*/
+    }
+    
+    outerMain(Array args) {
+      try {
+        innerMain(System:Process.new().args);
+      } catch (var e) {
+        log.log(lvl, "Exception in CmdUI, error is " + e);
+      }
+    }
+    
+    innerMain(Array args) {
+
+      Web:Client:CertificateManager.validateHosts = false;
+
+      if (args.length > 0) {
+        String mode = args[0]; //ui, svc, both, [absent]
+        log.log(lvl, "mode " + mode);
+      } else {
+        log.log(lvl, "mode empty");
+      }
+      if (TS.isEmpty(mode)) {
+        mode = "wui";
+      }
+      if (mode == "lui" || mode == "wui" || mode == "cmd") {
+        log.log(lvl, "making cam");
+        LinkPlugin link = LinkPlugin.new();
+        if (mode == "cmd") {
+          link.runBackground = false;
+        }
+        link.log = log;
+        link.lvl = lvl;
+        log.log(lvl, "adding plugins");
+        Array plugins = Array.new();
+        plugins += link;
+        plugins += App:AuthPlugin.new();
+        plugins += App:ConfigPlugin.new();
+        //plugins += App:FileManagerPlugin.new();
+        if (mode == "lui") {
+          AuthenticatedLocalApp.new(plugins, log, lvl).main();
+        }
+        if (mode == "wui") {
+          AuthenticatedWebApp.new(plugins, log, lvl).main();
+        }        
+        if (mode == "cmd") {
+          cmdMain(args, plugins);
+        }
+      }
+    }
+
+    cmdMain(Array args, plugins) {
+      AuthedApp ui = AuthedApp.new(plugins, log, lvl);
+      
+      if (args.length > 1) {
+        String mode = args[1]; //ui, svc, both, [absent]
+        log.log(lvl, "cmd " + mode);
+      } 
+      if (TS.isEmpty(mode)) {
+        log.log(lvl, "cmd empty");
+      }
+      if (mode == "help") {
+        log.log(lvl, "Help");
+        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+      }
+      if (TS.notEmpty(mode) && mode == "listLogins") {
+        foreach (String login in ui.accountManager.getLogins()) {
+          log.log(lvl, "Account login " + login);
+        }
+      }
+      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
+        String user = args[2];
+        String pass = args[3];
+        log.log(lvl, "Putting Account " + user);
+        Account ac = Account.new();
+        ac.user = user;
+        ac.pass = pass;
+        if (args.length > 4) {
+          ac.permsString = args[4];
+        }
+        ui.accountManager.putAccount(ac);
+      }
+      if (TS.notEmpty(mode) && mode == "getAccount") {
+        user = args[2];
+        log.log(lvl, "Get Account " + user);
+        ac = ui.accountManager.getAccount(user);
+        log.log(lvl, "Account " + ac);
+      }
+      if (TS.notEmpty(mode) && mode == "setPermsString") {
+        user = args[2];
+        String ps = args[3];
+        log.log(lvl, "Set Perms " + user);
+        ac = ui.accountManager.getAccount(user);
+        ac.permsString = ps;
+        ui.accountManager.putAccount(ac);
+        log.log(lvl, "Account " + ac);
+      }
+      if (TS.notEmpty(mode) && mode == "setPass") {
+        user = args[2];
+        pass = args[3];
+        log.log(lvl, "Set Pass " + user);
+        ac = ui.accountManager.getAccount(user);
+        ac.pass = pass;
+        ui.accountManager.putAccount(ac);
+      }
+      if (TS.notEmpty(mode) && mode == "deleteAccount") {
+        user = args[2];
+        log.log(lvl, "Deleting Account " + user);
+        ac = ui.accountManager.getAccount(user);
+        if (def(ac)) {
+          ui.accountManager.deleteAccount(ac);
+          log.log(lvl, "Deleted account " + user);
+        } else {
+          log.log(lvl, "No such account for deletion " + user);
+        }
+      }
+      if (TS.notEmpty(mode) && mode == "updateConfig") {
+        String key = args[2];
+        String value = args[3];
+        log.log(lvl, "Updating config " + key + " " + value);
+        ui.configManager.put(key, value);
+      }
+      if (TS.notEmpty(mode) && mode == "showConfig") {
+        foreach (var kv in ui.configManager.getMap()) {
+          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
+        }
+      }
+      if (TS.notEmpty(mode) && mode == "createConfig") {
+        key = args[2];
+        value = args[3];
+        log.log(lvl, "Creating config " + key + " " + value);
+        ui.configManager.put(key, value);
+      }
+      if (TS.notEmpty(mode) && mode == "deleteConfig") {
+        key = args[2];
+        log.log(lvl, "Deleting config " + key);
+        ui.configManager.delete(key);
+      }
+      ui.configManager.close();
+    }
+
+}
+
+use System:Thread:ObjectLocker as OLocker;
+
+use Crypto:Symmetric as Crypt;
 emit(jv) {
 """
 import java.util.Properties;
@@ -140,125 +290,114 @@ import javax.mail.Address;
 import javax.mail.Flags.Flag;
 """
 }
-use class App:IULink {
-    
-       
-   new() self {
-        fields {
-          WeBr webr;
-          UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
+use class IULink:LinkPlugin {
+
+     new() self {
+       fields {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          IUHandler requestHandler;
-          Background bg = Background.new();
+          var app;
+          String name = "IULink";
+          String homePage = "/App/IULink/IULink.html";
+          Background bg = Background.new(self);
+          Bool runBackground = true;
           OLocker urls = OLocker.new();
         }
-        
-        requestHandler = IUHandler.new();
-        requestHandler.log = log;
-        requestHandler.lvl = lvl;
-        requestHandler.app = self;
-        
-        bg.log = log;
-        bg.lvl = lvl;
-        bg.app = self;
-        bg.startBackground();
-                
-    }
-    
-    main() {
-      AppEv.put("startUi", self);
-      ifNotEmit(platDroid) {
-        startUi();
-      }
-    }
-
-    startUi() {
-      webr = WeBr.new();
-      webr.webHandler = self;
-      webr.height = 450;
-      webr.width = 320;
-      
-      String mypwd = System:Environment.getVariable("MYPWD");
-      ifNotEmit(platDroid) {
-        webr.location = "file:///" + mypwd + "/App/IULink/IULink.html";
-      }
-      ifEmit(platDroid) {
-        webr.location = "file:///android_asset/App/IULink/IULink.html";
-      }
-      
-      webr.setup();
-   }
-
-   initWeb() {
-
-   }
-   
-   pathsGet() App:Paths {
-    fields {
-      App:Paths paths;
-    }
-    if (undef(paths)) {
-      paths = App:Paths.new();
-    }
-    return(paths);
-  }
-
-   handleWeb(request) {
+     }
      
-     Map arg = request.scriptArg;
-     return(handleWeb(request, arg));
-   }
-
-  handleWeb(request, Map arg) {
-        try {
-            String aname = arg.get("action");
-            if (undef(aname) || aname.ends("Request")!) {
-              throw(Exception.new("Invalid request"));
-            }
-            Array args = Array.new(2);
-            args[0] = arg;
-            args[1] = request;
-            if (requestHandler.can(aname, args.length)) {
-              var res = requestHandler.invoke(aname, args);
-            }
-            request.scriptReturn = res;
-        } catch (var e) {
-           arg = Map.new();
-           log.log(lvl, "Caught exception during handleWeb B");
-           if (def(e)) {
-            log.log(lvl, "Error was " + e);
-           }
-            arg["action"] = "failResponse";
-            if (e.sameClass(Alert.new()@)) {
-              arg["reason"] = e.description;
-            } else {
-              arg["reason"] = "Sorry, unable to handle request";
-            }
-            request.scriptReturn = arg;
-        }
+    start() {
+      if (runBackground) {
+      bg.log = log;
+      bg.lvl = lvl;
+      bg.app = app;
+      bg.startBackground();
+      }
     }
     
-   configManagerGet() CLocker {
+    deviceNameGet() String {
     fields {
-      CLocker configManager;
+      String deviceName;
     }
-    if (undef(configManager)) {
-      Path db = self.paths.dataPath.addStep("IULink").addStep("IULinkDbs");
-      KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
-      configManagerKv.createOpen();
-      configManager = CLocker.new(configManagerKv);
+    if (TS.isEmpty(deviceName)) {
+      deviceName = app.configManager.get("deviceName");
+      if (TS.isEmpty(deviceName)) {
+        deviceName = "Device-" + System:Random.getString(4);
+        app.configManager.put("deviceName", deviceName);
+      }
     }
-    return(configManager);
+    return(deviceName);
   }
   
-  fakeUrls() {
+  deviceIdGet() String {
+    fields {
+      String deviceId;
+    }
+    if (TS.isEmpty(deviceId)) {
+      deviceId = app.configManager.get("deviceId");
+      if (TS.isEmpty(deviceId)) {
+        deviceId = System:Random.getString(16);
+        app.configManager.put("deviceId", deviceId);
+      }
+    }
+    return(deviceId);
+  }
+  
+  loggedIn(Account a, Map res, Map arg, request) {
+      res["action"] = "updateResponse";
+      res["justLoggedIn"] = true;
+      res["permsString"] = a.permsString;
+      res["actionLinks"] = getActionLinks(a, arg, request);
+      res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
+      res["deviceName"] = self.deviceName;
+      log.log(lvl, "sending updateResponse from loggedIn");
+      return(res);
+    }
+    
+    assureVers() {
+      fields {
+        Int majorVer = 5@;
+        Int minorVer = 0@;
+      }
+    }
+    
+    majorVerGet() Int {
+      assureVers();
+      return(majorVer);
+    }
+    
+    minorVerGet() Int {
+      assureVers();
+      return(minorVer);
+    
+    }
+    
+    checkPublicReadPath(Path pa, request) Bool {
+      String pas = pa.toString();
+      Path adz = Path.apNew("App/" + self.name).file.absPath;
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js"))) {
+        return(true);
+      }
+      return(false);
+   }
+  
+   getActionLinks(Account a, Map arg, request) String {
+     String actionLinks = String.new();
+     
+     String showCam = app.configManager.get("PLUGIN.hub");
+     if (TS.notEmpty(showCam) && showCam == "enabled") {
+       actionLinks += "<p><a href=\"IUHub.html\">Go to IUHub</a></p>";
+     }
+     return(actionLinks);
+   }
+   
+   fakeUrls() {
     log.log(lvl, "fakeUrls");
     Map furls = Map.new();
     Map furl = Map.new();
     furl.put("deviceId", "did");
     furl.put("deviceName", "dname");
+    furl.put("gw", "10.10.10.10");
     String intUrl = "https://127.0.0.1:5000/App/IUHub/IUHub.html";
     String extUrl = "https://10.10.10.10:5000/App/IUHub/IUHub.html";
     String intLink = "<a href=\"" + intUrl + "\">dname did internal Link, use on same network as the device is on.</a>";
@@ -281,24 +420,24 @@ use class App:IULink {
   }
   
   updateUrls() {
-    if (false) {
+    if (true) {
       fakeUrls();
       return(self);
     }
     log.log(lvl, "updateUrls");
-    String user = self.configManager.get("imap.user");
-    String endpoint = self.configManager.get("imap.endpoint");
-    String pass = self.configManager.get("imap.pass");
+    String user = app.configManager.get("imap.user");
+    String endpoint = app.configManager.get("imap.endpoint");
+    String pass = app.configManager.get("imap.pass");
     Map nurls = Map.new();
     if (TS.notEmpty(user) && TS.notEmpty(endpoint) && TS.notEmpty(pass)) {
       log.log(lvl, "have imap info");
       var e;
       try {
-          String prot = self.configManager.get("imap.protocol");
+          String prot = app.configManager.get("imap.protocol");
           if (TS.isEmpty(prot)) {
             prot = "imaps";
           }
-          String subf = self.configManager.get("imap.subFolder");
+          String subf = app.configManager.get("imap.subFolder");
           if (undef(subf)) {
             subf = "IotUrls";
           } elif (TS.isEmpty(subf)) {
@@ -403,73 +542,98 @@ use class App:IULink {
     }
   }
 
+  hiRequest(Map arg, request) {
+      log.log(lvl, "In hi");
+      Map res = Map.new();
+      res["action"] = "hiResponse";
+      res["msg"] = "hello2 " + arg["who"];
+      return(res);
+    }
+    
+    showImapRequest(Map arg, request) {
+      Map res = Map.new();
+      res["action"] = "showImapResponse";
+      String user = app.configManager.get("imap.user");
+      if (TS.notEmpty(user)) {
+        res["imapAccount"] = user;
+      }
+      String ep = app.configManager.get("imap.endpoint");
+      if (TS.notEmpty(ep)) {
+        res["imapEndpoint"] = ep;
+      }
+      return(res);
+   }
+   
+   imapSettingsRequest(Map arg, request) {
+      app.configManager.put("imap.user", arg["imapAccount"]);
+      app.configManager.put("imap.endpoint", arg["imapEndpoint"]);
+      app.configManager.put("imap.pass", arg["imapPass"]);
+      Map res = Map.new();
+      res["action"] = "hideImapResponse";
+      return(res);
+   }
+   
+   urlsRequest(Map arg, request) {
+      Map urls = self.urlsMap;
+      String uh = String.new();
+      log.log(lvl, "in urlsreq 1");
+      foreach (MNode kv in urls) {
+          log.log(lvl, "in urlsreq 2");
+          //uh += "<p>" += kv.value["intLink"] += "</p>";
+          //uh += "<p>" += kv.value["extLink"] += "</p>";
+          
+          String mygw = Net:Gateway.defaultAddress;
+          log.log(lvl,  " mygw " + mygw);
+          log.log(lvl, "dev gw is " + kv.value["gw"]);
+          
+          String extLink = "<p><a href=\"#\" onclick=\"openExtLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the internet or outside the network the device is on</a></p>";
+          
+          String intLink = "<p><a href=\"#\" onclick=\"openIntLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the same network the device is on</a></p>";
+          
+          if (def(mygw) && def(kv.value["gw"]) && mygw == kv.value["gw"]) {
+            uh += intLink;
+          } else {
+            uh += extLink;
+          }
+          
+          log.log(lvl, "in urlsreq 3");
+          
+          String ldiv = "shLinkDiv" + kv.value["deviceId"];
+          uh += "<p><a href=\"#\" onclick=\"showADiv('" += ldiv += "');return false;\">+" += kv.value["deviceName"] += "</a></p>";
+          uh += "<div id=\"" += ldiv += "\" style=\"display: none;\">";
+          uh += "<p><a href=\"#\" onclick=\"hideADiv('" += ldiv += "');return false;\">-" += kv.value["deviceName"] += "</a></p>";
+          uh += extLink;
+          uh += intLink;
+          uh += "</div>";
+      }
+      Map res = Map.new();
+      res["action"] = "urlsResponse";
+      res["urlsHtml"] = uh;
+      return(res);
+   }
+   
+   openLinkRequest(Map arg, request) {
+    log.log(lvl, "Open link request " + arg["deviceId"] + " from " + arg["from"]);
+    Map urlsm = app.urls.o;
+    if (def(urlsm)) {
+      Map md = urlsm.get(arg["deviceId"]);
+      if (def(md)) {
+        if (arg["from"] == "int") {
+          String tourl = md["intUrl"];
+        } else {
+          tourl = md["extUrl"];
+        }
+        log.log(lvl, "opening in browser: " + tourl);
+        UI:ExternalBrowser.openToUrl(tourl);
+      }
+    }
+    return(null);
+   }
+
 }
 
-use class IUHub:Background {
+use App:Account;
+use App:AccountManager;
+   
+use Db:KeyValue as KvDb;
 
-  new() self {
-    fields {
-      var app;
-      Int lvl;
-      IO:Log log;
-    }
-  }
-  
-  runMainTasks() {
-    log.log(lvl, "Run main tasks");
-    try {
-      app.updateUrls();
-    } catch (var e) { }
-  }
-  
-  schedRunMainTasks() {
-    fields {
-      Int lastMainPoll;
-      Int mainPollSeconds =@ 300;
-    }
-    Int ns = Time:Interval.now().seconds;
-    /*if (undef(lastMainPoll)) { log.log(lvl, "lmp null"); } else {
-      log.log(lvl, "lmp " + lastMainPoll);
-      }*/
-    if (undef(lastMainPoll) || (ns - lastMainPoll > mainPollSeconds)) {
-      lastMainPoll = ns;
-      //log.log(lvl, "updated lmp " + lastMainPoll + " " + ns);
-      try {
-        runMainTasks();
-      } catch (var e) {
-        log.log(lvl, "except in runMainTasks" + e);
-      }
-    }
-  }
-  
-  main() {
-    var e;
-    while (true) {
-      try {
-        schedRunMainTasks();
-      } catch (e) {
-        log.log(lvl, "Caught exception running tasks " + e);
-      }
-      try {          
-        Time:Sleep.sleepMilliseconds(sleepTime);
-      } catch (e) {
-        log.log(lvl, "Caught exception sleeping " + e);
-      }
-    }
-  }
-  
-  startBackground() {
-    //log.log(lvl, "start background");
-    fields {
-      System:Thread myThread;
-      Int sleepTime = 1000;
-    }
-    String bkdis = app.configManager.get("bk.disable");
-    if (TS.notEmpty(bkdis) && Bool.new(bkdis)) {
-      return(self);
-    }
-    myThread = System:Thread.new(self);
-    myThread.start();
-  }
-
-}
