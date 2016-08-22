@@ -73,7 +73,8 @@ use class IUCam:MotionUpdate {
     if (TS.notEmpty(cps)) {
       Int dz = Int.new(cps);
       if (dz > 0) {
-        String cmd = "App/IUCam/camclean.sh " + cps;
+        String cmd = app.paths.appPath.copy().addStep("camclean.sh").toString();
+        cmd += " " + cps;
         log.log(lvl, "running clean cmd " + cmd);
         Com.run(cmd);
       }
@@ -105,10 +106,10 @@ use class IUCam:MotionUpdate {
       Path p = Path.apNew(cp);
       String mcn = p.steps.last;
       log.log(lvl, "mocam name " + mcn);
-      Path confp = Path.apNew("Data/IUCam/WebCamConfig/MOCAM-" + mcn + ".conf");
+      Path confp = Path.apNew(app.paths.dataPath.toString() + "/WebCamConfig/MOCAM-" + mcn + ".conf");
       if (confp.file.exists!) {
         log.log(lvl, "no conf, creating " + confp);
-        Path.apNew("App/IUCam/MOCAM.conf").file.copyFile(confp.file);
+        Path.apNew(app.paths.appPath.toString() + "/MOCAM.conf").file.copyFile(confp.file);
         IO:File:Writer cw = confp.file.writer.openAppend();
         cw.write("videodevice " + cp + "\n");
         cw.write("target_dir Shared/WebCam\n");
@@ -121,7 +122,8 @@ use class IUCam:MotionUpdate {
         //cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M\n");
       }
       //start it in background
-      String toRun = "App/IUCam/motionrun.sh " + confp;
+      String toRun = app.paths.appPath.copy().addStep("motionrun.sh").toString();
+      toRun += " " + confp;
       log.log(lvl, "motion torun " + toRun);
       if (runit) {
         Com.run(toRun);
@@ -549,9 +551,9 @@ use class IUCam:CamPlugin {
       File picFile = pp.copy().addStep(picName).file;
       picFile.delete();
       if (System:CurrentPlatform.name == "mswin") {
-        String piccmd = "App\\IUCam\\uppic.bat";
+        String piccmd = app.paths.appPath.copy().addStep("uppic.bat").toStringWithSeparator("\\");
       } else {
-        piccmd = "App/IUCam/uppic.sh";
+        piccmd = app.paths.appPath.copy().addStep("uppic.sh").toStringWithSeparator("/");
       }
       log.log(lvl, "pic path " + picFile.path);
       //curl http://127.0.0.1:10994/0/action/snapshot
@@ -592,10 +594,16 @@ use class IUCam:CamPlugin {
    }
    
    updateCams() {
+      Path appP = app.paths.appPath;
+      log.log(lvl, "app path " + appP);
       if (System:CurrentPlatform.name == "mswin") {
-        String gccmd = "App\\IUCam\\getcams.bat";
+        //String gccmd = "App\\IUCam\\getcams.bat";
+        appP = appP.copy().addStep("getcams.bat");
+        String gccmd = appP.toStringWithSeparator("\\");
       } else {
-        gccmd = "App/IUCam/getcams.sh";
+        //gccmd = "App/IUCam/getcams.sh";
+        appP = appP.copy().addStep("getcams.sh");
+        gccmd = appP.toStringWithSeparator("/");
       }
       String res = System:Command.new(gccmd).open().output.readStringClose();
       log.log(lvl, "res from cmd " + res);

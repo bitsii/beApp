@@ -29,13 +29,31 @@ use class App:Alert(Exception) { }
 
 use class App:Paths {
 
+  new(_app) self {
+    fields {
+      var app = _app;
+      String name = app.plugin.name;
+    }
+  }
+
   dataPathGet() Path {
     ifEmit(platDroid) {
       var app = createInstance("UI:JvAd:WebBrowser");
-      dbp = Path.apNew(app.appDataDir).addStep("BeData");
+      dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(name);
     }
     ifNotEmit(platDroid) {
-      Path dbp = Path.apNew("Data");
+      Path dbp = Path.apNew("Data").addStep(name);
+    }
+    return(dbp);
+  }
+  
+  appPathGet() Path {
+    ifEmit(platDroid) {
+      var app = createInstance("UI:JvAd:WebBrowser");
+      dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(name);
+    }
+    ifNotEmit(platDroid) {
+      Path dbp = Path.apNew("App").addStep(name);
     }
     return(dbp);
   }
@@ -896,7 +914,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     """
     }
     //Path cerPath = Path.apNew("Data/IUHub/cert");
-    Path cerPath = self.paths.dataPath.addStep(self.plugin.name).addStep("cert");
+    Path cerPath = self.paths.dataPath.addStep("cert");
     String cerPathS = cerPath.toString();
     log.log(lvl, "cerPath " + cerPathS);
     if (cerPath.file.exists) {
@@ -1235,7 +1253,7 @@ class AuthedApp {
       App:Paths paths;
     }
     if (undef(paths)) {
-      paths = App:Paths.new();
+      paths = App:Paths.new(self);
     }
     return(paths);
   }
@@ -1245,7 +1263,7 @@ class AuthedApp {
       CLocker configManager;
     }
     if (undef(configManager)) {
-      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("CONFDB");
+      Path db = self.paths.dataPath.addStep("CONFDB");
       //KvDb configManagerKv = KvDb.new(Derby.pathNew(db), "CONFIG");
       KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
       configManagerKv.createOpen();
@@ -1267,7 +1285,7 @@ class AuthedApp {
       }
     }
     if (undef(sessionDb)) {
-      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("SESSDB");
+      Path db = self.paths.dataPath.addStep("SESSDB");
       //KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
       KvDb sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
       sessionDbKv.createOpen();
@@ -1316,7 +1334,7 @@ class AuthedApp {
       CLocker trackingManager;
     }
     if (undef(trackingManager)) {
-      Path db = self.paths.dataPath.addStep(self.plugin.name).addStep("TMDB");
+      Path db = self.paths.dataPath.addStep("TMDB");
       KvDb trackingManagerKv = KvDb.new(HsDb.pathNew(db), "TRACKING");
       trackingManagerKv.createOpen();
       trackingManager = CLocker.new(trackingManagerKv);
