@@ -800,7 +800,7 @@ use class IUHub:UpnpUpdate {
 
       if (update) {
         log.log(lvl, "Updating imap");
-        String deviceId = app.configManager.get("deviceId");
+        String deviceId = self.app.plugin.deviceId;
         String intUrl = "https://" += intAddress += ":" += intPort += "/App/IUHub/IUHub.html";
         String extUrl = "https://" += extAddress += ":" += extPort += "/App/IUHub/IUHub.html";
         String intLink = "<a href=\"" + intUrl + "\">" + deviceName + " " + deviceId + " internal Link, use on same network as the device is on.</a>";

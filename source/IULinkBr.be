@@ -71,7 +71,7 @@ use class App:IULinkBr {
     }
     
     main() {
-      urlsRequest();
+      //urlsRequest();
     }
     
     handleCallOut(Map arg) {
@@ -209,6 +209,7 @@ use class App:IULinkBr {
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
+      urlsResponse(arg);
     }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
@@ -220,8 +221,12 @@ use class App:IULinkBr {
           perms.put(perm);
         }
       }
-      HD.getElementById("admindiv").display = "none";
+      //HD.getElementById("admindiv").display = "none";
     }
+   }
+   
+   logoutResponse(Map arg) {
+     HD.reload();
    }
    
    startup() {

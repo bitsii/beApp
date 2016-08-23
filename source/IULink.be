@@ -344,6 +344,8 @@ use class IULink:LinkPlugin {
   }
   
   loggedIn(Account a, Map res, Map arg, request) {
+      Map ures = urlsRequest(arg, request);
+      res["urlsHtml"] = ures["urlsHtml"];
       res["action"] = "updateResponse";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
@@ -614,7 +616,7 @@ use class IULink:LinkPlugin {
    
    openLinkRequest(Map arg, request) {
     log.log(lvl, "Open link request " + arg["deviceId"] + " from " + arg["from"]);
-    Map urlsm = app.urls.o;
+    Map urlsm = self.urlsMap;
     if (def(urlsm)) {
       Map md = urlsm.get(arg["deviceId"]);
       if (def(md)) {
