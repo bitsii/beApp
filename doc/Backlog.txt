@@ -2,19 +2,6 @@
 =====
 =====
 
-test and reverify upgrade for hub et all
-easy install
-
-video and sound
-
-auto backup / one way sync of crypted pics to S3
-
-out there
-
-link hubbed
-  js rename
-
-service oriented ip alongside imap (in hub, link)
 alternate to upnp for getting into network
   ?ssh, own?
 
