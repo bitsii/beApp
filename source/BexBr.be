@@ -28,14 +28,14 @@ emit(js) {
 var eui;
 //ui startup
 var startup = function() {
-  eui = new be_BEL_4_Base_BEC_3_5_AppBexBr();
+  eui = new be_BEL_4_Base_$class/App:BexBr$();
   eui.bem_new_0();
   eui.bem_main_0();
 }
 
 var handleCallback = function(res) {
     if (res != null) {
-      var bevs_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
+      var bevs_resjs = new be_BEL_4_Base_$class/Text:String$().bems_new(res);
       eui.bem_handleCallback_1(bevs_resjs);
     }
 }

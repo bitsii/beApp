@@ -36,7 +36,7 @@ class FxBr(WebImp) {
     """
     
     public Stage stage;
-    public static BEC_2_4_10_UIJvFxWebBrowser sinst;
+    public static $class/UI:JvFx:WebBrowser$ sinst;
     
     public static class BECS_FxWebBrowser extends Application {
     
@@ -45,7 +45,7 @@ class FxBr(WebImp) {
         
           try {
             //handler setup happens here
-            sinst = BEC_2_4_10_UIJvFxWebBrowser.bevs_inst;
+            sinst = $class/UI:JvFx:WebBrowser$.bevs_inst;
             sinst.bem_initWeb_0();
             sinst.stage = stage;
         
@@ -59,11 +59,11 @@ class FxBr(WebImp) {
             final WebView browser = new WebView();
             final WebEngine webEngine = browser.getEngine();
       
-            BEC_4_6_TextString cont = sinst.bem_contentGet_0();
+            $class/Text:String$ cont = sinst.bem_contentGet_0();
             if (cont != null) {
               webEngine.loadContent(cont.bems_toJvString());
             } else {
-              BEC_4_6_TextString loc = sinst.bem_locationGet_0();
+              $class/Text:String$ loc = sinst.bem_locationGet_0();
               if (loc != null) {
                 webEngine.load(loc.bems_toJvString());
               }
@@ -104,8 +104,8 @@ class FxBr(WebImp) {
         } else {
           //System.out.println("HANDLE CALL GOT " + obj);
           String objstr = obj.toString();
-          BEC_4_6_TextString objbes = new BEC_4_6_TextString(objstr);
-          BEC_4_6_TextString resbes = sinst.bem_handleWeb_1(objbes);
+          $class/Text:String$ objbes = new $class/Text:String$(objstr);
+          $class/Text:String$ resbes = sinst.bem_handleWeb_1(objbes);
           if (resbes != null) {
             return resbes.bems_toJvString();
           }

@@ -39,7 +39,7 @@ use class Web:Server {
   public volatile Mono.Net.HttpListener bevi_listener = new Mono.Net.HttpListener();
   public void bems_handleWeb(object o)  {
     Mono.Net.HttpListenerContext context = o as Mono.Net.HttpListenerContext;
-    BEC_3_13_WebScriptRequest request = new BEC_3_13_WebScriptRequest(context);
+    $class/Web:ScriptRequest$ request = new $class/Web:ScriptRequest$(context);
     request.bem_new_0();
     bem_handleWeb_1(request);
   }
@@ -58,7 +58,7 @@ use class Web:Server {
         throws IOException, ServletException
     {
       try {
-          BEC_3_13_WebScriptRequest wr = new BEC_3_13_WebScriptRequest(request, response);
+          $class/Web:ScriptRequest$ wr = new $class/Web:ScriptRequest$(request, response);
           wr.bem_new_0();
           bem_handleWeb_1(wr);
        } catch (Throwable t) { 
@@ -230,7 +230,7 @@ use class Web:ScriptRequest {
   public Mono.Net.HttpListenerRequest bevi_req;
   public Mono.Net.HttpListenerResponse bevi_res;
   
-  public BEC_3_13_WebScriptRequest(Mono.Net.HttpListenerContext bevi_context) {
+  public $class/Web:ScriptRequest$(Mono.Net.HttpListenerContext bevi_context) {
       this.bevi_context = bevi_context;
       this.bevi_req = bevi_context.Request;
       this.bevi_res = bevi_context.Response;
@@ -244,7 +244,7 @@ use class Web:ScriptRequest {
     public javax.servlet.http.HttpServletRequest bevi_req;
     public javax.servlet.http.HttpServletResponse bevi_res;
     
-    public BEC_3_13_WebScriptRequest(javax.servlet.http.HttpServletRequest bevi_req, javax.servlet.http.HttpServletResponse bevi_res) {
+    public $class/Web:ScriptRequest$(javax.servlet.http.HttpServletRequest bevi_req, javax.servlet.http.HttpServletResponse bevi_res) {
         this.bevi_req = bevi_req;
         this.bevi_res = bevi_res;
         try {
@@ -261,7 +261,7 @@ use class Web:ScriptRequest {
      """
      string url = bevi_req.RawUrl;
      if (url != null) {
-       bevl_uri = new BEC_4_6_TextString(url);
+       bevl_uri = new $class/Text:String$(url);
      }
      """
      }
@@ -269,7 +269,7 @@ use class Web:ScriptRequest {
      """
      String url = bevi_req.getRequestURI();
      if (url != null) {
-       bevl_uri = new BEC_4_6_TextString(url);
+       bevl_uri = new $class/Text:String$(url);
      }
      """
      }
@@ -282,7 +282,7 @@ use class Web:ScriptRequest {
      """
      String val = bevi_req.getMethod();
      if (val != null) {
-       bevl_val = new BEC_4_6_TextString(val);
+       bevl_val = new $class/Text:String$(val);
      }
      """
      }
@@ -315,14 +315,14 @@ use class Web:ScriptRequest {
      """
      if (bevi_req != null) {
        string emaddr = bevi_req.LocalEndPoint.Address.ToString();
-       bevl_res = new BEC_4_6_TextString(emaddr);
+       bevl_res = new $class/Text:String$(emaddr);
      }
      """
      }
      emit(jv) {
      """
      if (bevi_req != null) {
-      bevl_res = new BEC_4_6_TextString(bevi_req.getLocalAddr());
+      bevl_res = new $class/Text:String$(bevi_req.getLocalAddr());
      }
      """
      }
@@ -336,7 +336,7 @@ use class Web:ScriptRequest {
      """
      if (bevi_req != null) {
        string emaddr = bevi_req.RemoteEndPoint.Address.ToString();
-       bevl_res = new BEC_4_6_TextString(emaddr);
+       bevl_res = new $class/Text:String$(emaddr);
      }
      """
      }
@@ -344,7 +344,7 @@ use class Web:ScriptRequest {
      """
      if (bevi_req != null) {
        String emaddr = bevi_req.getRemoteAddr();
-       bevl_res = new BEC_4_6_TextString(emaddr);
+       bevl_res = new $class/Text:String$(emaddr);
      }
      """
      }
@@ -383,7 +383,7 @@ use class Web:ScriptRequest {
      string csname = beva_name.bems_toCsString();
      foreach (Cookie cook in bevi_req.Cookies) {
        if (cook.Name == csname) {
-         return(new BEC_4_6_TextString(cook.Value));
+         return(new $class/Text:String$(cook.Value));
        }
      }
      """
@@ -398,7 +398,7 @@ use class Web:ScriptRequest {
           {
             Cookie cookie = cookies[i];
             if (jvname.equals(cookie.getName())) {
-              return(new BEC_4_6_TextString(cookie.getValue()));
+              return(new $class/Text:String$(cookie.getValue()));
             }
           }
       }
@@ -413,7 +413,7 @@ use class Web:ScriptRequest {
      """
      String[] vals = bevi_req.Headers.GetValues(beva_name.bems_toCsString());
      if (vals != null && vals.Length > 0) {
-        bevl_val = new BEC_4_6_TextString(vals[0]);
+        bevl_val = new $class/Text:String$(vals[0]);
      }
      """
      }
@@ -421,7 +421,7 @@ use class Web:ScriptRequest {
      """
      String emval = bevi_req.getHeader(beva_name.bems_toJvString());
      if (emval != null) {
-       bevl_val = new BEC_4_6_TextString(emval);
+       bevl_val = new $class/Text:String$(emval);
      }
      """
      }
@@ -476,7 +476,7 @@ use class Web:ScriptRequest {
        """
        String[] vals = bevi_req.QueryString.GetValues(beva_name.bems_toCsString());
        if (vals != null && vals.Length > 0) {
-          bevl_value = new BEC_4_6_TextString(vals[0]);
+          bevl_value = new $class/Text:String$(vals[0]);
        }
        """
        }
@@ -484,7 +484,7 @@ use class Web:ScriptRequest {
        """
        Object val = bevi_req.getParameter(beva_name.bems_toJvString());
        if (val != null) {
-          bevl_value = new BEC_4_6_TextString(val.toString());
+          bevl_value = new $class/Text:String$(val.toString());
        }
        """
        }

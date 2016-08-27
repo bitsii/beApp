@@ -496,7 +496,7 @@ use class IULink:LinkPlugin {
                         String mc = con.toString();
                         if (mc != null) {
                           //System.out.println("mc " + mc);
-                          bevl_contents.bem_addValue_1(new BEC_4_6_TextString(mc));
+                          bevl_contents.bem_addValue_1(new $class/Text:String$(mc));
                         }
                       }
                     }

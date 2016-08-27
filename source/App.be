@@ -276,7 +276,7 @@ class AppEv {
     try {
         
     bevs_inst.bem_handleEvent_1(
-    new BEC_4_6_TextString(event)
+    new $class/Text:String$(event)
     );
     } catch (Throwable t) {
         System.err.println("failed in handleEvent " + t.getMessage());
@@ -355,7 +355,7 @@ class Crypt {
     RijndaelManaged rijndael = new RijndaelManaged();
     ICryptoTransform enc = rijndael.CreateEncryptor(key, iv);
     byte[] res = enc.TransformFinalBlock(val, 0, val.Length);
-    bevl_res = new BEC_4_6_TextString(res);
+    bevl_res = new $class/Text:String$(res);
     """
     }
     emit(jv) {
@@ -368,7 +368,7 @@ class Crypt {
     IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
     aesCipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec);
     byte[] res = aesCipher.doFinal(val);
-    bevl_res = new BEC_4_6_TextString(res);
+    bevl_res = new $class/Text:String$(res);
     """
     }
     return(res);
@@ -396,7 +396,7 @@ class Crypt {
     RijndaelManaged rijndael = new RijndaelManaged();
     ICryptoTransform enc = rijndael.CreateDecryptor(key, iv);
     byte[] res = enc.TransformFinalBlock(val, 0, val.Length);
-    bevl_res = new BEC_4_6_TextString(res);
+    bevl_res = new $class/Text:String$(res);
     """
     }
     emit(jv) {
@@ -409,7 +409,7 @@ class Crypt {
     IvParameterSpec ivParameterSpec = new IvParameterSpec(iv);
     aesCipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec);
     byte[] res = aesCipher.doFinal(val);
-    bevl_res = new BEC_4_6_TextString(res);
+    bevl_res = new $class/Text:String$(res);
     """
     }
     return(res);
@@ -778,7 +778,7 @@ use class App:ConfigPlugin {
          foreach (var kv in ecm) {
            unless(kv.value.has("\"")) {
               String ckey = "configKey" + kv.key;
-              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"eui.bem_deleteConfig_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
+              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"eui.bem_deleteConfig_1(new be_BEL_4_Base_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
             }
          }
       }
@@ -962,8 +962,8 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     }
     emit(jv) {
     """
-    bevp_certificateThumbprint = new BEC_4_6_TextString(
-                 BEC_3_6_18_WebClientCertificateManager.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
+    bevp_certificateThumbprint = new $class/Text:String$(
+                 $class/Web:Client:CertificateManager$.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
               );
     """
     }

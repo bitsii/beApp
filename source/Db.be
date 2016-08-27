@@ -354,12 +354,12 @@ public ResultSet bevi_res = null;
       String res;
       emit(cs) {
       """
-      bevl_res = new BEC_4_6_TextString(bevi_reader[beva_col.bevi_int].ToString());
+      bevl_res = new $class/Text:String$(bevi_reader[beva_col.bevi_int].ToString());
       """
       }
       emit(jv) {
       """
-      bevl_res = new BEC_4_6_TextString(bevi_res.getString(beva_col.bevi_int + 1));
+      bevl_res = new $class/Text:String$(bevi_res.getString(beva_col.bevi_int + 1));
       """
       }
       return(res);
@@ -369,12 +369,12 @@ public ResultSet bevi_res = null;
       Int res;
       emit(cs) {
       """
-      bevl_res = new BEC_4_3_MathInt((int)bevi_reader[beva_col.bevi_int]);
+      bevl_res = new $class/Math:Int$((int)bevi_reader[beva_col.bevi_int]);
       """
       }
       emit(jv) {
       """
-      bevl_res = new BEC_4_3_MathInt(bevi_res.getInt(beva_col.bevi_int + 1));
+      bevl_res = new $class/Math:Int$(bevi_res.getInt(beva_col.bevi_int + 1));
       """
       }
       return(res);

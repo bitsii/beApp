@@ -666,7 +666,7 @@ use class IUCam:CamPlugin {
             clabel = Path.apNew(c).steps.last;
             app.configManager.put("cam." + c + ".label", clabel);
           }
-          actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_updateImage_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
+          actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_updateImage_1(new be_BEL_4_Base_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
         }
      }
      String showCam = app.configManager.get("PLUGIN.hub");

@@ -2,24 +2,29 @@
 =====
 =====
 
-deliver
+test and reverify upgrade for hub et all
+easy install
 
-link hubbed, with background updates, multiple sources
+video and sound
+
+auto backup / one way sync of crypted pics to S3
+
+out there
+
+link hubbed
   js rename
-service oriented ip alongside imap (in hub, link)
 
+service oriented ip alongside imap (in hub, link)
 alternate to upnp for getting into network
   ?ssh, own?
 
 libs
 
-link android ios background
+link android ios background, get pics (notification?)
 
 easy to do devel
   a devel plugin
 et all
-
-call it
 
 have an auto-login option for stand alone link
 

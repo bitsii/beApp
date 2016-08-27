@@ -31,7 +31,7 @@ import android.net.Uri;
 /*
 Example of android app component, just extend the activity below
 
-public class MainActivity extends be.BEL_4_Base.BEC_2_4_10_UIJvAdWebBrowser.MainActivity {
+public class MainActivity extends be.BEL_4_Base.$class/UI:JvAd:WebBrowser$.MainActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +69,8 @@ public static class MainActivity extends AppCompatActivity {
         //so things stay in the webview
         mWebView.setWebViewClient(new WebViewClient());
         mainActivity = this;
-        BEC_3_11_AppRunMainOnce.runMainOnce();
-        BEC_3_13_AppEventHandlers.handleEvent("startUi");
+        $class/App:RunMainOnce$.runMainOnce();
+        $class/App:EventHandlers$.handleEvent("startUi");
         mWebView.addJavascriptInterface(new WebAppInterface(), "Android");
         //mWebView.loadUrl("https://some.place");
     }
@@ -93,9 +93,9 @@ public static class MainActivity extends AppCompatActivity {
           if (objstr == null) {
             System.err.println("got a null obj in HandleCall");
           } else {
-            BEC_4_6_TextString objbes = new BEC_4_6_TextString(objstr);
-            BEC_2_4_10_UIJvAdWebBrowser sinst = BEC_2_4_10_UIJvAdWebBrowser.bevs_inst;
-            BEC_4_6_TextString resbes = sinst.bem_handleWeb_1(objbes);
+            $class/Text:String$ objbes = new $class/Text:String$(objstr);
+            $class/UI:JvAd:WebBrowser$ sinst = $class/UI:JvAd:WebBrowser$.bevs_inst;
+            $class/Text:String$ resbes = sinst.bem_handleWeb_1(objbes);
             if (resbes != null) {
               return resbes.bems_toJvString();
             }
@@ -179,7 +179,7 @@ public static class MainActivity extends AppCompatActivity {
   emit(jv) {
   """
   String ddir = MainActivity.mainActivity.getApplicationContext().getApplicationInfo().dataDir;
-  bevl_toRet = new BEC_4_6_TextString(ddir);
+  bevl_toRet = new $class/Text:String$(ddir);
   """
   }
   }

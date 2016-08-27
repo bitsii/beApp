@@ -127,26 +127,26 @@ use class Net:Interface {
         if (count != 3) {
           continue;
         }
-         bevl_address = new BEC_4_6_TextString(address);
+         bevl_address = new $class/Text:String$(address);
       } else {
         continue;
       }
       if (description != null) {
-         bevl_description = new BEC_4_6_TextString(description);
+         bevl_description = new $class/Text:String$(description);
       } else {
         bevl_description = null;
       }
       if (name != null) {
-         bevl_name = new BEC_4_6_TextString(name);
+         bevl_name = new $class/Text:String$(name);
       } else {
         bevl_name = null;
       }
       if (macAddress != null) {
-         bevl_macAddress = new BEC_4_6_TextString(macAddress);
+         bevl_macAddress = new $class/Text:String$(macAddress);
       } else {
         bevl_macAddress = null;
       }
-      bevl_status = new BEC_4_6_TextString(status);
+      bevl_status = new $class/Text:String$(status);
       """
       }
       ifEmit(jv) {
@@ -202,27 +202,27 @@ use class Net:Interface {
               if (unicastIp.Address.AddressFamily.ToString().Equals("InterNetwork")) {
                     address = unicastIp.Address.ToString();
                     if (description != null) {
-                      bevl_description = new BEC_4_6_TextString(description);
+                      bevl_description = new $class/Text:String$(description);
                     } else {
                       bevl_description = null;
                     }
                     if (macAddress != null) {
-                      bevl_macAddress = new BEC_4_6_TextString(macAddress);
+                      bevl_macAddress = new $class/Text:String$(macAddress);
                     } else {
                       bevl_macAddress = null;
                     }
                     if (name != null) {
-                      bevl_name = new BEC_4_6_TextString(name);
+                      bevl_name = new $class/Text:String$(name);
                     } else {
                       bevl_name = null;
                     }
                     if (status != null) {
-                      bevl_status = new BEC_4_6_TextString(status);
+                      bevl_status = new $class/Text:String$(status);
                     } else {
                       bevl_status = null;
                     }
                     if (address != null) {
-                      bevl_address = new BEC_4_6_TextString(address);
+                      bevl_address = new $class/Text:String$(address);
                     } else {
                       bevl_address = null;
                     }
@@ -431,7 +431,7 @@ class Upnp {
       }
       length = s.Receive(buffer);
       string got = Encoding.ASCII.GetString(buffer, 0, length);
-      bevl_received = new BEC_4_6_TextString(got);
+      bevl_received = new $class/Text:String$(got);
       """
       }
       emit(jv) {
@@ -442,7 +442,7 @@ class Upnp {
       DatagramPacket rpacket = new DatagramPacket(buffer, buffer.length);
       s.receive(rpacket);
       String got = new String(rpacket.getData(), 0, rpacket.getLength(), "UTF-8");
-      bevl_received = new BEC_4_6_TextString(got);
+      bevl_received = new $class/Text:String$(got);
       """
       }
       } catch (e) {
@@ -1499,7 +1499,7 @@ use class IUHub:HubPlugin {
      foreach (var kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
-      actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_runCommand_1(new be_BEL_4_Base_BEC_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
+      actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_runCommand_1(new be_BEL_4_Base_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
      }
      String showCam = app.configManager.get("PLUGIN.cam");
      if (TS.notEmpty(showCam) && showCam == "enabled") {

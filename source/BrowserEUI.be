@@ -61,7 +61,7 @@ class HE {
     String res;
     emit(js) {
     """
-    bevl_res = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(this.bevi_element.value);
+    bevl_res = new be_BEL_4_Base_$class/Text:String$().bems_new(this.bevi_element.value);
     """
     }
     return(res);
@@ -79,7 +79,7 @@ class HE {
     Bool res;
     emit(js) {
     """
-    bevl_res = new be_BEL_4_Base_BEC_5_4_LogicBool();
+    bevl_res = new be_BEL_4_Base_$class/Logic:Bool$();
     bevl_res.bevi_bool = this.bevi_element.checked;
     """
     }
@@ -98,7 +98,7 @@ class HE {
     String res;
     emit(js) {
     """
-    bevl_res = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(this.bevi_element.innerHTML);
+    bevl_res = new be_BEL_4_Base_$class/Text:String$().bems_new(this.bevi_element.innerHTML);
     """
     }
     return(res);
@@ -116,7 +116,7 @@ class HE {
     String res;
     emit(js) {
     """
-    bevl_res = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(this.bevi_element.style.display);
+    bevl_res = new be_BEL_4_Base_$class/Text:String$().bems_new(this.bevi_element.style.display);
     """
     }
     return(res);
@@ -144,13 +144,13 @@ class HC {
       var res = window.external.HandleCall(bevl_argjs.bems_toJsString());
       //document.getElementById("infotxt").value = res;
       if (res !== null && typeof(res) !== 'undefined') {
-        bevl_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
+        bevl_resjs = new be_BEL_4_Base_$class/Text:String$().bems_new(res);
         //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
       }
     } else if (typeof(Android) !== 'undefined') {
       var res = Android.HandleCall(bevl_argjs.bems_toJsString());
       if (res !== null) {
-        bevl_resjs = new be_BEL_4_Base_BEC_4_6_TextString().bems_new(res);
+        bevl_resjs = new be_BEL_4_Base_$class/Text:String$().bems_new(res);
         //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
       }
     } else {

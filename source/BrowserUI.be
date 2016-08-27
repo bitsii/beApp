@@ -161,17 +161,17 @@ class CM {
         SslPolicyErrors sslPolicyErrors)  {
     
     //Console.WriteLine((new X509Certificate2(cert)).Thumbprint);
-    BEC_3_6_18_WebClientCertificateManager cm = BEC_3_6_18_WebClientCertificateManager.bevs_inst;
+    $class/Web:Client:CertificateManager$ cm = $class/Web:Client:CertificateManager$.bevs_inst;
     //if thumbprint in accepted set, ret true
     if (cm.bevp_acceptedThumbprints.bem_has_1(
-      new BEC_4_6_TextString((new X509Certificate2(cert)).Thumbprint)).bevi_bool) {
+      new $class/Text:String$((new X509Certificate2(cert)).Thumbprint)).bevi_bool) {
       return true;  
     } else if (cm.bevp_onlyAcceptedThumbprints.bevi_bool) {
       return false;
     }
     //if validating certs and there's an error, return false
     if (
-      BEC_3_6_18_WebClientCertificateManager.bevs_inst.bevp_validateCertificates.bevi_bool
+      $class/Web:Client:CertificateManager$.bevs_inst.bevp_validateCertificates.bevi_bool
       && sslPolicyErrors != System.Net.Security.SslPolicyErrors.None) {
       return false;
     }
@@ -193,13 +193,13 @@ class CM {
                bevi_defaultTm.checkClientTrusted(certs, org);
              }
              public void checkServerTrusted(X509Certificate[ ] certs, String org) throws CertificateException { 
-               BEC_3_6_18_WebClientCertificateManager cm = BEC_3_6_18_WebClientCertificateManager.bevs_inst;
+               $class/Web:Client:CertificateManager$ cm = $class/Web:Client:CertificateManager$.bevs_inst;
                 if (certs != null && certs.length > 0) {
                 try {
                 for (int i = 0;i < certs.length;i++) {
                 //if thumbprint in accepted set, ret true
                 if (cm.bevp_acceptedThumbprints.bem_has_1(
-                  new BEC_4_6_TextString((bems_getThumbprint(certs[i])))).bevi_bool) {
+                  new $class/Text:String$((bems_getThumbprint(certs[i])))).bevi_bool) {
                   return;  
                 }
                 }
@@ -209,7 +209,7 @@ class CM {
                   throw new CertificateException("Not in accepted thumbprints");
                 }
                 if (
-      BEC_3_6_18_WebClientCertificateManager.bevs_inst.bevp_validateCertificates.bevi_bool) {
+      $class/Web:Client:CertificateManager$.bevs_inst.bevp_validateCertificates.bevi_bool) {
                 bevi_defaultTm.checkServerTrusted(certs, org);
                 }
              }
@@ -343,7 +343,7 @@ use class Web:Client {
         URL obj = new URL(bevp_url.bems_toJvString());
 		    bevi_conn = (HttpURLConnection) obj.openConnection();
 		    if (bevl_ssl != null &&
-      !BEC_3_6_18_WebClientCertificateManager.bevs_inst.bevp_validateHosts.bevi_bool) {
+      !$class/Web:Client:CertificateManager$.bevs_inst.bevp_validateHosts.bevi_bool) {
           HttpsURLConnection c = (HttpsURLConnection) bevi_conn;
            c.setHostnameVerifier(new HostnameVerifier() {
                 public boolean verify(String host, SSLSession sess) {
@@ -393,7 +393,7 @@ use class Web:Client {
         if (bevl_ssl != null) {
           X509Certificate cert = bevi_request.ServicePoint.Certificate;
           if (cert != null) {
-            bevp_certificateThumbprint = new BEC_4_6_TextString((new X509Certificate2(cert)).Thumbprint);
+            bevp_certificateThumbprint = new $class/Text:String$((new X509Certificate2(cert)).Thumbprint);
           }
         }
         """
@@ -411,8 +411,8 @@ use class Web:Client {
           if (certs != null && certs.length > 0) {
             Certificate cert = certs[0];
             if (cert instanceof X509Certificate) {
-              bevp_certificateThumbprint = new BEC_4_6_TextString(
-                 BEC_3_6_18_WebClientCertificateManager.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
+              bevp_certificateThumbprint = new $class/Text:String$(
+                 $class/Web:Client:CertificateManager$.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
               );
             }
           }
@@ -442,8 +442,8 @@ use class Web:Client {
         for(int i=0; i < bevi_response.Headers.Count; ++i) {
           if (bevi_response.Headers.Keys[i] != null &&
             bevi_response.Headers[i] != null) {
-              bevl_ihkey = new BEC_4_6_TextString(bevi_response.Headers.Keys[i]);
-              bevl_ihval = new BEC_4_6_TextString(bevi_response.Headers[i]);
+              bevl_ihkey = new $class/Text:String$(bevi_response.Headers.Keys[i]);
+              bevl_ihval = new $class/Text:String$(bevi_response.Headers[i]);
               bevp_inputHeaders.bem_put_2(bevl_ihkey, bevl_ihval);
             }
         }
@@ -451,7 +451,7 @@ use class Web:Client {
         if (bevl_ssl != null) {
           X509Certificate cert = bevi_request.ServicePoint.Certificate;
           if (cert != null) {
-            bevp_certificateThumbprint = new BEC_4_6_TextString((new X509Certificate2(cert)).Thumbprint);
+            bevp_certificateThumbprint = new $class/Text:String$((new X509Certificate2(cert)).Thumbprint);
           }
         }
         """
@@ -463,8 +463,8 @@ use class Web:Client {
         for (Map.Entry<String, List<String>> hentry : hdrs.entrySet()) {
           if (hentry.getKey() != null && hentry.getValue() != null &&
             hentry.getValue().size() > 0) {
-            bevl_ihkey = new BEC_4_6_TextString(hentry.getKey());
-              bevl_ihval = new BEC_4_6_TextString(hentry.getValue().get(0));
+            bevl_ihkey = new $class/Text:String$(hentry.getKey());
+              bevl_ihval = new $class/Text:String$(hentry.getValue().get(0));
               bevp_inputHeaders.bem_put_2(bevl_ihkey, bevl_ihval);
           }
         }
@@ -474,8 +474,8 @@ use class Web:Client {
           if (certs != null && certs.length > 0) {
             Certificate cert = certs[0];
             if (cert instanceof X509Certificate) {
-              bevp_certificateThumbprint = new BEC_4_6_TextString(
-                 BEC_3_6_18_WebClientCertificateManager.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
+              bevp_certificateThumbprint = new $class/Text:String$(
+                 $class/Web:Client:CertificateManager$.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
               );
             }
           }
@@ -676,7 +676,7 @@ use class UI:ExternalBrowser {
     ifEmit(platDroid) {
     emit(jv) {
    """
-be.BEL_4_Base.BEC_2_4_10_UIJvAdWebBrowser.MainActivity.openExternalBrowserToUrl(beva_url.bems_toJvString());
+be.BEL_4_Base.$class/UI:JvAd:WebBrowser$.MainActivity.openExternalBrowserToUrl(beva_url.bems_toJvString());
     """
     }
     }

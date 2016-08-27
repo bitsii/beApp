@@ -52,7 +52,7 @@ class WfBr(WebImp) {
     public WebBrowser bevi_webBrowser;
     
     public string HandleCall(string call) {
-      BEC_4_6_TextString ret = bem_handleWeb_1(new BEC_4_6_TextString(call));
+      $class/Text:String$ ret = bem_handleWeb_1(new $class/Text:String$(call));
       if (ret != null) {
         return ret.bems_toCsString();
       }
