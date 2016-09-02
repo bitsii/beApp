@@ -382,8 +382,12 @@ use class IUCam:Eui {
    }
    
    browseWebCam() {
-     HD.getElementById("browseFilesDiv").display = "block";
-     localBrowseRequest(Encode:Hex.encode("./Shared/WebCam"));
+     if (HD.getElementById("browseFilesDiv").display == "block") {
+      closeFileBrowser();
+     } else {
+      HD.getElementById("browseFilesDiv").display = "block";
+      localBrowseRequest(Encode:Hex.encode("./Shared/WebCam"));
+     }
    }
    
    closeFileBrowser() {
