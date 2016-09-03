@@ -415,10 +415,10 @@ use class IUCam:CamPlugin {
      }
      
     start() {
-      if (runBackground) {
       bg.log = log;
       bg.lvl = lvl;
       bg.app = app;
+      if (runBackground) {
       bg.startBackground();
       }
     }

@@ -978,7 +978,7 @@ use class IUHub:Background {
     }
   }
   
-  startBackground() {
+  init() self {
     fields {
       System:Thread myThread;
       Int sleepTime = 500;
@@ -999,6 +999,10 @@ use class IUHub:Background {
     uu.lvl = lvl;
     uu.log = log;
     uu.init();
+  }
+  
+  startBackground() self {
+    init();
     myThread = System:Thread.new(self);
     myThread.start();
   }
@@ -1171,6 +1175,13 @@ use class IUHub:HubStart {
         log.log(lvl, "Deleting config " + key);
         ui.configManager.delete(key);
       }
+      if (TS.notEmpty(mode) && mode == "saveIntUrl") {
+        log.log(lvl, "saveIntUrl");
+        ui.plugin.bg.init().uu.doUpdate();
+        log.log(lvl, "int url is " + ui.plugin.links.o.get("intUrl"));
+        File.apNew(args[2]).writer.open().write(ui.plugin.links.o.get("intUrl")).close();
+        File.apNew(args[3]).writer.open().write("#!/bin/bash\nxdg-open " + ui.plugin.links.o.get("intUrl") + "\n").close();
+      }
       ui.configManager.close();
     }
 
@@ -1209,10 +1220,10 @@ use class IUHub:HubPlugin {
      }
      
      start() {
-      if (runBackground) {
       bg.log = log;
       bg.lvl = lvl;
       bg.app = app;
+      if (runBackground) {
       bg.startBackground();
       }
     }

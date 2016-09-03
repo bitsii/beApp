@@ -20,22 +20,28 @@ unzip -o ../../../IUBHub.zip
 chmod +x *.sh
 
 cd
+mkdir tmp
 
-echo "net.ipv6.conf.all.disable_ipv6 = 1" > /tmp/scadd
-echo "net.ipv6.conf.default.disable_ipv6 = 1" >> /tmp/scadd
-echo "net.ipv6.conf.lo.disable_ipv6 = 1" >> /tmp/scadd
-sudo -- sh -c 'cat /tmp/scadd >> /etc/sysctl.conf'
+echo "net.ipv6.conf.all.disable_ipv6 = 1" > tmp/scadd
+echo "net.ipv6.conf.default.disable_ipv6 = 1" >> tmp/scadd
+echo "net.ipv6.conf.lo.disable_ipv6 = 1" >> tmp/scadd
+sudo -- sh -c 'cat tmp/scadd >> /etc/sysctl.conf'
 
-echo "su pi -c \"/home/pi/apprun/App/IUHub/startiuh.sh\"" > /tmp/stadd
-echo "exit 0" >> /tmp/stadd
-sudo -- sh -c 'cat /tmp/stadd > /etc/rc.local'
+echo "su pi -c \"/home/pi/apprun/App/IUHub/startiuh.sh\"" > tmp/stadd
+echo "exit 0" >> tmp/stadd
+sudo -- sh -c 'cat tmp/stadd > /etc/rc.local'
 
 ./apprun/App/IUHub/createAdminAccount.sh
 
-#provide url (cmd)
+./admin/App/IUHub/iuhcmd.sh cmd saveIntUrl shu.txt opu.sh
 
 ./apprun/App/IUHub/startiuh.sh
 
-#launch browser for url (xdg-open)
+echo -n "To get started, you can open the following url on a browser from a device on the same network as this server and login with the account you just created - "
+cat ./apprun/shu.txt
+echo
+echo "Note, the certificate is self signed and you will need to accept it permanently once on each device you use to connect to this server.  If you are asked to accept it in the same browser after adding permanently be careful, it may indicate a security issue.  If in doubt verify the certificate thumbprint for the site in your browser against the one in email before entering your username and password"
+echo "Now opening a browser on this box to the url above, to continue, login with the account you just created"
 
-#have help in app
+chmod +x ./apprun/opu.sh
+./apprun/opu.sh
