@@ -49,7 +49,7 @@ copy /y scripts\iuhcmdrs.sh ..\apprun\App\IUHub
 copy /y scripts\iuhcmd.sh ..\apprun\App\IUHub
 copy /y source\IUHub*.html ..\apprun\App\IUHub
 copy /y source\Version.txt ..\apprun\App\IUHub
-copy /y extlibs\IUHub\* ..\apprun\App\IUHub
+REM copy /y extlibs\IUHub\* ..\apprun\App\IUHub
 
 REM cam
 copy /y ..\apprun\App\IUCam\Base\target\js\be\BEL_4_Base\BEL_4_Base.js ..\apprun\App\IUHub\IUCam_BEL_4_Base.js
@@ -66,7 +66,7 @@ copy /y scripts\camclean.sh ..\apprun\App\IUHub
 copy /y source\IUCam*.html ..\apprun\App\IUHub
 copy /y source\Version.txt ..\apprun\App\IUHub
 copy /y source\MOCAM.conf ..\apprun\App\IUHub
-copy /y extlibs\IUCam\* ..\apprun\App\IUHub
+REM copy /y extlibs\IUCam\* ..\apprun\App\IUHub
 
 del /s /q ..\apprun\App\IUHub\Base
 rmdir /s /q ..\apprun\App\IUHub\Base

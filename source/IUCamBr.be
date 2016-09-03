@@ -215,6 +215,13 @@ use class IUCam:Eui {
       handleCallOut(arg);
    }
    
+   toggleMotion(String cam) {
+      Map arg = Map.new();
+      arg["action"] = "toggleMotionRequest";
+      arg["cam"] = cam;
+      handleCallOut(arg);
+   }
+   
    showConfig() {
       if (TS.notEmpty(HD.getElementById("configsDiv").innerHTML)) {
         hideConfig();

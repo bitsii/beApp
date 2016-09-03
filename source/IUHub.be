@@ -1250,27 +1250,16 @@ use class IUHub:HubPlugin {
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
-      res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
+      res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       return(res);
     }
     
-    assureVers() {
+    versionGet() String {
       fields {
-        Int majorVer = 5@;
-        Int minorVer = 0@;
+        String version =@ "5.3.0";
       }
-    }
-    
-    majorVerGet() Int {
-      assureVers();
-      return(majorVer);
-    }
-    
-    minorVerGet() Int {
-      assureVers();
-      return(minorVer);
-    
+      return(version);
     }
     
   updateNetAddresses() {

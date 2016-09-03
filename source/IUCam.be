@@ -456,27 +456,16 @@ use class IUCam:CamPlugin {
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
-      res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
+      res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       return(res);
     }
     
-    assureVers() {
+    versionGet() String {
       fields {
-        Int majorVer = 5@;
-        Int minorVer = 0@;
+        String version =@ "5.3.0";
       }
-    }
-    
-    majorVerGet() Int {
-      assureVers();
-      return(majorVer);
-    }
-    
-    minorVerGet() Int {
-      assureVers();
-      return(minorVer);
-    
+      return(version);
     }
     
     checkPublicReadPath(Path pa, request) Bool {
@@ -487,8 +476,26 @@ use class IUCam:CamPlugin {
       }
       return(false);
    }
-  
-     
+   
+    toggleMotionRequest(Map arg, request) {
+      Account a = app.accountManager.getAccountForRequest(request);
+      if (app.requestFromAdmin(request)) {
+        String cam = arg["cam"];
+        String mcp = app.configManager.get("cam." + cam + ".motion");
+        if (TS.notEmpty(mcp) && Bool.new(mcp)) {
+          app.configManager.put("cam." + cam + ".motion", "false");
+        } else {
+          app.configManager.put("cam." + cam + ".motion", "true")
+        }
+        Map res = Map.new();
+        res["action"] = "updateResponse";
+        res["actionLinks"] = getActionLinks(a, arg, request);
+        bg.mu.doUpdate();
+        return(res);
+      }
+      return(null);
+    }
+    
      updateImageRequest(Map arg, request) {
       //Path pp = app.getHomeDir(request).addStep("WebCam");
       Path pp = Path.apNew("Shared/WebCam");
@@ -657,7 +664,9 @@ use class IUCam:CamPlugin {
    }
    
    getActionLinks(Account a, Map arg, request) String {
+     Bool showMotion = app.requestFromAdmin(request);
      String actionLinks = String.new();
+     String moLinks = String.new();
      Set ecm = getCams();
      foreach (String c in ecm) {
        if (camOkForAccount(c, a)) {
@@ -667,9 +676,21 @@ use class IUCam:CamPlugin {
             app.configManager.put("cam." + c + ".label", clabel);
           }
           actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_updateImage_1(new be_BEL_4_Base_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
+          if (showMotion) {
+            String mcp = app.configManager.get("cam." + c + ".motion");
+            if (TS.notEmpty(mcp) && Bool.new(mcp)) {
+             String endis = "Disable";
+            } else {
+              endis = "Enable";
+            }
+            moLinks += "<p><a href=\"#\" onclick=\"eui.bem_toggleMotion_1(new be_BEL_4_Base_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">" += endis += " motion for " + clabel + "</a></p>";
+          }
         }
      }
      String showCam = app.configManager.get("PLUGIN.hub");
+     if (showMotion) {
+      actionLinks += moLinks;
+     }
      if (TS.notEmpty(showCam) && showCam == "enabled") {
        actionLinks += "<p><a href=\"IUHub.html\">Go to IUHub</a></p>";
      }

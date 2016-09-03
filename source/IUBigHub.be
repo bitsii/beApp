@@ -232,7 +232,7 @@ use class IUHub:BigHubPlugin(HubPlugin) {
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
-      res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
+      res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       return(res);
     }
