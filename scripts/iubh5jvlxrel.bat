@@ -44,6 +44,7 @@ copy /y scripts\upgrade.sh ..\apprun\App\IUHub
 copy /y scripts\upgrade2.sh ..\apprun\App\IUHub
 copy /y scripts\postupgrade.sh ..\apprun\App\IUHub
 copy /y scripts\startiuh.sh ..\apprun\App\IUHub
+copy /y scripts\createAdminAccount.sh ..\apprun\App\IUHub
 copy /y scripts\iuhrun.sh ..\apprun\App\IUHub
 copy /y scripts\iuhcmdrs.sh ..\apprun\App\IUHub
 copy /y scripts\iuhcmd.sh ..\apprun\App\IUHub

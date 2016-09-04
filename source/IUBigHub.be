@@ -220,7 +220,7 @@ use class IUHub:BigHubStart {
         ui.plugin.bg.init().uu.doUpdate();
         log.log(lvl, "int url is " + ui.plugin.links.o.get("intUrl"));
         File.apNew(args[2]).writer.open().write(ui.plugin.links.o.get("intUrl")).close();
-        File.apNew(args[3]).writer.open().write("#!/bin/bash\nxdg-open " + ui.plugin.links.o.get("intUrl") + "\n").close();
+        File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.links.o.get("intUrl") + "\n").close();
       }
       ui.configManager.close();
     }
