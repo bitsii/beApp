@@ -149,7 +149,7 @@ class HC {
       }
     } else if (typeof(Android) !== 'undefined') {
       var res = Android.HandleCall(bevl_argjs.bems_toJsString());
-      if (res !== null) {
+      if (res !== null  && typeof(res) !== 'undefined') {
         bevl_resjs = new be_BEL_4_Base_$class/Text:String$().bems_new(res);
         //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
       }

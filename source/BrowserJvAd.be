@@ -53,6 +53,8 @@ public static class MainActivity extends AppCompatActivity {
     
     public WebView mWebView;
     
+    public String initialUrl;
+    
     public static void openExternalBrowserToUrl(String toUrl) {
     
       Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(toUrl));
@@ -64,15 +66,16 @@ public static class MainActivity extends AppCompatActivity {
     }
 
     protected void postCreate() {
-        WebSettings webSettings = mWebView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        //so things stay in the webview
-        mWebView.setWebViewClient(new WebViewClient());
         mainActivity = this;
         $class/App:RunMainOnce$.runMainOnce();
         $class/App:EventHandlers$.handleEvent("startUi");
+        //so things stay in the webview
+        mWebView.setWebViewClient(new WebViewClient());
         mWebView.addJavascriptInterface(new WebAppInterface(), "Android");
+        WebSettings webSettings = mWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
         //mWebView.loadUrl("https://some.place");
+        mWebView.loadUrl(initialUrl);
     }
 
     @Override
@@ -134,7 +137,8 @@ public static class MainActivity extends AppCompatActivity {
    String loc = setupHandler.location;
    emit(jv) {
    """
-   MainActivity.mainActivity.mWebView.loadUrl(bevl_loc.bems_toJvString());
+   //MainActivity.mainActivity.mWebView.loadUrl(bevl_loc.bems_toJvString());
+   MainActivity.mainActivity.initialUrl = bevl_loc.bems_toJvString();
    """
    }
      
@@ -169,7 +173,9 @@ public static class MainActivity extends AppCompatActivity {
     r.scriptArgJson = arg;
     webHandler.handleWeb(r);
     String ret = r.scriptReturnJson;
-    log.log(lvl, "in handleWeb, ret " + ret);
+    if (def(ret)) {
+      log.log(lvl, "in handleWeb, ret " + ret);
+    }
     return(ret);
   }
   

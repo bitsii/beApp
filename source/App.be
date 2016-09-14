@@ -829,7 +829,6 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
       webr.width = 320;
       
       String mypwd = System:Environment.getVariable("MYPWD");
-      //broken on android
       ifEmit(platDroid) {
         mypwd = "android_asset";
       }
