@@ -24,6 +24,11 @@ emit(jv) {
 import java.sql.*;
 """
 }
+emit(cs) {
+"""
+using System.Data.Common;
+"""
+}
 use Db:Relational:Database as DbDb;
 class Db:Relational:Database {
 

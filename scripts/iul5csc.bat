@@ -7,7 +7,7 @@ del /s /q ..\apprun\App\IULink
 rmdir /s /q ..\apprun\App\IULink
 mkdir ..\apprun\App\IULink
 
-..\be\target5\BEL_4_Base_csc.exe --buildFile build\shared.txt --deployPath ..\apprun\App\IULink\d --buildPath ..\apprun\App\IULink --emitLang cs -mainClass=App:IULink --emitFlag foo source\IULink.be source\BrowserUI.be source\BrowserCsWf.be source\App.be
+..\be\target5\BEL_4_Base_csc.exe --buildFile build\shared.txt --deployPath ..\apprun\App\IULink\d --buildPath ..\apprun\App\IULink --emitLang cs -mainClass=App:IULink --emitFlag foo source\IULink.be source\BrowserUI.be source\BrowserCsWf.be source\App.be source\Db.be 
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
