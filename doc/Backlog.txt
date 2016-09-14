@@ -1,7 +1,7 @@
 
 =====
 =====
-
+  
 alternate to upnp for getting into network
   ?ssh, own?
 

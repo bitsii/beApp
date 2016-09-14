@@ -22,7 +22,6 @@ use Test:Assertions as Assert;
 use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
 use Db:Derby:Database as Derby;
-use Db:HSQLDb:Database as HsDb;
 use System:Thread:Lock;
 use System:Thread:ContainerLocker as CLocker;
 use System:Command as Com;
@@ -108,7 +107,6 @@ use class IULink:Background {
 }
 
 use App:AuthenticatedLocalApp;
-use App:AuthenticatedWebApp;
 use App:AuthenticatedApp as AuthedApp;
 
 use class IULink:LinkStart {
@@ -153,9 +151,9 @@ use class IULink:LinkStart {
         log.log(lvl, "mode empty");
       }
       if (TS.isEmpty(mode)) {
-        mode = "wui";
+        mode = "lui";
       }
-      if (mode == "lui" || mode == "wui" || mode == "cmd") {
+      if (mode == "lui" || mode == "cmd") {
         log.log(lvl, "making cam");
         LinkPlugin link = LinkPlugin.new();
         if (mode == "cmd") {
@@ -171,10 +169,7 @@ use class IULink:LinkStart {
         //plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
           AuthenticatedLocalApp.new(plugins, log, lvl).main();
-        }
-        if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins, log, lvl).main();
-        }        
+        }      
         if (mode == "cmd") {
           cmdMain(args, plugins);
         }
