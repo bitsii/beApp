@@ -4,18 +4,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-use Text:String;
-use Logic:Bool;
-use Math:Int;
-use System:Exception;
-use Container:Array;
-use Container:Map;
-use Container:Set;
-use Container:LinkedList;
-use Container:Queue;
 use IO:File:Path;
 use IO:File;
-use Text:Strings as TS;
 use Test:Assertions as Assert;
 use System:Thread:Lock;
 

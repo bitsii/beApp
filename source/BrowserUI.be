@@ -6,14 +6,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use Text:String;
-use Text:Strings as TS;
-use Logic:Bool;
-use Math:Int;
-use Container:Array;
-use Container:Map;
-use Container:Set;
-
 emit(cs) {
     """
 //for mono ws, prefix Http* with Mono.Net for mono ver, drop (or System.Net) for ms builtin

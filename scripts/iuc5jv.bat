@@ -6,7 +6,7 @@ del /s /q ..\apprun\App\IUCam
 rmdir /s /q ..\apprun\App\IUCam
 mkdir ..\apprun\App\IUCam
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\shared.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang jv -mainClass=IUCam:CamStart source\IUCam.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base ../be/source/base/Uses.be --buildFile build\shared.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang jv -mainClass=IUCam:CamStart source\IUCam.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
@@ -14,7 +14,7 @@ javac -classpath extlibs\IUCam\* ..\be\system\jv\be\BELS_Base\*.java ..\apprun\A
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build\base.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang js --ownProcess false -mainClass=IUCam:Eui source\IUCamBr.be source\BrowserEUI.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang js --ownProcess false -mainClass=IUCam:Eui source\IUCamBr.be source\BrowserEUI.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
