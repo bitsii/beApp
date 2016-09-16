@@ -169,7 +169,7 @@ public Connection bevi_trans = null;
     return(st);
   }
   
-  getStatement(String _stmt, Array vals) DbSt {
+  getStatement(String _stmt, List vals) DbSt {
     DbSt st = DbSt.new(_stmt, self, vals);
     emit(jv) {
     """
@@ -184,7 +184,7 @@ public Connection bevi_trans = null;
     return(fbstmt.execute());
   }
   
-  execute(String stmt, Array vals) DbSt {
+  execute(String stmt, List vals) DbSt {
     DbSt fbstmt = getStatement(stmt, vals);
     return(fbstmt.execute(vals));
   }
@@ -194,7 +194,7 @@ public Connection bevi_trans = null;
     return(fbstmt.executeQuery());
   }
   
-  executeQuery(String stmt, Array vals) DbSt {
+  executeQuery(String stmt, List vals) DbSt {
     DbSt fbstmt = getStatement(stmt, vals);
     return(fbstmt.executeQuery(vals));
   }
@@ -226,10 +226,10 @@ public ResultSet bevi_res = null;
       }
    }
    
-   new(String _stmt, DbDb _db, Array _vals) self {
+   new(String _stmt, DbDb _db, List _vals) self {
      new(_stmt, _db);
      fields {
-      Array vals = _vals;
+      List vals = _vals;
      }
    }
         
@@ -246,7 +246,7 @@ public ResultSet bevi_res = null;
      }
    }
    
-   execute(Array vals) self {
+   execute(List vals) self {
      emit(jv) {
      """
      PreparedStatement bevi_pstmt = (PreparedStatement) bevi_stmt;
@@ -269,7 +269,7 @@ public ResultSet bevi_res = null;
      }
    }
    
-   executeQuery(Array vals) self {
+   executeQuery(List vals) self {
      emit(jv) {
      """
      PreparedStatement bevi_pstmt = (PreparedStatement) bevi_stmt;
@@ -520,14 +520,14 @@ use class Db:Relational:Test(Assert) {
     }
     db.commit();
     
-    Array vals2 = Array.new(2);
+    List vals2 = List.new(2);
     vals2[0] = "yo";
     vals2[1] = "adrian";
     db.begin();
     db.execute("insert into TESTTAB(P, K) values (?, ?)", vals2);
     db.commit();
     
-    Array vals1 = Array.new(1);
+    List vals1 = List.new(1);
     vals1[0] = "yo";
     db.begin();
     foreach (re in db.executeQuery("select * from TESTTAB where P=?", vals1)) {
@@ -607,7 +607,7 @@ class KvDb {
   getMap() Map {
     try {
       Map res = Map.new();
-      Array qa = Array.new(0);
+      List qa = List.new(0);
       db.begin();
       foreach (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName, qa)) {
         String name = ares.getString(0);
@@ -627,7 +627,7 @@ class KvDb {
   getMap(String prefix) Map {
     try {
       Map res = Map.new();
-      Array qa = Array.new(1);
+      List qa = List.new(1);
       qa.put(0, prefix + "%");
       db.begin();
       foreach (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName + " WHERE NAME LIKE ?", qa)) {
@@ -647,7 +647,7 @@ class KvDb {
 
   get(String name) String {
     try {
-      Array qa = Array.new(1);
+      List qa = List.new(1);
       qa[0] = name;
       db.begin();
       foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
@@ -665,7 +665,7 @@ class KvDb {
   
   insert(String name, String value) {
     try {
-      Array qa = Array.new(2).put(0, name).put(1, value);
+      List qa = List.new(2).put(0, name).put(1, value);
       db.begin();
       db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
       db.commit();
@@ -678,7 +678,7 @@ class KvDb {
   
   update(String name, String value) {
     try {
-      Array qa = Array.new(2).put(0, value).put(1, name);
+      List qa = List.new(2).put(0, value).put(1, name);
       db.begin();
       db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
       db.commit();
@@ -691,7 +691,7 @@ class KvDb {
   
   put(String name, String value) {
     try {
-      Array qa = Array.new(1);
+      List qa = List.new(1);
       qa[0] = name;
       db.begin();
       Bool exists = false;
@@ -699,10 +699,10 @@ class KvDb {
         exists = true;
       }
       if (exists) {
-        qa = Array.new(2).put(0, value).put(1, name);
+        qa = List.new(2).put(0, value).put(1, name);
         db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
       } else {
-        qa = Array.new(2).put(0, name).put(1, value);
+        qa = List.new(2).put(0, name).put(1, value);
         db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
       }
       db.commit();
@@ -717,10 +717,10 @@ class KvDb {
     Bool result = false;
     try {
       db.begin();
-      Array qa = Array.new(3).put(0, value).put(1, name).put(2, oldValue);
+      List qa = List.new(3).put(0, value).put(1, name).put(2, oldValue);
       db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=? AND VALUE=?", qa);
       //db.commit();
-      Array qc = Array.new(1).put(0, name);
+      List qc = List.new(1).put(0, name);
       foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qc)) {
         String currValue = ares.getString(0);
         if (currValue == value) {
@@ -739,7 +739,7 @@ class KvDb {
   
   delete(String name) {
     try {
-      Array qa = Array.new(1).put(0, name);
+      List qa = List.new(1).put(0, name);
       db.begin();
       db.execute("DELETE FROM " + tableName + " WHERE NAME=?", qa);
       db.commit();

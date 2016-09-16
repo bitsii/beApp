@@ -112,8 +112,8 @@ use class App:AccountManager {
     prefix = _prefix;
   }
   
-  getLogins() Array {
-    Array logins = Array.new();
+  getLogins() List {
+    List logins = List.new();
     foreach (var kv in kvDb.getMap(prefix)) {
       logins.addValue(kv.key.substring(prefix.size));
     }
@@ -293,7 +293,7 @@ class AppEv {
   handleEvent(String event) {
     var rc = registry.get(event);
     if (def(rc)) {
-      Array args = Array.new(0);
+      List args = List.new(0);
       rc.invoke(event, args);
     }
   }
@@ -474,7 +474,7 @@ use class App:AuthPlugin {
         throw(Alert.new("Must be administrator"));
       }
       String accountLinks = String.new();
-      Array logins = app.accountManager.getLogins();
+      List logins = app.accountManager.getLogins();
       foreach (String login in logins) {
         accountLinks += "<p><a href=\"#\" onclick=\"loadAccountRequest('" += login += "');return false;\">Modify " += login += "</a></p>";
       }
@@ -700,7 +700,7 @@ use class App:FileManagerPlugin {
         if (dirFile.isDir) {
           var dit = dirFile.iterator;
           dit.open();
-          Array olist = Array.new();
+          List olist = List.new();
           Map omap = Map.new();
           while (dit.hasNext) {
             File entry = dit.next;
@@ -844,7 +844,7 @@ class AuthedApp {
 
   new(_plugins, _log, _lvl) self {
       fields {
-        Array plugins = _plugins;
+        List plugins = _plugins;
         var plugin = plugins.first;
         IO:Log log = _log;
         Int lvl = _lvl;
@@ -1137,7 +1137,7 @@ class AuthedApp {
               }
             }
             log.log(lvl, "here");
-            Array args = Array.new(2);
+            List args = List.new(2);
             args[0] = arg;
             args[1] = request;
             foreach (var pl in plugins) {

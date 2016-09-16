@@ -114,7 +114,7 @@ use class IULink:LinkStart {
       main(System:Process.new().args);
     }
     
-    main(Array args) {
+    main(List args) {
       outerMain(System:Process.new().args);
       /*try {
         app.configManager.close();
@@ -123,7 +123,7 @@ use class IULink:LinkStart {
       }*/
     }
     
-    outerMain(Array args) {
+    outerMain(List args) {
       try {
         innerMain(System:Process.new().args);
       } catch (var e) {
@@ -131,7 +131,7 @@ use class IULink:LinkStart {
       }
     }
     
-    innerMain(Array args) {
+    innerMain(List args) {
 
       Web:Client:CertificateManager.validateHosts = false;
 
@@ -153,7 +153,7 @@ use class IULink:LinkStart {
         link.log = log;
         link.lvl = lvl;
         log.log(lvl, "adding plugins");
-        Array plugins = Array.new();
+        List plugins = List.new();
         plugins += link;
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
@@ -167,7 +167,7 @@ use class IULink:LinkStart {
       }
     }
 
-    cmdMain(Array args, plugins) {
+    cmdMain(List args, plugins) {
       AuthedApp ui = AuthedApp.new(plugins, log, lvl);
       
       if (args.length > 1) {
@@ -434,9 +434,9 @@ use class IULink:LinkPlugin {
           Json:Unmarshaller unmar = Json:Unmarshaller.new();
           //msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
           String subjPref = "DeviceLinks ";
-          //Array froms = Array.new();
-          Array contents = Array.new();
-          Array devices = Array.new();
+          //List froms = List.new();
+          List contents = List.new();
+          List devices = List.new();
           emit(jv) {
           """
           Properties props = new Properties();

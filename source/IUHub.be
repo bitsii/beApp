@@ -63,8 +63,8 @@ use class Net:Interface {
    return(res);
  }
  
- localInterfacesGet() Array {
-   Array res;
+ localInterfacesGet() List {
+   List res;
    ifEmit(cs) {
      res = localInterfacesGetCs();
    }
@@ -74,9 +74,9 @@ use class Net:Interface {
    return(res);
  }
  
- localInterfacesGetJv() Array {
+ localInterfacesGetJv() List {
    
-    Array interfaces = Array.new();
+    List interfaces = List.new();
     
     String description;
     String macAddress;
@@ -151,9 +151,9 @@ use class Net:Interface {
       return(interfaces);
     }
  
- localInterfacesGetCs() Array {
+ localInterfacesGetCs() List {
    
-    Array interfaces = Array.new();
+    List interfaces = List.new();
     
     String description;
     String macAddress;
@@ -248,8 +248,8 @@ use class Net:Interface {
       return(s);
     }
     
-    upInterfacesGet() Array {
-      Array ups = Array.new();
+    upInterfacesGet() List {
+      List ups = List.new();
       foreach (Interface i in self.localInterfaces) {
         if (TS.notEmpty(i.status) && i.status == "Up" && TS.notEmpty(i.address)) {
           ups += i;
@@ -277,11 +277,11 @@ use class Net:Interface {
       return(bestMatch);
     }
     
-    sortedUpInterfacesGet() Array {
-      Array ups = self.upInterfaces;
-      Array sups = Array.new();
+    sortedUpInterfacesGet() List {
+      List ups = self.upInterfaces;
+      List sups = List.new();
       Map adif = Map.new();
-      Array ads = Array.new();
+      List ads = List.new();
       foreach (Interface i in ups) {
         adif.put(i.address, i);
         ads += i.address;
@@ -1012,7 +1012,7 @@ use class IUHub:HubStart {
       main(System:Process.new().args);
     }
     
-    main(Array args) {
+    main(List args) {
       outerMain(System:Process.new().args);
       /*try {
         app.configManager.close();
@@ -1021,7 +1021,7 @@ use class IUHub:HubStart {
       }*/
     }
     
-    outerMain(Array args) {
+    outerMain(List args) {
       try {
         innerMain(System:Process.new().args);
       } catch (var e) {
@@ -1029,7 +1029,7 @@ use class IUHub:HubStart {
       }
     }
     
-    innerMain(Array args) {
+    innerMain(List args) {
 
       Web:Client:CertificateManager.validateHosts = false;
 
@@ -1051,7 +1051,7 @@ use class IUHub:HubStart {
         hub.log = log;
         hub.lvl = lvl;
         log.log(lvl, "adding plugins");
-        Array plugins = Array.new();
+        List plugins = List.new();
         plugins += hub;
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
@@ -1071,7 +1071,7 @@ use class IUHub:HubStart {
       }
     }
 
-    cmdMain(Array args, plugins) {
+    cmdMain(List args, plugins) {
       AuthedApp ui = AuthedApp.new(plugins, log, lvl);
       
       if (args.length > 1) {

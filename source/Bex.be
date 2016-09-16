@@ -104,7 +104,7 @@ use class App:BrowserExample {
             if (undef(aname) || aname.ends("Request")!) {
               throw(Exception.new("Invalid request"));
             }
-            Array args = Array.new(2);
+            List args = List.new(2);
             args[0] = arg;
             args[1] = request;
             if (requestHandler.can(aname, args.length)) {

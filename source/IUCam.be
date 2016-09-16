@@ -230,7 +230,7 @@ use class IUCam:CamStart {
       main(System:Process.new().args);
     }
     
-    main(Array args) {
+    main(List args) {
       outerMain(System:Process.new().args);
       /*try {
         app.configManager.close();
@@ -239,7 +239,7 @@ use class IUCam:CamStart {
       }*/
     }
     
-    outerMain(Array args) {
+    outerMain(List args) {
       try {
         innerMain(System:Process.new().args);
       } catch (var e) {
@@ -247,7 +247,7 @@ use class IUCam:CamStart {
       }
     }
     
-    innerMain(Array args) {
+    innerMain(List args) {
 
       Web:Client:CertificateManager.validateHosts = false;
 
@@ -269,7 +269,7 @@ use class IUCam:CamStart {
         cam.log = log;
         cam.lvl = lvl;
         log.log(lvl, "adding plugins");
-        Array plugins = Array.new();
+        List plugins = List.new();
         plugins += cam;
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
@@ -286,7 +286,7 @@ use class IUCam:CamStart {
       }
     }
 
-    cmdMain(Array args, plugins) {
+    cmdMain(List args, plugins) {
       AuthedApp ui = AuthedApp.new(plugins, log, lvl);
       
       if (args.length > 1) {

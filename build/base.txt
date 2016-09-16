@@ -10,7 +10,7 @@ Base
 ../be/source/base/Encode.be
 ../be/source/base/LinkedList.be
 ../be/source/base/Stack.be
-../be/source/base/Array.be
+../be/source/base/List.be
 ../be/source/base/Map.be
 ../be/source/base/System.be
 ../be/source/base/Exceptions.be

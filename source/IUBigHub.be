@@ -44,7 +44,7 @@ use class IUHub:BigHubStart {
       main(System:Process.new().args);
     }
     
-    main(Array args) {
+    main(List args) {
       outerMain(System:Process.new().args);
       /*try {
         app.configManager.close();
@@ -53,7 +53,7 @@ use class IUHub:BigHubStart {
       }*/
     }
     
-    outerMain(Array args) {
+    outerMain(List args) {
       try {
         innerMain(System:Process.new().args);
       } catch (var e) {
@@ -61,7 +61,7 @@ use class IUHub:BigHubStart {
       }
     }
     
-    innerMain(Array args) {
+    innerMain(List args) {
 
       Web:Client:CertificateManager.validateHosts = false;
 
@@ -89,7 +89,7 @@ use class IUHub:BigHubStart {
         cam.log = log;
         cam.lvl = lvl;
         log.log(lvl, "adding plugins");
-        Array plugins = Array.new();
+        List plugins = List.new();
         plugins += hub;
         plugins += cam;
         plugins += App:AuthPlugin.new();
@@ -110,7 +110,7 @@ use class IUHub:BigHubStart {
       }
     }
 
-    cmdMain(Array args, plugins) {
+    cmdMain(List args, plugins) {
       AuthedApp ui = AuthedApp.new(plugins, log, lvl);
       
       if (args.length > 1) {

@@ -145,7 +145,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
   }
   
     main() {
-      Array args = System:Process.new().args;
+      List args = System:Process.new().args;
 
       startWeb();
    }
