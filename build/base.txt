@@ -1,7 +1,7 @@
 --libraryName
 Base
--jsInclude=../be/system/js/be/BELS_Base/BECS_Runtime.js
--jsInclude=../be/system/js/be/BELS_Base/BECS_Object.js
+-jsInclude=../be/system/js/be/BECS_Runtime.js
+-jsInclude=../be/system/js/be/BECS_Object.js
 ../be/source/base/Object.be
 ../be/source/base/String.be
 ../be/source/base/Logic.be

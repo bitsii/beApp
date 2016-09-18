@@ -20,8 +20,8 @@ public class BeWebBrowser : Form
     [STAThread]
     static void Main()
     {
-        //add to csc /main:be.BEL_4_Base.BeWebBrowser
-        be.BEL_4_Base.BEL_4_Base.Main(new string[] {});
+        //add to csc /main:be.BeWebBrowser
+        be.BEL_4_Base.Main(new string[] {});
     }
     
     public void BeRun() {

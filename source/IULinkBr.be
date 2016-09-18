@@ -20,7 +20,7 @@ emit(js) {
 var eui;
 //ui startup
 var startup = function() {
-  eui = new be_BEL_4_Base_$class/App:IULinkBr$();
+  eui = new be_$class/App:IULinkBr$();
   eui.bem_new_0();
   eui.bem_main_0();
   eui.bem_startup_0();
@@ -28,18 +28,18 @@ var startup = function() {
 
 var handleCallback = function(res) {
     if (res != null) {
-      var bevs_resjs = new be_BEL_4_Base_$class/Text:String$().bems_new(res);
+      var bevs_resjs = new be_$class/Text:String$().bems_new(res);
       eui.bem_handleCallback_1(bevs_resjs);
     }
 }
 
 var openIntLink = function(devid) {
-    var bevs_resjs = new be_BEL_4_Base_$class/Text:String$().bems_new(devid);
+    var bevs_resjs = new be_$class/Text:String$().bems_new(devid);
     eui.bem_openIntLinkRequest_1(bevs_resjs);
 }
 
 var openExtLink = function(devid) {
-    var bevs_resjs = new be_BEL_4_Base_$class/Text:String$().bems_new(devid);
+    var bevs_resjs = new be_$class/Text:String$().bems_new(devid);
     eui.bem_openExtLinkRequest_1(bevs_resjs);
 }
 

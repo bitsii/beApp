@@ -23,7 +23,7 @@ import android.net.Uri;
 /*
 Example of android app component, just extend the activity below
 
-public class MainActivity extends be.BEL_4_Base.$class/UI:JvAd:WebBrowser$.MainActivity {
+public class MainActivity extends be.$class/UI:JvAd:WebBrowser$.MainActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

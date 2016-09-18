@@ -244,7 +244,7 @@ public synchronized static void runMainOnce() {
   if (!haveRun) {
     String[] margs = new String[0];
     try {
-        be.BEL_4_Base.BEL_4_Base.main(margs);
+        be.BEL_4_Base.main(margs);
     } catch (Throwable t) {
         System.err.println("Failed in main with " + t.getMessage());
         throw new Error(t.getMessage(), t);
@@ -768,7 +768,7 @@ use class App:ConfigPlugin {
          foreach (var kv in ecm) {
            unless(kv.value.has("\"")) {
               String ckey = "configKey" + kv.key;
-              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"eui.bem_deleteConfig_1(new be_BEL_4_Base_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
+              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"eui.bem_deleteConfig_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
             }
          }
       }

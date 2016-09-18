@@ -19,7 +19,7 @@ emit(js) {
 var eui;
 //ui startup
 var startup = function() {
-  eui = new be_BEL_4_Base_$class/IUHub:Eui$();
+  eui = new be_$class/IUHub:Eui$();
   eui.bem_new_0();
   eui.bem_main_0();
   eui.bem_startup_0();
@@ -27,29 +27,29 @@ var startup = function() {
 
 var handleCallback = function(res) {
     if (res != null) {
-      var bevs_resjs = new be_BEL_4_Base_$class/Text:String$().bems_new(res);
+      var bevs_resjs = new be_$class/Text:String$().bems_new(res);
       eui.bem_handleCallback_1(bevs_resjs);
     }
 }
 
 var endSession = function(forId) {
-  var theId = new be_BEL_4_Base_$class/Text:String$().bems_new(forId);
+  var theId = new be_$class/Text:String$().bems_new(forId);
   eui.bem_endSessionRequest_1(theId);
 }
 
 var updateConfig = function(forKey, forId) {
-  var theKey = new be_BEL_4_Base_$class/Text:String$().bems_new(forKey);
-  var theId = new be_BEL_4_Base_$class/Text:String$().bems_new(forId);
+  var theKey = new be_$class/Text:String$().bems_new(forKey);
+  var theId = new be_$class/Text:String$().bems_new(forId);
   eui.bem_updateConfig_2(theKey, theId);
 }
 
 var localBrowseRequest = function(forId) {
-  var theId = new be_BEL_4_Base_$class/Text:String$().bems_new(forId);
+  var theId = new be_$class/Text:String$().bems_new(forId);
   eui.bem_localBrowseRequest_1(theId);
 }
 
 var loadAccountRequest = function(forId) {
-  var theId = new be_BEL_4_Base_$class/Text:String$().bems_new(forId);
+  var theId = new be_$class/Text:String$().bems_new(forId);
   eui.bem_loadAccountRequest_1(theId);
 }
 
@@ -59,7 +59,7 @@ var deleteSelected = function() {
 }
 
 var deleteAccount = function() {
-  eui.bem_deleteAccountRequest_1(new be_BEL_4_Base_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
+  eui.bem_deleteAccountRequest_1(new be_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
 }
 
 var copySelected = function() {
@@ -86,7 +86,7 @@ var upgradeSelected = function() {
   }
   
 function fileChecked(box) {
-  var theId = new be_BEL_4_Base_$class/Text:String$().bems_new(box.id);
+  var theId = new be_$class/Text:String$().bems_new(box.id);
   if (box.checked) {
     eui.bem_fileChecked_1(theId);
     //alert("checked ".concat(box.id));
