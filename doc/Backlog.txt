@@ -1,41 +1,58 @@
 
 =====
 =====
+
+library based dev env
+  incl up to before apps (hub, cam) in baselib (js too)
   
-alternate to upnp for getting into network
-  ?ssh, own?
+separate hub into upnp et all and just a container for other apps?
+  call upnp et all bridge (IUBridge)
 
-libs
+switch to simpler proxy (+1 request, if not available fall back to exact)
 
-link android ios background, get pics (notification?)
+plugin to build, on success install-restart (last start time)
+diff cmds for base lib and app
 
-easy to do devel
-  a devel plugin
-et all
+always loggedin hub
+freeform devel app (jv/mcs gen, js run) - win, mac, ios, android (plugin)
 
-have an auto-login option for stand alone link
+good event development/scripting abilities!!! across devs (home auto, etc)
 
-devel plugin
-  edit, build, install, etc on page (online code editor)
-    build button
-    build output
-    edit area
+link working jvweb (bh), wincs, monoweb, xamarin
+  use mono sqlite instead of firebird
+  monoweb with just build module, link, hub
+  
+no-upnp option
+no imap option
 easy setup
   step by step install instructions for noobs
   url for script to do the rest
  
 activation for cam
 
-scripts to pull down extlibs
-android javamail
-step by step instructions for setting up android env
+step by step instructions for setting up development envs
 
 section to add cam perms to accounts under cam setup  
   
-lang stuff
 ______________
 
+link client, keeps hub up to date with ip, gw, mac
+autodl pics, ping location
+
+record sound
+play uploaded sound
+alarm
+
+remote access/vpn/wakeup/remote control/remote presense
+
+remoting for other apps
+
+ui to add forwarding
+wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
+also have a rasberry pi connected wakeup option
+
 video and voice
+
 password sync/ vault
 contact sync
 bookmark sync
