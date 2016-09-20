@@ -205,15 +205,15 @@ use class App:AuthenticatedWebApp(AuthedApp) {
             outw.close();
             request.outputContent = "UPLOAD COMPLETE";
          }
-       } elif (checkReadPath(imgfile.path, request)) {
+       } elseIf (checkReadPath(imgfile.path, request)) {
          log.log(lvl, "imgfile " + imgfile.path);
          if (imgfile.exists) {
           String mtype;
           if (uri.ends(".html")) {
             mtype = "text/html";
-          } elif (uri.ends(".jpg")) {
+          } elseIf (uri.ends(".jpg")) {
             mtype = "image/jpeg";
-          } elif (uri.ends(".js")) {
+          } elseIf (uri.ends(".js")) {
             mtype = "text/javascript";
           } else {
             mtype = "application/octet-stream";

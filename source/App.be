@@ -463,7 +463,7 @@ use class App:AuthPlugin {
         res["accountName"] = a.user;
         res["admin"] = a.perms.has("admin");
         return(res);
-      } elif (true) {
+      } elseIf (true) {
         throw(Alert.new("No such account"));
       }
       return(null);
@@ -731,7 +731,7 @@ use class App:FileManagerPlugin {
             }
           }
           dit.close();
-        } elif (dirFile.path.toString().ends(".jpg")) {
+        } elseIf (dirFile.path.toString().ends(".jpg")) {
           Map res = Map.new();
           res["action"] = "updateImageResponse";
           res["imghtm"] = "<img src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
@@ -975,7 +975,7 @@ class AuthedApp {
       String pas = pa.toString();
       if (self.plugin.checkPublicReadPath(pa, request)) {
         isOk = true;
-      } elif (def(h) && pas.begins(h.toString())) {
+      } elseIf (def(h) && pas.begins(h.toString())) {
         isOk = true;
       }
     } catch (e) {

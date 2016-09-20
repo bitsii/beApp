@@ -1278,7 +1278,7 @@ use class IUHub:HubPlugin {
         String subf = app.configManager.get("imap.subFolder");
         if (undef(subf)) {
           subf = "IotUrls";
-        } elif (TS.isEmpty(subf)) {
+        } elseIf (TS.isEmpty(subf)) {
           subf = null;
         }
         if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {

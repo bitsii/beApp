@@ -428,7 +428,7 @@ use class IULink:LinkPlugin {
           String subf = app.configManager.get("imap.subFolder");
           if (undef(subf)) {
             subf = "IotUrls";
-          } elif (TS.isEmpty(subf)) {
+          } elseIf (TS.isEmpty(subf)) {
             subf = null;
           }
           Json:Unmarshaller unmar = Json:Unmarshaller.new();
