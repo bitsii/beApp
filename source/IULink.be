@@ -182,7 +182,7 @@ use class IULink:LinkStart {
         log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
-        foreach (String login in ui.accountManager.getLogins()) {
+        for (String login in ui.accountManager.getLogins()) {
           log.log(lvl, "Account login " + login);
         }
       }
@@ -239,7 +239,7 @@ use class IULink:LinkStart {
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
-        foreach (var kv in ui.configManager.getMap()) {
+        for (var kv in ui.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
       }
@@ -495,7 +495,7 @@ use class IULink:LinkPlugin {
             store.close();
           """
           }
-          foreach (String con in contents) {
+          for (String con in contents) {
             //log.log(lvl, "got con " + con);
             try {
               String beg = "type=\"hidden\" value=\"";
@@ -565,7 +565,7 @@ use class IULink:LinkPlugin {
       Map urls = self.urlsMap;
       String uh = String.new();
       log.log(lvl, "in urlsreq 1");
-      foreach (MNode kv in urls) {
+      for (MNode kv in urls) {
           log.log(lvl, "in urlsreq 2");
           //uh += "<p>" += kv.value["intLink"] += "</p>";
           //uh += "<p>" += kv.value["extLink"] += "</p>";

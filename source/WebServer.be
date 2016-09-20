@@ -373,7 +373,7 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      string csname = beva_name.bems_toCsString();
-     foreach (Cookie cook in bevi_req.Cookies) {
+     for (Cookie cook in bevi_req.Cookies) {
        if (cook.Name == csname) {
          return(new $class/Text:String$(cook.Value));
        }

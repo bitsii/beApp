@@ -312,7 +312,7 @@ use class IUCam:Eui {
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
       if (TS.notEmpty(permsString)) {
-        foreach (String perm in permsString.split(",")) {
+        for (String perm in permsString.split(",")) {
           perms.put(perm);
         }
       }

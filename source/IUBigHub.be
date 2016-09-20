@@ -131,7 +131,7 @@ use class IUHub:BigHubStart {
         pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
-        foreach (String login in ui.accountManager.getLogins()) {
+        for (String login in ui.accountManager.getLogins()) {
           log.log(lvl, "Account login " + login);
         }
       }
@@ -188,7 +188,7 @@ use class IUHub:BigHubStart {
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
-        foreach (var kv in ui.configManager.getMap()) {
+        for (var kv in ui.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
       }

@@ -78,7 +78,7 @@ class Gw {
       res = res.substring(fz);
       Bool started = false;
       String accum = String.new();
-      foreach (String s in res.biter) {
+      for (String s in res.biter) {
         if (s == " ") {
           if (started) {
             break;
@@ -114,7 +114,7 @@ use class App:AccountManager {
   
   getLogins() List {
     List logins = List.new();
-    foreach (var kv in kvDb.getMap(prefix)) {
+    for (var kv in kvDb.getMap(prefix)) {
       logins.addValue(kv.key.substring(prefix.size));
     }
     return(logins);
@@ -211,7 +211,7 @@ use class App:Account {
   permsStringSet(String permsString) {
     perms = Set.new();
     if (TS.notEmpty(permsString)) {
-      foreach (String perm in permsString.split(",")) {
+      for (String perm in permsString.split(",")) {
         perms.put(perm);
       }
     }
@@ -220,7 +220,7 @@ use class App:Account {
   permsStringGet() String {
     Bool first = true;
     String permsString = "";
-    foreach (String perm in perms) {
+    for (String perm in perms) {
       if (first) {
         first = false;
       } else {
@@ -475,7 +475,7 @@ use class App:AuthPlugin {
       }
       String accountLinks = String.new();
       List logins = app.accountManager.getLogins();
-      foreach (String login in logins) {
+      for (String login in logins) {
         accountLinks += "<p><a href=\"#\" onclick=\"loadAccountRequest('" += login += "');return false;\">Modify " += login += "</a></p>";
       }
       Map res = Map.new();
@@ -709,7 +709,7 @@ use class App:FileManagerPlugin {
             omap.put(p.steps.last, entry);
           }
           olist = olist.sort();
-          foreach (String ole in olist) {
+          for (String ole in olist) {
             entry = omap.get(ole);
             p = entry.path;
             if (entry.isDirectory) {
@@ -765,7 +765,7 @@ use class App:ConfigPlugin {
        Map ecm = app.configManager.getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
-         foreach (var kv in ecm) {
+         for (var kv in ecm) {
            unless(kv.value.has("\"")) {
               String ckey = "configKey" + kv.key;
               conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"eui.bem_deleteConfig_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
@@ -853,7 +853,7 @@ class AuthedApp {
         String certificateThumbprint;
       }
       
-      foreach (var pl in plugins) {
+      for (var pl in plugins) {
         pl.app = self;
         pl.log = log;
         pl.lvl = lvl;
@@ -1079,7 +1079,7 @@ class AuthedApp {
     String res = String.new();
     String accountName = a.user;
     Map all = self.sessionManager.sessions.getMap();
-    foreach (var kv in all) {
+    for (var kv in all) {
       if (kv.key.ends("account.name") && kv.value == accountName) {
         log.log(lvl, "Found session " + kv.key);
         var kp = kv.key.split(".");
@@ -1140,7 +1140,7 @@ class AuthedApp {
             List args = List.new(2);
             args[0] = arg;
             args[1] = request;
-            foreach (var pl in plugins) {
+            for (var pl in plugins) {
               if (pl.can(aname, args.length)) {
                 var res = pl.invoke(aname, args);
                 break;

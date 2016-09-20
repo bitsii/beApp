@@ -253,7 +253,7 @@ public ResultSet bevi_res = null;
      """
      }
      Int i = 1;
-     foreach (var v in vals) {
+     for (var v in vals) {
        String sv = v;
        emit(jv) {
        """
@@ -276,7 +276,7 @@ public ResultSet bevi_res = null;
      """
      }
      Int i = 1;
-     foreach (var v in vals) {
+     for (var v in vals) {
        String sv = v;
        emit(jv) {
        """
@@ -376,7 +376,7 @@ public ResultSet bevi_res = null;
    }
    
    iteratorGet() {
-    //to support foreach
+    //to support for
     return(self);
    }
    
@@ -515,7 +515,7 @@ use class Db:Relational:Test(Assert) {
     db.commit();
     
     db.begin();
-    foreach (DbSt re in db.executeQuery("select * from TESTTAB")) {
+    for (DbSt re in db.executeQuery("select * from TESTTAB")) {
       assertEqual(re.getString(0), "hi");
     }
     db.commit();
@@ -530,7 +530,7 @@ use class Db:Relational:Test(Assert) {
     List vals1 = List.new(1);
     vals1[0] = "yo";
     db.begin();
-    foreach (re in db.executeQuery("select * from TESTTAB where P=?", vals1)) {
+    for (re in db.executeQuery("select * from TESTTAB where P=?", vals1)) {
       assertEqual(re.getString(1), "adrian");
     }
     db.commit();
@@ -609,7 +609,7 @@ class KvDb {
       Map res = Map.new();
       List qa = List.new(0);
       db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName, qa)) {
+      for (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName, qa)) {
         String name = ares.getString(0);
         String value = ares.getString(1);
         res.put(name, value);
@@ -630,7 +630,7 @@ class KvDb {
       List qa = List.new(1);
       qa.put(0, prefix + "%");
       db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName + " WHERE NAME LIKE ?", qa)) {
+      for (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName + " WHERE NAME LIKE ?", qa)) {
         String name = ares.getString(0);
         String value = ares.getString(1);
         res.put(name, value);
@@ -650,7 +650,7 @@ class KvDb {
       List qa = List.new(1);
       qa[0] = name;
       db.begin();
-      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
+      for (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
         String value = ares.getString(0);
       }
       //ares.close();
@@ -695,7 +695,7 @@ class KvDb {
       qa[0] = name;
       db.begin();
       Bool exists = false;
-      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
+      for (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
         exists = true;
       }
       if (exists) {
@@ -721,7 +721,7 @@ class KvDb {
       db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=? AND VALUE=?", qa);
       //db.commit();
       List qc = List.new(1).put(0, name);
-      foreach (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qc)) {
+      for (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qc)) {
         String currValue = ares.getString(0);
         if (currValue == value) {
           result = true;

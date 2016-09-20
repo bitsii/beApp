@@ -348,7 +348,7 @@ use class Web:Client {
         }
         """
         }
-        foreach (var kv in outputHeaders) {
+        for (var kv in outputHeaders) {
           String hk = kv.key;
           String hv = kv.value;
           emit(cs) {
@@ -625,7 +625,7 @@ use class Web:SessionManager {
   deleteSessionByKey(String key) {
     if (TS.notEmpty(key)) {
       Map toDel = sessions.getMap(key + ".");
-      foreach (var x in toDel) {
+      for (var x in toDel) {
         //("deleting session key " + x.key).print(); 
         sessions.delete(x.key);
       }

@@ -163,7 +163,7 @@ use class Net:Interface {
     emit(cs) {
         """            
         NetworkInterface[] adapters  = NetworkInterface.GetAllNetworkInterfaces();
-        foreach (NetworkInterface adapter in adapters)
+        for (NetworkInterface adapter in adapters)
         {
             string description = adapter.Description;
             string macAddress = adapter.GetPhysicalAddress().ToString();
@@ -177,7 +177,7 @@ use class Net:Interface {
             string gatewayAddress = null;
             if (addresses.Count >0)
             {
-                foreach (GatewayIPAddressInformation gaddress in addresses)
+                for (GatewayIPAddressInformation gaddress in addresses)
                 {
                   if (gaddress.Address.AddressFamily.ToString().Equals("InterNetwork")) {
                     gatewayAddress = gaddress.Address.ToString();
@@ -186,7 +186,7 @@ use class Net:Interface {
                 }
             }*/
             string address = null;
-            foreach(UnicastIPAddressInformation unicastIp in unicastIps)
+            for(UnicastIPAddressInformation unicastIp in unicastIps)
             {
               if (unicastIp.Address.AddressFamily.ToString().Equals("InterNetwork")) {
                     address = unicastIp.Address.ToString();
@@ -250,7 +250,7 @@ use class Net:Interface {
     
     upInterfacesGet() List {
       List ups = List.new();
-      foreach (Interface i in self.localInterfaces) {
+      for (Interface i in self.localInterfaces) {
         if (TS.notEmpty(i.status) && i.status == "Up" && TS.notEmpty(i.address)) {
           ups += i;
         }
@@ -261,7 +261,7 @@ use class Net:Interface {
     interfaceForNetwork(String netip) String {
       Int maxSoFar = 0;
       String bestMatch;
-      foreach (Interface i in self.localInterfaces) {
+      for (Interface i in self.localInterfaces) {
         String iip = i.address;
         if (TS.notEmpty(iip)) {
           String cp = TS.commonPrefix(iip, netip);
@@ -282,12 +282,12 @@ use class Net:Interface {
       List sups = List.new();
       Map adif = Map.new();
       List ads = List.new();
-      foreach (Interface i in ups) {
+      for (Interface i in ups) {
         adif.put(i.address, i);
         ads += i.address;
       }
       ads.sort();
-      foreach (String ad in ads) {
+      for (String ad in ads) {
         sups += adif.get(ad);
       }
       return(sups);
@@ -296,7 +296,7 @@ use class Net:Interface {
     preferredInterfaceGet() Interface {
       Interface res;
       Int resScore = -1;
-      foreach (Interface i in self.localInterfaces) {
+      for (Interface i in self.localInterfaces) {
         Int score = score(i);
         if (score > resScore) {
           res = i;
@@ -347,7 +347,7 @@ class Upnp {
       res = res.substring(fz);
       Bool started = false;
       String accum = String.new();
-      foreach (String s in res.biter) {
+      for (String s in res.biter) {
         if (s == " ") {
           if (started) {
             break;
@@ -773,7 +773,7 @@ use class IUHub:UpnpUpdate {
         upnp.forwardPort(fwdSecs, Int.new(extPort), Int.new(intPort));
         String exPorts = app.configManager.get("upnp.extraPorts");
         if (TS.notEmpty(exPorts)) {
-          foreach (String ep in exPorts.split(",")) {
+          for (String ep in exPorts.split(",")) {
             String currPortS = app.configManager.get("upnp.extraPort." + ep + ".externalPort");
             if (TS.isEmpty(currPortS)) {
               Int intPorti = System:Random.getInt(Int.new(), 6000);
@@ -797,7 +797,7 @@ use class IUHub:UpnpUpdate {
         Map jsl = Map.new();
         if (TS.notEmpty(exPorts)) {
           String extraPortsMsg = String.new();
-          foreach (ep in exPorts.split(",")) {
+          for (ep in exPorts.split(",")) {
             currPortS = app.configManager.get("upnp.extraPort." + ep + ".externalPort");
             String httpsPath = app.configManager.get("upnp.extraPort." + ep + ".httpsPath");
             String appName = app.configManager.get("upnp.extraPort." + ep + ".appName");
@@ -1092,7 +1092,7 @@ use class IUHub:HubStart {
         pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
-        foreach (String login in ui.accountManager.getLogins()) {
+        for (String login in ui.accountManager.getLogins()) {
           log.log(lvl, "Account login " + login);
         }
       }
@@ -1149,7 +1149,7 @@ use class IUHub:HubStart {
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
-        foreach (var kv in ui.configManager.getMap()) {
+        for (var kv in ui.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
       }
@@ -1485,7 +1485,7 @@ use class IUHub:HubPlugin {
   getActionLinks(Account a, Map arg, request) String {
      String actionLinks = String.new();
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
-     foreach (var kv in ecm) {
+     for (var kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
       actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_runCommand_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";

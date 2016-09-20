@@ -89,7 +89,7 @@ use class IUCam:MotionUpdate {
     }
     configuredMocams = Set.new();
     //make sure configs present
-    foreach (String cp in mocams) {
+    for (String cp in mocams) {
       log.log(lvl, cp + " is a mocam not setup yet");
       Path p = Path.apNew(cp);
       String mcn = p.steps.last;
@@ -125,7 +125,7 @@ use class IUCam:MotionUpdate {
     mocams = Set.new();
     String cps = app.configManager.get("cam.paths");
     if (TS.notEmpty(cps)) {
-      foreach (String cp in cps.split(",")) {
+      for (String cp in cps.split(",")) {
         String mcp = app.configManager.get("cam." + cp + ".motion");
         if (TS.notEmpty(mcp) && Bool.new(mcp)) {
           mocams.put(cp);
@@ -307,7 +307,7 @@ use class IUCam:CamStart {
         pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
-        foreach (String login in ui.accountManager.getLogins()) {
+        for (String login in ui.accountManager.getLogins()) {
           log.log(lvl, "Account login " + login);
         }
       }
@@ -364,7 +364,7 @@ use class IUCam:CamStart {
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
-        foreach (var kv in ui.configManager.getMap()) {
+        for (var kv in ui.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
       }
@@ -605,7 +605,7 @@ use class IUCam:CamPlugin {
       if (TS.notEmpty(res)) {
         //res.swap("\r", "\n");
         String cres = String.new();
-        foreach (String v in res.split("\n")) {
+        for (String v in res.split("\n")) {
           log.log(lvl, "v is " + v);
           if (TS.notEmpty(v)) {
             if (v.ends("\r")) {
@@ -631,7 +631,7 @@ use class IUCam:CamPlugin {
       Set ecm = Set.new();
       String ecps = app.configManager.get("cam.paths");
       if (def(ecps)) {
-        foreach (String cp in ecps.split(",")) {
+        for (String cp in ecps.split(",")) {
           ecm.put(cp);
         }
       }
@@ -656,7 +656,7 @@ use class IUCam:CamPlugin {
      String actionLinks = String.new();
      String moLinks = String.new();
      Set ecm = getCams();
-     foreach (String c in ecm) {
+     for (String c in ecm) {
        if (camOkForAccount(c, a)) {
           String clabel = app.configManager.get("cam." + c + ".label");
           if (TS.isEmpty(clabel)) {
