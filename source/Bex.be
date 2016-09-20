@@ -18,7 +18,7 @@ use class Bex:BHandler {
        fields {
           IO:Log log;
           Int lvl;
-          var app;
+          any app;
         }
      }
    
@@ -108,10 +108,10 @@ use class App:BrowserExample {
             args[0] = arg;
             args[1] = request;
             if (requestHandler.can(aname, args.length)) {
-              var res = requestHandler.invoke(aname, args);
+              any res = requestHandler.invoke(aname, args);
             }
             request.scriptReturn = res;
-        } catch (var e) {
+        } catch (any e) {
            arg = Map.new();
            log.log(lvl, "Caught exception during handleWeb B");
            if (def(e)) {

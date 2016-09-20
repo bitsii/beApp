@@ -21,14 +21,14 @@ use class App:Paths {
 
   new(_app) self {
     fields {
-      var app = _app;
+      any app = _app;
       String name = app.plugin.name;
     }
   }
 
   dataPathGet() Path {
     ifEmit(platDroid) {
-      var app = createInstance("UI:JvAd:WebBrowser");
+      any app = createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(name);
     }
     ifNotEmit(platDroid) {
@@ -39,7 +39,7 @@ use class App:Paths {
   
   appPathGet() Path {
     ifEmit(platDroid) {
-      var app = createInstance("UI:JvAd:WebBrowser");
+      any app = createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(name);
     }
     ifNotEmit(platDroid) {
@@ -99,7 +99,7 @@ use class App:AccountManager {
 
   new() self {
     fields {
-      var kvDb;
+      any kvDb;
       String prefix;
       Json:Marshaller mar = Json:Marshaller.new();
       Json:Unmarshaller unmar = Json:Unmarshaller.new();
@@ -114,7 +114,7 @@ use class App:AccountManager {
   
   getLogins() List {
     List logins = List.new();
-    for (var kv in kvDb.getMap(prefix)) {
+    for (any kv in kvDb.getMap(prefix)) {
       logins.addValue(kv.key.substring(prefix.size));
     }
     return(logins);
@@ -276,7 +276,7 @@ class AppEv {
   """
   }
 
-  put(String label, var handler) {
+  put(String label, any handler) {
     registry.put(label, handler);
   }
   
@@ -291,7 +291,7 @@ class AppEv {
   }
   
   handleEvent(String event) {
-    var rc = registry.get(event);
+    any rc = registry.get(event);
     if (def(rc)) {
       List args = List.new(0);
       rc.invoke(event, args);
@@ -413,7 +413,7 @@ use class App:AuthPlugin {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          var app;
+          any app;
           String name = "Auth";
         }
         
@@ -595,7 +595,7 @@ use class App:FileManagerPlugin {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          var app;
+          any app;
           String name = "FileManager";
         }
         
@@ -628,7 +628,7 @@ use class App:FileManagerPlugin {
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
        if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, request)) {
-         var dpath = Path.apNew(arg["toName"]);
+         any dpath = Path.apNew(arg["toName"]);
          dpath = dirFile.path.parent.copy() + dpath;
          log.log(lvl, "precheck write " + dpath);
          if (app.checkWritePath(dpath, request)) {
@@ -698,7 +698,7 @@ use class App:FileManagerPlugin {
           += hex.encode(parent.toString()) += "');return false;\">.. (UP)</a></td></tr>";
         }
         if (dirFile.isDir) {
-          var dit = dirFile.iterator;
+          any dit = dirFile.iterator;
           dit.open();
           List olist = List.new();
           Map omap = Map.new();
@@ -753,7 +753,7 @@ use class App:ConfigPlugin {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          var app;
+          any app;
           String name = "Conf";
         }
         
@@ -765,7 +765,7 @@ use class App:ConfigPlugin {
        Map ecm = app.configManager.getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
-         for (var kv in ecm) {
+         for (any kv in ecm) {
            unless(kv.value.has("\"")) {
               String ckey = "configKey" + kv.key;
               conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"eui.bem_deleteConfig_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
@@ -845,7 +845,7 @@ class AuthedApp {
   new(_plugins, _log, _lvl) self {
       fields {
         List plugins = _plugins;
-        var plugin = plugins.first;
+        any plugin = plugins.first;
         IO:Log log = _log;
         Int lvl = _lvl;
         Lock lock = Lock.new();
@@ -853,7 +853,7 @@ class AuthedApp {
         String certificateThumbprint;
       }
       
-      for (var pl in plugins) {
+      for (any pl in plugins) {
         pl.app = self;
         pl.log = log;
         pl.lvl = lvl;
@@ -939,7 +939,7 @@ class AuthedApp {
       return(true);
     }
     String accountName = request.getSession("account.name");
-    var e;
+    any e;
     Bool isOk = false;
     if (undef(accountName)) { accountName = ""; }
     try {
@@ -964,7 +964,7 @@ class AuthedApp {
       return(true);
     }
     String accountName = request.getSession("account.name");
-    var e;
+    any e;
     Bool isOk = false;
     if (undef(accountName)) { accountName = ""; }
     try {
@@ -1079,10 +1079,10 @@ class AuthedApp {
     String res = String.new();
     String accountName = a.user;
     Map all = self.sessionManager.sessions.getMap();
-    for (var kv in all) {
+    for (any kv in all) {
       if (kv.key.ends("account.name") && kv.value == accountName) {
         log.log(lvl, "Found session " + kv.key);
-        var kp = kv.key.split(".");
+        any kp = kv.key.split(".");
         String sessLabel = String.new();
         String name = self.sessionManager.sessions.get(kp.first + ".session.name");
         if (def(name)) {
@@ -1140,14 +1140,14 @@ class AuthedApp {
             List args = List.new(2);
             args[0] = arg;
             args[1] = request;
-            for (var pl in plugins) {
+            for (any pl in plugins) {
               if (pl.can(aname, args.length)) {
-                var res = pl.invoke(aname, args);
+                any res = pl.invoke(aname, args);
                 break;
               }
             }
             request.scriptReturn = res;
-        } catch (var e) {
+        } catch (any e) {
            arg = Map.new();
            log.log(lvl, "Caught exception during handleWeb B");
            if (def(e)) {

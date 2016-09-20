@@ -368,7 +368,7 @@ class Upnp {
     if (def(deviceURL)) {
       return(deviceURL);
     }
-    var e;
+    any e;
     String discover = "M-SEARCH * HTTP/1.1\r\n" +
             "HOST: 239.255.255.250:1900\r\n" +
             "ST:upnp:rootdevice\r\n" +
@@ -407,7 +407,7 @@ class Upnp {
     while (nowSec < endSec) {
       received = null;
       if (count % 7 == 0) {
-        var bcast = true;
+        any bcast = true;
       } else {
         bcast = null;
       }
@@ -474,7 +474,7 @@ class Upnp {
     }
     
     controlURLGet() String {
-      var e;
+      any e;
       fields {
         String controlURL;
       }
@@ -587,7 +587,7 @@ class Upnp {
       
     forwardPortOld(Int duration, Int external, Int internal, String internalIP) Bool {
       if (true) { return(true); }
-      var e;
+      any e;
       String cu = self.controlURL;
       Web:Client client = Web:Client.new();
       client.url = cu;
@@ -627,7 +627,7 @@ use class IUHub:DnsUpdate {
     fields {
       String duckDomain;
       String duckToken;
-      var app;
+      any app;
       Int lvl;
       IO:Log log;
       Int lastSec = 0;
@@ -678,7 +678,7 @@ use class IUHub:UpnpUpdate {
   new() self {
   
     fields {
-      var app;
+      any app;
       Int lvl;
       IO:Log log;
       Int lastPoll = 0;
@@ -702,7 +702,7 @@ use class IUHub:UpnpUpdate {
   }
   
   doUpdate() {
-    var e;
+    any e;
     log.log(lvl, "In upnp doUpdate");
     unless (disable) {
       log.log(lvl, "upnp doing");
@@ -920,7 +920,7 @@ use class IUHub:Background {
 
   new() self {
     fields {
-      var app;
+      any app;
       Int lvl;
       IO:Log log;
       DnsUpdate du = DnsUpdate.new();
@@ -952,7 +952,7 @@ use class IUHub:Background {
   }
   
   main() {
-    var e;
+    any e;
     while (true) {
       try {
         runTasks();
@@ -1016,7 +1016,7 @@ use class IUHub:HubStart {
       outerMain(System:Process.new().args);
       /*try {
         app.configManager.close();
-      } catch (var e) {
+      } catch (any e) {
         log.log(lvl, "Exception closing db in CmdUI, error is " + e);
       }*/
     }
@@ -1024,7 +1024,7 @@ use class IUHub:HubStart {
     outerMain(List args) {
       try {
         innerMain(System:Process.new().args);
-      } catch (var e) {
+      } catch (any e) {
         log.log(lvl, "Exception in CmdUI, error is " + e);
       }
     }
@@ -1149,7 +1149,7 @@ use class IUHub:HubStart {
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
-        for (var kv in ui.configManager.getMap()) {
+        for (any kv in ui.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
       }
@@ -1199,7 +1199,7 @@ use class IUHub:HubPlugin {
        fields {
           IO:Log log;
           Int lvl;
-          var app;
+          any app;
           String name = "IUHub";
           String homePage = "/App/IUHub/IUHub.html";
           OLocker links = OLocker.new();
@@ -1264,7 +1264,7 @@ use class IUHub:HubPlugin {
     
   updateNetAddresses() {
     log.log(lvl, "In doimap");
-    var e;
+    any e;
     try {
       Map jsl = links.o;
       if(def(jsl) && jsl.notEmpty) {
@@ -1443,7 +1443,7 @@ use class IUHub:HubPlugin {
      if (TS.notEmpty(path)) {
        Path dpath = Path.apNew("App/IUHub.zip");
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
-       var e;
+       any e;
        try {
        app.lock.lock();
        log.log(lvl, "copying " + dirFile.path + " to " + dpath);
@@ -1485,7 +1485,7 @@ use class IUHub:HubPlugin {
   getActionLinks(Account a, Map arg, request) String {
      String actionLinks = String.new();
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
-     for (var kv in ecm) {
+     for (any kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
       actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_runCommand_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";

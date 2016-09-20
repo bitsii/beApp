@@ -253,7 +253,7 @@ public ResultSet bevi_res = null;
      """
      }
      Int i = 1;
-     for (var v in vals) {
+     for (any v in vals) {
        String sv = v;
        emit(jv) {
        """
@@ -276,7 +276,7 @@ public ResultSet bevi_res = null;
      """
      }
      Int i = 1;
-     for (var v in vals) {
+     for (any v in vals) {
        String sv = v;
        emit(jv) {
        """
@@ -542,7 +542,7 @@ use class Db:Relational:Test(Assert) {
     "Begin Relational Test".print();
     try {
       dbTest();
-    } catch (var e) {
+    } catch (any e) {
       e.print();
       throw(e);
     }
@@ -571,7 +571,7 @@ class KvDb {
   }
   
   dbFailed() {
-    var e;
+    any e;
     try {
       close();
     } catch (e) {
@@ -616,7 +616,7 @@ class KvDb {
       }
       //ares.close();
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       db.rollback();
       dbFailed();
       throw(e);
@@ -637,7 +637,7 @@ class KvDb {
       }
       //ares.close();
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       db.rollback();
       dbFailed();
       throw(e);
@@ -655,7 +655,7 @@ class KvDb {
       }
       //ares.close();
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       db.rollback();
       dbFailed();
       throw(e);
@@ -669,7 +669,7 @@ class KvDb {
       db.begin();
       db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       db.rollback();
       dbFailed();
       throw(e);
@@ -682,7 +682,7 @@ class KvDb {
       db.begin();
       db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       db.rollback();
       dbFailed();
       throw(e);
@@ -706,7 +706,7 @@ class KvDb {
         db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
       }
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       db.rollback();
       dbFailed();
       throw(e);
@@ -729,7 +729,7 @@ class KvDb {
       }
       //if (true) { throw(Exception.new("fail")); }
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       result = false;
       db.rollback();
       //expected case, not fatal
@@ -743,7 +743,7 @@ class KvDb {
       db.begin();
       db.execute("DELETE FROM " + tableName + " WHERE NAME=?", qa);
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       db.rollback();
       dbFailed();
       throw(e);
@@ -755,7 +755,7 @@ class KvDb {
       db.begin();
       db.execute("DELETE FROM " + tableName);
       db.commit();
-    } catch (var e) {
+    } catch (any e) {
       db.rollback();
       dbFailed();
       throw(e);

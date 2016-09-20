@@ -24,7 +24,7 @@ use class IUHub:Test(Assert) {
       IUHub:AccountTest.new().main();
       IUHub:ConfigTest.new().main();
       //IUHub:HHandlerTest.new().main();
-    } catch (var e) {
+    } catch (any e) {
       "Exception during test".print();
       e.print();
     }

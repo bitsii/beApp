@@ -33,7 +33,7 @@ use class IULink:Background {
 
   new(LinkPlugin _link) self {
     fields {
-      var app;
+      any app;
       Int lvl;
       IO:Log log;
       LinkPlugin link = _link;
@@ -63,7 +63,7 @@ use class IULink:Background {
   }
   
   main() {
-    var e;
+    any e;
     while (true) {
       try {
         runTasks();
@@ -118,7 +118,7 @@ use class IULink:LinkStart {
       outerMain(System:Process.new().args);
       /*try {
         app.configManager.close();
-      } catch (var e) {
+      } catch (any e) {
         log.log(lvl, "Exception closing db in CmdUI, error is " + e);
       }*/
     }
@@ -126,7 +126,7 @@ use class IULink:LinkStart {
     outerMain(List args) {
       try {
         innerMain(System:Process.new().args);
-      } catch (var e) {
+      } catch (any e) {
         log.log(lvl, "Exception in CmdUI, error is " + e);
       }
     }
@@ -239,7 +239,7 @@ use class IULink:LinkStart {
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
-        for (var kv in ui.configManager.getMap()) {
+        for (any kv in ui.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
       }
@@ -283,7 +283,7 @@ use class IULink:LinkPlugin {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          var app;
+          any app;
           String name = "IULink";
           String homePage = "/App/IULink/IULink.html";
           Background bg = Background.new(self);
@@ -419,7 +419,7 @@ use class IULink:LinkPlugin {
     Map nurls = Map.new();
     if (TS.notEmpty(user) && TS.notEmpty(endpoint) && TS.notEmpty(pass)) {
       log.log(lvl, "have imap info");
-      var e;
+      any e;
       try {
           String prot = app.configManager.get("imap.protocol");
           if (TS.isEmpty(prot)) {

@@ -121,7 +121,7 @@ class HC {
     fields {
       Json:Marshaller mar = Json:Marshaller.new();
       Json:Unmarshaller unmar = Json:Unmarshaller.new();
-      var callback = _callback;
+      any callback = _callback;
     }
   }
 

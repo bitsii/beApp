@@ -48,7 +48,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     }
     
     startWeb() {
-      var e;
+      any e;
       String ports = self.webPort;
       Int port = Int.new(ports);
       String cerPath = assureCert(port);

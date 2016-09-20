@@ -32,7 +32,7 @@ use class IUCam:MotionUpdate {
     fields {
       Set mocams = Set.new();
       Set configuredMocams = Set.new();
-      var app;
+      any app;
       Int lvl;
       IO:Log log;
       Int lastPoll = 0;
@@ -144,7 +144,7 @@ use class IUCam:Background {
 
   new() self {
     fields {
-      var app;
+      any app;
       Int lvl;
       IO:Log log;
       MotionUpdate mu = MotionUpdate.new();
@@ -174,7 +174,7 @@ use class IUCam:Background {
   }
   
   main() {
-    var e;
+    any e;
     while (true) {
       try {
         runTasks();
@@ -234,7 +234,7 @@ use class IUCam:CamStart {
       outerMain(System:Process.new().args);
       /*try {
         app.configManager.close();
-      } catch (var e) {
+      } catch (any e) {
         log.log(lvl, "Exception closing db in CmdUI, error is " + e);
       }*/
     }
@@ -242,7 +242,7 @@ use class IUCam:CamStart {
     outerMain(List args) {
       try {
         innerMain(System:Process.new().args);
-      } catch (var e) {
+      } catch (any e) {
         log.log(lvl, "Exception in CmdUI, error is " + e);
       }
     }
@@ -364,7 +364,7 @@ use class IUCam:CamStart {
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
-        for (var kv in ui.configManager.getMap()) {
+        for (any kv in ui.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
       }
@@ -394,7 +394,7 @@ use class IUCam:CamPlugin {
           IO:Log log = IO:Log.new();
           log.level = log.info;
           Int lvl = log.level;
-          var app;
+          any app;
           String name = "IUCam";
           String homePage = "/App/IUCam/IUCam.html";
           Background bg = Background.new();

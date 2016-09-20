@@ -33,8 +33,8 @@ class WebImp {
   
   setup() {
     fields {
-      var setupHandler;
-      var webHandler;
+      any setupHandler;
+      any webHandler;
     }
   }
   
@@ -56,7 +56,7 @@ class UI:WebBrowser {
       String content;
       String location;
       String browserType;
-      var webHandler;
+      any webHandler;
       WebImp webImp;
     }
     ifEmit(cs) {
@@ -317,7 +317,7 @@ use class Web:Client {
         """
         }
         if (url.begins("https")) {
-          var ssl = "yup";//null or not null
+          any ssl = "yup";//null or not null
         }
         emit(cs) {
         """
@@ -348,7 +348,7 @@ use class Web:Client {
         }
         """
         }
-        for (var kv in outputHeaders) {
+        for (any kv in outputHeaders) {
           String hk = kv.key;
           String hv = kv.value;
           emit(cs) {
@@ -373,7 +373,7 @@ use class Web:Client {
       open();
       certificateThumbprint = null;
       if (url.begins("https")) {
-        var ssl = "yup";//null or not null
+        any ssl = "yup";//null or not null
       }
       outputWriter = IO:Writer.new();
       emit(cs) {
@@ -426,7 +426,7 @@ use class Web:Client {
         inputReader = IO:Reader.new();
         certificateThumbprint = null;
         if (url.begins("https")) {
-          var ssl = "yup";//null or not null
+          any ssl = "yup";//null or not null
         }
         emit(cs) {
         """
@@ -580,7 +580,7 @@ use class Web:SessionManager {
   
   new(_sessions, String _keyName) self {
     fields {
-      var sessions = _sessions;
+      any sessions = _sessions;
       String keyName = _keyName;
       Int keyLen = 64;
     }
@@ -625,7 +625,7 @@ use class Web:SessionManager {
   deleteSessionByKey(String key) {
     if (TS.notEmpty(key)) {
       Map toDel = sessions.getMap(key + ".");
-      for (var x in toDel) {
+      for (any x in toDel) {
         //("deleting session key " + x.key).print(); 
         sessions.delete(x.key);
       }

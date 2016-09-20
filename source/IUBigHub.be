@@ -48,7 +48,7 @@ use class IUHub:BigHubStart {
       outerMain(System:Process.new().args);
       /*try {
         app.configManager.close();
-      } catch (var e) {
+      } catch (any e) {
         log.log(lvl, "Exception closing db in CmdUI, error is " + e);
       }*/
     }
@@ -56,7 +56,7 @@ use class IUHub:BigHubStart {
     outerMain(List args) {
       try {
         innerMain(System:Process.new().args);
-      } catch (var e) {
+      } catch (any e) {
         log.log(lvl, "Exception in CmdUI, error is " + e);
       }
     }
@@ -188,7 +188,7 @@ use class IUHub:BigHubStart {
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
-        for (var kv in ui.configManager.getMap()) {
+        for (any kv in ui.configManager.getMap()) {
           log.log(lvl, "Config name " + kv.key + " value " + kv.value);
         }
       }

@@ -64,10 +64,10 @@ use class Web:Server {
   init() {
     fields {
       Int port = 8080;
-      var app;
+      any app;
       Bool ssl = false;
       String sslPath;
-      var sessionManager;
+      any sessionManager;
       IO:Log log = IO:Log.new();
       Int lvl = log.debug;
       Bool gzipOutput = false;
@@ -91,7 +91,7 @@ use class Web:Server {
   }
   
   handleWeb(request) {
-    var e;
+    any e;
     try {
       request.gzipOutput = gzipOutput;
       request.sessionManager = sessionManager;
@@ -134,7 +134,7 @@ use class Web:Server {
     """
     }
     
-    var ussl;
+    any ussl;
     if (ssl) {
       ussl = "notnull";
     }
@@ -492,7 +492,7 @@ use class Web:ScriptRequest {
    
    getSession(String name) String {
      fields {
-       var sessionManager;
+       any sessionManager;
      }
      if (def(sessionManager)) {
        return(sessionManager.getSession(self, name));
