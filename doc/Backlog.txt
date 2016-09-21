@@ -2,6 +2,8 @@
 =====
 =====
 
+open/close for motion en/disable
+
 library based dev env
   incl up to before apps (hub, cam) in baselib (js too)
   
