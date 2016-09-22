@@ -375,7 +375,7 @@ public ResultSet bevi_res = null;
       return(res);
    }
    
-   iteratorGet() {
+   iteratorGet() any {
     //to support for
     return(self);
    }

@@ -2,15 +2,16 @@
 =====
 =====
 
-open/close for motion en/disable
-
-library based dev env
-  incl up to before apps (hub, cam) in baselib (js too)
-  
 separate hub into upnp et all and just a container for other apps?
   call upnp et all bridge (IUBridge)
-
+  
 switch to simpler proxy (+1 request, if not available fall back to exact)
+  instance for the call in eui, return call on an instance in the ui
+  old way works, is facade over it
+
+library based dev env
+
+open/close for motion en/disable
 
 plugin to build, on success install-restart (last start time)
 diff cmds for base lib and app
