@@ -13,6 +13,25 @@ use UI:HtmlDom:Document as HD;
 use UI:HtmlDom:Element as HE;
 use UI:HtmlDom:Call as HC;
 
+emit(js) {
+"""
+
+var eui;
+
+var handleCallback = function(res) {
+    if (res != null) {
+      var bevs_resjs = new be_$class/Text:String$().bems_new(res);
+      eui.bem_handleCallback_1(bevs_resjs);
+    }
+}
+
+var request = function(callName, callArgs) {
+
+}
+
+"""
+}
+
 class HD {
   default() self {
     

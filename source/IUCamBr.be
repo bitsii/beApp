@@ -16,20 +16,12 @@ use UI:HtmlDom:Call as HC;
 emit(js) {
 """
 
-var eui;
 //ui startup
 var startup = function() {
   eui = new be_$class/IUCam:Eui$();
   eui.bem_new_0();
   eui.bem_main_0();
   eui.bem_startup_0();
-}
-
-var handleCallback = function(res) {
-    if (res != null) {
-      var bevs_resjs = new be_$class/Text:String$().bems_new(res);
-      eui.bem_handleCallback_1(bevs_resjs);
-    }
 }
 
 var endSession = function(forId) {

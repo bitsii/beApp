@@ -2,42 +2,69 @@
 =====
 =====
 
+js and be + convenience that takes string of call name and array of args and passes through (call in Br and callBack in App), use typeof() to convert strings and ints - convenience methods to get objects - no more extra wrappers and map construction
+  move callout/back to common code, eui is embedded (it's pretty much there in HC
+    but looks like some stuff still needs to move / js outermost)
+    do the js stuff (in common/HC)
+    request and respond (response)
+    on js side have method
+    do proxy in be
+  
+open/close for motion en/disable
+
+online dev env
+  alt instance alongside
+  existing working on pi
+  build/run
+  patch back/forth
+
+activation for cam
+
+section to add cam perms to accounts under cam setup    
+
+picture navigation (prior/next)
+
+phone/etc/dev env
+eventing framework
+all in browser dev sandbox
+    
+easy setup
+  step by step install instructions for noobs
+  url for script to do the rest
+______________
+
+sound 
+
+remote wakeup
+remote access
+locks - web service option
+
 separate hub into upnp et all and just a container for other apps?
   call upnp et all bridge (IUBridge)
   
-switch to simpler proxy (+1 request, if not available fall back to exact)
-  instance for the call in eui, return call on an instance in the ui
-  old way works, is facade over it
+no-upnp option
+no imap option
 
-library based dev env
+video
 
-open/close for motion en/disable
+embedded plugin host (autoauth, etc)
+
+basic link working wincs, monoweb, xamarin
+  use mono sqlite instead of firebird
+  monoweb with just build module, link, hub
+
+link autoget pics
+
+robots
 
 plugin to build, on success install-restart (last start time)
 diff cmds for base lib and app
 
-always loggedin hub
 freeform devel app (jv/mcs gen, js run) - win, mac, ios, android (plugin)
 
 good event development/scripting abilities!!! across devs (home auto, etc)
 
-link working jvweb (bh), wincs, monoweb, xamarin
-  use mono sqlite instead of firebird
-  monoweb with just build module, link, hub
-  
-no-upnp option
-no imap option
-easy setup
-  step by step install instructions for noobs
-  url for script to do the rest
- 
-activation for cam
-
-step by step instructions for setting up development envs
-
-section to add cam perms to accounts under cam setup  
-  
-______________
+library based dev env
 
 link client, keeps hub up to date with ip, gw, mac
 autodl pics, ping location
@@ -53,8 +80,6 @@ remoting for other apps
 ui to add forwarding
 wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
 also have a rasberry pi connected wakeup option
-
-video and voice
 
 password sync/ vault
 contact sync
