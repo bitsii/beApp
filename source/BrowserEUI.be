@@ -16,12 +16,12 @@ use UI:HtmlDom:Call as HC;
 emit(js) {
 """
 
-var eui;
+var app;
 
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
-      eui.bem_handleCallback_1(bevs_resjs);
+      app.bem_handleCallback_1(bevs_resjs);
     }
 }
 

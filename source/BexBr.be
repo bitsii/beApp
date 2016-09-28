@@ -16,18 +16,18 @@ use UI:HtmlDom:Call as HC;
 emit(js) {
 """
 
-var eui;
+var app;
 //ui startup
 var startup = function() {
-  eui = new be_$class/App:BexBr$();
-  eui.bem_new_0();
-  eui.bem_main_0();
+  app = new be_$class/App:BexBr$();
+  app.bem_new_0();
+  app.bem_main_0();
 }
 
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
-      eui.bem_handleCallback_1(bevs_resjs);
+      app.bem_handleCallback_1(bevs_resjs);
     }
 }
 

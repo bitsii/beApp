@@ -2,13 +2,12 @@
 =====
 =====
 
-js and be + convenience that takes string of call name and array of args and passes through (call in Br and callBack in App), use typeof() to convert strings and ints - convenience methods to get objects - no more extra wrappers and map construction
-  move callout/back to common code, eui is embedded (it's pretty much there in HC
-    but looks like some stuff still needs to move / js outermost)
-    do the js stuff (in common/HC)
-    request and respond (response)
-    on js side have method
-    do proxy in be
+js and be + convenience that takes string of call name and array of args and passes through
+   use typeof() to convert strings and ints - no more extra wrappers
+   request and respond (response)
+   on js side have method
+   do proxy in be
+   app and App on Br side, ui (or UI?, or br Br or Bro(w)) on App
   
 open/close for motion en/disable
 
@@ -17,6 +16,7 @@ online dev env
   existing working on pi
   build/run
   patch back/forth
+  webide
 
 activation for cam
 

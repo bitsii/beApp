@@ -663,7 +663,7 @@ use class IUCam:CamPlugin {
             clabel = Path.apNew(c).steps.last;
             app.configManager.put("cam." + c + ".label", clabel);
           }
-          actionLinks += "<p><a href=\"#\" onclick=\"eui.bem_updateImage_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
+          actionLinks += "<p><a href=\"#\" onclick=\"app.bem_updateImage_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
           if (showMotion) {
             String mcp = app.configManager.get("cam." + c + ".motion");
             if (TS.notEmpty(mcp) && Bool.new(mcp)) {
@@ -671,7 +671,7 @@ use class IUCam:CamPlugin {
             } else {
               endis = "Enable";
             }
-            moLinks += "<p><a href=\"#\" onclick=\"eui.bem_toggleMotion_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">" += endis += " motion for " + clabel + "</a></p>";
+            moLinks += "<p><a href=\"#\" onclick=\"app.bem_toggleMotion_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">" += endis += " motion for " + clabel + "</a></p>";
           }
         }
      }

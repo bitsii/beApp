@@ -18,54 +18,54 @@ emit(js) {
 
 //ui startup
 var startup = function() {
-  eui = new be_$class/IUHub:Eui$();
-  eui.bem_new_0();
-  eui.bem_main_0();
-  eui.bem_startup_0();
+  app = new be_$class/IUHub:Eui$();
+  app.bem_new_0();
+  app.bem_main_0();
+  app.bem_startup_0();
 }
 
 var endSession = function(forId) {
   var theId = new be_$class/Text:String$().bems_new(forId);
-  eui.bem_endSessionRequest_1(theId);
+  app.bem_endSessionRequest_1(theId);
 }
 
 var updateConfig = function(forKey, forId) {
   var theKey = new be_$class/Text:String$().bems_new(forKey);
   var theId = new be_$class/Text:String$().bems_new(forId);
-  eui.bem_updateConfig_2(theKey, theId);
+  app.bem_updateConfig_2(theKey, theId);
 }
 
 var localBrowseRequest = function(forId) {
   var theId = new be_$class/Text:String$().bems_new(forId);
-  eui.bem_localBrowseRequest_1(theId);
+  app.bem_localBrowseRequest_1(theId);
 }
 
 var loadAccountRequest = function(forId) {
   var theId = new be_$class/Text:String$().bems_new(forId);
-  eui.bem_loadAccountRequest_1(theId);
+  app.bem_loadAccountRequest_1(theId);
 }
 
 var deleteSelected = function() {
-  eui.bem_deleteRequest_0();
+  app.bem_deleteRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
 var deleteAccount = function() {
-  eui.bem_deleteAccountRequest_1(new be_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
+  app.bem_deleteAccountRequest_1(new be_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
 }
 
 var copySelected = function() {
-  eui.bem_copyRequest_0();
+  app.bem_copyRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
 var upgradeSelected = function() {
-  eui.bem_upgradeRequest_0();
+  app.bem_upgradeRequest_0();
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
   function handleFileSelect(evt) {
-    var dpath = eui.bem_browsingDirGet_0().bems_toJsString();
+    var dpath = app.bem_browsingDirGet_0().bems_toJsString();
     var files = evt.target.files; // FileList object
     for (var i = 0, f; f = files[i]; i++) {
       var req = new XMLHttpRequest();
@@ -80,10 +80,10 @@ var upgradeSelected = function() {
 function fileChecked(box) {
   var theId = new be_$class/Text:String$().bems_new(box.id);
   if (box.checked) {
-    eui.bem_fileChecked_1(theId);
+    app.bem_fileChecked_1(theId);
     //alert("checked ".concat(box.id));
   } else {
-    eui.bem_fileUnchecked_1(theId);
+    app.bem_fileUnchecked_1(theId);
     //alert("unchecked ".concat(box.id));
   }
   

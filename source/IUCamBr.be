@@ -18,35 +18,35 @@ emit(js) {
 
 //ui startup
 var startup = function() {
-  eui = new be_$class/IUCam:Eui$();
-  eui.bem_new_0();
-  eui.bem_main_0();
-  eui.bem_startup_0();
+  app = new be_$class/IUCam:Eui$();
+  app.bem_new_0();
+  app.bem_main_0();
+  app.bem_startup_0();
 }
 
 var endSession = function(forId) {
   var theId = new be_$class/Text:String$().bems_new(forId);
-  eui.bem_endSessionRequest_1(theId);
+  app.bem_endSessionRequest_1(theId);
 }
 
 var updateConfig = function(forKey, forId) {
   var theKey = new be_$class/Text:String$().bems_new(forKey);
   var theId = new be_$class/Text:String$().bems_new(forId);
-  eui.bem_updateConfig_2(theKey, theId);
+  app.bem_updateConfig_2(theKey, theId);
 }
 
 var localBrowseRequest = function(forId) {
   var theId = new be_$class/Text:String$().bems_new(forId);
-  eui.bem_localBrowseRequest_1(theId);
+  app.bem_localBrowseRequest_1(theId);
 }
 
 var loadAccountRequest = function(forId) {
   var theId = new be_$class/Text:String$().bems_new(forId);
-  eui.bem_loadAccountRequest_1(theId);
+  app.bem_loadAccountRequest_1(theId);
 }
 
 var deleteAccount = function() {
-  eui.bem_deleteAccountRequest_1(new be_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
+  app.bem_deleteAccountRequest_1(new be_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
 }
 
 window.onload = startup;

@@ -39,20 +39,20 @@ h5.luiForm {
 <body>
 
 <!--<p><label>Hi to Who2 </label><input type="text" id="who" size="20" value=""></p>
-<p><button id="sayit" type="button" onclick="eui.bem_hiRequest_0();return false;">Say It</button></p>-->
+<p><button id="sayit" type="button" onclick="app.bem_hiRequest_0();return false;">Say It</button></p>-->
 
 <div id="failDiv" style="display: none;">
 <div id="failMessageDiv"></div>
-<p><a href="#" onclick="eui.bem_hideFail_0();return false;">Clear Error</a></p>
+<p><a href="#" onclick="app.bem_hideFail_0();return false;">Clear Error</a></p>
 </div>
 <div id="logindiv">
 <p>Login</p>
 <form>
 <p><label class="luiForm">Account Name</label><input type="text" id="accountName"></input></p>
-<p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) eui.bem_login_0()"></input></p>
-<p><label class="luiForm">Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) eui.bem_login_0()"></input>(Optional)</p>
+<p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) app.bem_login_0()"></input></p>
+<p><label class="luiForm">Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) app.bem_login_0()"></input>(Optional)</p>
 </form>
-<p><a href="#" onclick="eui.bem_login_0();return false;">Login</a></p>
+<p><a href="#" onclick="app.bem_login_0();return false;">Login</a></p>
 </div>
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
@@ -62,8 +62,8 @@ h5.luiForm {
 </div>
 
 <table><tr>
-<td><a href="#" onclick="eui.bem_showImapRequest_0();return false;">Settings</a></td>
-<td><a href="#" onclick="eui.bem_logout_0();return false;">Logout</a></td>
+<td><a href="#" onclick="app.bem_showImapRequest_0();return false;">Settings</a></td>
+<td><a href="#" onclick="app.bem_logout_0();return false;">Logout</a></td>
 </tr></table>
 
 <div id="imapSettingsDiv" style="display: none;">
@@ -72,7 +72,7 @@ h5.luiForm {
 <p><label class="luiForm">Account</label><input type="text" id="imapAccount"</input></p>
 <p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
 <p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
-<p><a href="#" onclick="eui.bem_imapSettingsRequest_0();return false;">Save Coordinator Settings</a></p>
+<p><a href="#" onclick="app.bem_imapSettingsRequest_0();return false;">Save Coordinator Settings</a></p>
 </div>
 <div id="actionLinksDiv"></div>
 </div>
