@@ -16,16 +16,40 @@ use UI:HtmlDom:Call as HC;
 emit(js) {
 """
 
-var app;
+var ui;
 
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
-      app.bem_handleCallback_1(bevs_resjs);
+      ui.bem_handleCallback_1(bevs_resjs);
     }
 }
 
-var request = function(callName, callArgs) {
+var convertArgs = function() {
+  //make bemap
+  //make bearray
+  //put cname and args into map and return
+  var cname;
+  for (var i = 0; i < arguments.length; i++) {
+    if (i == 0) {
+      //is the base name of the method
+      cname = arguments[i];
+    } else {
+      var ta = arguments[i];
+      //add to array
+      if (typeof ta === 'number') {
+        //new int
+      } else if (typeof ta === 'string') {
+        //new string
+      }
+    }
+  }
+}
+
+//callApp does invoke on app via a call to ui
+//callUi does invoke on ui
+
+var getById = function(theId) {
 
 }
 

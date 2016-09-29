@@ -19,20 +19,20 @@ emit(js) {
 
 //ui startup
 var startup = function() {
-  app = new be_$class/App:IULinkBr$();
-  app.bem_new_0();
-  app.bem_main_0();
-  app.bem_startup_0();
+  ui = new be_$class/App:IULinkBr$();
+  ui.bem_new_0();
+  ui.bem_main_0();
+  ui.bem_startup_0();
 }
 
 var openIntLink = function(devid) {
     var bevs_resjs = new be_$class/Text:String$().bems_new(devid);
-    app.bem_openIntLinkRequest_1(bevs_resjs);
+    ui.bem_openIntLinkRequest_1(bevs_resjs);
 }
 
 var openExtLink = function(devid) {
     var bevs_resjs = new be_$class/Text:String$().bems_new(devid);
-    app.bem_openExtLinkRequest_1(bevs_resjs);
+    ui.bem_openExtLinkRequest_1(bevs_resjs);
 }
 
 var showADiv = function(divid) {

@@ -4,12 +4,16 @@
 
 js and be + convenience that takes string of call name and array of args and passes through
    use typeof() to convert strings and ints - no more extra wrappers
-   request and respond (response)
+   callApp callUi proxy ui.mtd in app
    on js side have method
    do proxy in be
-   app and App on Br side, ui (or UI?, or br Br or Bro(w)) on App
   
 open/close for motion en/disable
+
+persistent ip tunnel based on same/diff router and background check
+
+ui to add forwarding
+wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
 
 online dev env
   alt instance alongside
@@ -17,6 +21,10 @@ online dev env
   build/run
   patch back/forth
   webide
+  
+scheduling
+
+homeauto - locks, light
 
 activation for cam
 
@@ -34,10 +42,6 @@ easy setup
 ______________
 
 sound 
-
-remote wakeup
-remote access
-locks - web service option
 
 separate hub into upnp et all and just a container for other apps?
   call upnp et all bridge (IUBridge)
@@ -73,12 +77,10 @@ record sound
 play uploaded sound
 alarm
 
-remote access/vpn/wakeup/remote control/remote presense
+remote presense
 
 remoting for other apps
 
-ui to add forwarding
-wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
 also have a rasberry pi connected wakeup option
 
 password sync/ vault
@@ -88,8 +90,6 @@ text backup
 location tracking/find phone
 move cert stuff out of app (to webserver?, or sharable place...)
 
-home automation
-
 have a sync adapter/ios background thing that updates on occasion
 also working in c# windows imap  
 xamarin studio uwp - xamarin forms
@@ -98,8 +98,8 @@ ios
 only send on change of ext port or ip (make this work better)
 have timing and force update options for both email and folder saved
 
-easy install home-assistant.io openhab https://github.com/domoticz/domoticz
-  port fwd, admin acct
+home automation
+port fwd, admin acct
 
 imap coordinator as-is for links/entry (hub)
 also sends emails (see offerLinkRequest) - list of email addresses which are updated (comma sep)

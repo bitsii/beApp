@@ -1488,7 +1488,7 @@ use class IUHub:HubPlugin {
      for (any kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
-      actionLinks += "<p><a href=\"#\" onclick=\"app.bem_runCommand_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
+      actionLinks += "<p><a href=\"#\" onclick=\"ui.bem_runCommand_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
      }
      String showCam = app.configManager.get("PLUGIN.cam");
      if (TS.notEmpty(showCam) && showCam == "enabled") {
@@ -1499,7 +1499,7 @@ use class IUHub:HubPlugin {
    
    showDevLinksRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-       //String devLinks = "<p><a href=\"#\" onclick=\"app.bem_offerDevLink_0();return false;\">Send Link Offer</a></p>";
+       //String devLinks = "<p><a href=\"#\" onclick=\"ui.bem_offerDevLink_0();return false;\">Send Link Offer</a></p>";
        Map res = Map.new();
        res["action"] = "showDevLinksResponse";
        //res["devLinks"] = devLinks;
