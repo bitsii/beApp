@@ -2,38 +2,25 @@
 =====
 =====
 
-callApp for loadAccount
-callUI for expand/contract enable/disable motion
-
-generic set values callback (with invokes?), use for callApp?
-
-get rid of as much boilerplate as possible, including for making new plugins
-
-reenable compression (not by default)
-add random stuff to responses
-see if can turn off compression request by requiest, if so check referrer
-
-add csrf token
-
 deploy
 
-js and be + convenience that takes string of call name and array of args and passes through
-   loadAccount
-   use typeof() to convert strings and ints - no more extra wrappers
-   callApp callUi proxy ui.mtd in app
-   on js side have method
-   do proxy in be
-
-convert exerything to it
-   
 lib the dev env
-  
-open/close for motion en/disable
 
-persistent ip tunnel based on same/diff router and background check
+autoscale display
 
-ui to add forwarding
-wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
+easy setup
+  step by step install instructions for noobs
+  url for script to do the rest
+
+generic set values callback (with invokes?), use for callApp?
+do proxy in be (or something) for returns
+   
+no-upnp option
+no imap option
+______________
+
+link client, keeps hub up to date with ip, gw, mac
+______________
 
 online dev env
   alt instance alongside
@@ -41,6 +28,16 @@ online dev env
   build/run
   patch back/forth
   webide
+
+phone/etc/dev env
+eventing framework
+all in browser dev sandbox
+______________
+  
+persistent ip tunnel based on same/diff router and background check
+
+ui to add forwarding
+wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
   
 scheduling
 
@@ -51,24 +48,15 @@ activation for cam
 section to add cam perms to accounts under cam setup    
 
 picture navigation (prior/next)
-
-phone/etc/dev env
-eventing framework
-all in browser dev sandbox
-    
-easy setup
-  step by step install instructions for noobs
-  url for script to do the rest
 ______________
 
 sound 
 
+hc default inst?
+
 separate hub into upnp et all and just a container for other apps?
   call upnp et all bridge (IUBridge)
   
-no-upnp option
-no imap option
-
 video
 
 embedded plugin host (autoauth, etc)
@@ -90,7 +78,6 @@ good event development/scripting abilities!!! across devs (home auto, etc)
 
 library based dev env
 
-link client, keeps hub up to date with ip, gw, mac
 autodl pics, ping location
 
 record sound

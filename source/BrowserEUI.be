@@ -65,7 +65,12 @@ var callApp = function() {
   var alist = convertArgs(arguments);
   hc.bem_callApp_1(alist);
 }
-//callUi does invoke on ui
+
+//callUI does invoke on ui
+var callUI = function() {
+  var alist = convertArgs(arguments);
+  return hc.bem_callUI_1(alist);
+}
 
 var getById = function(theId) {
 
@@ -193,6 +198,15 @@ class HC {
      arg["args"] = args;
      arg["plugin"] = callback.name;
      call(arg);
+   }
+   
+   callUI(List args) any {
+     String aname = args[0];
+     args.delete(0);
+     if (callback.can(aname, args.length)) {
+       return(callback.invoke(aname, args));
+     }         
+     return(null);
    }
 
   call(Map arg) {

@@ -451,7 +451,7 @@ use class IUCam:CamPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.3.1";
+        String version =@ "5.4.1";
       }
       return(version);
     }
@@ -677,7 +677,10 @@ use class IUCam:CamPlugin {
      }
      String showCam = app.configManager.get("PLUGIN.hub");
      if (showMotion) {
+      actionLinks += "<p><a href=\"#\" onclick=\"callUI('toggleCamSettings');return false;\">Cam Settings</a></p>";
+      actionLinks += "<div id=\"camSettingsDiv\" style=\"display: none;\">"
       actionLinks += moLinks;
+      actionLinks += "</div>";
      }
      if (TS.notEmpty(showCam) && showCam == "enabled") {
        actionLinks += "<p><a href=\"IUHub.html\">Go to IUHub</a></p>";

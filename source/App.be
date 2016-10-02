@@ -879,6 +879,26 @@ class AuthedApp {
     Int clearSecs =@ 10;
     Int updateSecs =@ 5;
   */
+  
+    /*
+    log.log(lvl, "checking origins");
+    String org = request.getInputHeader("origin");
+    String ref = request.getInputHeader("referer");
+    String uri = request.uri;
+    String la = request.localAddress;
+    String ra = request.remoteAddress;
+    if (true) {
+      if (def(org)) {
+        log.log(lvl, "orgin " + org);
+      }
+      if (def(ref)) {
+        log.log(lvl, "referer " + ref);
+      }
+      if (def(uri) && def(la) && def(ra)) {
+        log.log(lvl, "uri, la, ra " + uri + " " + la + " " + ra);
+      }
+    }
+    */
     
     String ip = request.remoteAddress;
     String sip = request.getSession("ip");
@@ -888,7 +908,7 @@ class AuthedApp {
         return(true);
       }
     }
-  
+    
     Int ns = Time:Interval.now().seconds;
     
     if (TS.notEmpty(ip)) {
@@ -933,7 +953,47 @@ class AuthedApp {
     return(true);
   }
   
+  isCrossSite(request) Bool {
+    fields {
+      String extUrl;
+    }
+    String ref = request.getInputHeader("referer");
+    String la = request.localAddress;
+    if (TS.isEmpty(ref) || TS.isEmpty(la)) {
+    //  log.log(lvl, "isCrossSite true empty");
+      return(true);
+    }
+    la = "https://" + la;
+    if (ref.begins(la)) {
+    //  log.log(lvl, "isCrossSite false begins " + la + " " + ref);
+      return(false);
+    }
+    if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
+    //  log.log(lvl, "isCrossSite false extUrl begins " + extUrl + " " + ref);
+      return(false);
+    }
+    String extAddress = self.configManager.get("upnp.extAddress");
+    String extPort = self.configManager.get("wui.extPort");
+    if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
+      extUrl = "https://" + extAddress + ":" + extPort;
+    //  log.log(lvl, "new extUrl " + extUrl);
+    } else {
+    //  log.log(lvl, "extAddress or extPort empty");
+      if (TS.isEmpty(extAddress)) { log.log(lvl, "extAddress empty"); }
+      if (TS.isEmpty(extPort)) { log.log(lvl, "extPort empty"); }
+    }
+    if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
+    //  log.log(lvl, "isCrossSite false new extUrl begins " + extUrl + " " + ref);
+      return(false);
+    }
+    //log.log(lvl, "isCrossSite true not begins " + la + " " + ref);
+    return(true);
+  }
+  
   checkWritePath(Path p, request) Bool {
+    if (isCrossSite(request)) {
+      return(false);
+    }
     Account a = self.accountManager.getAccountForRequest(request);
     if (def(a) && a.perms.has("admin")) {
       return(true);
@@ -959,6 +1019,14 @@ class AuthedApp {
    }
    
    checkReadPath(Path p, request) Bool {
+    Path pa = p.file.absPath;
+    String pas = pa.toString();
+    if (self.plugin.checkPublicReadPath(pa, request)) {
+        return(true);
+    }
+    if (isCrossSite(request)) {
+      return(false);
+    }
     Account a = self.accountManager.getAccountForRequest(request);
     if (def(a) && a.perms.has("admin")) {
       return(true);
@@ -968,14 +1036,10 @@ class AuthedApp {
     Bool isOk = false;
     if (undef(accountName)) { accountName = ""; }
     try {
-      Path pa = p.file.absPath;
       if (TS.notEmpty(accountName)) {
         Path h = Path.apNew("Home/" + accountName).file.absPath;
       }
-      String pas = pa.toString();
-      if (self.plugin.checkPublicReadPath(pa, request)) {
-        isOk = true;
-      } elseIf (def(h) && pas.begins(h.toString())) {
+      if (def(h) && pas.begins(h.toString())) {
         isOk = true;
       }
     } catch (e) {
@@ -1126,6 +1190,10 @@ class AuthedApp {
       return(null);
      }
         try {
+            if (isCrossSite(request)) {
+              log.log(lvl, "rejecting cross site request");
+              return(null);
+            }
             String aname = arg.get("action");
             if (undef(aname) || aname.ends("Request")!) {
               throw(Exception.new("Invalid request"));
@@ -1141,12 +1209,12 @@ class AuthedApp {
               //is "standard call"
               args = arg["args"];
               args += request;
-              log.log(lvl, "call type a " + aname + args.length);
+              //log.log(lvl, "call type a " + aname + args.length);
             } else {
               List args = List.new(2);
               args[0] = arg;
               args[1] = request;
-              log.log(lvl, "call type b");
+              //log.log(lvl, "call type b");
             }
             for (any pl in plugins) {
               if (pl.can(aname, args.length)) {

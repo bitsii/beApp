@@ -1257,7 +1257,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.3.1";
+        String version =@ "5.4.1";
       }
       return(version);
     }

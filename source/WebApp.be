@@ -61,7 +61,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
       vw.ssl = true;
       vw.sslPath = cerPath;
       vw.app = self;
-      //vw.gzipOutput = true;//security issues
+      vw.gzipOutput = true;
       fields {
         System:Thread myThread = System:Thread.new(vw);
       }

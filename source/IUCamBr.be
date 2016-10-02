@@ -191,6 +191,14 @@ use class IUCam:Eui {
       handleCallOut(arg);
    }
    
+   toggleCamSettings() {
+     if (HD.getElementById("camSettingsDiv").display == "block") {
+       HD.getElementById("camSettingsDiv").display = "none";
+     } else {
+       HD.getElementById("camSettingsDiv").display = "block";
+     }
+   }
+   
    showConfig() {
       if (TS.notEmpty(HD.getElementById("configsDiv").innerHTML)) {
         hideConfig();
