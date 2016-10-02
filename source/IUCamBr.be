@@ -18,10 +18,7 @@ emit(js) {
 
 //ui startup
 var startup = function() {
-  ui = new be_$class/IUCam:Eui$();
-  ui.bem_new_0();
-  ui.bem_main_0();
-  ui.bem_startup_0();
+  uiStartup(new be_$class/IUCam:Eui$());
 }
 
 var endSession = function(forId) {
@@ -40,11 +37,6 @@ var localBrowseRequest = function(forId) {
   ui.bem_localBrowseRequest_1(theId);
 }
 
-var loadAccountRequest = function(forId) {
-  var theId = new be_$class/Text:String$().bems_new(forId);
-  ui.bem_loadAccountRequest_1(theId);
-}
-
 var deleteAccount = function() {
   ui.bem_deleteAccountRequest_1(new be_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
 }
@@ -57,6 +49,7 @@ use class IUCam:Eui {
 
   new() self {
         fields {
+          String name = "cam";
         }
     }
     
@@ -66,7 +59,7 @@ use class IUCam:Eui {
     
     handleCallOut(Map arg) {
       if (def(arg)) {
-        arg["plugin"] = "cam";
+        arg["plugin"] = name;
       }
       HC.new(self).call(arg);
     }
@@ -159,15 +152,8 @@ use class IUCam:Eui {
      clearAccountAdmin();
    }
    
-   loadAccountRequest(String accountName) {
-      clearAccountAdmin();
-      Map arg = Map.new();
-      arg["accountName"] = accountName;
-      arg["action"] = "loadAccountRequest";
-      handleCallOut(arg);
-   }
-   
    loadAccountResponse(Map arg) {
+     clearAccountAdmin();
      HD.getElementById("aadminName").value = arg["accountName"];
      HD.getElementById("aadminIsAdmin").checked = arg["admin"];
      HD.getElementById("aadminIsWebcam").checked = arg["allcam"];

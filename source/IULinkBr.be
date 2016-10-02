@@ -19,10 +19,7 @@ emit(js) {
 
 //ui startup
 var startup = function() {
-  ui = new be_$class/App:IULinkBr$();
-  ui.bem_new_0();
-  ui.bem_main_0();
-  ui.bem_startup_0();
+  uiStartup(new be_$class/App:IULinkBr$());
 }
 
 var openIntLink = function(devid) {
@@ -51,6 +48,7 @@ use class App:IULinkBr {
 
   new() self {
         fields {
+          String name = "link";
         }
     }
     
@@ -60,7 +58,7 @@ use class App:IULinkBr {
     
     handleCallOut(Map arg) {
       if (def(arg)) {
-        arg["plugin"] = "link";
+        arg["plugin"] = name;
       }
       HC.new(self).call(arg);
     }

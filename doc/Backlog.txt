@@ -2,11 +2,31 @@
 =====
 =====
 
+callApp for loadAccount
+callUI for expand/contract enable/disable motion
+
+generic set values callback (with invokes?), use for callApp?
+
+get rid of as much boilerplate as possible, including for making new plugins
+
+reenable compression (not by default)
+add random stuff to responses
+see if can turn off compression request by requiest, if so check referrer
+
+add csrf token
+
+deploy
+
 js and be + convenience that takes string of call name and array of args and passes through
+   loadAccount
    use typeof() to convert strings and ints - no more extra wrappers
    callApp callUi proxy ui.mtd in app
    on js side have method
    do proxy in be
+
+convert exerything to it
+   
+lib the dev env
   
 open/close for motion en/disable
 

@@ -452,11 +452,11 @@ use class App:AuthPlugin {
       app.accountManager.putAccount(a);
    }
    
-   loadAccountRequest(Map arg, request) {
+   loadAccountRequest(String accountName, request) {
       unless (app.requestFromAdmin(request)) {
         throw(Alert.new("Must be administrator"));
       }
-      Account a = app.accountManager.getAccount(arg["accountName"]);
+      Account a = app.accountManager.getAccount(accountName);
       if (def(a)) {
         Map res = Map.new();
         res["action"] = "loadAccountResponse";
@@ -476,7 +476,7 @@ use class App:AuthPlugin {
       String accountLinks = String.new();
       List logins = app.accountManager.getLogins();
       for (String login in logins) {
-        accountLinks += "<p><a href=\"#\" onclick=\"loadAccountRequest('" += login += "');return false;\">Modify " += login += "</a></p>";
+        accountLinks += "<p><a href=\"#\" onclick=\"callApp('loadAccountRequest', '" += login += "');return false;\">Modify " += login += "</a></p>";
       }
       Map res = Map.new();
       res["action"] = "showAccountAdminResponse";
@@ -1137,9 +1137,17 @@ class AuthedApp {
               }
             }
             log.log(lvl, "here");
-            List args = List.new(2);
-            args[0] = arg;
-            args[1] = request;
+            if (arg.has("args")) {
+              //is "standard call"
+              args = arg["args"];
+              args += request;
+              log.log(lvl, "call type a " + aname + args.length);
+            } else {
+              List args = List.new(2);
+              args[0] = arg;
+              args[1] = request;
+              log.log(lvl, "call type b");
+            }
             for (any pl in plugins) {
               if (pl.can(aname, args.length)) {
                 any res = pl.invoke(aname, args);

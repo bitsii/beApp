@@ -18,10 +18,9 @@ emit(js) {
 
 var ui;
 //ui startup
+
 var startup = function() {
-  ui = new be_$class/App:BexBr$();
-  ui.bem_new_0();
-  ui.bem_main_0();
+  uiStartup(new be_$class/App:BexBr$());
 }
 
 var handleCallback = function(res) {

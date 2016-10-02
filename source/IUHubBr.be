@@ -18,10 +18,7 @@ emit(js) {
 
 //ui startup
 var startup = function() {
-  ui = new be_$class/IUHub:Eui$();
-  ui.bem_new_0();
-  ui.bem_main_0();
-  ui.bem_startup_0();
+  uiStartup(new be_$class/IUHub:Eui$());
 }
 
 var endSession = function(forId) {
@@ -38,11 +35,6 @@ var updateConfig = function(forKey, forId) {
 var localBrowseRequest = function(forId) {
   var theId = new be_$class/Text:String$().bems_new(forId);
   ui.bem_localBrowseRequest_1(theId);
-}
-
-var loadAccountRequest = function(forId) {
-  var theId = new be_$class/Text:String$().bems_new(forId);
-  ui.bem_loadAccountRequest_1(theId);
 }
 
 var deleteSelected = function() {
@@ -98,12 +90,13 @@ use class IUHub:Eui {
   new() self {
         fields {
           String currentlyCheckedId;
+          String name = "hub";
         }
     }
     
     handleCallOut(Map arg) {
       if (def(arg)) {
-        arg["plugin"] = "hub";
+        arg["plugin"] = name;
       }
       HC.new(self).call(arg);
     }
@@ -215,15 +208,8 @@ use class IUHub:Eui {
      clearAccountAdmin();
    }
    
-   loadAccountRequest(String accountName) {
-      clearAccountAdmin();
-      Map arg = Map.new();
-      arg["accountName"] = accountName;
-      arg["action"] = "loadAccountRequest";
-      handleCallOut(arg);
-   }
-   
    loadAccountResponse(Map arg) {
+     clearAccountAdmin();
      HD.getElementById("aadminName").value = arg["accountName"];
      HD.getElementById("aadminIsAdmin").checked = arg["admin"];
    }

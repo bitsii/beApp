@@ -17,6 +17,16 @@ emit(js) {
 """
 
 var ui;
+var hc;
+
+var uiStartup = function(_ui) {
+  ui = _ui;
+  ui.bem_new_0();
+  ui.bem_main_0();
+  hc = new be_$class/UI:HtmlDom:Call$()
+  hc.bem_new_1(ui);
+  ui.bem_startup_0();
+}
 
 var handleCallback = function(res) {
     if (res != null) {
@@ -25,28 +35,36 @@ var handleCallback = function(res) {
     }
 }
 
-var convertArgs = function() {
+var convertArgs = function(args) {
   //make bemap
   //make bearray
   //put cname and args into map and return
-  var cname;
-  for (var i = 0; i < arguments.length; i++) {
-    if (i == 0) {
-      //is the base name of the method
-      cname = arguments[i];
-    } else {
-      var ta = arguments[i];
-      //add to array
-      if (typeof ta === 'number') {
-        //new int
-      } else if (typeof ta === 'string') {
-        //new string
-      }
+  
+  var alist = (new be_BEC_2_9_4_ContainerList()).bem_new_0();
+
+  for (var i = 0; i < args.length; i++) {
+    var ta = args[i];
+    //add to array
+    if (typeof ta === 'number') {
+      //new int
+      var aint = (new be_BEC_2_4_3_MathInt()).beml_set_bevi_int(ta);
+      alist.bem_addValue_1(aint);
+    } else if (typeof ta === 'string') {
+      //new string
+      var astr = (new be_BEC_2_4_6_TextString()).bems_new(ta);
+      alist.bem_addValue_1(astr);
     }
   }
+  
+  return alist;
+  
 }
 
 //callApp does invoke on app via a call to ui
+var callApp = function() {
+  var alist = convertArgs(arguments);
+  hc.bem_callApp_1(alist);
+}
 //callUi does invoke on ui
 
 var getById = function(theId) {
@@ -167,6 +185,15 @@ class HC {
       any callback = _callback;
     }
   }
+  
+  callApp(List args) {
+     Map arg = Map.new();
+     arg["action"] = args[0];
+     args.delete(0);
+     arg["args"] = args;
+     arg["plugin"] = callback.name;
+     call(arg);
+   }
 
   call(Map arg) {
     String argjs = mar.marshall(arg);
