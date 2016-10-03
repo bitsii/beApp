@@ -380,6 +380,7 @@ use class IUHub:Eui {
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
+      HC.new(self).pageToken = arg["pageToken"];
     }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];

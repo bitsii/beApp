@@ -1145,7 +1145,7 @@ class AuthedApp {
     Map all = self.sessionManager.sessions.getMap();
     for (any kv in all) {
       if (kv.key.ends("account.name") && kv.value == accountName) {
-        log.log(lvl, "Found session " + kv.key);
+        //log.log(lvl, "Found session " + kv.key);
         any kp = kv.key.split(".");
         String sessLabel = String.new();
         String name = self.sessionManager.sessions.get(kp.first + ".session.name");
@@ -1203,6 +1203,26 @@ class AuthedApp {
               unless (aname == "loginRequest") {
                 return(null);
               }
+            } else {
+            
+              //checkLoggedInRequest is ok
+               
+              String stok = request.getSession("pageToken");
+              String atok = arg["pageToken"];
+              unless (aname == "checkLoggedInRequest" && TS.isEmpty(atok)) {
+                if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
+                  log.log(lvl, "stok or atok emtpy failing due to pageToken");
+                  return(null);
+                }
+                if (stok != atok) {
+                  log.log(lvl, "stok != atok failing due to pageToken");
+                  return(null);
+                }
+              }
+            
+              //log.log(lvl, "pageToken action " + aname);
+              //if (def(arg["pageToken"])) { log.log(lvl, "pageToken " + //arg["pageToken"]); } else { log.log(lvl, "no pageToken"); }
+              //if (def(stok)) { log.log(lvl, "session pageToken " + stok); }
             }
             log.log(lvl, "here");
             if (arg.has("args")) {
@@ -1256,6 +1276,9 @@ class AuthedApp {
     }
     
     loggedIn(Account a, Map res, Map arg, request) {
+      String pageToken = System:Random.getString(32);
+      request.putSession("pageToken", pageToken);
+      res["pageToken"] = pageToken;
       return(self.plugin.loggedIn(a, res, arg, request));
     }
     

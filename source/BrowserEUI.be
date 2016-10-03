@@ -23,7 +23,8 @@ var uiStartup = function(_ui) {
   ui = _ui;
   ui.bem_new_0();
   ui.bem_main_0();
-  hc = new be_$class/UI:HtmlDom:Call$()
+  hc = new be_$class/UI:HtmlDom:Call$();
+  hc = hc.bemc_getInitial();
   hc.bem_new_1(ui);
   ui.bem_startup_0();
 }
@@ -183,11 +184,14 @@ class HE {
 
 class HC {
 
+  default() self { }
+
   new(_callback) self {
     fields {
       Json:Marshaller mar = Json:Marshaller.new();
       Json:Unmarshaller unmar = Json:Unmarshaller.new();
       any callback = _callback;
+      String pageToken;
     }
   }
   
@@ -210,6 +214,9 @@ class HC {
    }
 
   call(Map arg) {
+    if (TS.notEmpty(pageToken)) {
+      arg["pageToken"] = pageToken;
+    }
     String argjs = mar.marshall(arg);
     String resjs;
     emit(js) {

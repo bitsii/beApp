@@ -2,7 +2,9 @@
 =====
 =====
 
-deploy
+simple response callback
+call to respond mtd with a return value
+have a generic return mtd that sets things
 
 lib the dev env
 
@@ -11,9 +13,6 @@ autoscale display
 easy setup
   step by step install instructions for noobs
   url for script to do the rest
-
-generic set values callback (with invokes?), use for callApp?
-do proxy in be (or something) for returns
    
 no-upnp option
 no imap option
