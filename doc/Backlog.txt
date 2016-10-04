@@ -2,24 +2,32 @@
 =====
 =====
 
+reverse file order (list reverse)
+
+better look, spaces in forms, change font from js?
+
 simple response callback
 call to respond mtd with a return value
 have a generic return mtd that sets things
 
-lib the dev env
-
-autoscale display
-
 easy setup
   step by step install instructions for noobs
   url for script to do the rest
-   
+
+separate hub into upnp et all and just a container for other apps?
+  call upnp et all bridge (IUBridge)
+  
 no-upnp option
-no imap option
 ______________
 
-link client, keeps hub up to date with ip, gw, mac
+link client (ad, ms, etc), keeps hub up to date with ip, gw, mac
+ non-browser sessions (token keys), limited calls possible
+  bypasses csrf ref checks 
+  pass required to do
+  whitelist calls
 ______________
+
+lib the dev env
 
 online dev env
   alt instance alongside
@@ -31,6 +39,8 @@ online dev env
 phone/etc/dev env
 eventing framework
 all in browser dev sandbox
+
+db pooling kvdb (no clocker) option
 ______________
   
 persistent ip tunnel based on same/diff router and background check
@@ -52,9 +62,6 @@ ______________
 sound 
 
 hc default inst?
-
-separate hub into upnp et all and just a container for other apps?
-  call upnp et all bridge (IUBridge)
   
 video
 

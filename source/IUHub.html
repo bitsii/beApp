@@ -3,32 +3,12 @@
     <meta charset="UTF-8">
 <style>
 
-label.luiForm {
-    width: 120px; float: left;margin:0;padding:0;
+body {
+font-size: 5vw;
 }
 
-input.luiFormField {
-    width: 140px;margin:0;padding:0;clear: right;
-}
-
-input.luiForm {
-    width: 260px;margin:0;padding:0;
-}
-
-p.luiForm {
-    width: 260px;margin:0;padding:0;
-}
-
-h5.luiForm {
-    width: 260px;margin:0;padding:0;
-}
-
-#alertDiv {
-    top:0;
-    left:0;
-    width:100%;
-    height:150%;
-    display:none;
+.smaller {
+ font-size: 3vw; 
 }
 
 </style>
@@ -43,27 +23,27 @@ h5.luiForm {
 <div id="logindiv">
 <p>Login</p>
 <form>
-<p><label class="luiForm">Account Name</label><input type="text" id="accountName"></input></p>
-<p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input></p>
-<p><label class="luiForm">Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input>(Optional)</p>
+<p><label>Account Name</label><input type="text" id="accountName"></input></p>
+<p><label>Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input></p>
+<p><label>Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input>(Optional)</p>
 </form>
 <p><a href="#" onclick="ui.bem_login_0();return false;">Login</a></p>
 </div>
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
-<table><tr>
-<td><a href="#" onclick="ui.bem_showAccountSettings_0();return false;">Settings</a></td>
-<td><a id="localBrowseId" href="#" onclick="ui.bem_localBrowseRequest_0();return false;">Files</a></td>
-<td><a href="#" onclick="ui.bem_logout_0();return false;">Logout</a></td>
-</tr></table>
+<p>
+<a href="#" onclick="ui.bem_showAccountSettings_0();return false;">Settings</a>
+<a id="localBrowseId" href="#" onclick="ui.bem_localBrowseRequest_0();return false;">Files</a>
+<a href="#" onclick="ui.bem_logout_0();return false;">Logout</a>
+
 <div id="accountSettingsDiv" style="display: none;">
-<table><tr>
-<td><a href="#" onclick="ui.bem_showSessionsRequest_0();return false;">Sessions</a></td>
-</tr></table>
+<p>
+<a href="#" onclick="ui.bem_showSessionsRequest_0();return false;">Sessions</a>
+
 <div id="sessionsListDiv" style="display: none;"></div>
-<p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
-<p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
-<p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
+<p><label>Old Password</label><input type="password" id="changePassOld"</input></p>
+<p><label>New Password</label><input type="password" id="changePassNew"</input></p>
+<p><label>Repeat New</label><input type="password" id="changePassNew2"</input></p>
 <p><a href="#" onclick="ui.bem_changePassRequest_0();return false;">Change Password</a></p>
 </div>
 <!--<p><a id="showDevsId" href="#" onclick="ui.bem_showDevLinks_0();return false;">Linked Devices</a></p>
@@ -71,34 +51,34 @@ h5.luiForm {
 <p><a href="#" onclick="ui.bem_hideDevLinks_0();return false;">Close Linked Devices</a></p>
 <div id="offerDevLinkDiv" style="display: none;">
 <form>
-<p><label class="luiForm">Offer to Email</label><input type="text" id="offerEmail"></input></p>
-<p><label class="luiForm">Link Password</label><input type="password" id="offerPass1"</input></p>
-<p><label class="luiForm">Repeat Password</label><input type="password" id="offerPass2"</input></p>
+<p><label>Offer to Email</label><input type="text" id="offerEmail"></input></p>
+<p><label>Link Password</label><input type="password" id="offerPass1"</input></p>
+<p><label>Repeat Password</label><input type="password" id="offerPass2"</input></p>
 <p><a href="#" onclick="ui.bem_offerLink_0();return false;">Send Link Offer</a></p>
 </form>
 </div>-->
 <div id="admindiv" style="display: none;">
-<table><tr>
-<td><a id="showConfigId" href="#" onclick="ui.bem_showConfig_0();return false;">Configuration</a></td>
-<td><a id="showAccountAdminId" href="#" onclick="ui.bem_showAccountAdminRequest_0();return false;">Accounts</a></td>
-<td><a href="#" onclick="ui.bem_showImapRequest_0();return false;">Imap</a></td>
-</tr></table>
+<p>
+<a id="showConfigId" href="#" onclick="ui.bem_showConfig_0();return false;">Configuration</a>
+<a id="showAccountAdminId" href="#" onclick="ui.bem_showAccountAdminRequest_0();return false;">Accounts</a>
+<a href="#" onclick="ui.bem_showImapRequest_0();return false;">Imap</a>
+
 <div id="accountAdminDiv" style="display: none;">
-<p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
-<p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
-<p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
+<p><label>Account Name</label><input type="text" id="aadminName"</input></p>
+<p><label>New Password</label><input type="password" id="aadminPass"</input></p>
+<p><label>Repeat New</label><input type="password" id="aadminPass2"</input></p>
 <p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
 <p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="ui.bem_saveAccountRequest_0();return false;">&nbsp;Confirm account Deletion <input type="checkbox" id="confirmAccountDelete"/><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="deleteAccount();return false;"></p>
 <div id="accountLinksDiv"></div>
 </div>
 <div id="imapSettingsDiv" style="display: none;">
-<p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
-<p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
-<p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
-<p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
+<p><label>Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
+<p><label>Imap Account</label><input type="text" id="imapAccount"</input></p>
+<p><label>Password</label><input type="password" id="imapPass"</input></p>
+<p><label>Repeat Password</label><input type="password" id="imapPass2"</input></p>
 <p><a href="#" onclick="ui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
 </div>
-<div id="configsDiv"></div>
+<div class="smaller" id="configsDiv"></div>
 <!--<p><a id="tryThingId" href="#" onclick="ui.bem_tryThing_0();return false;">Try Thing</a></p>-->
 <p><a id="restartId" href="#" onclick="ui.bem_restart_0();return false;">Restart</a></p>
 <p><a id="restartId" href="#" onclick="ui.bem_clearAllSessions_0();return false;">Clear all sessions (Logs everyone out)</a></p>
@@ -107,10 +87,10 @@ h5.luiForm {
 <div id="actionLinksDiv"></div>
 <p><a href="#" id="clearPicId" onclick="ui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
 <div id="imgdiv"></div>
-<div id="browseFilesDiv" style="display: none;">
+<div class="smaller" id="browseFilesDiv" style="display: none;">
 <p>Upload a File <input type="file" id="files" name="files[]" multiple /></p>
 <p>Confirm file deletion <input type="checkbox" id="confirmDeleteId"/><input id="deleteSubmit" type="submit" value="Delete Selected File" onclick="deleteSelected();return false;"></p>
-<p><label class="luiForm">Copy to Name</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy Selected File" onclick="copySelected();return false;"></p>
+<p><label>Copy to Name</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy Selected File" onclick="copySelected();return false;"></p>
 <p><input id="upgradeSubmit" type="submit" value="Upgrade Using Selected File" onclick="upgradeSelected();return false;"></p>
 <div id="localBrowseListDiv"></div>
 </div>

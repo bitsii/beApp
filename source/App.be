@@ -676,26 +676,26 @@ use class App:FileManagerPlugin {
       dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
       if (dirFile.exists && app.checkReadPath(dirFile.path, request)) {
         dirListHtml += "<p>Listing for " += htmle.encode(dirFile.path.toString()) += "</p>";
-        dirListHtml += "<table>";
+        dirListHtml += "";
         if (adminLinks) {
           if (System:CurrentPlatform.name == "mswin") {
-            dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode("\\") += "');return false;\">ROOT</a></td></tr>";
+            dirListHtml += "<p>DIR <a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode("\\") += "');return false;\">ROOT</a>";
           } else {
-            dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode("/") += "');return false;\">ROOT</a></td></tr>";
+            dirListHtml += "<p>DIR <a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode("/") += "');return false;\">ROOT</a>";
           }
-          dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(".") += "');return false;\">APPDIR</a></td></tr>";
+          dirListHtml += "<p>DIR <a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(".") += "');return false;\">APPDIR</a>";
         }
-        dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>";
-        dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(dirFile.path.toString()) += "');return false;\">.  (REFRESH)</a></td></tr>";
+        dirListHtml += "<p>DIR <a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a>";
+        dirListHtml += "<p>DIR <a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(dirFile.path.toString()) += "');return false;\">.  (REFRESH)</a>";
         IO:File:Path parent = dirFile.path.parent;
         if (def(parent) && TS.notEmpty(parent.toString())) {
-        dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(parent.toString()) += "');return false;\">.. (UP)</a></td></tr>";
+        dirListHtml += "<p>DIR <a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(parent.toString()) += "');return false;\">.. (UP)</a>";
         }
         if (dirFile.isDir) {
           any dit = dirFile.iterator;
@@ -713,21 +713,21 @@ use class App:FileManagerPlugin {
             entry = omap.get(ole);
             p = entry.path;
             if (entry.isDirectory) {
-              dirListHtml += "<tr>";
-              dirListHtml += "<td>DIR</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"localBrowseRequest('"
-          += hex.encode(p.toString()) += "');return false;\">" += htmle.encode(p.name) += "</a></td>";
-              dirListHtml += "</tr>";   
+              dirListHtml += "<p>";
+              dirListHtml += "DIR <a href=" + TS.quote + "#" + TS.quote + " onclick=\"localBrowseRequest('"
+          += hex.encode(p.toString()) += "');return false;\">" += htmle.encode(p.name) += "</a>";
+              dirListHtml += "";   
             } else {
               if (p.toString().ends(".jpg")) {
                 String jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
               } else {
                 jscall = "";
               }
-              dirListHtml += "<tr>";
-              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + jscall + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
-              dirListHtml += "<td><input type=\"checkbox\" id=\"FCB"
-              += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\"></td>";
-              dirListHtml += "</tr>";
+              dirListHtml += "<p>";
+              dirListHtml += "FILE <a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + jscall + ">" += htmle.encode(p.name) += "</a> " += entry.size += "";
+              dirListHtml += " <input type=\"checkbox\" id=\"FCB"
+              += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\">";
+              dirListHtml += "";
             }
           }
           dit.close();
@@ -737,7 +737,7 @@ use class App:FileManagerPlugin {
           res["imghtm"] = "<img src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
           return(res);
         }
-        dirListHtml += "</table>";
+        dirListHtml += "";
       }
       ret.put("action", "localBrowseResponse");
       ret.put("dirListHtml", dirListHtml);
@@ -764,16 +764,16 @@ use class App:ConfigPlugin {
        String conf = String.new();
        Map ecm = app.configManager.getMap();
        if (ecm.isEmpty!) {
-         conf += "<table>";
+         conf += "";
          for (any kv in ecm) {
            unless(kv.value.has("\"")) {
               String ckey = "configKey" + kv.key;
-              conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"ui.bem_deleteConfig_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
+              conf += "<p>" + kv.key + " <input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"> <a href=\"#\" onclick=\"ui.bem_deleteConfig_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a> <a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a>";
             }
          }
       }
-      conf += "<tr><td>Add New:&nbsp;<input type=\"text\" id=\"addConfigKeyId\" value=\"\"></td><td><a href=\"#\" onclick=\"ui.bem_addConfig_0();return false;\">+</a><input type=\"hidden\" id=\"addConfigValId\" value=\"\"></td></tr>";
-      conf += "</table>";
+      conf += "<p>Add New: <input type=\"text\" id=\"addConfigKeyId\" value=\"\"> <a href=\"#\" onclick=\"ui.bem_addConfig_0();return false;\">+</a> <input type=\"hidden\" id=\"addConfigValId\" value=\"\">";
+      conf += "";
        Map res = Map.new();
       res["action"] = "showConfigResponse";
       res["configs"] = conf;
