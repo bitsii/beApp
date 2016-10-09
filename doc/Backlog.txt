@@ -2,23 +2,23 @@
 =====
 =====
 
-reverse file order (list reverse)
-
-better look, spaces in forms, change font from js?
-
-simple response callback
-call to respond mtd with a return value
-have a generic return mtd that sets things
+homeauto - locks, light
 
 easy setup
   step by step install instructions for noobs
   url for script to do the rest
+  executable to download and run which does it (mono?)
+  
+activation for cam
+section to add cam perms to accounts under cam setup   
+device name set
+change password expand/collapse
+cam names
+______________
 
 separate hub into upnp et all and just a container for other apps?
   call upnp et all bridge (IUBridge)
-  
-no-upnp option
-______________
+  migrate to new stuff enroute as works
 
 link client (ad, ms, etc), keeps hub up to date with ip, gw, mac
  non-browser sessions (token keys), limited calls possible
@@ -39,6 +39,15 @@ online dev env
 phone/etc/dev env
 eventing framework
 all in browser dev sandbox
+______________
+
+no-upnp option - ssh
+  use vm on box - get working first
+  jssh
+  remote host/ip/creds
+  mode switch
+  
+reverse file order
 
 db pooling kvdb (no clocker) option
 ______________
@@ -48,13 +57,7 @@ persistent ip tunnel based on same/diff router and background check
 ui to add forwarding
 wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
   
-scheduling
-
-homeauto - locks, light
-
-activation for cam
-
-section to add cam perms to accounts under cam setup    
+scheduling 
 
 picture navigation (prior/next)
 ______________
