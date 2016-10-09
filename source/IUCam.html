@@ -1,19 +1,35 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 
-body {
-//font-size: 4vw;  
-//font-size: 5vw;
-//font-size: x-large;
+label.luiForm {
+    width: 120px; float: left;margin:0;padding:0;
 }
 
-.smaller {
-//font-size: 3vw;
-//font-size: 3vw; 
-//font-size: large;
+input.luiFormField {
+    width: 140px;margin:0;padding:0;clear: right;
+}
+
+input.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+p.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+h5.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+#alertDiv {
+    top:0;
+    left:0;
+    width:100%;
+    height:150%;
+    display:none;
 }
 
 </style>
@@ -28,41 +44,43 @@ body {
 <div id="logindiv">
 <p>Login</p>
 <form>
-<p><label>Account Name</label><input type="text" id="accountName"></input></p>
-<p><label>Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input></p>
-<p><label>Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input>(Optional)</p>
+<p><label class="luiForm">Account Name</label><input type="text" id="accountName"></input></p>
+<p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input></p>
+<p><label class="luiForm">Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input>(Optional)</p>
 </form>
 <p><a href="#" onclick="ui.bem_login_0();return false;">Login</a></p>
 </div>
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
-<p><a href="#" onclick="ui.bem_showAccountSettings_0();return false;">Settings</a>
-<a id="localBrowseId" href="#" onclick="ui.bem_browseWebCam_0();return false;">WebCam Files</a>
-<a href="#" onclick="ui.bem_logout_0();return false;">Logout</a></p>
+<table><tr>
+<td><a href="#" onclick="ui.bem_showAccountSettings_0();return false;">Settings</a></td>
+<td><a id="localBrowseId" href="#" onclick="ui.bem_browseWebCam_0();return false;">WebCam Files</a></td>
+<td><a href="#" onclick="ui.bem_logout_0();return false;">Logout</a></td>
+</tr></table>
 <div id="accountSettingsDiv" style="display: none;">
-<p>
-<a href="#" onclick="ui.bem_showSessionsRequest_0();return false;">Sessions</a></td>
-
+<table><tr>
+<td><a href="#" onclick="ui.bem_showSessionsRequest_0();return false;">Sessions</a></td>
+</tr></table>
 <div id="sessionsListDiv" style="display: none;"></div>
-<p><label>Old Password</label> <input type="password" id="changePassOld"</input></p>
-<p><label>New Password</label> <input type="password" id="changePassNew"</input></p>
-<p><label>Repeat New</label> <input type="password" id="changePassNew2"</input></p>
+<p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
 <p><a href="#" onclick="ui.bem_changePassRequest_0();return false;">Change Password</a></p>
 </div>
 <div id="admindiv" style="display: none;">
-<p>
-<a id="showConfigId" href="#" onclick="ui.bem_showConfig_0();return false;">Configuration</a></td>
-<a id="showAccountAdminId" href="#" onclick="ui.bem_showAccountAdminRequest_0();return false;">Accounts</a></td>
-
+<table><tr>
+<td><a id="showConfigId" href="#" onclick="ui.bem_showConfig_0();return false;">Configuration</a></td>
+<td><a id="showAccountAdminId" href="#" onclick="ui.bem_showAccountAdminRequest_0();return false;">Accounts</a></td>
+</tr></table>
 <div id="accountAdminDiv" style="display: none;">
-<p><label>Account Name</label><input type="text" id="aadminName"</input></p>
-<p><label>New Password</label><input type="password" id="aadminPass"</input></p>
-<p><label>Repeat New</label><input type="password" id="aadminPass2"</input></p>
+<p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
 <p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
 <p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="ui.bem_saveAccountRequest_0();return false;">&nbsp;Confirm account Deletion <input type="checkbox" id="confirmAccountDelete"/><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="deleteAccount();return false;"></p>
 <div id="accountLinksDiv"></div>
 </div>
-<div class="smaller" id="configsDiv"></div>
+<div id="configsDiv"></div>
 <p><a id="detectCamsId" href="#" onclick="ui.bem_detectCams_0();return false;" >Detect WebCams</a></p>
 <!--<p><a id="tryThingId" href="#" onclick="ui.bem_tryThing_0();return false;">Try Thing</a></p>-->
 <p><a id="restartId" href="#" onclick="ui.bem_restart_0();return false;">Restart</a></p>
@@ -72,7 +90,7 @@ body {
 <div id="actionLinksDiv"></div>
 <p><a href="#" id="clearPicId" onclick="ui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
 <div id="imgdiv"></div>
-<div class="smaller" id="browseFilesDiv" style="display: none;">
+<div id="browseFilesDiv" style="display: none;">
 <div id="localBrowseListDiv"></div>
 </div>
 </body>
