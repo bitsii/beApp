@@ -1,8 +1,8 @@
 #!/bin/bash
 
-killall startiuh.sh
-killall iuhcmdrs.sh
-killall java
+killall startiuh.sh 2>/dev/null
+killall iuhcmdrs.sh 2>/dev/null
+killall java 2>/dev/null
 
 cd
 
@@ -10,6 +10,7 @@ echo "Updating software lists"
 sudo apt -qq --assume-yes update
 echo "Installing required additional system software"
 sudo apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
+sudo apt -qq --assume-yes install mpg123
 
 echo "Preparing application area"
 rm -rf apprun/App/IUHub
@@ -43,7 +44,7 @@ echo "Setting IUHub to start at boot"
 echo "#!/bin/sh -e" > tmp/stadd
 echo "#" >> tmp/stadd
 echo "# rc.local" >> tmp/stadd
-echo "su pi -c \"/home/pi/apprun/App/IUHub/startiuh.sh\"" >> tmp/stadd
+echo "su $USER -c \"$HOME/apprun/App/IUHub/startiuh.sh\"" >> tmp/stadd
 echo "exit 0" >> tmp/stadd
 sudo -- sh -c 'cat tmp/stadd > /etc/rc.local'
 

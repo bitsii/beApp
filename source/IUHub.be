@@ -1257,7 +1257,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.4.4";
+        String version =@ "5.4.7";
       }
       return(version);
     }
@@ -1491,7 +1491,7 @@ use class IUHub:HubPlugin {
       actionLinks += "<p><a href=\"#\" onclick=\"ui.bem_runCommand_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
      }
      String showCam = app.configManager.get("PLUGIN.cam");
-     if (TS.notEmpty(showCam) && showCam == "enabled") {
+     if (TS.isEmpty(showCam) || showCam == "enabled") {
        actionLinks += "<p><a href=\"IUCam.html\">Go to IUCam</a></p>";
      }
      return(actionLinks);

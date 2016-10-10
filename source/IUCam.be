@@ -451,7 +451,7 @@ use class IUCam:CamPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.4.4";
+        String version =@ "5.4.7";
       }
       return(version);
     }
@@ -682,7 +682,7 @@ use class IUCam:CamPlugin {
       actionLinks += moLinks;
       actionLinks += "</div>";
      }
-     if (TS.notEmpty(showCam) && showCam == "enabled") {
+     if (TS.isEmpty(showCam) || showCam == "enabled") {
        actionLinks += "<p><a href=\"IUHub.html\">Go to IUHub</a></p>";
      }
      return(actionLinks);

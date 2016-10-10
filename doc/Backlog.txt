@@ -5,15 +5,15 @@
 homeauto - locks, light
 
 easy setup
-  step by step install instructions for noobs
-  url for script to do the rest
-  executable to download and run which does it (mono?)
+  step by step install instructions for noobs - keyboard, tz (raspi-config)
   
-activation for cam
 section to add cam perms to accounts under cam setup   
 device name set
 change password expand/collapse
 cam names
+extraports
+put detect webcams under cam settings
+cam clean days ui, default to something (?30) (-1 for never)
 ______________
 
 separate hub into upnp et all and just a container for other apps?
@@ -41,11 +41,14 @@ eventing framework
 all in browser dev sandbox
 ______________
 
+make install work when upnp failes
 no-upnp option - ssh
   use vm on box - get working first
   jssh
   remote host/ip/creds
   mode switch
+  
+direct hosting option with imap and webmail
   
 reverse file order
 
