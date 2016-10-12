@@ -83,6 +83,7 @@ h5.luiForm {
 <td><a id="showConfigId" href="#" onclick="ui.bem_showConfig_0();return false;">Configuration</a></td>
 <td><a id="showAccountAdminId" href="#" onclick="ui.bem_showAccountAdminRequest_0();return false;">Accounts</a></td>
 <td><a href="#" onclick="ui.bem_showImapRequest_0();return false;">Imap</a></td>
+<td><a href="#" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;">Device Name</a></td>
 </tr></table>
 <div id="accountAdminDiv" style="display: none;">
 <p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
@@ -91,6 +92,10 @@ h5.luiForm {
 <p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
 <p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="ui.bem_saveAccountRequest_0();return false;">&nbsp;Confirm account Deletion <input type="checkbox" id="confirmAccountDelete"/><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="deleteAccount();return false;"></p>
 <div id="accountLinksDiv"></div>
+</div>
+<div id="deviceNameDiv" style="display: none;">
+<p><label class="luiForm">Device Name</label><input type="text" id="newDeviceName"</input></p>
+<p><a href="#" onclick="callApp('changeDeviceNameRequest', callHD('getElementById', 'newDeviceName').bem_valueGet_0());return false;">Change Device Name</a></p>
 </div>
 <div id="imapSettingsDiv" style="display: none;">
 <p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>

@@ -18,6 +18,7 @@ emit(js) {
 
 var ui;
 var hc;
+var hd;
 
 var uiStartup = function(_ui) {
   ui = _ui;
@@ -26,6 +27,9 @@ var uiStartup = function(_ui) {
   hc = new be_$class/UI:HtmlDom:Call$();
   hc = hc.bemc_getInitial();
   hc.bem_new_1(ui);
+  hd = new be_$class/UI:HtmlDom:Document$();
+  hd = hd.bemc_getInitial();
+  hd.bem_new_0();
   ui.bem_startup_0();
 }
 
@@ -73,8 +77,10 @@ var callUI = function() {
   return hc.bem_callUI_1(alist);
 }
 
-var getById = function(theId) {
-
+//callHD does invoke on hd
+var callHD = function() {
+  var alist = convertArgs(arguments);
+  return hd.bem_call_1(alist);
 }
 
 """
@@ -96,6 +102,15 @@ class HD {
     """
     }
   }
+  
+  call(List args) any {
+     String aname = args[0];
+     args.delete(0);
+     if (self.can(aname, args.length)) {
+       return(self.invoke(aname, args));
+     }         
+     return(null);
+   }
 }
 
 class HE {
@@ -276,10 +291,16 @@ class HC {
     Map resm = unmar.unmarshall(resjs);
     if (def(resm)) {
       String mname = resm["action"];
-      List rargs = List.new(1);
-      rargs[0] = resm;
-      if (def(mname) && mname.ends("Response") && callback.can(mname, rargs.length)) {
-        callback.invoke(mname, rargs);
+      if (def(mname) && mname.ends("Response")) {
+        if (resm.has("args")) {
+          rargs = resm["args"];
+        } else {
+          List rargs = List.new(1);
+          rargs[0] = resm;
+        }
+        if (callback.can(mname, rargs.length)) {
+          callback.invoke(mname, rargs);
+        }
       }
     }
   }

@@ -22,6 +22,7 @@ use App:AuthenticatedLocalApp;
 use App:AuthenticatedWebApp;
 use App:AuthenticatedApp as AuthedApp;
 use Text:String;
+use App:CallBackUI;
 
 emit(jv) {
 """
@@ -1385,6 +1386,10 @@ use class IUHub:HubPlugin {
         return(true);
       }
       return(false);
+   }
+   
+   getDeviceNameRequest(request) {
+      return(CallBackUI.setElementValuesResponse(Maps.from("newDeviceName", self.deviceName)));
    }
    
    showImapRequest(Map arg, request) {

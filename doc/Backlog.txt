@@ -2,29 +2,27 @@
 =====
 =====
 
-homeauto - locks, light
+changeDeviceName
 
-easy setup
-  step by step install instructions for noobs - keyboard, tz (raspi-config)
-  
 section to add cam perms to accounts under cam setup   
-device name set
 change password expand/collapse
 cam names
 extraports
 put detect webcams under cam settings
 cam clean days ui, default to something (?30) (-1 for never)
+
+hub boilerplate - toggle, set element, common place (browsereui)
+
+check and kill motion if api unresponsive
 ______________
 
 separate hub into upnp et all and just a container for other apps?
   call upnp et all bridge (IUBridge)
   migrate to new stuff enroute as works
 
-link client (ad, ms, etc), keeps hub up to date with ip, gw, mac
- non-browser sessions (token keys), limited calls possible
-  bypasses csrf ref checks 
-  pass required to do
-  whitelist calls
+link client (ad, ms, etc)
+  auto-login
+  lock, etc
 ______________
 
 lib the dev env
@@ -41,7 +39,14 @@ eventing framework
 all in browser dev sandbox
 ______________
 
-make install work when upnp failes
+homeauto - locks, light
+  java wrapper openzw? node + openzw?
+
+easy setup
+  step by step install instructions for noobs
+  make install work when upnp failes (virtualbox)
+______________
+
 no-upnp option - ssh
   use vm on box - get working first
   jssh
@@ -54,6 +59,12 @@ reverse file order
 
 db pooling kvdb (no clocker) option
 ______________
+
+link client (ad, ms, etc), keeps hub up to date with ip, gw, mac
+ non-browser sessions (token keys), limited calls possible
+  bypasses csrf ref checks 
+  pass required to do
+  whitelist calls
   
 persistent ip tunnel based on same/diff router and background check
 

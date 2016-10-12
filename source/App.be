@@ -1286,10 +1286,17 @@ class AuthedApp {
 
 class CallBackUI {
 
+  default() self { }
+
   forwardCall(System:ForwardCall fcall) {
       //fcall.name.print();
       //fcall.args.length.print(); //list
       //make a map, name action, args args
+      
+      Map retc = Map.new();
+      retc["action"] = fcall.name;
+      retc["args"] = fcall.args;
+      return(retc);
    }
 
 }
@@ -1301,4 +1308,4 @@ use Time:Sleep;
 use System:Thread:ObjectLocker as OLocker;
 use Db:HSQLDb:Database as HsDb;
 
-use local App:CallBackUI;
+use App:CallBackUI;
