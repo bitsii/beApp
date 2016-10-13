@@ -769,13 +769,14 @@ use class App:ConfigPlugin {
       }
    
    showConfigRequest(Map arg, request) Map {
+     Set noshow =@ Sets.from("imap.pass", "auth.sessionId", "imap.user");
      if (app.requestFromAdmin(request)) {
        String conf = String.new();
        Map ecm = app.configManager.getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
          for (any kv in ecm) {
-           unless(kv.value.has("\"")) {
+           unless(kv.value.has("\"") || noshow.has(kv.key)) {
               String ckey = "configKey" + kv.key;
               conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"ui.bem_deleteConfig_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
             }

@@ -68,7 +68,7 @@ use class IUCam:MotionUpdate {
       }
     } else {
       //set sensible default
-      app.configManager.put("cam.cleanDays", 7);
+      app.configManager.put("cam.cleanDays", "7");
     }
   }
   
@@ -691,12 +691,24 @@ use class IUCam:CamPlugin {
       actionLinks += "<div id=\"camSettingsDiv\" style=\"display: none;\">"
       actionLinks += moLinks;
       actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"ui.bem_detectCams_0();return false;\" >Detect WebCams</a></p>";
+      String cps = app.configManager.get("cam.cleanDays");
+      if (TS.isEmpty(cps)) {
+        cps = "7";
+      }
+      actionLinks += "<p><label class=\"luiForm\">Days before Deleting Cam Pics</label><input type=\"text\" id=\"camCleanDays\" value=\"" += cps += "\"></input> (-1 to disable) <a id=\"setCamCleanId\" href=\"#\" onclick=\"callApp('setCamCleanRequest', document.getElementById('camCleanDays').value);return false;\" >Save Cam Delete Days</a></p>";
       actionLinks += "</div>";
      }
      if (TS.isEmpty(showCam) || showCam == "enabled") {
-       actionLinks += "<p><a href=\"IUHub.html\">Go to IUHub</a></p>";
+       actionLinks += "<p style=\"clear:both;\"><a href=\"IUHub.html\">Go to IUHub</a></p>";
      }
      return(actionLinks);
+   }
+   
+   setCamCleanRequest(String days, request) {
+      if (app.requestFromAdmin(request)) {
+        Int.new(days);//make sure its int
+        app.configManager.put("cam.cleanDays", days);
+      }
    }
 
 }

@@ -2,10 +2,7 @@
 =====
 =====
 
-cam clean days ui, default to something (?30) (-1 for never)
-cam names 
-extraports
-hide password values/secret things in show config
+cam names
 ______________
 
 easy setup
@@ -22,6 +19,10 @@ link client (ad, ms, etc)
 email link (crypt secret) not in folder
 ______________
 
+homeauto - locks, light
+  java wrapper openzw? node + openzw?
+______________
+
 no-upnp option - ssh
   use vm on box - get working first
   jssh
@@ -31,9 +32,11 @@ no-upnp option - ssh
 direct hosting option with imap and webmail
 ______________
 
-homeauto - locks, light
-  java wrapper openzw? node + openzw?
+ui to add forwarding
+extraports
+wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
 ______________
+
 
 all in browser dev sandbox
 ______________
@@ -45,9 +48,6 @@ reverse file order
 db pooling kvdb (no clocker) option
   
 persistent ip tunnel based on same/diff router and background check
-
-ui to add forwarding
-wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
   
 scheduling 
 
