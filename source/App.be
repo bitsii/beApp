@@ -758,6 +758,15 @@ use class App:ConfigPlugin {
         }
         
      }
+     
+     changeDeviceNameRequest(String deviceName, request) {
+     log.log(lvl, "changing name");
+      if (app.requestFromAdmin(request) && TS.notEmpty(name)) {
+        app.plugin.deviceName = deviceName;
+      }
+      //return(CallBackUI.setElementsDisplaysResponse(Maps.from("deviceNameDiv", "none")));
+      return(CallBackUI.reloadResponse());
+      }
    
    showConfigRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {

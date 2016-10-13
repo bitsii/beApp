@@ -150,21 +150,6 @@ use class IUHub:Eui {
       handleCallOut(arg);
    }
    
-   toggleDisplay(String id) {
-     HE he = HD.getElementById(id);
-     if (he.display == "block") {
-      he.display = "none";
-     } else {
-      he.display = "block";
-     }
-   }
-   
-   setElementValuesResponse(Map idvals) {
-     for (any kv in idvals) {
-      HD.getElementById(kv.key).value = kv.value;
-     }
-   }
-   
    showAccountSettings() {
      if (HD.getElementById("accountSettingsDiv").display == "block") {
        hideAccountSettings();

@@ -59,13 +59,16 @@ h5.luiForm {
 </tr></table>
 <div id="accountSettingsDiv" style="display: none;">
 <table><tr>
+<td><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');return false;">Password</a></td>
 <td><a href="#" onclick="ui.bem_showSessionsRequest_0();return false;">Sessions</a></td>
 </tr></table>
 <div id="sessionsListDiv" style="display: none;"></div>
+<div id="passwordDiv" style="display: none;">
 <p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
 <p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
 <p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
-<p><a href="#" onclick="ui.bem_changePassRequest_0();return false;">Change Password</a></p>
+<p><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');ui.bem_changePassRequest_0();return false;">Change Password</a></p>
+</div>
 </div>
 <!--<p><a id="showDevsId" href="#" onclick="ui.bem_showDevLinks_0();return false;">Linked Devices</a></p>
 <div id="devsDiv"></div>
@@ -95,7 +98,7 @@ h5.luiForm {
 </div>
 <div id="deviceNameDiv" style="display: none;">
 <p><label class="luiForm">Device Name</label><input type="text" id="newDeviceName"</input></p>
-<p><a href="#" onclick="callApp('changeDeviceNameRequest', callHD('getElementById', 'newDeviceName').bem_valueGet_0());return false;">Change Device Name</a></p>
+<p><a href="#" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Change Device Name</a> <a href="#" onclick="callUI('toggleDisplay', 'deviceNameDiv');return false;">Cancel</a></p>
 </div>
 <div id="imapSettingsDiv" style="display: none;">
 <p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>

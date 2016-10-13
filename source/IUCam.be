@@ -66,6 +66,9 @@ use class IUCam:MotionUpdate {
         log.log(lvl, "running clean cmd " + cmd);
         Com.run(cmd);
       }
+    } else {
+      //set sensible default
+      app.configManager.put("cam.cleanDays", 7);
     }
   }
   
@@ -425,6 +428,13 @@ use class IUCam:CamPlugin {
     return(deviceName);
   }
   
+  deviceNameSet(String _deviceName) {
+    if (TS.notEmpty(_deviceName)) {
+      deviceName = _deviceName;
+      app.configManager.put("deviceName", deviceName);
+    }
+  }
+  
   deviceIdGet() String {
     fields {
       String deviceId;
@@ -680,6 +690,7 @@ use class IUCam:CamPlugin {
       actionLinks += "<p><a href=\"#\" onclick=\"callUI('toggleCamSettings');return false;\">Cam Settings</a></p>";
       actionLinks += "<div id=\"camSettingsDiv\" style=\"display: none;\">"
       actionLinks += moLinks;
+      actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"ui.bem_detectCams_0();return false;\" >Detect WebCams</a></p>";
       actionLinks += "</div>";
      }
      if (TS.isEmpty(showCam) || showCam == "enabled") {

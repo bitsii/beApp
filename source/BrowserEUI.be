@@ -224,6 +224,8 @@ class HC {
      args.delete(0);
      if (callback.can(aname, args.length)) {
        return(callback.invoke(aname, args));
+     } elseIf (self.can(aname, args.length)) {
+       return(self.invoke(aname, args));
      }         
      return(null);
    }
@@ -300,9 +302,37 @@ class HC {
         }
         if (callback.can(mname, rargs.length)) {
           callback.invoke(mname, rargs);
+        } elseIf(self.can(mname, rargs.length)) {
+          self.invoke(mname, rargs); 
         }
       }
     }
   }
+  
+   toggleDisplay(String id) {
+     HE he = HD.getElementById(id);
+     if (he.display == "block") {
+      he.display = "none";
+     } else {
+      he.display = "block";
+     }
+   }
+   
+   setElementsValuesResponse(Map idvals) {
+     for (any kv in idvals) {
+      HD.getElementById(kv.key).value = kv.value;
+     }
+   }
+   
+   setElementsDisplaysResponse(Map idvals) {
+     for (any kv in idvals) {
+      HD.getElementById(kv.key).display = kv.value;
+     }
+   }
+   
+   reloadResponse() {
+     HD.reload();
+   }
+   
 }
 

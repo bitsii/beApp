@@ -2,49 +2,24 @@
 =====
 =====
 
-changeDeviceName
-
-section to add cam perms to accounts under cam setup   
-change password expand/collapse
-cam names
-extraports
-put detect webcams under cam settings
 cam clean days ui, default to something (?30) (-1 for never)
-
-hub boilerplate - toggle, set element, common place (browsereui)
-
-check and kill motion if api unresponsive
+cam names 
+extraports
+hide password values/secret things in show config
 ______________
-
-separate hub into upnp et all and just a container for other apps?
-  call upnp et all bridge (IUBridge)
-  migrate to new stuff enroute as works
-
-link client (ad, ms, etc)
-  auto-login
-  lock, etc
-______________
-
-lib the dev env
-
-online dev env
-  alt instance alongside
-  existing working on pi
-  build/run
-  patch back/forth
-  webide
-
-phone/etc/dev env
-eventing framework
-all in browser dev sandbox
-______________
-
-homeauto - locks, light
-  java wrapper openzw? node + openzw?
 
 easy setup
   step by step install instructions for noobs
   make install work when upnp failes (virtualbox)
+  
+doc dev env - good on all plats
+______________
+
+link client (ad, ms, etc)
+  auto-login
+  lock, etc
+
+email link (crypt secret) not in folder
 ______________
 
 no-upnp option - ssh
@@ -54,17 +29,20 @@ no-upnp option - ssh
   mode switch
   
 direct hosting option with imap and webmail
-  
-reverse file order
+______________
 
-db pooling kvdb (no clocker) option
+homeauto - locks, light
+  java wrapper openzw? node + openzw?
+______________
+
+all in browser dev sandbox
 ______________
 
 link client (ad, ms, etc), keeps hub up to date with ip, gw, mac
- non-browser sessions (token keys), limited calls possible
-  bypasses csrf ref checks 
-  pass required to do
-  whitelist calls
+    
+reverse file order
+
+db pooling kvdb (no clocker) option
   
 persistent ip tunnel based on same/diff router and background check
 
@@ -76,6 +54,8 @@ scheduling
 picture navigation (prior/next)
 ______________
 
+check and kill motion if api unresponsive
+
 sound 
 
 hc default inst?
@@ -83,6 +63,9 @@ hc default inst?
 video
 
 embedded plugin host (autoauth, etc)
+
+separate hub into upnp et all and just a container for other apps?
+  call upnp et all bridge (IUBridge)
 
 basic link working wincs, monoweb, xamarin
   use mono sqlite instead of firebird

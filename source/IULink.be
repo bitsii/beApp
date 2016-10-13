@@ -315,6 +315,13 @@ use class IULink:LinkPlugin {
     return(deviceName);
   }
   
+  deviceNameSet(String _deviceName) {
+    if (TS.notEmpty(_deviceName)) {
+      deviceName = _deviceName;
+      app.configManager.put("deviceName", deviceName);
+    }
+  }
+  
   deviceIdGet() String {
     fields {
       String deviceId;

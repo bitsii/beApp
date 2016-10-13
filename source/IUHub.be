@@ -1232,6 +1232,13 @@ use class IUHub:HubPlugin {
     return(deviceName);
   }
   
+  deviceNameSet(String _deviceName) {
+    if (TS.notEmpty(_deviceName)) {
+      deviceName = _deviceName;
+      app.configManager.put("deviceName", deviceName);
+    }
+  }
+  
   deviceIdGet() String {
     fields {
       String deviceId;
@@ -1389,7 +1396,7 @@ use class IUHub:HubPlugin {
    }
    
    getDeviceNameRequest(request) {
-      return(CallBackUI.setElementValuesResponse(Maps.from("newDeviceName", self.deviceName)));
+      return(CallBackUI.setElementsValuesResponse(Maps.from("deviceNameDiv", self.deviceName)));
    }
    
    showImapRequest(Map arg, request) {
