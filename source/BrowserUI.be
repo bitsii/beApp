@@ -520,6 +520,7 @@ use class UI:BrowserScriptRequest {
             Json:Marshaller mar = Json:Marshaller.new();
             Json:Unmarshaller unmar = Json:Unmarshaller.new();
             String inputAddress;
+            Bool embedded = true;
         }
     }
     

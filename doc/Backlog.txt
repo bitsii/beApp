@@ -3,20 +3,31 @@
 =====
 
 cam names
+upload in progress indicator
 ______________
 
 easy setup
   step by step install instructions for noobs
   make install work when upnp failes (virtualbox)
   
+check for updates - two places (sf and github?)
+
+get pipeline going
+  
 doc dev env - good on all plats
 ______________
 
 link client (ad, ms, etc)
+  jv working
+  ms working
+  ad working
+  xa working
   auto-login
   lock, etc
 
 email link (crypt secret) not in folder
+
+win/mac client app to check upnp availability
 ______________
 
 homeauto - locks, light

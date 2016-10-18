@@ -268,6 +268,10 @@ use class Web:ScriptRequest {
      return(uri);
    }
    
+   embeddedGet() {
+    return(false);
+   }
+   
    inputMethodGet() String {
      String val;
      emit(jv) {

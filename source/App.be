@@ -967,6 +967,7 @@ class AuthedApp {
     fields {
       String extUrl;
     }
+    if (request.embedded) { return(false); }
     String ref = request.getInputHeader("referer");
     String la = request.localAddress;
     if (TS.isEmpty(ref) || TS.isEmpty(la)) {
