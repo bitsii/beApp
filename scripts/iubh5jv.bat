@@ -6,7 +6,7 @@ del /s /q ..\apprun\App\IUHub
 rmdir /s /q ..\apprun\App\IUHub
 mkdir ..\apprun\App\IUHub
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\shared.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang jv -mainClass=IUHub:BigHubStart source\IUHubTest.be source\IUHub.be source\IUCam.be source\IUBigHub.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be source\WebApp.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\shared.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang jv -mainClass=IUHub:BigHubStart source\IUHubTest.be source\IUHub.be source\IUCam.be source\IUBigHub.be source\IU.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be source\WebApp.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
@@ -14,11 +14,11 @@ javac -classpath extlibs\IUHub\* ..\be\system\jv\be\*.java ..\apprun\App\IUHub\B
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui source\IUHubBr.be source\BrowserEUI.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ..\be\source\extended\Log.be source\IUHubBr.be source\BrowserEUI.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang js --ownProcess false -mainClass=IUCam:Eui source\IUCamBr.be source\BrowserEUI.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang js --ownProcess false -mainClass=IUCam:Eui ..\be\source\extended\Log.be source\IUCamBr.be source\BrowserEUI.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 

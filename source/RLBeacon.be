@@ -18,19 +18,84 @@ use Time:Sleep;
 
 use App:Alert;
 
-use App:AuthenticatedLocalApp;
-use App:AuthenticatedWebApp;
-use App:AuthenticatedApp as AuthedApp;
-use IUHub:HubPlugin;
-use IUCam:CamPlugin;
-
 emit(jv) {
 """
 //import java.io.*;
-import java.net.*;
+//import java.net.*;
 """
 }
-use class IUHub:BigHubStart {
+
+use class RLBeacon:Background {
+
+  new() self {
+    fields {
+      any app;
+      Int lvl;
+      IO:Log log;
+    }
+  }
+  
+  runMyTasks() {
+    fields {
+      Int lastTrackClear;
+      Int clearSeconds =@ 7200;
+    }
+    if (def(lastTrackClear)) {
+      Int ns = Time:Interval.now().seconds;
+      if (ns - lastTrackClear > clearSeconds) {
+        app.trackingManager.clear();
+        lastTrackClear = ns;
+      }
+    } else {
+      lastTrackClear = 0;
+    }
+  }
+  
+  runTasks() {
+    //log.log(lvl, "Running tasks");
+    runMyTasks();
+  }
+  
+  main() {
+    any e;
+    while (true) {
+      try {
+        runTasks();
+      } catch (e) {
+        log.log(lvl, "Caught exception running tasks " + e);
+      }
+      try {          
+        Time:Sleep.sleepMilliseconds(sleepTime);
+      } catch (e) {
+        log.log(lvl, "Caught exception sleeping " + e);
+      }
+    }
+  }
+  
+  startBackground() {
+    fields {
+      System:Thread myThread;
+      Int sleepTime = 500;
+    }
+    String bkdis = app.configManager.get("bk.disable");
+    if (TS.notEmpty(bkdis) && Bool.new(bkdis)) {
+      return(self);
+    }
+    Int _sleepTime = app.configManager.get("bk.sleepTime");
+    if (def(_sleepTime) && _sleepTime > 0) {
+      sleepTime = _sleepTime;
+    }
+    myThread = System:Thread.new(self);
+    myThread.start();
+  }
+
+}
+
+use App:AuthenticatedLocalApp;
+use App:AuthenticatedWebApp;
+use App:AuthenticatedApp as AuthedApp;
+
+use class RLBeacon:SiteStart {
 
    new() self {
       fields {
@@ -75,13 +140,7 @@ use class IUHub:BigHubStart {
         mode = "wui";
       }
       if (mode == "lui" || mode == "wui" || mode == "cmd") {
-        log.log(lvl, "making hub");
-        BigHubPlugin hub = BigHubPlugin.new();
-        if (mode == "cmd") {
-          hub.runBackground = false;
-        }
-        hub.log = log;
-        hub.lvl = lvl;
+        log.log(lvl, "making cam");
         CamPlugin cam = CamPlugin.new();
         if (mode == "cmd") {
           cam.runBackground = false;
@@ -90,11 +149,9 @@ use class IUHub:BigHubStart {
         cam.lvl = lvl;
         log.log(lvl, "adding plugins");
         List plugins = List.new();
-        plugins += hub;
         plugins += cam;
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
-        plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
           AuthenticatedLocalApp.new(plugins, log, lvl).main();
         }
@@ -104,9 +161,6 @@ use class IUHub:BigHubStart {
         if (mode == "cmd") {
           cmdMain(args, plugins);
         }
-      }
-      if (mode == "test") {
-        IUHub:Test.new().main();
       }
     }
 
@@ -123,12 +177,6 @@ use class IUHub:BigHubStart {
       if (mode == "help") {
         log.log(lvl, "Help");
         log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
-      }
-      if (TS.notEmpty(mode) && mode == "portForward") {
-        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.log = log;
-        pf.lvl = lvl;
-        pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         for (String login in ui.accountManager.getLogins()) {
@@ -203,26 +251,74 @@ use class IUHub:BigHubStart {
         log.log(lvl, "Deleting config " + key);
         ui.configManager.delete(key);
       }
-      /*if (TS.notEmpty(mode) && mode == "saveIntUrl") {
-        log.log(lvl, "saveIntUrl");
-        ui.plugin.bg.init().uu.doUpdate();
-        log.log(lvl, "int url is " + ui.plugin.links.o.get("intUrl"));
-        File.apNew(args[2]).writer.open().write(ui.plugin.links.o.get("intUrl")).close();
-        File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.links.o.get("intUrl") + "\n").close();
-      }*/
       ui.configManager.close();
     }
-
 
 }
 
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
-use class IUHub:BigHubPlugin(HubPlugin) {
+use class RLBeacon:CamPlugin {
 
+     new() self {
+       fields {
+          IO:Log log = IO:Log.new();
+          log.level = log.info;
+          Int lvl = log.level;
+          any app;
+          String name = "RLBeacon";
+          String homePage = "/App/RLBeacon/RLBeacon.html";
+          Background bg = Background.new();
+          Bool runBackground = true;
+        }
+     }
+     
+    start() {
+      bg.log = log;
+      bg.lvl = lvl;
+      bg.app = app;
+      if (runBackground) {
+      bg.startBackground();
+      }
+    }
     
-    loggedIn(Account a, Map res, Map arg, request) {
+    deviceNameGet() String {
+    fields {
+      String deviceName;
+    }
+    if (TS.isEmpty(deviceName)) {
+      deviceName = app.configManager.get("deviceName");
+      if (TS.isEmpty(deviceName)) {
+        deviceName = "Device-" + System:Random.getString(4);
+        app.configManager.put("deviceName", deviceName);
+      }
+    }
+    return(deviceName);
+  }
+  
+  deviceNameSet(String _deviceName) {
+    if (TS.notEmpty(_deviceName)) {
+      deviceName = _deviceName;
+      app.configManager.put("deviceName", deviceName);
+    }
+  }
+  
+  deviceIdGet() String {
+    fields {
+      String deviceId;
+    }
+    if (TS.isEmpty(deviceId)) {
+      deviceId = app.configManager.get("deviceId");
+      if (TS.isEmpty(deviceId)) {
+        deviceId = System:Random.getString(16);
+        app.configManager.put("deviceId", deviceId);
+      }
+    }
+    return(deviceId);
+  }
+  
+  loggedIn(Account a, Map res, Map arg, request) {
       res["action"] = "updateResponse";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
@@ -232,17 +328,26 @@ use class IUHub:BigHubPlugin(HubPlugin) {
       return(res);
     }
     
-    getActionLinks(Account a, Map arg, request) String {
-     if (TS.notEmpty(arg["plugin"]) && arg["plugin"] == "cam") {
-      return(self.cam.getActionLinks(a, arg, request));
-     }
-     return(super.getActionLinks(a, arg, request));
-   }
-    
-    camGet() CamPlugin {
-      return(app.plugins[1]);
+    versionGet() String {
+      fields {
+        String version =@ "5.4.7";
+      }
+      return(version);
     }
-     
+    
+    checkPublicReadPath(Path pa, request) Bool {
+      String pas = pa.toString();
+      Path adz = Path.apNew("App/" + self.name).file.absPath;
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js"))) {
+        return(true);
+      }
+      return(false);
+   }
+   
+   getActionLinks(Account a, Map arg, request) String {
+     String actionLinks = String.new();
+     return(actionLinks);
+   }
    
 }
 
@@ -250,3 +355,4 @@ use App:Account;
 use App:AccountManager;
    
 use Db:KeyValue as KvDb;
+

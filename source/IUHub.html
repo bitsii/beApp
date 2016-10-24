@@ -60,6 +60,7 @@ h5.luiForm {
 <div id="accountSettingsDiv" style="display: none;">
 <table><tr>
 <td><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');return false;">Password</a></td>
+<td><a href="#" onclick="callUI('toggleDisplay', 'newBeaconDiv');return false;">Link Device</a></td>
 <td><a href="#" onclick="ui.bem_showSessionsRequest_0();return false;">Sessions</a></td>
 </tr></table>
 <div id="sessionsListDiv" style="display: none;"></div>
@@ -69,6 +70,15 @@ h5.luiForm {
 <p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
 <p><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');ui.bem_changePassRequest_0();return false;">Change Password</a></p>
 </div>
+<div id="newBeaconDiv" style="display: none;">
+<p><label class="luiForm">Link Name</label><input type="text" id="newBeaconName"</input></p>
+<p><a href="#" onclick="callUI('toggleDisplay', 'newBeaconDiv');callApp('updateBeaconRequest', document.getElementById('newBeaconName').value);document.getElementById('newBeaconName').value = '';return false;">Ok</a> <a href="#" onclick="callUI('toggleDisplay', 'newBeaconDiv');document.getElementById('newBeaconName').value = '';return false;">Cancel</a></p>
+</div>
+<div id="viewBeaconDiv" style="display: none;">
+<p><label class="luiForm">Link Name</label><input type="text" id="viewBeaconName"</input></p>
+<p><label class="luiForm">Link Token (Only available at create or update</label><input type="text" id="viewBeaconToken"</input></p>
+<p><a href="#" onclick="callApp('updateBeaconRequest', document.getElementById('viewBeaconName').value);document.getElementById('viewBeaconName').value = '';return false;">Regenerate Token</a> <a href="#" onclick="callUI('toggleDisplay', 'viewBeaconDiv');document.getElementById('viewBeaconName').value = '';return false;">Close</a></p>
+</div>    
 </div>
 <!--<p><a id="showDevsId" href="#" onclick="ui.bem_showDevLinks_0();return false;">Linked Devices</a></p>
 <div id="devsDiv"></div>

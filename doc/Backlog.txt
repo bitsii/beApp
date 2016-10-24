@@ -2,12 +2,41 @@
 =====
 =====
 
+beacon jv
+talk to hub (token) - token from hub to include addresses - (find, initial internally only, later guess)
+  copy to clipboard
+hub wakeup (shared links logic hub/other(links))
+
+call args serialize/deserialize
+
+beacon
+jv first
+per box links (incl hub for iucam, wake and remote for dt, etc) - in hub and link (shared)
+
+hub wakeup
+
+link client (ad, ms, etc)
+  ms working
+  ad working
+  xa working
+  auto-login
+  
+site as well as direct
+
+no-upnp ssh version
+  command line ssh - linux, mac - putty windows
+______________
+
+duck setup
 cam names
+cam scheduled pic
 upload in progress indicator
+update check
 ______________
 
 easy setup
   step by step install instructions for noobs
+  
   make install work when upnp failes (virtualbox)
   
 check for updates - two places (sf and github?)
@@ -15,19 +44,7 @@ check for updates - two places (sf and github?)
 get pipeline going
   
 doc dev env - good on all plats
-______________
-
-link client (ad, ms, etc)
-  jv working
-  ms working
-  ad working
-  xa working
-  auto-login
-  lock, etc
-
-email link (crypt secret) not in folder
-
-win/mac client app to check upnp availability
+android ver
 ______________
 
 homeauto - locks, light

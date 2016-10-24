@@ -599,7 +599,7 @@ class KvDb {
   
   create() self {
     db.begin();
-    db.execute("CREATE TABLE " + tableName + "( NAME VARCHAR(110), VALUE VARCHAR(500), "
+    db.execute("CREATE TABLE " + tableName + "( NAME VARCHAR(110), VALUE VARCHAR(2000), "
       + " constraint " + tableName + "_k primary key (NAME) )");
     db.commit();
   }

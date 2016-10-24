@@ -15,6 +15,7 @@ use System:Thread:Lock;
 use System:Thread:ContainerLocker as CLocker;
 use System:Command as Com;
 use Time:Sleep;
+use Container:Pair;
 
 use App:Alert;
 
@@ -23,603 +24,7 @@ use App:AuthenticatedWebApp;
 use App:AuthenticatedApp as AuthedApp;
 use Text:String;
 use App:CallBackUI;
-
-emit(jv) {
-"""
-//import java.io.*;
-import java.net.*;
-"""
-}
-use class Net:Interface {
- 
- new(String _description, String _macAddress, String _name, 
-     String _status, 
-     String _address) self {
-   fields {
-     String description = _description;
-     String macAddress = _macAddress;
-     String name = _name;
-     String status = _status;
-     String address = _address;
-   }
- }
- 
- toString() String {
-   String res = String.new();
-   if (def(description)) {
-     res += " description: " += description;
-   }
-   if (def(macAddress)) {
-     res += " macAddress: " += macAddress;
-   }
-   if (def(name)) {
-     res += " name: " += name;
-   }
-   if (def(status)) {
-     res += " status: " += status;
-   }
-   if (def(address)) {
-     res += " address: " += address;
-   }
-   return(res);
- }
- 
- localInterfacesGet() List {
-   List res;
-   ifEmit(cs) {
-     res = localInterfacesGetCs();
-   }
-   ifEmit(jv) {
-     res = localInterfacesGetJv();
-   }
-   return(res);
- }
- 
- localInterfacesGetJv() List {
-   
-    List interfaces = List.new();
-    
-    String description;
-    String macAddress;
-    String name;
-    String status;
-    String address;
-    
-     emit(jv) {
-  """
-  for(NetworkInterface ifc : java.util.Collections.list(NetworkInterface.getNetworkInterfaces())) {
-    String status;
-    if (ifc.isUp()) {
-      status = "Up";
-    } else {
-      status = "Down";
-    }
-    String description = ifc.getDisplayName();
-    String name = ifc.getName();
-    byte[] hwad = ifc.getHardwareAddress();
-    String macAddress = null;
-    if (hwad != null) {
-      StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < hwad.length; i++) {
-        sb.append(String.format("%02X%s", hwad[i], ""));		
-      }
-      macAddress = sb.toString();
-    }
-    for(InetAddress addr : java.util.Collections.list(ifc.getInetAddresses())) {
-      int count = 0;
-      String address = addr.getHostAddress();
-      if (address != null) {
-        for (int i = 0;i < address.length();i++) {
-          if (address.charAt(i) == '.') {
-            count++;
-          }
-        }
-        if (count != 3) {
-          continue;
-        }
-         bevl_address = new $class/Text:String$(address);
-      } else {
-        continue;
-      }
-      if (description != null) {
-         bevl_description = new $class/Text:String$(description);
-      } else {
-        bevl_description = null;
-      }
-      if (name != null) {
-         bevl_name = new $class/Text:String$(name);
-      } else {
-        bevl_name = null;
-      }
-      if (macAddress != null) {
-         bevl_macAddress = new $class/Text:String$(macAddress);
-      } else {
-        bevl_macAddress = null;
-      }
-      bevl_status = new $class/Text:String$(status);
-      """
-      }
-      ifEmit(jv) {
-        interfaces +=  Interface.new(description, macAddress,
-          name, status, address);
-      }
-      emit(jv) {
-      """
-    }
-  }
-  """
-  }    
-      return(interfaces);
-    }
- 
- localInterfacesGetCs() List {
-   
-    List interfaces = List.new();
-    
-    String description;
-    String macAddress;
-    String name;
-    String status;
-    String address;
-    emit(cs) {
-        """            
-        NetworkInterface[] adapters  = NetworkInterface.GetAllNetworkInterfaces();
-        for (NetworkInterface adapter in adapters)
-        {
-            string description = adapter.Description;
-            string macAddress = adapter.GetPhysicalAddress().ToString();
-            string name = adapter.Name;
-            string status = adapter.OperationalStatus.ToString();
-            IPInterfaceProperties adapterProperties = adapter.GetIPProperties();
-            
-            UnicastIPAddressInformationCollection unicastIps = adapterProperties.UnicastAddresses;
-            
-            /*GatewayIPAddressInformationCollection addresses = adapterProperties.GatewayAddresses;
-            string gatewayAddress = null;
-            if (addresses.Count >0)
-            {
-                for (GatewayIPAddressInformation gaddress in addresses)
-                {
-                  if (gaddress.Address.AddressFamily.ToString().Equals("InterNetwork")) {
-                    gatewayAddress = gaddress.Address.ToString();
-                  }
-                    
-                }
-            }*/
-            string address = null;
-            for(UnicastIPAddressInformation unicastIp in unicastIps)
-            {
-              if (unicastIp.Address.AddressFamily.ToString().Equals("InterNetwork")) {
-                    address = unicastIp.Address.ToString();
-                    if (description != null) {
-                      bevl_description = new $class/Text:String$(description);
-                    } else {
-                      bevl_description = null;
-                    }
-                    if (macAddress != null) {
-                      bevl_macAddress = new $class/Text:String$(macAddress);
-                    } else {
-                      bevl_macAddress = null;
-                    }
-                    if (name != null) {
-                      bevl_name = new $class/Text:String$(name);
-                    } else {
-                      bevl_name = null;
-                    }
-                    if (status != null) {
-                      bevl_status = new $class/Text:String$(status);
-                    } else {
-                      bevl_status = null;
-                    }
-                    if (address != null) {
-                      bevl_address = new $class/Text:String$(address);
-                    } else {
-                      bevl_address = null;
-                    }
-                    """
-                    }
-                    ifEmit(cs) {
-                      interfaces +=  Interface.new(description, macAddress,
-                        name, status, address);
-                    }
-                    emit(cs) {
-                    """
-              }
-            }
-        }
-        """
-        }
-        return(interfaces);
-    }
-    
-    score(Interface i) Int {
-      Int s = 0;
-      if (def(i.status) && i.status == "Up") {
-       s++=;
-      }
-      if (def(i.address)) {
-       s++=;
-       if (i.address != "127.0.0.1") {
-         s++=;
-       }
-      }
-      if (def(i.macAddress)) {
-        s++=;
-      }
-      return(s);
-    }
-    
-    upInterfacesGet() List {
-      List ups = List.new();
-      for (Interface i in self.localInterfaces) {
-        if (TS.notEmpty(i.status) && i.status == "Up" && TS.notEmpty(i.address)) {
-          ups += i;
-        }
-      }
-      return(ups);
-    }
-    
-    interfaceForNetwork(String netip) String {
-      Int maxSoFar = 0;
-      String bestMatch;
-      for (Interface i in self.localInterfaces) {
-        String iip = i.address;
-        if (TS.notEmpty(iip)) {
-          String cp = TS.commonPrefix(iip, netip);
-          if (def(cp)) {
-            Int cps = cp.size;
-            if (cps > maxSoFar) {
-              maxSoFar = cps;
-              bestMatch = iip;
-            }
-          }
-        }
-      }
-      return(bestMatch);
-    }
-    
-    sortedUpInterfacesGet() List {
-      List ups = self.upInterfaces;
-      List sups = List.new();
-      Map adif = Map.new();
-      List ads = List.new();
-      for (Interface i in ups) {
-        adif.put(i.address, i);
-        ads += i.address;
-      }
-      ads.sort();
-      for (String ad in ads) {
-        sups += adif.get(ad);
-      }
-      return(sups);
-    }
-    
-    preferredInterfaceGet() Interface {
-      Interface res;
-      Int resScore = -1;
-      for (Interface i in self.localInterfaces) {
-        Int score = score(i);
-        if (score > resScore) {
-          res = i;
-          resScore = score;
-        }
-      }
-      return(res);
-    }
- 
-}
-
-use Net:UPnP as Upnp;
-
-class Upnp {
-
-  new() self {
-    fields {
-      String netGw;
-      IO:Log log = IO:Log.new();
-      Int lvl = log.debug;
-    }
-  }
-  
-  new(String _netGw) self {
-    new();
-    netGw = _netGw;
-  }
-  
-  gatewayAddressGet() String {
-    
-    System:Command sc = System:Command.new("netstat -rn").open();
-    String res = sc.output.readString();
-    sc.close();
-    
-    //log.log(lvl, "netstat output " + res);
-    
-    if (System:CurrentPlatform.name == "mswin") {
-      Int fz = res.find("0.0.0.0"); //win
-    } else {
-      fz = 0;
-    }
-    if (def(fz)) {
-      Int fz2 = res.find("0.0.0.0", fz + 1);
-      if (def(fz2)) {
-        fz = fz2;
-      }
-      fz += 7;
-      res = res.substring(fz);
-      Bool started = false;
-      String accum = String.new();
-      for (String s in res.biter) {
-        if (s == " ") {
-          if (started) {
-            break;
-          }
-        } else {
-          started = true;
-          accum += s;
-        }
-      }
-    }
-    return(accum);
-  }
-  
-  deviceURLGet() String {
-    fields {
-      String deviceURL;
-    }
-    if (def(deviceURL)) {
-      return(deviceURL);
-    }
-    any e;
-    String discover = "M-SEARCH * HTTP/1.1\r\n" +
-            "HOST: 239.255.255.250:1900\r\n" +
-            "ST:upnp:rootdevice\r\n" +
-            "MAN:\"ssdp:discover\"\r\n" +
-            "MX:3\r\n\r\n";
-            
-    emit(cs) {
-    """
-    Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-    s.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
-    byte[] data = Encoding.ASCII.GetBytes(bevl_discover.bems_toCsString());
-    IPEndPoint ipe = new IPEndPoint(IPAddress.Broadcast, 1900);
-    byte[] buffer = new byte[0x1000];
-    int length;
-    s.SendTimeout = 500;
-    s.ReceiveTimeout = 500;
-    """
-    }
-    String intip = self.internalIP;
-    emit(jv) {
-    """
-    //DatagramSocket s = new DatagramSocket();
-    DatagramSocket s = new DatagramSocket(0, InetAddress.getByName(bevl_intip.bems_toJvString()));
-    s.setBroadcast(true);
-    s.setSoTimeout(500);
-    byte[] data = bevl_discover.bems_toJvString().getBytes("UTF-8");
-    DatagramPacket spacket = new DatagramPacket(data, data.length, InetAddress.getByName("255.255.255.255"), 1900);
-    byte[] buffer = new byte[0x1000];
-    """
-    }
-    
-    String received;
-    Int endSec = Time:Interval.now().seconds + 5;
-    Int nowSec = Time:Interval.now().seconds;
-    Int count = 0;
-    while (nowSec < endSec) {
-      received = null;
-      if (count % 7 == 0) {
-        any bcast = true;
-      } else {
-        bcast = null;
-      }
-      count++=;
-      try {
-      emit(cs) {
-      """
-      if (bevl_bcast != null) {
-        s.SendTo(data, ipe);
-      }
-      length = s.Receive(buffer);
-      string got = Encoding.ASCII.GetString(buffer, 0, length);
-      bevl_received = new $class/Text:String$(got);
-      """
-      }
-      emit(jv) {
-      """
-      if (bevl_bcast != null) {
-        s.send(spacket);
-      }
-      DatagramPacket rpacket = new DatagramPacket(buffer, buffer.length);
-      s.receive(rpacket);
-      String got = new String(rpacket.getData(), 0, rpacket.getLength(), "UTF-8");
-      bevl_received = new $class/Text:String$(got);
-      """
-      }
-      } catch (e) {
-        log.log(lvl, "got except during upnp bcast et all " + e);
-      }
-      if (def(received)) {
-        received.lowerValue();
-        log.log(lvl, "deviceURLGet Received " + received);
-        if (received.has("upnp:rootdevice")) {
-          Int loc = received.find("location:");
-          if (def(loc)) {
-            loc += 10;
-            received = received.substring(loc);
-            loc = received.find("\r");
-            if (def(loc)) {
-              received = received.substring(0, loc);
-              if (received.has(netGw)) {
-                deviceURL = received;
-                return(received);
-              }
-            }
-          }
-        }
-      }
-      nowSec = Time:Interval.now().seconds;
-    }
-    
-    return(null);
-    }
-    
-    dropTrailingPath(String received) String {
-      //drop trailing path
-      Int mk = received.find("/");
-      mk = received.find("/", mk + 1);
-      mk = received.find("/", mk + 1);
-      if (def(mk)) {
-        received = received.substring(0, mk);
-      }
-      return(received);
-    }
-    
-    controlURLGet() String {
-      any e;
-      fields {
-        String controlURL;
-      }
-      if (def(controlURL)) {
-        return(controlURL);
-      }
-      String deviceURL = self.deviceURL;
-      //("deviceUrl " + deviceURL).print();
-      Web:Client client = Web:Client.new();
-      client.url = deviceURL;
-      try {
-        String received = client.openInput().readString();
-      } catch (e) {
-        cu = dropTrailingPath(deviceURL);
-        controlURL = cu;
-        return(cu);
-      }
-      Int mk = received.find("InternetGatewayDevice");
-      if (def(mk)) {
-        mk = received.find("WANIPConnection", mk + 1);
-        if (def(mk)) {
-          mk = received.find("controlURL", mk + 1);
-        }
-        if (def(mk)) {
-          received = received.substring(mk + 11);
-          mk = received.find("</controlURL>");
-          if (def(mk)) {
-            received = received.substring(0, mk);
-            String cu = dropTrailingPath(deviceURL);
-            cu = cu + received;
-            controlURL = cu;
-          }
-        }
-      }
-      return(controlURL);
-    }
-    
-    externalIPGet() String {
-      String cmd = "upnpc -s";
-      String res = System:Command.new(cmd).open().output.readStringClose();
-      //log.log(lvl, "res1 " + res);
-      if (TS.notEmpty(res)) {
-        Int rf = res.find("ExternalIPAddress = ");
-        if (def(rf)) {
-          rf += 20;
-          res = res.substring(rf, res.size);
-          //log.log(lvl, "res2 " + res);
-          rf = res.find("\n");
-          Int rf2 = res.find("\r");
-          if (def(rf2) && rf2 < rf) {
-            rf = rf2;
-          }
-          res = res.substring(0, rf);
-          log.log(lvl, "res3 extipis " + res);
-          return(res);
-        }
-      }
-      return(null);
-    }
-
-    externalIPGetOld() String {
-      String cu = self.controlURL;
-      Web:Client client = Web:Client.new();
-      client.url = cu;
-      client.outputContentType = "text/xml";
-      
-      client.outputHeaders.put("SoapAction", "urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress");
-      
-      client.verb = "POST";
-      String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'> <s:Body> <u:GetExternalIPAddress xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\" /> </s:Body> </s:Envelope>";
-      client.openOutput().write(payload);
-      String res = client.openInput().readString();
-      if (def(res)) {
-        Int start = res.find("<NewExternalIPAddress>");
-        Int end = res.find("</NewExternalIPAddress>");
-        if (def(start) && def("end")) {
-          String ip = res.substring(start + 22, end);
-          return(ip);
-        }
-      }
-      
-      return(null);
-    }
-    
-    internalIPGet() {
-      fields {
-        String internalIP;
-      }
-      if (def(internalIP)) {
-        return(internalIP);
-      }
-      Net:Interface ni = Net:Interface.new();
-      log.log(lvl, "getgw " + netGw);
-      internalIP = ni.interfaceForNetwork(netGw);
-      log.log(lvl, "Got internal ip " + internalIP);
-      return(internalIP);
-    }
-    
-    forwardPort(Int duration, Int external, Int internal) Bool {
-      return(forwardPort(duration, external, internal, self.internalIP));
-    }
-    
-    forwardPort(Int duration, Int external, Int internal, String internalIP) Bool {
-      //upnpc -a 192.168.99.100 5555 9999 TCP
-      String cmd = "upnpc -a " + internalIP + " " + internal + " " + external + " TCP";
-      String res = System:Command.new(cmd).open().output.readStringClose();
-      log.log(lvl, "forwardPort result " + res);
-      return(true);
-    }
-      
-    forwardPortOld(Int duration, Int external, Int internal, String internalIP) Bool {
-      if (true) { return(true); }
-      any e;
-      String cu = self.controlURL;
-      Web:Client client = Web:Client.new();
-      client.url = cu;
-      client.outputContentType = "text/xml";
-      
-      client.outputHeaders.put("SoapAction", "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping");
-      
-      client.verb = "POST";
-      //String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/' xmlns:s='http://schemas.xmlsoap.org/soap/envelope/'> <s:Body> <u:GetExternalIPAddress xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\" /> </s:Body> </s:Envelope>";
-      
-      String payload = "<?xml version='1.0' encoding='utf-8'?> <s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'><s:Body><u:AddPortMapping xmlns:u=\"urn:schemas-upnp-org:service:WANIPConnection:1\"><NewRemoteHost></NewRemoteHost> <NewExternalPort>" + external.toString() + "</NewExternalPort><NewProtocol>TCP</NewProtocol> <NewInternalPort>" + internal.toString() + "</NewInternalPort> <NewInternalClient>" + internalIP + "</NewInternalClient> <NewEnabled>1</NewEnabled> <NewPortMappingDescription>node:nat:upnp</NewPortMappingDescription> <NewLeaseDuration>" + duration.toString() + "</NewLeaseDuration> </u:AddPortMapping> </s:Body> </s:Envelope>";
-      
-      try {
-        client.openOutput().write(payload);
-        String res = client.openInput().readString();
-      } catch (e) {
-        return(false);
-      }
-      if (def(res)) {
-        if (res.has("Fault") || res.has("UPnPError")) {
-          return(false);
-        }
-        return(true);
-      }
-      
-      return(false);
-    }
-            
-    
-
-}
+local use IU:WebConnect;
 
 use class IUHub:DnsUpdate {
 
@@ -674,7 +79,7 @@ use class IUHub:DnsUpdate {
 
 }
 
-use class IUHub:UpnpUpdate {
+use class IUHub:ConnectionUpdate {
 
   new() self {
   
@@ -687,9 +92,10 @@ use class IUHub:UpnpUpdate {
       Int lastFwd = 0;
       Int pollSecs = 1200;//how often to check for ip changes
       Int uupdateSecs = 600;//how often to update upnp fwd
-      Int fwdSecs = 7200;//fwd upnp for how long
       Int forceUpdate = 3600;//imap force update
       Bool disable = false;
+      String webPort;
+      String certificateThumbprint; 
     }
   
   }
@@ -706,7 +112,6 @@ use class IUHub:UpnpUpdate {
     any e;
     log.log(lvl, "In upnp doUpdate");
     unless (disable) {
-      log.log(lvl, "upnp doing");
       
       Bool update = false;
       Bool fwd = false;
@@ -720,166 +125,40 @@ use class IUHub:UpnpUpdate {
         lastFwd = currSec;
         fwd = true;
       }
-    
-      Bool upnpWorking = true;
-      Upnp upnp = Upnp.new();
-      upnp.log = log;
-      upnp.lvl = lvl;
-      upnp.netGw = upnp.gatewayAddress;
-      String gwNow = upnp.netGw;
-      String iaNow = upnp.internalIP;
-      try {
-        String eaNow = upnp.externalIP;
-      } catch (e) {
-        //don't change external ip when upnp fails
-        log.log(lvl, "Upnp externalIp failed, will not update external or forward ");
-        if (def(e)) { log.log(lvl, e.toString()); }
-        upnpWorking = false;
-        eaNow = extAddress;
+      log.log(lvl, "getting wcs");
+      String wcs = app.configManager.get("wui.webConnect");
+      if (TS.notEmpty(wcs)) {
+        log.log(lvl, "deserializing wcs");
+        WebConnect wc = System:Serializer.deserialize(wcs);
+      } else {
+        log.log(lvl, "new wcs");
+        wc = WebConnect.new();
+        wc.externalPort = app.configManager.get("wui.extPort");
+        wc.extraPorts = app.configManager.get("upnp.extraPorts");
+        wc.path = "App/IUHub/IUHub.html";
       }
-      
-      if (TS.notEmpty(gwNow)) {
-        if (TS.isEmpty(gw) || gwNow != gw) {
-          gw = gwNow;
-          app.configManager.put("upnp.gw", gw);
-        }
+      log.log(lvl, "after wcs init");
+      wc.log = log;
+      wc.lvl = lvl;
+      wc.internalPort = webPort;
+      wc.certificatePrint = certificateThumbprint; 
+      log.log(lvl, "starting wc update");
+      wc.update();
+      if (fwd) {
+        log.log(lvl, "wc forwarding ports");
+        wc.forwardPorts();
       }
-      
-      if (TS.notEmpty(iaNow)) {
-        if (TS.isEmpty(intAddress) || iaNow != intAddress) {
-          intAddress = iaNow;
-          app.configManager.put("upnp.intAddress", intAddress);
-        }
-      }
-      
-      if (TS.notEmpty(eaNow)) {
-        if (TS.isEmpty(extAddress) || eaNow != extAddress) {
-          extAddress = eaNow;
-          app.configManager.put("upnp.extAddress", extAddress);
-        }
-      }
-      
-      if (TS.isEmpty(intPort) || intPort != appIntPort) {
-        intPort = appIntPort;
-        app.configManager.put("upnp.intPort", intPort);
-      }
-      
-      if (TS.isEmpty(extPort) || extPort != appExtPort) {
-        extPort = appExtPort;
-        app.configManager.put("upnp.extPort", extPort);
-      }
-      
-      if (fwd && upnpWorking) {
-        log.log(lvl, "Forwarding");
-        upnp.forwardPort(fwdSecs, Int.new(extPort), Int.new(intPort));
-        String exPorts = app.configManager.get("upnp.extraPorts");
-        if (TS.notEmpty(exPorts)) {
-          for (String ep in exPorts.split(",")) {
-            String currPortS = app.configManager.get("upnp.extraPort." + ep + ".externalPort");
-            if (TS.isEmpty(currPortS)) {
-              Int intPorti = System:Random.getInt(Int.new(), 6000);
-              intPorti += 3000;
-              currPortS = intPorti.toString();
-              app.configManager.put("upnp.extraPort." + ep + ".externalPort", currPortS);
-            }
-            log.log(lvl, "Forwarding extraport external " + currPortS + " to " + ep);
-            upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
-          }
-        }
-      }
-
-      if (update) {
-        log.log(lvl, "Updating imap");
-        String deviceId = self.app.plugin.deviceId;
-        String intUrl = "https://" += intAddress += ":" += intPort += "/App/IUHub/IUHub.html";
-        String extUrl = "https://" += extAddress += ":" += extPort += "/App/IUHub/IUHub.html";
-        String intLink = "<a href=\"" + intUrl + "\">" + deviceName + " " + deviceId + " internal Link, use on same network as the device is on.</a>";
-        String extLink = "<a href=\"" + extUrl + "\">" + deviceName + " " + deviceId + " external Link, use from the internet or outside the network the device is on.</a>";
-        Map jsl = Map.new();
-        if (TS.notEmpty(exPorts)) {
-          String extraPortsMsg = String.new();
-          for (ep in exPorts.split(",")) {
-            currPortS = app.configManager.get("upnp.extraPort." + ep + ".externalPort");
-            String httpsPath = app.configManager.get("upnp.extraPort." + ep + ".httpsPath");
-            String appName = app.configManager.get("upnp.extraPort." + ep + ".appName");
-            if (TS.notEmpty(currPortS)) {
-              if (TS.notEmpty(appName)) {
-                extraPortsMsg += "Begin Application " += appName += ":";
-                jsl.put("extraPortAppName:" + ep, appName);
-              }
-              extraPortsMsg += "<p>External ip " += extAddress += " port " += currPortS += " directed to internal ip " += intAddress += " port " += ep += "</p>";
-              if (TS.notEmpty(httpsPath)) {
-                extraPortsMsg += "<p>External url <a href=\"https://" += extAddress += ":" += currPortS += httpsPath += "\">https://" += extAddress += ":" += currPortS += httpsPath += "</a></p>";
-                extraPortsMsg += "<p>Internal url <a href=\"https://" += intAddress += ":" += ep += httpsPath += "\">https://" += intAddress += ":" += ep += httpsPath += "</a></p>";
-                jsl.put("extraPortHttpsPath:" + ep, httpsPath);
-              }
-              if (TS.notEmpty(appName)) {
-                extraPortsMsg += "End Application " += appName;
-              }
-              jsl.put("extraPort:" + ep, currPortS);
-            }
-          }
-          jsl.put("extraPortsMsg", extraPortsMsg);
-          jsl.put("extraPorts", exPorts);
-        }
-        log.log(lvl, "intLink " + intLink);
-        log.log(lvl, "extLink " + extLink);
-        String ct = app.certificateThumbprint;
-        if (TS.notEmpty(ct)) {
-          jsl.put("certThumbprint", ct);
-          jsl.put("certThumbprintMsg", "<p>Certificate Thumbprint: " + ct + "</p>");
-        }
-        jsl.put("intAddress", intAddress);
-        jsl.put("intPort", intPort);
-        jsl.put("extAddress", extAddress);
-        jsl.put("extPort", extPort);
-        jsl.put("gw", gw);
-        jsl.put("deviceName", deviceName);
-        jsl.put("deviceId", deviceId)
-        jsl.put("intLink", intLink);
-        jsl.put("extLink", extLink);
-        jsl.put("intUrl", intUrl);
-        jsl.put("extUrl", extUrl);
-        app.plugin.links.o = jsl;
-        app.plugin.updateNetAddresses();
-      }
+      log.log(lvl, "setting links");
+      app.plugin.links.o = wc;
+      log.log(lvl, "updating addresses");
+      app.plugin.updateNetAddresses();
+      log.log(lvl, "saving");
+      app.configManager.put("wui.webConnect", System:Serializer.serialize(wc));
+      log.log(lvl, "upnp doUpdate done");
     }
   }
   
-    externalPortGet() String {
-      if (TS.isEmpty(extPort)) {
-        extPort = app.configManager.get("wui.extPort");
-        if (TS.isEmpty(extPort)) {
-          Int extPorti = System:Random.getInt(Int.new(), 6000);
-          extPorti += 3000;
-          extPort = extPorti.toString();
-          app.configManager.put("wui.extPort", extPort);
-        }
-      }
-      return(extPort);
-    }
-  
   init() {
-    fields {
-      String gw;
-      String intAddress;
-      String extAddress;
-      String intPort;
-      String extPort;
-      String appIntPort;
-      String appExtPort;
-      String deviceName;
-    }
-    
-    gw = app.configManager.get("upnp.gw");
-    intAddress = app.configManager.get("upnp.intAddress");
-    extAddress = app.configManager.get("upnp.extAddress");
-    intPort = app.configManager.get("upnp.intPort");
-    extPort = app.configManager.get("upnp.extPort");
-    
-    appIntPort = app.webPort;
-    appExtPort = self.externalPort;
-    deviceName = app.plugin.deviceName;
     
     String disables = app.configManager.get("upnp.disable");
     if (TS.notEmpty(disables) && disables == "true") {
@@ -907,12 +186,9 @@ use class IUHub:UpnpUpdate {
       app.configManager.put("upnp.updateSecs", uupdateSecs.toString());
     }
     
-    String fwdSecsS = app.configManager.get("upnp.fwdSecs");
-    if (TS.notEmpty(fwdSecsS)) {
-      fwdSecs = Int.new(fwdSecsS);
-    } else {
-      app.configManager.put("upnp.fwdSecs", fwdSecs.toString());
-    }
+    webPort = app.webPort;
+    certificateThumbprint = app.certificateThumbprint; 
+    
   }
 
 }
@@ -925,7 +201,7 @@ use class IUHub:Background {
       Int lvl;
       IO:Log log;
       DnsUpdate du = DnsUpdate.new();
-      UpnpUpdate uu = UpnpUpdate.new();
+      ConnectionUpdate uu = ConnectionUpdate.new();
     }
   }
   
@@ -1165,13 +441,13 @@ use class IUHub:HubStart {
         log.log(lvl, "Deleting config " + key);
         ui.configManager.delete(key);
       }
-      if (TS.notEmpty(mode) && mode == "saveIntUrl") {
+      /*if (TS.notEmpty(mode) && mode == "saveIntUrl") {
         log.log(lvl, "saveIntUrl");
         ui.plugin.bg.init().uu.doUpdate();
         log.log(lvl, "int url is " + ui.plugin.links.o.get("intUrl"));
         File.apNew(args[2]).writer.open().write(ui.plugin.links.o.get("intUrl")).close();
         File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.links.o.get("intUrl") + "\n").close();
-      }
+      }*/
       ui.configManager.close();
     }
 
@@ -1274,8 +550,9 @@ use class IUHub:HubPlugin {
     log.log(lvl, "In doimap");
     any e;
     try {
-      Map jsl = links.o;
-      if(def(jsl) && jsl.notEmpty) {
+      WebConnect wc = links.o;
+      if(def(wc)) {
+        log.log(lvl, "In doimap1");
         String prot = app.configManager.get("imap.protocol");
         if (TS.isEmpty(prot)) {
           prot = "imaps";
@@ -1292,21 +569,22 @@ use class IUHub:HubPlugin {
         if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
           return(null);
         }
-        Json:Marshaller mar = Json:Marshaller.new();
-        String json = mar.marshall(jsl);
-        log.log(lvl, "links json " + json);
-        String msg = "<p>" + jsl.get("extLink") + "</p>\n<p>" + jsl.get("intLink") + "</p>\n";
-        msg += "<p>External (Internet) address " += jsl.get("extAddress") += ", web user interface on external port " += jsl.get("extPort") += "</p>";
-        msg += "<p>Internal address " += jsl.get("intAddress") += ", web user interface on internal port " += jsl.get("intPort") += "</p>";
-        if (TS.notEmpty(jsl.get("extraPortsMsg"))) {
-          msg += jsl.get("extraPortsMsg");
+        log.log(lvl, "In doimap2");
+        String msg = "<p>" + wc.externalLink + "</p>\n<p>" + wc.internalLink + "</p>\n";
+        msg += "<p>External (Internet) address " += wc.externalAddress += ", web user interface on external port " += wc.externalPort += "</p>";
+        msg += "<p>Internal address " += wc.internalAddress += ", web user interface on internal port " += wc.internalPort += "</p>";
+        log.log(lvl, "In doimap3");
+        for (any kv in wc.extraPortMap) {
+          msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
         }
-        if (TS.notEmpty(jsl.get("certThumbprintMsg"))) {
-          msg += jsl.get("certThumbprintMsg");
-        }
-        msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
-        String subjPref = "DeviceLinks " + jsl.get("deviceName") + " " + app.configManager.get("deviceId") + " ";
+        log.log(lvl, "In doimap4");
+        //msg += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
+        String subjPref = "DeviceLinks " + self.deviceName + " " + self.deviceId + " ";
         String subj = subjPref + Time:Interval.now().seconds;
+        log.log(lvl, "In doimap5");
+        log.log(lvl, "doing email subj " + subj);
+        log.log(lvl, "doing email msg " + msg);
+        log.log(lvl, "In doimap6");
         emit(jv) {
         """
         Properties props = new Properties();
@@ -1366,7 +644,9 @@ use class IUHub:HubPlugin {
       }
     } catch (e) {
       if(def(e)) {
-        ("Exception during imap update " + e);
+        log.log(lvl, "Exception during imap update " + e);
+      } else {
+        log.log(lvl, "Exception during imap update null");
       }
     }
   }
@@ -1518,6 +798,26 @@ use class IUHub:HubPlugin {
        return(res);
      }
      return(null);
+   }
+   
+   updateBeaconRequest(String beaconName, request) {
+      //check num beacons TODO
+      log.log(lvl, "update beacon");
+      Account a = app.accountManager.getAccountForRequest(request);
+      if (def(a) && TS.notEmpty(beaconName)) {
+          log.log(lvl, "doing update");
+          String token = System:Random.getString(32);
+          String tokenHash = Digest:SHA256.digestToHex(token);
+          Map b = Maps.from("accountUser", a.user, 
+                            "beaconName", beaconName, 
+                            "tokenHash", tokenHash);
+          app.configManager.put("token." + tokenHash, Json:Marshaller.marshall(b));
+          WebConnect wc = links.o;
+          String tokout = Json:Marshaller.marshall(Maps.from("token", token, "externalUrl", wc.externalUrl, "internalUrl", wc.internalUrl, "gateway", wc.gateway));
+          log.log(lvl, "ret token");
+          return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("viewBeaconName", beaconName, "viewBeaconToken", tokout)), CallBackUI.setElementsDisplaysResponse(Maps.from("viewBeaconDiv", "block")))));
+        }
+        return(null);
    }
    
 }

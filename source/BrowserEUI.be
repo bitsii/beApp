@@ -88,7 +88,11 @@ var callHD = function() {
 
 class HD {
   default() self {
-    
+    fields {
+      IO:Log log = IO:Log.new();
+      log.level = log.error;
+      Int lvl = log.level;
+    }
   }
   
   getElementById(String id) {
@@ -292,6 +296,11 @@ class HC {
   handleCallback(String resjs) {
     Map resm = unmar.unmarshall(resjs);
     if (def(resm)) {
+        handleCallbackMap(resm);
+    }
+  }
+    
+  handleCallbackMap(Map resm) {
       String mname = resm["action"];
       if (def(mname) && mname.ends("Response")) {
         if (resm.has("args")) {
@@ -300,6 +309,7 @@ class HC {
           List rargs = List.new(1);
           rargs[0] = resm;
         }
+        String show = rargs.size.toString();
         if (callback.can(mname, rargs.length)) {
           callback.invoke(mname, rargs);
         } elseIf(self.can(mname, rargs.length)) {
@@ -307,7 +317,6 @@ class HC {
         }
       }
     }
-  }
   
    toggleDisplay(String id) {
      HE he = HD.getElementById(id);
@@ -315,6 +324,12 @@ class HC {
       he.display = "none";
      } else {
       he.display = "block";
+     }
+   }
+   
+   multiResponse(List res) {
+     for (Map resm in res) {
+        handleCallbackMap(resm);
      }
    }
    
