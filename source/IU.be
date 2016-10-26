@@ -15,6 +15,7 @@ class IU:WebConnect {
     fields {
       Int lvl;
       IO:Log log;
+      
       String gateway;
       String internalAddress;
       String externalAddress;
@@ -32,9 +33,21 @@ class IU:WebConnect {
       String internalMacAddress;
       String extraPorts;
       Map extraPortMap = Map.new();
+      
     }
     log = IO:Log.new();
     lvl = log.level;
+  }
+  
+  toMap() Map {
+    Map res = Maps.fieldsIntoMap(self, Map.new());
+    res.delete("log");
+    res.delete("lvl");
+    return(res);
+  }
+  
+  fromMap(Map fr) this {
+    Maps.mapIntoFields(fr, self);
   }
   
   getAPort() String {

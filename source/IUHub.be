@@ -24,7 +24,6 @@ use App:AuthenticatedWebApp;
 use App:AuthenticatedApp as AuthedApp;
 use Text:String;
 use App:CallBackUI;
-local use IU:WebConnect;
 
 use class IUHub:DnsUpdate {
 
@@ -813,7 +812,9 @@ use class IUHub:HubPlugin {
                             "tokenHash", tokenHash);
           app.configManager.put("token." + tokenHash, Json:Marshaller.marshall(b));
           WebConnect wc = links.o;
-          String tokout = Json:Marshaller.marshall(Maps.from("token", token, "externalUrl", wc.externalUrl, "internalUrl", wc.internalUrl, "gateway", wc.gateway));
+          Map wcm = wc.toMap();
+          wcm += Maps.from("token", token, "deviceId", self.deviceId, "deviceName", self.deviceName, "linkName", beaconName);
+          String tokout = Json:Marshaller.marshall(wcm);
           log.log(lvl, "ret token");
           return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("viewBeaconName", beaconName, "viewBeaconToken", tokout)), CallBackUI.setElementsDisplaysResponse(Maps.from("viewBeaconDiv", "block")))));
         }

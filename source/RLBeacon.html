@@ -59,6 +59,7 @@ h5.luiForm {
 <div id="accountSettingsDiv" style="display: none;">
 <table><tr>
 <td><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');return false;">Password</a></td>
+<td><a href="#" onclick="callUI('toggleDisplay', 'newBeaconDiv');return false;">Link to Hub</a></td>
 <td><a href="#" onclick="ui.bem_showSessionsRequest_0();return false;">Sessions</a></td>
 </tr></table>
 <div id="sessionsListDiv" style="display: none;"></div>
@@ -67,6 +68,10 @@ h5.luiForm {
 <p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
 <p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
 <p><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');ui.bem_changePassRequest_0();return false;">Change Password</a></p>
+</div>
+<div id="newBeaconDiv" style="display: none;">
+<p><label class="luiForm">Paste token from Hub</label><input type="password" id="newBeaconName"</input></p>
+<p><a href="#" onclick="callUI('toggleDisplay', 'newBeaconDiv');callApp('addLinkRequest', document.getElementById('newBeaconName').value);document.getElementById('newBeaconName').value = '';return false;">Ok</a> <a href="#" onclick="callUI('toggleDisplay', 'newBeaconDiv');document.getElementById('newBeaconName').value = '';return false;">Cancel</a></p>
 </div>
 </div>
 <div id="admindiv" style="display: none;">

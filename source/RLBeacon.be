@@ -15,6 +15,7 @@ use System:Thread:Lock;
 use System:Thread:ContainerLocker as CLocker;
 use System:Command as Com;
 use Time:Sleep;
+use Container:Pair;
 
 use App:Alert;
 
@@ -39,16 +40,31 @@ use class RLBeacon:Background {
     fields {
       Int lastTrackClear;
       Int clearSeconds =@ 7200;
+      
+      Int lastHubUpdate;
+      Int hubUpdateSeconds =@ 7200;
     }
-    if (def(lastTrackClear)) {
-      Int ns = Time:Interval.now().seconds;
-      if (ns - lastTrackClear > clearSeconds) {
-        app.trackingManager.clear();
-        lastTrackClear = ns;
-      }
-    } else {
-      lastTrackClear = 0;
+    Pair tickres = tick(lastTrackClear, clearSeconds);
+    lastTrackClear = tickres.second;
+    if (tickres.first) {
+      app.trackingManager.clear();
     }
+    tickres = tick(lastHubUpdate, hubUpdateSeconds);
+    lastHubUpdate = tickres.second;
+    if (tickres.first) {
+      //update wc
+    }
+  }
+  
+  tick(Int last, Int period) Pair {
+    if (undef(last)) {
+      last = 0;
+    }
+    Int ns = Time:Interval.now().seconds;
+    if (ns - last > period) {
+      return(Pair.new(true, ns));
+    }
+    return(Pair.new(false, last));
   }
   
   runTasks() {
@@ -271,6 +287,7 @@ use class RLBeacon:CamPlugin {
           String homePage = "/App/RLBeacon/RLBeacon.html";
           Background bg = Background.new();
           Bool runBackground = true;
+          OLocker links = OLocker.new();
         }
      }
      
@@ -347,6 +364,26 @@ use class RLBeacon:CamPlugin {
    getActionLinks(Account a, Map arg, request) String {
      String actionLinks = String.new();
      return(actionLinks);
+   }
+   
+   addLinkRequest(String token, request) {
+      //check num beacons TODO
+      log.log(lvl, "add link");
+      log.log(lvl, "token " + token);
+      Account a = app.accountManager.getAccountForRequest(request);
+      if (def(a) && TS.notEmpty(token)) {
+          //wc to/from token
+          Map tok = Json:Unmarshaller.unmarshall(token);
+          //this is "direct" (name or ip based, name extra element), later will check against svc for updates to url (?not cert?)
+          
+          app.configManager.put("link!" + a.user + "!" + tok.get("deviceId") + "!" + tok.get("linkName"), token);
+          
+          //iu call update hub for link, sends it all over (addr, mac, etc - ?wc?)
+          //send json of connection and of content, get back json of content back
+          //also on bkgrnd schedule
+          
+        }
+        return(null);
    }
    
 }

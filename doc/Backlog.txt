@@ -2,20 +2,21 @@
 =====
 =====
 
-beacon jv
-talk to hub (token) - token from hub to include addresses - (find, initial internally only, later guess)
-  copy to clipboard
-hub wakeup (shared links logic hub/other(links))
-
-call args serialize/deserialize
-
 beacon
-jv first
-per box links (incl hub for iucam, wake and remote for dt, etc) - in hub and link (shared)
 
-hub wakeup
+*beacon get from paste
+beacon sends to hub then, and on schedule (later svc to find, if not direct, svc also updated)
+iu "url for address for svc" to gen links, list links, svc name or empty
+hub wakeup (shared links logic hub/other(links))
+add names and types to portmap of "extra" ports (int port to map of protocal, friendly name, etc, use prot to make url)
 
-link client (ad, ms, etc)
+cert on link
+
+hub to rlreflect
+cam to rlview
+link to rlbeam
+
+beam(link) client (ad, ms, etc)
   ms working
   ad working
   xa working
@@ -25,9 +26,12 @@ site as well as direct
 
 no-upnp ssh version
   command line ssh - linux, mac - putty windows
+
+duck setup, name based resolution support
 ______________
 
-duck setup
+convenience links for remote desktop
+
 cam names
 cam scheduled pic
 upload in progress indicator
@@ -89,6 +93,10 @@ sound
 hc default inst?
   
 video
+
+call args serialize/deserialize, gotta fix js serialize first
+check size
+have both options (subclass callback?)
 
 embedded plugin host (autoauth, etc)
 

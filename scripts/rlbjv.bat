@@ -6,7 +6,7 @@ del /s /q ..\apprun\App\RLBeacon
 rmdir /s /q ..\apprun\App\RLBeacon
 mkdir ..\apprun\App\RLBeacon
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\shared.txt --deployPath ..\apprun\App\RLBeacon\d --buildPath ..\apprun\App\RLBeacon --emitLang jv -mainClass=RLBeacon:SiteStart source\RLBeacon.be ..\app\source\Db.be ..\app\source\BrowserUI.be ..\app\source\BrowserJvFx.be ..\app\source\WebServer.be ..\app\source\App.be ..\app\source\WebApp.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\shared.txt --deployPath ..\apprun\App\RLBeacon\d --buildPath ..\apprun\App\RLBeacon --emitLang jv -mainClass=RLBeacon:SiteStart source\IU.be source\RLBeacon.be ..\app\source\Db.be ..\app\source\BrowserUI.be ..\app\source\BrowserJvFx.be ..\app\source\WebServer.be ..\app\source\App.be ..\app\source\WebApp.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
@@ -16,7 +16,7 @@ REM -Xlint:deprecation
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\RLBeacon\d --buildPath ..\apprun\App\RLBeacon --emitLang js --ownProcess false -mainClass=RLBeacon:Eui source\RLBeaconBr.be ..\app\source\BrowserEUI.be
+java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\RLBeacon\d --buildPath ..\apprun\App\RLBeacon --emitLang js --ownProcess false -mainClass=RLBeacon:Eui ..\be\source\extended\Log.be source\RLBeaconBr.be ..\app\source\BrowserEUI.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
