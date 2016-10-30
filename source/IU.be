@@ -34,6 +34,9 @@ class IU:WebConnect {
       String extraPorts;
       Map extraPortMap = Map.new();
       
+      String deviceId;
+      String deviceName;
+      
     }
     log = IO:Log.new();
     lvl = log.level;
@@ -71,7 +74,10 @@ class IU:WebConnect {
     }
     
     try {
-        externalAddress = upnp.externalIP;
+        String ea = upnp.externalIP;
+        if (TS.notEmpty(ea)) {
+          externalAddress = ea;
+        }
       } catch (any e) {
         //don't change external ip when upnp fails
         log.log(lvl, "Upnp externalAddress failed");

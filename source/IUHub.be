@@ -25,59 +25,6 @@ use App:AuthenticatedApp as AuthedApp;
 use Text:String;
 use App:CallBackUI;
 
-use class IUHub:DnsUpdate {
-
-  new() self {
-  
-    fields {
-      String duckDomain;
-      String duckToken;
-      any app;
-      Int lvl;
-      IO:Log log;
-      Int lastSec = 0;
-      Int pollSecs = 3600;
-    }
-  
-  }
-  
-  updateOnInterval() {
-    Int currSec = Time:Interval.now().seconds;
-    if (currSec - lastSec > pollSecs) {
-      lastSec = currSec;
-      doUpdate();
-    }
-  }
-  
-  doUpdate() {
-    //log.log(lvl, "In doUpdate");
-    if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
-      log.log(lvl, "Hitting Duck");
-      String url =  "https://duckdns.org/update/" + duckDomain + "/" + duckToken;
-      Web:Client client = Web:Client.new();
-      Web:Client:CertificateManager.validateCertificates = false;
-      client.verb = "GET";
-      client.url = url;
-      String res = client.openInput().readString();
-      client.close();
-      Web:Client:CertificateManager.validateCertificates = true;
-      client = null;
-    }
-  }
-  
-  init() {
-    duckDomain = app.configManager.get("dns.duckDomain");
-    duckToken = app.configManager.get("dns.duckToken");
-    String pollSecsS = app.configManager.get("dns.pollSecs");
-    if (TS.notEmpty(pollSecsS)) {
-      pollSecs = Int.new(pollSecsS);
-    } else {
-      app.configManager.put("dns.pollSecs", pollSecs.toString());
-    }
-  }
-
-}
-
 use class IUHub:ConnectionUpdate {
 
   new() self {
@@ -107,6 +54,40 @@ use class IUHub:ConnectionUpdate {
     }
   }
   
+  loadWc() {
+    if (undef(app.plugin.wcol.o)) {
+      loadWcInner();
+    }
+  }
+  
+  loadWcInner() {
+    String wcs = app.configManager.get("wui.webConnect");
+    if (TS.notEmpty(wcs)) {
+      log.log(lvl, "deserializing wcs");
+      WebConnect wc = WebConnect.new();
+      wc.fromMap(Json:Unmarshaller.unmarshall(wcs));
+      app.plugin.wcol.o = wc;
+    }  
+  }
+  
+  loadLinks() {
+    if (undef(app.plugin.linksol.o)) {
+      loadLinksInner();
+    }
+  }
+  
+  loadLinksInner() {
+    Map links = Map.new();
+    Json:Unmarshaller unmar = Json:Unmarshaller.new();
+    for (any kv in app.configManager.getMap("link.")) {
+      WebConnect wc = WebConnect.new();
+      wc.fromMap(unmar.unmarshall(kv.value));
+      links.put(wc.deviceName + " " + wc.deviceId, wc);
+      log.log(lvl, "loaded link " + wc.deviceName);
+    }
+    app.plugin.linksol.o = links;
+  }
+  
   doUpdate() {
     any e;
     log.log(lvl, "In upnp doUpdate");
@@ -124,23 +105,25 @@ use class IUHub:ConnectionUpdate {
         lastFwd = currSec;
         fwd = true;
       }
-      log.log(lvl, "getting wcs");
-      String wcs = app.configManager.get("wui.webConnect");
-      if (TS.notEmpty(wcs)) {
-        log.log(lvl, "deserializing wcs");
-        WebConnect wc = System:Serializer.deserialize(wcs);
+      log.log(lvl, "getting wc");
+      loadWc();
+      WebConnect wc = app.plugin.wcol.o;
+      if (def(wc)) {
+        log.log(lvl, "wc from wcol");
       } else {
-        log.log(lvl, "new wcs");
+        log.log(lvl, "new wc");
         wc = WebConnect.new();
-        wc.externalPort = app.configManager.get("wui.extPort");
-        wc.extraPorts = app.configManager.get("upnp.extraPorts");
         wc.path = "App/IUHub/IUHub.html";
+        wc.extraPorts = app.configManager.get("upnp.extraPorts");
       }
-      log.log(lvl, "after wcs init");
+      log.log(lvl, "after wc init");
       wc.log = log;
       wc.lvl = lvl;
       wc.internalPort = webPort;
-      wc.certificatePrint = certificateThumbprint; 
+      wc.certificatePrint = certificateThumbprint;
+      wc.deviceId = app.plugin.deviceId;
+      wc.deviceName = app.plugin.deviceName; 
+      wc.externalPort = app.configManager.get("wui.extPort");
       log.log(lvl, "starting wc update");
       wc.update();
       if (fwd) {
@@ -148,11 +131,12 @@ use class IUHub:ConnectionUpdate {
         wc.forwardPorts();
       }
       log.log(lvl, "setting links");
-      app.plugin.links.o = wc;
+      app.plugin.wcol.o = wc;
       log.log(lvl, "updating addresses");
       app.plugin.updateNetAddresses();
+      app.plugin.updateUrls();
       log.log(lvl, "saving");
-      app.configManager.put("wui.webConnect", System:Serializer.serialize(wc));
+      app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
       log.log(lvl, "upnp doUpdate done");
     }
   }
@@ -185,6 +169,9 @@ use class IUHub:ConnectionUpdate {
       app.configManager.put("upnp.updateSecs", uupdateSecs.toString());
     }
     
+    loadWc();
+    loadLinks();
+    
     webPort = app.webPort;
     certificateThumbprint = app.certificateThumbprint; 
     
@@ -199,7 +186,6 @@ use class IUHub:Background {
       any app;
       Int lvl;
       IO:Log log;
-      DnsUpdate du = DnsUpdate.new();
       ConnectionUpdate uu = ConnectionUpdate.new();
     }
   }
@@ -223,7 +209,6 @@ use class IUHub:Background {
   runTasks() {
     //log.log(lvl, "Running tasks");
     runMyTasks();
-    du.updateOnInterval();
     uu.updateOnInterval();
   }
   
@@ -256,10 +241,6 @@ use class IUHub:Background {
     if (def(_sleepTime) && _sleepTime > 0) {
       sleepTime = _sleepTime;
     }
-    du.app = app;
-    du.lvl = lvl;
-    du.log = log;
-    du.init();
     uu.app = app;
     uu.lvl = lvl;
     uu.log = log;
@@ -478,7 +459,8 @@ use class IUHub:HubPlugin {
           any app;
           String name = "IUHub";
           String homePage = "/App/IUHub/IUHub.html";
-          OLocker links = OLocker.new();
+          OLocker wcol = OLocker.new();
+          OLocker linksol = OLocker.new();
           Background bg = Background.new();
           Bool runBackground = true;
         }
@@ -545,11 +527,142 @@ use class IUHub:HubPlugin {
       return(version);
     }
     
+    updateUrls() {
+      log.log(lvl, "updateLinks");
+      String user = app.configManager.get("imap.user");
+      String endpoint = app.configManager.get("imap.endpoint");
+      String pass = app.configManager.get("imap.pass");
+      Map links = Map.new();
+      if (TS.notEmpty(user) && TS.notEmpty(endpoint) && TS.notEmpty(pass)) {
+        log.log(lvl, "have imap info");
+        any e;
+        try {
+            String prot = app.configManager.get("imap.protocol");
+          if (TS.isEmpty(prot)) {
+            prot = "imaps";
+          }
+          String subf = app.configManager.get("imap.subFolder");
+          if (undef(subf)) {
+            subf = "IotUrls";
+          } elseIf (TS.isEmpty(subf)) {
+            subf = null;
+          }
+          Json:Unmarshaller unmar = Json:Unmarshaller.new();
+          //msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
+          String subjPref = "DeviceLinks ";
+          //List froms = List.new();
+          List contents = List.new();
+          List devices = List.new();
+          emit(jv) {
+          """
+          Properties props = new Properties();
+          props.setProperty("mail.store.protocol", bevl_prot.bems_toJvString());
+            Session session = Session.getDefaultInstance(props, null);
+            Store store = session.getStore(bevl_prot.bems_toJvString());
+            if (!store.isConnected()) {
+              store.connect(bevl_endpoint.bems_toJvString(), bevl_user.bems_toJvString(), bevl_pass.bems_toJvString());
+            }
+            Folder f = store.getFolder("Inbox");
+            if (bevl_subf != null) {
+              Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
+              if (!f2.exists()) {
+                f2.create(Folder.HOLDS_MESSAGES);
+              }
+              f = f2;
+            }
+            f.open(Folder.READ_WRITE);
+            
+            if (bevl_subjPref != null) {
+            
+              String ls = bevl_subjPref.bems_toJvString();
+              
+              Message[] messages = f.getMessages();
+              if (messages != null) {
+                for(int i = 0; i < messages.length; i++)
+                {
+                  String subj = messages[i].getSubject();
+                  if (subj != null && subj.startsWith(ls)) {
+                    System.out.println("found message");
+                    Message message = messages[i];
+                    if (message != null) {
+                      /*Address[] adda = message.getFrom();
+                      if (adda != null && adda.length > 0) {
+                        Address add = adda[0];
+                        if (add != null) {
+                          //String adds = add.toString();
+                          //System.out.println("address " + adds);
+                        }
+                      }*/
+                      Object con = message.getContent();
+                      if (con != null) {
+                        String mc = con.toString();
+                        if (mc != null) {
+                          //System.out.println("mc " + mc);
+                          bevl_contents.bem_addValue_1(new $class/Text:String$(mc));
+                        }
+                      }
+                    }
+                  }
+                }
+              }            
+            }
+            
+            f.close(true);
+            store.close();
+          """
+          }
+          Set dids = Set.new();
+          for (String con in contents) {
+            //log.log(lvl, "got con " + con);
+            try {
+              String beg = "type=\"hidden\" name=\"payload\" value=\"";
+              Int d = con.find(beg);
+              if (def(d)) {
+                con = con.substring(d + beg.size);
+                d = con.find("\"");
+                if (def(d)) {
+                  con = con.substring(0, d);
+                  //log.log(lvl, "final con " + con);
+                  String conjs = Encode:Hex.decode(con);
+                  log.log(lvl, "conjs " + conjs);
+                  Map lm = unmar.unmarshall(conjs);
+                  if (def(lm)) {
+                    log.log(lvl, "putting into links");
+                    WebConnect wc = WebConnect.new().fromMap(lm);
+                    links.put(wc.deviceName + " " + wc.deviceId, wc);
+                    dids.put(wc.deviceId);
+                    app.configManager.put("link." + wc.deviceId, conjs);
+                  }
+                  //log.log(lvl, "done with unmar " + lm.get("extAddress"));
+                }
+              }
+            } catch (e) {
+             log.log(lvl, "Exception during imap stuff " );
+            }
+          }
+          linksol.o = links;
+          for (any kv in app.configManager.getMap("link.")) {
+            String kid = kv.key.substring(5);
+            log.log(lvl, "checking kid " + kid);
+            unless (dids.has(kid)) {
+              log.log(lvl, "deleteing " + kv.key);
+              app.configManager.delete(kv.key);
+            }
+          }
+          log.log(lvl, "Done with imap stuff");
+      } catch (e) {
+        if(def(e)) {
+          log.log(lvl, "Exception during imap stuff ");
+        }
+      }
+    }
+  }
+    
   updateNetAddresses() {
     log.log(lvl, "In doimap");
     any e;
     try {
-      WebConnect wc = links.o;
+      WebConnect wc = wcol.o;
       if(def(wc)) {
         log.log(lvl, "In doimap1");
         String prot = app.configManager.get("imap.protocol");
@@ -572,14 +685,16 @@ use class IUHub:HubPlugin {
         String msg = "<p>" + wc.externalLink + "</p>\n<p>" + wc.internalLink + "</p>\n";
         msg += "<p>External (Internet) address " += wc.externalAddress += ", web user interface on external port " += wc.externalPort += "</p>";
         msg += "<p>Internal address " += wc.internalAddress += ", web user interface on internal port " += wc.internalPort += "</p>";
+        String payload = Encode:Hex.new().encode(Json:Marshaller.marshall(wc.toMap()));
+        msg += "<input type=\"hidden\" name=\"payload\" value=\"" += payload += "\"/>";
         log.log(lvl, "In doimap3");
         for (any kv in wc.extraPortMap) {
           msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
         }
         log.log(lvl, "In doimap4");
         //msg += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
-        String subjPref = "DeviceLinks " + self.deviceName + " " + self.deviceId + " ";
-        String subj = subjPref + Time:Interval.now().seconds;
+        String subjPref = "DeviceLinks " + self.deviceId + " ";
+        String subj = subjPref + Time:Interval.now().seconds + " " + self.deviceName;
         log.log(lvl, "In doimap5");
         log.log(lvl, "doing email subj " + subj);
         log.log(lvl, "doing email msg " + msg);
@@ -650,13 +765,6 @@ use class IUHub:HubPlugin {
     }
   }
   
-  tryThingRequest(Map arg, request) Map {
-     if (app.requestFromAdmin(request)) {
-        updateNetAddresses();
-     }
-     return(null);
-   }
-   
    restartRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
         log.log(lvl, "Restarting as requested, will have exit code 3 by login " + app.accountManager.getAccountForRequest(request).user);
@@ -786,39 +894,6 @@ use class IUHub:HubPlugin {
        actionLinks += "<p><a href=\"IUCam.html\">Go to IUCam</a></p>";
      }
      return(actionLinks);
-   }
-   
-   showDevLinksRequest(Map arg, request) Map {
-     if (app.requestFromAdmin(request)) {
-       //String devLinks = "<p><a href=\"#\" onclick=\"ui.bem_offerDevLink_0();return false;\">Send Link Offer</a></p>";
-       Map res = Map.new();
-       res["action"] = "showDevLinksResponse";
-       //res["devLinks"] = devLinks;
-       return(res);
-     }
-     return(null);
-   }
-   
-   updateBeaconRequest(String beaconName, request) {
-      //check num beacons TODO
-      log.log(lvl, "update beacon");
-      Account a = app.accountManager.getAccountForRequest(request);
-      if (def(a) && TS.notEmpty(beaconName)) {
-          log.log(lvl, "doing update");
-          String token = System:Random.getString(32);
-          String tokenHash = Digest:SHA256.digestToHex(token);
-          Map b = Maps.from("accountUser", a.user, 
-                            "beaconName", beaconName, 
-                            "tokenHash", tokenHash);
-          app.configManager.put("token." + tokenHash, Json:Marshaller.marshall(b));
-          WebConnect wc = links.o;
-          Map wcm = wc.toMap();
-          wcm += Maps.from("token", token, "deviceId", self.deviceId, "deviceName", self.deviceName, "linkName", beaconName);
-          String tokout = Json:Marshaller.marshall(wcm);
-          log.log(lvl, "ret token");
-          return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("viewBeaconName", beaconName, "viewBeaconToken", tokout)), CallBackUI.setElementsDisplaysResponse(Maps.from("viewBeaconDiv", "block")))));
-        }
-        return(null);
    }
    
 }

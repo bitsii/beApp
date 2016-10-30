@@ -2,32 +2,40 @@
 =====
 =====
 
-beacon
+imap folder
+extraports ui
+test extraports in msg
+show list of devices
+expand device gens links based on caller address (have expand for alt)
+  include svc list in wc
+  link to each thing (url, cam url, rdp/vnc/etc, wakeup, ssh...)
+    (port named services, alt suffixes (cam))
 
-*beacon get from paste
-beacon sends to hub then, and on schedule (later svc to find, if not direct, svc also updated)
-iu "url for address for svc" to gen links, list links, svc name or empty
-hub wakeup (shared links logic hub/other(links))
-add names and types to portmap of "extra" ports (int port to map of protocal, friendly name, etc, use prot to make url)
+wakeup, do all mac addresses, start with "best"
+  put all macs in wc, commasep
+  only show wake link in "main links" when device on same network based in gw
 
-cert on link
+clear dev db
 
-hub to rlreflect
-cam to rlview
-link to rlbeam
+persist the last update time, have an update now (refresh) option
 
-beam(link) client (ad, ms, etc)
-  ms working
-  ad working
-  xa working
-  auto-login
+update, run for awhile
   
-site as well as direct
+cert on link
+optional password to encrypte/decrypte imap blob
+have option to not put link info in imap emails (also extra ports sep opt)
+force deviceid to certain characteristics (in get)
+
+mac, win
+  cs imap
+  native jv/cs upnp, nw (no cmd line) (keep old code)
 
 no-upnp ssh version
-  command line ssh - linux, mac - putty windows
-
-duck setup, name based resolution support
+  native jv cs ssh (jcsh, looks like ssh.net should work)
+  presesnce of ssh info
+  show if upnp is working
+    
+android, ios
 ______________
 
 convenience links for remote desktop
@@ -35,7 +43,7 @@ convenience links for remote desktop
 cam names
 cam scheduled pic
 upload in progress indicator
-update check
+update check/auto update
 ______________
 
 easy setup
