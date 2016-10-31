@@ -345,6 +345,12 @@ class HC {
      }
    }
    
+   setElementsInnerHTMLResponse(Map idvals) {
+     for (any kv in idvals) {
+      HD.getElementById(kv.key).innerHTML = kv.value;
+     }
+   }
+   
    reloadResponse() {
      HD.reload();
    }

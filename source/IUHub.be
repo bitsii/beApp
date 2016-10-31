@@ -82,7 +82,7 @@ use class IUHub:ConnectionUpdate {
     for (any kv in app.configManager.getMap("link.")) {
       WebConnect wc = WebConnect.new();
       wc.fromMap(unmar.unmarshall(kv.value));
-      links.put(wc.deviceName + " " + wc.deviceId, wc);
+      links.put(wc.deviceId, wc);
       log.log(lvl, "loaded link " + wc.deviceName);
     }
     app.plugin.linksol.o = links;
@@ -515,6 +515,7 @@ use class IUHub:HubPlugin {
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
+      res["devLinksList"] = getDevLinks(a, arg, request);
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       return(res);
@@ -629,7 +630,7 @@ use class IUHub:HubPlugin {
                   if (def(lm)) {
                     log.log(lvl, "putting into links");
                     WebConnect wc = WebConnect.new().fromMap(lm);
-                    links.put(wc.deviceName + " " + wc.deviceId, wc);
+                    links.put(wc.deviceId, wc);
                     dids.put(wc.deviceId);
                     app.configManager.put("link." + wc.deviceId, conjs);
                   }
@@ -894,6 +895,42 @@ use class IUHub:HubPlugin {
        actionLinks += "<p><a href=\"IUCam.html\">Go to IUCam</a></p>";
      }
      return(actionLinks);
+   }
+   
+   getDevLinks(Account a, Map arg, request) String {
+    String devLinks = String.new();
+    Json:Unmarshaller unmar = Json:Unmarshaller.new();
+    for (any kv in app.plugin.linksol.o) {
+      WebConnect wc = kv.value;
+      devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\">Links for  " += wc.deviceName += "</a></p>";
+    }
+     return(devLinks);
+   }
+   
+   getDevLinksRequest(String deviceId, String type, request) Map {
+     String devLinks = String.new();
+     //common prefix with target . and check for size of 3
+     //later can use my netmask TODO
+     WebConnect wc = app.plugin.linksol.o.get(deviceId);
+     if (def(wc)) {
+       if (TS.isEmpty(type)) {
+        type = "ext";
+        String cp = TS.commonPrefix(request.remoteAddress, wc.internalAddress);
+        if (TS.notEmpty(cp)) {
+          LinkedList ll = cp.split(".");
+          log.log(lvl, " rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
+          if (ll.size > 2) {
+            type = "int";
+          }
+        }
+       }
+       if (type == "ext") {
+         devLinks += wc.externalLink;
+       } else {
+         devLinks += wc.internalLink;
+       }
+    }
+     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
    }
    
 }

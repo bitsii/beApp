@@ -385,6 +385,12 @@ use class IUHub:Eui {
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
+    if (arg.has("devLinksList")) {
+      HD.getElementById("devLinksListDiv").innerHTML = arg["devLinksList"];
+    } else {
+      HD.getElementById("devLinksListDiv").innerHTML = "";
+    }
+    HD.getElementById("devLinksDiv").innerHTML = "";
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
       if (TS.notEmpty(permsString)) {

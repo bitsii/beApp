@@ -227,6 +227,7 @@ use class IUHub:BigHubPlugin(HubPlugin) {
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
+      res["devLinksList"] = getDevLinks(a, arg, request);
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       return(res);

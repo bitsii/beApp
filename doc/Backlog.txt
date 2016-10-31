@@ -2,24 +2,34 @@
 =====
 =====
 
-imap folder
-extraports ui
-test extraports in msg
 show list of devices
-expand device gens links based on caller address (have expand for alt)
+expand device gens links based on caller address
+  put option to alt (internal or external) in return
+    no arg means guess, arge means do that one
+    include link for alt
   include svc list in wc
   link to each thing (url, cam url, rdp/vnc/etc, wakeup, ssh...)
     (port named services, alt suffixes (cam))
 
-wakeup, do all mac addresses, start with "best"
-  put all macs in wc, commasep
+test extraports in msg
+wakeup
   only show wake link in "main links" when device on same network based in gw
-
-clear dev db
 
 persist the last update time, have an update now (refresh) option
 
+clear dev db
+
 update, run for awhile
+
+does not like spaces in the names, or names with same part + space (dogcam high dogcam low) have a toAlphaNum (alphanumeric)
+
+extraports ui
+imap folder
+
+do all mac addresses, start with "best"
+  put all macs in wc, commasep
+
+native jv upnp, update, run for awhile
   
 cert on link
 optional password to encrypte/decrypte imap blob
