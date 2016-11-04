@@ -30,7 +30,7 @@ class IU:WebConnect {
       String internalLink;
       String externalLink;
       String certificatePrint = "";
-      String internalMacAddress;
+      List internalMacAddresses = List.new();
       String extraPorts;
       Map extraPortMap = Map.new();
       
@@ -67,7 +67,11 @@ class IU:WebConnect {
     gateway = upnp.netGw;
     internalAddress = upnp.internalIP;
     Net:Interface ni = Net:Interface.new();
-    internalMacAddress = ni.interfaceForNetwork(upnp.netGw).macAddress;
+    internalMacAddresses.clear();
+    internalMacAddresses += ni.interfaceForNetwork(upnp.netGw).macAddress;
+    for (ni in ni.localInterfaces) {
+      internalMacAddresses += ni.macAddress;
+    }
     
     if (TS.isEmpty(externalPort)) {
       externalPort = getAPort();
@@ -94,13 +98,16 @@ class IU:WebConnect {
       } else {
         extPort = "";
       }
-      internalBase = protocol + internalAddress + intPort + "/";
-      externalBase = protocol + externalAddress + extPort + "/";
-      internalUrl = internalBase + path;
-      externalUrl = externalBase + path;
-      
-      internalLink = "<a href=\"" + internalUrl + "\">Internal Link - use on same network as the device is on.</a>";
-      externalLink = "<a href=\"" + externalUrl + "\">External Link - use from the internet, outside the network the device is on.</a>";
+      if (TS.notEmpty(internalAddress)) {
+        internalBase = protocol + internalAddress + intPort + "/";
+        internalUrl = internalBase + path;
+        internalLink = "<a href=\"" + internalUrl + "\">Internal Link to Hub UI - use on same network as the device is on.</a>";
+      }
+      if (TS.notEmpty(externalAddress)) {
+        externalBase = protocol + externalAddress + extPort + "/";          
+        externalUrl = externalBase + path;
+        externalLink = "<a href=\"" + externalUrl + "\">External Link to Hub UI - use from the internet, outside the network the device is on.</a>";
+      }
       
   }
   
@@ -725,5 +732,110 @@ class Upnp {
     }
             
     
+
+}
+
+local use Net:Wol;
+
+class Wol {
+
+  default() self { 
+    fields {
+      Int lvl;
+      IO:Log log;
+    }
+    log = IO:Log.new();
+    lvl = log.error;
+  }
+
+  emit(cs) {
+"""
+private static byte[] StringToByteArray(string hex)
+{
+  int NumberChars = hex.Length;
+  byte[] bytes = new byte[NumberChars / 2];
+  for (int i = 0; i < NumberChars; i += 2)
+    bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+  return bytes;
+}
+private static void WakeOnLan(string hex)
+{
+    byte[] mac = StringToByteArray(hex);
+    // WOL packet is sent over UDP 255.255.255.0:40000.
+    UdpClient client = new UdpClient();
+    client.Connect(IPAddress.Broadcast, 40000);
+
+    // WOL packet contains a 6-bytes trailer and 16 times a 6-bytes sequence containing the MAC address.
+    byte[] packet = new byte[17*6];
+
+    // Trailer of 6 times 0xFF.
+    for (int i = 0; i < 6; i++)
+        packet[i] = 0xFF;
+
+    // Body of magic packet contains 16 times the MAC address.
+    for (int i = 1; i <= 16; i++)
+        for (int j = 0; j < 6; j++)
+            packet[i*6 + j] = mac[j];
+
+    // Send WOL packet.
+    client.Send(packet, packet.Length);
+}
+"""
+}
+
+emit(jv) {
+"""
+private static byte[] stringToByteArray(String hex)
+{
+  int numChars = hex.length();
+  byte[] bytes = new byte[numChars / 2];
+  for (int i = 0; i < numChars; i += 2)
+    bytes[i / 2] = (byte) Integer.parseInt(hex.substring(i, i + 2), 16);
+  return bytes;
+}
+private static void wakeOnLan(String hex) throws Exception
+{
+    byte[] mac = stringToByteArray(hex);
+
+    // WOL packet contains a 6-bytes trailer and 16 times a 6-bytes sequence containing the MAC address.
+    byte[] packet = new byte[17*6];
+
+    // Trailer of 6 times 0xFF.
+    for (int i = 0; i < 6; i++)
+        packet[i] = (byte) 0xFF;
+
+    // Body of magic packet contains 16 times the MAC address.
+    for (int i = 1; i <= 16; i++)
+        for (int j = 0; j < 6; j++)
+            packet[i*6 + j] = mac[j];
+
+    // Send WOL packet.
+    // WOL packet is sent over UDP 255.255.255.0:40000.
+    InetAddress address = InetAddress.getByName("255.255.255.255");
+    DatagramPacket dpacket = new DatagramPacket(packet, packet.length, address, 40000);
+    DatagramSocket socket = new DatagramSocket();
+    socket.send(dpacket);
+    socket.close();
+}
+"""
+}
+
+  wakeMacAddr(String addr) {
+    addr = addr.swap(":", "");
+    addr = addr.swap("-", "");
+    addr = addr.strip();
+    log.log(lvl, "Waking " + addr);
+    emit(cs) {
+    """
+    WakeOnLan(beva_addr.bems_toCsString());
+    """
+    }
+    emit(jv) {
+    """
+    wakeOnLan(beva_addr.bems_toJvString());
+    """
+    }
+    return(null);
+  }
 
 }

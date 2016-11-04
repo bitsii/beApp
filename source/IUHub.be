@@ -683,15 +683,16 @@ use class IUHub:HubPlugin {
           return(null);
         }
         log.log(lvl, "In doimap2");
-        String msg = "<p>" + wc.externalLink + "</p>\n<p>" + wc.internalLink + "</p>\n";
-        msg += "<p>External (Internet) address " += wc.externalAddress += ", web user interface on external port " += wc.externalPort += "</p>";
-        msg += "<p>Internal address " += wc.internalAddress += ", web user interface on internal port " += wc.internalPort += "</p>";
+        String msg = "";
+        if (TS.notEmpty(wc.externalLink)) {
+          msg += "<p>" + wc.externalLink += "</p>\n<p>" += wc.internalLink += "</p>\n";
+        }
         String payload = Encode:Hex.new().encode(Json:Marshaller.marshall(wc.toMap()));
         msg += "<input type=\"hidden\" name=\"payload\" value=\"" += payload += "\"/>";
         log.log(lvl, "In doimap3");
-        for (any kv in wc.extraPortMap) {
-          msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
-        }
+        //for (any kv in wc.extraPortMap) {
+        //  msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
+        //}
         log.log(lvl, "In doimap4");
         //msg += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
         String subjPref = "DeviceLinks " + self.deviceId + " ";
@@ -902,9 +903,27 @@ use class IUHub:HubPlugin {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
     for (any kv in app.plugin.linksol.o) {
       WebConnect wc = kv.value;
-      devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\">Links for  " += wc.deviceName += "</a></p>";
+      devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\">Get links for  " += wc.deviceName += "</a></p>";
     }
      return(devLinks);
+   }
+   
+   wakeDevRequest(String deviceId, request) {
+     Wol wol = Wol.new();
+     wol.log = log;
+     wol.lvl = lvl;
+     WebConnect wc = app.plugin.linksol.o.get(deviceId);
+     if (def(wc)) {
+       log.log(lvl, "waking " + wc.deviceName);
+       for (Int i = 0;i < 3;i++=) {
+         for (String mac in wc.internalMacAddresses) {
+           if (TS.notEmpty(mac)) {
+            log.log(lvl, "wake for mac addr " + mac);
+            wol.wakeMacAddr(mac);
+           }
+         }
+       }
+     }
    }
    
    getDevLinksRequest(String deviceId, String type, request) Map {
@@ -912,6 +931,7 @@ use class IUHub:HubPlugin {
      //common prefix with target . and check for size of 3
      //later can use my netmask TODO
      WebConnect wc = app.plugin.linksol.o.get(deviceId);
+     WebConnect mywc = app.plugin.wcol.o;
      if (def(wc)) {
        if (TS.isEmpty(type)) {
         type = "ext";
@@ -923,12 +943,32 @@ use class IUHub:HubPlugin {
             type = "int";
           }
         }
-       }
-       if (type == "ext") {
-         devLinks += wc.externalLink;
+        showWake = false;
+        cp = TS.commonPrefix(mywc.internalAddress, wc.internalAddress);
+        if (TS.notEmpty(cp)) {
+          ll = cp.split(".");
+          if (ll.size > 2) {
+            showWake = true;
+          }
+        }
        } else {
-         devLinks += wc.internalLink;
+        Bool showWake = true;
        }
+       if (showWake) {
+        devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" += wc.deviceId += "');return false;\">Wakeup  " += wc.deviceName += "</a></p>";
+        }
+       if (type == "ext") {
+         if (TS.notEmpty(wc.externalLink)) {
+          devLinks += wc.externalLink;
+         }
+         devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'int');return false;\">Or get internal links for  " += wc.deviceName += "...</a></p>";
+       } else {
+         if (TS.notEmpty(wc.internalLink)) {
+          devLinks += wc.internalLink;
+         }
+         devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'ext');return false;\">Or get external links for  " += wc.deviceName += "...</a></p>";
+       }
+       devLinks += "<p><a href=\"#\" onclick=\"document.getElementById('devLinksDiv').innerHTML = '';return false;\">Close Links</a></p>";
     }
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
    }

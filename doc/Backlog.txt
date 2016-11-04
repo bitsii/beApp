@@ -1,59 +1,54 @@
 
 =====
 =====
+______________
 
-show list of devices
-expand device gens links based on caller address
-  put option to alt (internal or external) in return
-    no arg means guess, arge means do that one
-    include link for alt
-  include svc list in wc
-  link to each thing (url, cam url, rdp/vnc/etc, wakeup, ssh...)
-    (port named services, alt suffixes (cam))
-
-test extraports in msg
-wakeup
-  only show wake link in "main links" when device on same network based in gw
-
-persist the last update time, have an update now (refresh) option
-
-clear dev db
-
-update, run for awhile
+convenience add services to hub (for puters or hub, oc)
+    ssh, rdp, vnc (mac)?, nomachine, ...
+  knows internal port
+  sets up extraport
+  creates a url
+  in browser remote where available...
+  on webserver vnc?
 
 does not like spaces in the names, or names with same part + space (dogcam high dogcam low) have a toAlphaNum (alphanumeric)
 
-extraports ui
 imap folder
-
-do all mac addresses, start with "best"
-  put all macs in wc, commasep
-
-native jv upnp, update, run for awhile
-  
-cert on link
-optional password to encrypte/decrypte imap blob
-have option to not put link info in imap emails (also extra ports sep opt)
-force deviceid to certain characteristics (in get)
-
-mac, win
-  cs imap
-  native jv/cs upnp, nw (no cmd line) (keep old code)
-
-no-upnp ssh version
-  native jv cs ssh (jcsh, looks like ssh.net should work)
-  presesnce of ssh info
-  show if upnp is working
-    
-android, ios
-______________
-
-convenience links for remote desktop
-
 cam names
-cam scheduled pic
+cam periodic pic
 upload in progress indicator
 update check/auto update
+
+extraports/services ui (simple...)
+
+moar pretty
+
+mac, win
+  static build miniupnpc mac
+
+no-upnp ssh version
+  putty for win
+  presesnce of ssh info
+  show if upnp is working
+______________
+
+android, ios client only
+
+cert on link
+optional password to encrypte/decrypte imap blob
+have option to not put link info in imap emails
+force deviceid to certain characteristics (in get)
+
+native jv upnp
+
+cs imap
+
+native jv cs ssh (jcsh, looks like ssh.net should work)
+
+persist the last update time, have an update now (refresh) option
+
+______________
+
 ______________
 
 easy setup

@@ -122,7 +122,7 @@ use class IUHub:Eui {
     }
     
     handleCallback(String res) {
-      hideFail();
+      hideInform();
       HC.new(self).handleCallback(res);
     }
     
@@ -181,7 +181,7 @@ use class IUHub:Eui {
    
    deleteAccountRequest(String accountName) {
      unless (HD.getElementById("confirmAccountDelete").checked) {
-      return(fail("Must confirm account deletion"));
+      return(inform("Must confirm account deletion"));
      }
      HD.getElementById("confirmAccountDelete").checked = false;
      Map arg = Map.new();
@@ -223,7 +223,7 @@ use class IUHub:Eui {
      if (TS.notEmpty(pass)) {
        String pass2 = HD.getElementById("aadminPass2").value;
        if (pass != pass2) {
-        return(fail("Account Admin passwords don't match"));
+        return(inform("Account Admin passwords don't match"));
        }
        arg["accountPass"] = pass;
      }
@@ -433,7 +433,7 @@ use class IUHub:Eui {
     arg["newPass"] = np;
     handleCallOut(arg);
     } else {
-      fail("New passwords don't match");
+      inform("New passwords don't match");
     }
    }
    
@@ -469,7 +469,7 @@ use class IUHub:Eui {
     arg["imapPass"] = ip;
     handleCallOut(arg);
     } else {
-      fail("Passwords don't match");
+      inform("Passwords don't match");
     }
    }
    
@@ -512,19 +512,19 @@ use class IUHub:Eui {
       }
    }
    
-   failResponse(Map arg) {
-    fail(arg["reason"]);
+   informResponse(Map arg) {
+    inform(arg["reason"]);
    }
    
-   fail(String r) {
+   inform(String r) {
      if (TS.notEmpty(r)) {
-      HD.getElementById("failMessageDiv").innerHTML = r;
-      HD.getElementById("failDiv").display = "block";
+      HD.getElementById("informMessageDiv").innerHTML = r;
+      HD.getElementById("informDiv").display = "block";
      }
    }
    
-   hideFail() {
-     HD.getElementById("failDiv").display = "none";
+   hideInform() {
+     HD.getElementById("informDiv").display = "none";
    }
    
    copyRequest() {

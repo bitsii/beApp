@@ -144,23 +144,23 @@ use class App:IULinkBr {
     arg["imapPass"] = ip;
     handleCallOut(arg);
     } else {
-      fail("Passwords don't match");
+      inform("Passwords don't match");
     }
    }
    
-   failResponse(Map arg) {
-    fail(arg["reason"]);
+   informResponse(Map arg) {
+    inform(arg["reason"]);
    }
    
-   fail(String r) {
+   inform(String r) {
      if (TS.notEmpty(r)) {
-      HD.getElementById("failMessageDiv").innerHTML = r;
-      HD.getElementById("failDiv").display = "block";
+      HD.getElementById("informMessageDiv").innerHTML = r;
+      HD.getElementById("informDiv").display = "block";
      }
    }
    
-   hideFail() {
-     HD.getElementById("failDiv").display = "none";
+   hideInform() {
+     HD.getElementById("informDiv").display = "none";
    }
    
    login() {
