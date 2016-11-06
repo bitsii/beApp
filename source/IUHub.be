@@ -690,6 +690,10 @@ use class IUHub:HubPlugin {
         String payload = Encode:Hex.new().encode(Json:Marshaller.marshall(wc.toMap()));
         msg += "<input type=\"hidden\" name=\"payload\" value=\"" += payload += "\"/>";
         log.log(lvl, "In doimap3");
+        Pair sl = self.serviceLinks;
+        msg += "<p>Service connections for " += self.deviceName += "</p>";
+        msg += "<p>" += sl.first += "</p>";
+        msg += "<p>" += sl.second += "</p>";
         //for (any kv in wc.extraPortMap) {
         //  msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
         //}
@@ -908,12 +912,19 @@ use class IUHub:HubPlugin {
         }
       }
       Pair sl = self.serviceLinks;
+      actionLinks += "<p>Service connections for " += self.deviceName += "</p>";
       if (internal) {
         actionLinks += sl.first;
+        actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show external service connections</a>";
+        actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.second;
+        actionLinks += "</div>";
       } else {
         actionLinks += sl.second;
+        actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show internal service connections</a>";
+        actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.first;
+        actionLinks += "</div>";
       }
      return(actionLinks);
    }

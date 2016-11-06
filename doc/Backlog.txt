@@ -4,8 +4,6 @@
 ______________
 
 port forward
-  hide int/ext based on location
-  into email/links (both)
   show and load for changes
   drop down
   
