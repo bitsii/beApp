@@ -895,7 +895,38 @@ use class IUHub:HubPlugin {
      if (TS.isEmpty(showCam) || showCam == "enabled") {
        actionLinks += "<p><a href=\"IUCam.html\">Go to IUCam</a></p>";
      }
+     //is remote
+     //add links
+     Bool internal = false;
+     WebConnect wc = wcol.o;
+     String cp = TS.commonPrefix(request.remoteAddress, wc.internalAddress);
+      if (TS.notEmpty(cp)) {
+        LinkedList ll = cp.split(".");
+        log.log(lvl, " rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
+        if (ll.size > 2) {
+          internal = true;
+        }
+      }
+      Pair sl = self.serviceLinks;
+      if (internal) {
+        actionLinks += sl.first;
+        actionLinks += sl.second;
+      } else {
+        actionLinks += sl.second;
+        actionLinks += sl.first;
+      }
      return(actionLinks);
+   }
+   
+   serviceLinksGet() Pair {
+     WebConnect wc = wcol.o;
+      String intsl = String.new();
+      String extsl = String.new();
+      for (any kv in wc.getServices()) {
+        intsl += "<p>" += kv.value.get("intLink") += "</p>";
+        extsl += "<p>" += kv.value.get("extLink") += "</p>";
+      }
+      return(Pair.new(intsl, extsl));
    }
    
    getDevLinks(Account a, Map arg, request) String {
@@ -972,6 +1003,19 @@ use class IUHub:HubPlugin {
     }
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
    }
+   
+   updateForwardRequest(String fpName, String port, String urlPat, request) Map {
+     if (app.requestFromAdmin(request)) {
+       WebConnect wc = app.plugin.wcol.o;
+       //now fpname and urlpat tied to port
+       wc.addService(fpName, port, urlPat);
+       app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
+       app.plugin.wcol.o = wc;
+       return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
+       }
+       return(null);
+   }
+   
    
 }
 

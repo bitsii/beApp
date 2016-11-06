@@ -1258,7 +1258,7 @@ class AuthedApp {
            arg = Map.new();
            log.log(lvl, "Caught exception during handleWeb B");
            if (def(e)) {
-            log.log(lvl, "Error was " + e);
+            log.log(lvl, "Exception was " + e);
            }
             arg["action"] = "failResponse";
             if (e.sameClass(Alert.new()@)) {

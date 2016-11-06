@@ -33,6 +33,7 @@ class IU:WebConnect {
       List internalMacAddresses = List.new();
       String extraPorts;
       Map extraPortMap = Map.new();
+      Map servicesConf = Map.new();
       
       String deviceId;
       String deviceName;
@@ -132,6 +133,69 @@ class IU:WebConnect {
           }
         }
       }
+    }
+    
+    addService(String name, String port, String urlPat) {
+      log.log(lvl, "adding service");
+      String extPort = self.extraPorts;
+      if (TS.notEmpty(port)) {
+       Bool present = false;
+       if (TS.notEmpty(extPort)) {
+         //see if present
+         any eps = extPort.split(",");
+         for (String ep in eps) {
+          if (ep == port) {
+            present = true;
+          }
+         }       
+       }
+       unless (present) {
+        log.log(lvl, "extport notpresent");
+        if (TS.notEmpty(extPort)) {
+          extPort += "," += port;
+        } else {
+          extPort = port;
+        }
+        //det the port now
+        extraPortMap.put(port, getAPort());
+        extraPorts = extPort;
+       } else {
+         log.log(lvl, "extport present");
+       }
+       Map epConf = Maps.from("name", name, "urlPat", urlPat);
+       if (undef(servicesConf)) {
+        servicesConf = Map.new();
+       }
+       servicesConf.put(port, epConf);
+       log.log(lvl, "added");
+      }
+    }
+    
+    getServices() Map {
+      Map services = Map.new();
+      //intPort->{extPort, name, intUrl, extUrl}
+      for (any kv in servicesConf) {
+        String intPort = kv.key;
+        Map conf = kv.value;
+        Map service = Map.new();
+        services.put(intPort, service);
+        service.put("intPort", extraPortMap.get(intPort));
+        service.put("name", conf.get("name"));
+        String intUrl = conf.get("urlPat").copy();
+        log.log(lvl, "intUrl " + intUrl);
+        if (TS.notEmpty(intUrl) && TS.notEmpty(internalAddress)) {
+          intUrl = intUrl.swap("$ip$", internalAddress);
+          intUrl = intUrl.swap("$port$", intPort);
+          service.put("intLink", intUrl + " Internal Connection for " += conf.get("name") += " - use from the same network the device is on.")
+        }
+        String extUrl = conf.get("urlPat").copy();
+        if (TS.notEmpty(extUrl) && TS.notEmpty(externalAddress)) {
+          extUrl = extUrl.swap("$ip$", externalAddress);
+          extUrl = extUrl.swap("$port$", service.get("intPort"));
+          service.put("extLink", extUrl + " External Connection for " += conf.get("name") += " - use from the internet, outside the network the device is on.");
+        }
+      }
+      return(services);
     }
     
 }
@@ -665,7 +729,7 @@ class Upnp {
       if (def(res)) {
         Int start = res.find("<NewExternalIPAddress>");
         Int end = res.find("</NewExternalIPAddress>");
-        if (def(start) && def("end")) {
+        if (def(start) && def(end)) {
           String ip = res.substring(start + 22, end);
           return(ip);
         }

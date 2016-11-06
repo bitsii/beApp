@@ -3,23 +3,30 @@
 =====
 ______________
 
-convenience add services to hub (for puters or hub, oc)
-    ssh, rdp, vnc (mac)?, nomachine, ...
-  knows internal port
-  sets up extraport
-  creates a url
-  in browser remote where available...
-  on webserver vnc?
+port forward
+  hide int/ext based on location
+  into email/links (both)
+  show and load for changes
+  drop down
+  
+  ssh, rdp, vnc (mac)?, nomachine, ...
+  cam links (direct) (+activation)
+  
+handle cam on/off like a service add
+  
+imap folder -w- default
+drop down email
+
+test wake, all the things - check power for wifi to ethernet
+  
+do your own links no matter what (whether imap or no)
 
 does not like spaces in the names, or names with same part + space (dogcam high dogcam low) have a toAlphaNum (alphanumeric)
 
-imap folder
 cam names
 cam periodic pic
 upload in progress indicator
 update check/auto update
-
-extraports/services ui (simple...)
 
 moar pretty
 
@@ -29,10 +36,12 @@ mac, win
 no-upnp ssh version
   putty for win
   presesnce of ssh info
-  show if upnp is working
+  show if upnp is working (did I get external ip from upnp? portforward 
+    result check?)
 ______________
 
 android, ios client only
+  there look to be command line ssh miniupnpc's (for android at least)
 
 cert on link
 optional password to encrypte/decrypte imap blob
