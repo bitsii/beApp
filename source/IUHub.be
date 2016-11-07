@@ -1015,6 +1015,26 @@ use class IUHub:HubPlugin {
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
    }
    
+   getForwardPortsListRequest(request) Map {
+     String fpl = String.new();
+     WebConnect wc = wcol.o;
+     for (any kv in wc.getServices()) {
+      fpl += "<a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a>";
+     }
+     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", fpl)));
+   }
+   
+   loadForwardPortRequest(String port, request) Map {
+     String fpl = String.new();
+     WebConnect wc = wcol.o;
+     Map fp = wc.getServices().get(port);
+     for (any kv in fp) {
+      log.log(lvl, "fp " + kv.key + " " + kv.value);
+     }
+     log.log(lvl, "urlPat " + fp.get("urlPat"));
+    return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpPattern", fp.get("urlPat"))));
+   }
+   
    updateForwardRequest(String fpName, String port, String urlPat, request) Map {
      if (app.requestFromAdmin(request)) {
        WebConnect wc = app.plugin.wcol.o;

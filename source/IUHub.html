@@ -88,7 +88,7 @@ h5.luiForm {
 <td><a id="showAccountAdminId" href="#" onclick="ui.bem_showAccountAdminRequest_0();return false;">Accounts</a></td>
 <td><a href="#" onclick="ui.bem_showImapRequest_0();return false;">Imap</a></td>
 <td><a href="#" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;">Device Name</a></td>
-<td><a href="#" onclick="callUI('toggleDisplay', 'forwardPortsDiv');return false;">Remote Service Setup</a></td>
+<td><a href="#" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;">Remote Service Setup</a></td>
 </tr></table>
 <div id="accountAdminDiv" style="display: none;">
 <p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
@@ -114,6 +114,7 @@ h5.luiForm {
 <p><label class="luiForm">Local Port</label><input type="text" id="fpPort"</input></p>
 <p><label class="luiForm">Url Pattern</label><input type="text" id="fpPattern"</input></p>
 <p><a href="#" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value, document.getElementById('fpPattern').value);callUI('toggleDisplay', 'forwardPortsDiv');return false;">Save Service Setup</a> <a href="#" onclick="callUI('toggleDisplay', 'forwardPortsDiv');return false;">Cancel</a></p>
+<div id="forwardPortsListDiv"></div>
 </div>
 <div id="configsDiv"></div>
 <!--<p><a id="tryThingId" href="#" onclick="ui.bem_tryThing_0();return false;">Try Thing</a></p>-->

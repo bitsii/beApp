@@ -4,13 +4,14 @@
 ______________
 
 port forward
-  show and load for changes
   drop down
+  delete service config
   
   ssh, rdp, vnc (mac)?, nomachine, ...
   cam links (direct) (+activation)
   
 handle cam on/off like a service add
+  separate list of other active suffixes in wc, substr etc for them
   
 imap folder -w- default
 drop down email
@@ -30,6 +31,7 @@ moar pretty
 
 mac, win
   static build miniupnpc mac
+______________
 
 no-upnp ssh version
   putty for win
@@ -69,6 +71,8 @@ get pipeline going
   
 doc dev env - good on all plats
 android ver
+
+static forward for things like ssh from local port
 ______________
 
 homeauto - locks, light

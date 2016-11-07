@@ -162,6 +162,7 @@ class IU:WebConnect {
        } else {
          log.log(lvl, "extport present");
        }
+       log.log(lvl, "urlPat " + urlPat);
        Map epConf = Maps.from("name", name, "urlPat", urlPat);
        if (undef(servicesConf)) {
         servicesConf = Map.new();
@@ -181,6 +182,7 @@ class IU:WebConnect {
         services.put(intPort, service);
         service.put("intPort", extraPortMap.get(intPort));
         service.put("name", conf.get("name"));
+        service.put("urlPat", conf.get("urlPat"));
         String intUrl = conf.get("urlPat").copy();
         log.log(lvl, "intUrl " + intUrl);
         if (TS.notEmpty(intUrl) && TS.notEmpty(internalAddress)) {
