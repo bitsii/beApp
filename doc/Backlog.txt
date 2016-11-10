@@ -5,7 +5,6 @@ ______________
 
 port forward
   drop down
-  delete service config
   
   ssh, rdp, vnc (mac)?, nomachine, ...
   cam links (direct) (+activation)

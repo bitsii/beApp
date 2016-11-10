@@ -1019,9 +1019,9 @@ use class IUHub:HubPlugin {
      String fpl = String.new();
      WebConnect wc = wcol.o;
      for (any kv in wc.getServices()) {
-      fpl += "<a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a>";
+      fpl += "<p><a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a></p>";
      }
-     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", fpl)));
+     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", fpl)), CallBackUI.setElementsValuesResponse(Maps.from("fpName", "", "fpPort", "", "fpExPort", "", "fpPattern", "")))));
    }
    
    loadForwardPortRequest(String port, request) Map {
@@ -1032,14 +1032,26 @@ use class IUHub:HubPlugin {
       log.log(lvl, "fp " + kv.key + " " + kv.value);
      }
      log.log(lvl, "urlPat " + fp.get("urlPat"));
-    return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpPattern", fp.get("urlPat"))));
+    return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpExPort", wc.extraPortMap.get(port), "fpPattern", fp.get("urlPat"))));
    }
    
-   updateForwardRequest(String fpName, String port, String urlPat, request) Map {
+   deleteForwardRequest(String port, request) Map {
      if (app.requestFromAdmin(request)) {
        WebConnect wc = app.plugin.wcol.o;
        //now fpname and urlpat tied to port
-       wc.addService(fpName, port, urlPat);
+       wc.deleteService(port);
+       app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
+       app.plugin.wcol.o = wc;
+       return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
+       }
+       return(null);
+   }
+   
+   updateForwardRequest(String fpName, String port, String exPort, String urlPat, request) Map {
+     if (app.requestFromAdmin(request)) {
+       WebConnect wc = app.plugin.wcol.o;
+       //now fpname and urlpat tied to port
+       wc.putService(fpName, port, exPort, urlPat);
        app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
        return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));

@@ -135,7 +135,7 @@ class IU:WebConnect {
       }
     }
     
-    addService(String name, String port, String urlPat) {
+    putService(String name, String port, String exPort, String urlPat) {
       log.log(lvl, "adding service");
       String extPort = self.extraPorts;
       if (TS.notEmpty(port)) {
@@ -157,10 +157,17 @@ class IU:WebConnect {
           extPort = port;
         }
         //det the port now
-        extraPortMap.put(port, getAPort());
+        if (TS.isEmpty(exPort)) {
+          exPort = getAPort();
+        }
+        extraPortMap.put(port, exPort);
         extraPorts = extPort;
        } else {
          log.log(lvl, "extport present");
+         if (TS.notEmpty(exPort)) {
+          //port selected
+          extraPortMap.put(port, exPort);
+         }
        }
        log.log(lvl, "urlPat " + urlPat);
        Map epConf = Maps.from("name", name, "urlPat", urlPat);
@@ -169,6 +176,29 @@ class IU:WebConnect {
        }
        servicesConf.put(port, epConf);
        log.log(lvl, "added");
+      }
+    }
+    
+    deleteService(String port) {
+      log.log(lvl, "deleting service");
+      String newPorts = "";
+      String extPort = self.extraPorts;
+      if (TS.notEmpty(port)) {
+       if (TS.notEmpty(extPort)) {
+         any eps = extPort.split(",");
+         for (String ep in eps) {
+          if (ep != port) {
+            if (TS.notEmpty(newPorts)) {
+              newPorts += ",";
+            }
+            newPorts += ep;
+          }
+         }       
+       }
+       extraPortMap.delete(port);
+       extraPorts = newPorts;
+       servicesConf.delete(port);
+       log.log(lvl, "deleted");
       }
     }
     
