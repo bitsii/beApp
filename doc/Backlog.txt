@@ -3,9 +3,6 @@
 ______________
 
 
-dropdown vnc (mac)?, nomachine, ...
-another field from dropdown with more info and links (inner html) for ssh, rdp, etc
-
 drop down email fillin (gmail, etc, with signup links)
   
 handle cam on/off like a service add

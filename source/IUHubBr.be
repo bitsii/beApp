@@ -577,16 +577,37 @@ use class IUHub:Eui {
         HD.getElementById("fpPort").value = "22";
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "Run command: ssh -p $port$ $ip$";
+        HD.getElementById("fpDitty").innerHTML = "<p>ssh - <a href=\"https://duckduckgo.com/?q=ssh\">About Secure Shell</a>";
       } elseIf (forService.ends("(rdp)")) {
         HD.getElementById("fpName").value = "Remote Desktop";
         HD.getElementById("fpPort").value = "3389";
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://support.microsoft.com/en-us/help/17463/windows-7-connect-to-another-computer-remote-desktop-connection\">MS Remote Desktop</a>";
+      } elseIf (forService.ends("(nx)")) {
+        HD.getElementById("fpName").value = "NoMachine";
+        HD.getElementById("fpPort").value = "4000";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.nomachine.com/\">NoMachine, free cross platform remote desktop</a>";
+      } elseIf (forService.ends("VNC")) {
+        HD.getElementById("fpName").value = "VNC";
+        HD.getElementById("fpPort").value = "5900";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://en.wikipedia.org/wiki/Virtual_Network_Computing\">Virtual Network Computing - open source remote desktop (unencrypted)</a>";
+      } elseIf (forService.ends("(ard)")) {
+        HD.getElementById("fpName").value = "Apple Remote Desktop";
+        HD.getElementById("fpPort").value = "5988";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.apple.com/remotedesktop/\">Apple Remote Desktop</a>";
       } else {
         HD.getElementById("fpName").value = "";
         HD.getElementById("fpPort").value = "";
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "";
+        HD.getElementById("fpDitty").innerHTML = "";
       }
    }
   

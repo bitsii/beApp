@@ -115,12 +115,16 @@ h5.luiForm {
 <option >(Select a service to Auto-Populate)</option>
 <option>Secure Shell (ssh)</option>
 <option>Remote Desktop (rdp)</option>
+<option>NoMachine (nx)</option>
+<option>VNC</option>
+<option>Apple Remote Desktop (ard)</option>
 </select>
 </form>
 <p><label class="luiForm">Service Name</label><input type="text" id="fpName"</input></p>
 <p><label class="luiForm">Local Port</label><input type="text" id="fpPort"</input></p>
 <p><label class="luiForm">External Port</label><input type="text" id="fpExPort"</input>(Blank to Autoselect)</p>
 <p><label class="luiForm">Url Pattern</label><input type="text" id="fpPattern"</input></p>
+<div id="fpDitty"></div>
 <p><a href="#" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);callUI('toggleDisplay', 'forwardPortsDiv');return false;">Save Service Setup</a>  <a href="#" onclick="callApp('deleteForwardRequest', document.getElementById('fpPort').value);return false;">Delete Service</a>  <a href="#" onclick="callUI('toggleDisplay', 'forwardPortsDiv');return false;">Cancel</a></p>
 <div id="forwardPortsListDiv"></div>
 </div>
