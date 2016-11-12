@@ -1,28 +1,25 @@
 
 =====
-=====
 ______________
 
-port forward
-  drop down
-  
-  ssh, rdp, vnc (mac)?, nomachine, ...
-  cam links (direct) (+activation)
+
+dropdown vnc (mac)?, nomachine, ...
+another field from dropdown with more info and links (inner html) for ssh, rdp, etc
+
+drop down email fillin (gmail, etc, with signup links)
   
 handle cam on/off like a service add
   separate list of other active suffixes in wc, substr etc for them
   
 imap folder -w- default
-drop down email
 
 test wake, all the things - check power for wifi to ethernet
   
 do your own links no matter what (whether imap or no)
 
-does not like spaces in the names, or names with same part + space (dogcam high dogcam low) have a toAlphaNum (alphanumeric)
+does not like spaces in the names, or names with same part + space (dogcam high dogcam low) have a toAlphaNum (alphanumeric) (file name stuff for pic)
 
 cam names
-cam periodic pic
 upload in progress indicator
 update check/auto update
 
@@ -32,11 +29,8 @@ mac, win
   static build miniupnpc mac
 ______________
 
-no-upnp ssh version
-  putty for win
-  presesnce of ssh info
-  show if upnp is working (did I get external ip from upnp? portforward 
-    result check?)
+homeauto - light
+  java wrapper openzw? node + openzw?
 ______________
 
 android, ios client only
@@ -46,6 +40,38 @@ cert on link
 optional password to encrypte/decrypte imap blob
 have option to not put link info in imap emails
 force deviceid to certain characteristics (in get)
+
+easy setup
+  step by step install instructions for noobs
+  
+  make install work when upnp failes (virtualbox)
+  
+check for updates - two places (sf and github?)
+
+get pipeline going
+
+=====
+
+no-upnp ssh version
+  putty for win
+  presesnce of ssh info
+  show if upnp is working (did I get external ip from upnp? portforward 
+    result check?)
+
+=====
+
+homeauto - locks
+
+doc dev env - good on all plats
+android ver
+
+static forward for things like ssh from local port
+______________
+
+
+______________
+
+cam periodic pic
 
 native jv upnp
 

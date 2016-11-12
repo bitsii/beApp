@@ -110,6 +110,13 @@ h5.luiForm {
 <p><a href="#" onclick="ui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
 </div>
 <div id="forwardPortsDiv" style="display: none;">
+<form>
+<select name=fpFillin onchange='fpChange(this.form.fpFillin);return false;'>
+<option >(Select a service to Auto-Populate)</option>
+<option>Secure Shell (ssh)</option>
+<option>Remote Desktop (rdp)</option>
+</select>
+</form>
 <p><label class="luiForm">Service Name</label><input type="text" id="fpName"</input></p>
 <p><label class="luiForm">Local Port</label><input type="text" id="fpPort"</input></p>
 <p><label class="luiForm">External Port</label><input type="text" id="fpExPort"</input>(Blank to Autoselect)</p>

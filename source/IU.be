@@ -152,9 +152,9 @@ class IU:WebConnect {
        unless (present) {
         log.log(lvl, "extport notpresent");
         if (TS.notEmpty(extPort)) {
-          extPort += "," += port;
+          extPort = extPort + "," + port;//no +=, effect existing svc
         } else {
-          extPort = port;
+          extPort = port.copy();
         }
         //det the port now
         if (TS.isEmpty(exPort)) {

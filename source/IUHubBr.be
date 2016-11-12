@@ -81,6 +81,12 @@ function fileChecked(box) {
   
 }
 
+function fpChange(dropdown) {
+    var myindex  = dropdown.selectedIndex
+    var SelValue = dropdown.options[myindex].value
+    callUI('fillForwardPort', SelValue);
+}
+
 window.onload = startup;
 """
 }
@@ -563,6 +569,25 @@ use class IUHub:Eui {
    localBrowseResponse(Map arg) {
       HD.getElementById("localBrowseListDiv").innerHTML = arg["dirListHtml"];
       HD.getElementById("localBrowseListDiv").display = "block";
+   }
+   
+   fillForwardPort(String forService) {
+      if (forService.ends("(ssh)")) {
+        HD.getElementById("fpName").value = "Secure Shell";
+        HD.getElementById("fpPort").value = "22";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "Run command: ssh -p $port$ $ip$";
+      } elseIf (forService.ends("(rdp)")) {
+        HD.getElementById("fpName").value = "Remote Desktop";
+        HD.getElementById("fpPort").value = "3389";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
+      } else {
+        HD.getElementById("fpName").value = "";
+        HD.getElementById("fpPort").value = "";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "";
+      }
    }
   
 }
