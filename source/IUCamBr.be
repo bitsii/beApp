@@ -287,7 +287,7 @@ use class IUCam:Eui {
      }
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
       //String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
-      String lmsg = "Welcome to " + arg["deviceName"] + " on Version " + arg["appVersion"];
+      String lmsg = arg["deviceName"];
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";

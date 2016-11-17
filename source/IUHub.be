@@ -782,7 +782,7 @@ use class IUHub:HubPlugin {
    checkPublicReadPath(Path pa, request) Bool {
       String pas = pa.toString();
       Path adz = Path.apNew("App/" + self.name).file.absPath;
-      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js"))) {
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".svg"))) {
         return(true);
       }
       return(false);
@@ -806,6 +806,12 @@ use class IUHub:HubPlugin {
       if (TS.notEmpty(ep)) {
         res["imapEndpoint"] = ep;
       }
+      String sf = app.configManager.get("imap.subFolder");
+      if (TS.notEmpty(sf)) {
+        res["imapFolder"] = sf;
+      } else {
+        res["imapFolder"] = "IotUrls";
+      }
       return(res);
    }
    
@@ -816,6 +822,7 @@ use class IUHub:HubPlugin {
       app.configManager.put("imap.user", arg["imapAccount"]);
       app.configManager.put("imap.endpoint", arg["imapEndpoint"]);
       app.configManager.put("imap.pass", arg["imapPass"]);
+      app.configManager.put("imap.subFolder", arg["imapFolder"]);
       Map res = Map.new();
       res["action"] = "hideImapResponse";
       return(res);

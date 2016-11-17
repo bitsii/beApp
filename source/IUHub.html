@@ -46,73 +46,69 @@ h5.luiForm {
 <form>
 <p><label class="luiForm">Account Name</label><input type="text" id="accountName"></input></p>
 <p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input></p>
-<p><label class="luiForm">Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input>(Optional)</p>
+<!--<p><label class="luiForm">Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input>(Optional)</p>-->
+<input type="hidden" id="sessionName" value=""/>
 </form>
 <p><a href="#" onclick="ui.bem_login_0();return false;">Login</a></p>
 </div>
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
-<table><tr>
-<td><a href="#" onclick="ui.bem_showAccountSettings_0();return false;">Settings</a></td>
-<td><a id="localBrowseId" href="#" onclick="ui.bem_localBrowseRequest_0();return false;">Files</a></td>
-<td><a href="#" onclick="ui.bem_logout_0();return false;">Logout</a></td>
-</tr></table>
-<div id="accountSettingsDiv" style="display: none;">
-<table><tr>
-<td><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');return false;">Password</a></td>
-<td><a href="#" onclick="callUI('toggleDisplay', 'newBeaconDiv');return false;">Link Device</a></td>
-<td><a href="#" onclick="ui.bem_showSessionsRequest_0();return false;">Sessions</a></td>
-</tr></table>
-<div id="sessionsListDiv" style="display: none;"></div>
+  
+<!--Logout-->
+<img src="system-log-out.svg" onclick="ui.bem_logout_0();return false;" alt="Logout"/>
+<!--Logout-->
+
+<!--Password-->
+<img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" alt="Password"/>
 <div id="passwordDiv" style="display: none;">
 <p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
 <p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
 <p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
 <p><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');ui.bem_changePassRequest_0();return false;">Change Password</a></p>
 </div>
+<!--Password-->
+
+<!--Files-->
+<img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" alt="Files"/>
+<p><a href="#" id="clearPicId" onclick="ui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
+<div id="imgdiv"></div>
+<div id="browseFilesDiv" style="display: none;">
+<p>Upload a File <input type="file" id="files" name="files[]" multiple /></p>
+<p>Confirm file deletion <input type="checkbox" id="confirmDeleteId"/><input id="deleteSubmit" type="submit" value="Delete Selected File" onclick="deleteSelected();return false;"></p>
+<p><label class="luiForm">Copy to Name</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy Selected File" onclick="copySelected();return false;"></p>
+<p><input id="upgradeSubmit" type="submit" value="Upgrade Using Selected File" onclick="upgradeSelected();return false;"></p>
+<div id="localBrowseListDiv"></div>
 </div>
-<!--<p><a id="showDevsId" href="#" onclick="ui.bem_showDevLinks_0();return false;">Linked Devices</a></p>
-<div id="devsDiv"></div>
-<p><a href="#" onclick="ui.bem_hideDevLinks_0();return false;">Close Linked Devices</a></p>
-<div id="offerDevLinkDiv" style="display: none;">
-<form>
-<p><label class="luiForm">Offer to Email</label><input type="text" id="offerEmail"></input></p>
-<p><label class="luiForm">Link Password</label><input type="password" id="offerPass1"</input></p>
-<p><label class="luiForm">Repeat Password</label><input type="password" id="offerPass2"</input></p>
-<p><a href="#" onclick="ui.bem_offerLink_0();return false;">Send Link Offer</a></p>
-</form>
-</div>-->
-<div id="admindiv" style="display: none;">
-<table><tr>
-<td><a id="showConfigId" href="#" onclick="ui.bem_showConfig_0();return false;">Configuration</a></td>
-<td><a id="showAccountAdminId" href="#" onclick="ui.bem_showAccountAdminRequest_0();return false;">Accounts</a></td>
-<td><a href="#" onclick="ui.bem_showImapRequest_0();return false;">Imap</a></td>
-<td><a href="#" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;">Device Name</a></td>
-<td><a href="#" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;">Remote Service Setup</a></td>
-</tr></table>
-<div id="accountAdminDiv" style="display: none;">
-<p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
-<p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
-<p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
-<p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
-<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="ui.bem_saveAccountRequest_0();return false;">&nbsp;Confirm account Deletion <input type="checkbox" id="confirmAccountDelete"/><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="deleteAccount();return false;"></p>
-<div id="accountLinksDiv"></div>
-</div>
-<div id="deviceNameDiv" style="display: none;">
-<p><label class="luiForm">Device Name</label><input type="text" id="newDeviceName"</input></p>
-<p><a href="#" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Change Device Name</a> <a href="#" onclick="callUI('toggleDisplay', 'deviceNameDiv');return false;">Cancel</a></p>
-</div>
+<script>
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+<!--Files-->
+
+<!--Imap-->
+<img src="applications-mail.svg" onclick="ui.bem_showImapRequest_0();return false;" alt="Imap"/>
 <div id="imapSettingsDiv" style="display: none;">
+<form>
+<select name=imFillin onchange='imChange(this.form.imFillin);return false;'>
+<option >(Select a mail provider to start)</option>
+<option>GMail</option>
+</select>
+</form>
 <p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
 <p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
+<p><label class="luiForm">Message Folder</label><input type="text" id="imapFolder"</input></p>
 <p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
 <p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
+<div id="imDitty"></div>
 <p><a href="#" onclick="ui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
 </div>
+<!--Imap-->
+
+<!--Services-->
+<img src="system-upgrade.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" alt="Imap"/>
 <div id="forwardPortsDiv" style="display: none;">
 <form>
 <select name=fpFillin onchange='fpChange(this.form.fpFillin);return false;'>
-<option >(Select a service to Auto-Populate)</option>
+<option >(Select a service to start (or configure manually))</option>
 <option>Secure Shell (ssh)</option>
 <option>Remote Desktop (rdp)</option>
 <option>NoMachine (nx)</option>
@@ -128,27 +124,52 @@ h5.luiForm {
 <p><a href="#" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);callUI('toggleDisplay', 'forwardPortsDiv');return false;">Save Service Setup</a>  <a href="#" onclick="callApp('deleteForwardRequest', document.getElementById('fpPort').value);return false;">Delete Service</a>  <a href="#" onclick="callUI('toggleDisplay', 'forwardPortsDiv');return false;">Cancel</a></p>
 <div id="forwardPortsListDiv"></div>
 </div>
+<!--Services-->
+
+<!--Configuration-->
+<img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="ui.bem_showConfig_0();return false;" alt="Configuration"/>
 <div id="configsDiv"></div>
-<!--<p><a id="tryThingId" href="#" onclick="ui.bem_tryThing_0();return false;">Try Thing</a></p>-->
-<p><a id="restartId" href="#" onclick="ui.bem_restart_0();return false;">Restart</a></p>
+<!--Configuration-->
+
+<!--Sessions-->
+<img src="system-users.svg" onclick="ui.bem_showSessionsRequest_0();return false;" alt="Sessions"/>
+<div id="sessionsListDiv" style="display: none;"></div>
+<!--Sessions-->
+
+<!--Accounts-->
+<img src="contact-new.svg" onclick="ui.bem_showAccountAdminRequest_0();return false;" alt="Accounts"/>
+<div id="accountAdminDiv" style="display: none;">
+<p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
+<p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
+<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="ui.bem_saveAccountRequest_0();return false;">&nbsp;Confirm account Deletion <input type="checkbox" id="confirmAccountDelete"/><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="deleteAccount();return false;"></p>
+<div id="accountLinksDiv"></div>
+</div>
+<!--Accounts-->
+
+<!--Device Name-->
+<img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" alt="Device Name"/>
+<div id="deviceNameDiv" style="display: none;">
+<p><label class="luiForm">Device Name</label><input type="text" id="newDeviceName"</input></p>
+<p><a href="#" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Change Device Name</a> <a href="#" onclick="callUI('toggleDisplay', 'deviceNameDiv');return false;">Cancel</a></p>
+</div>
+<!--Device Name-->
+
+<!--Restart-->
+<p><img src="system-software-update.svg" onclick="ui.bem_restart_0();return false;" alt="Restart"/>
+<!--Restart-->
+
+<!--Security Extras-->
+<img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');return false;" alt="Security Extras"/>
+<div id="seDiv">
 <p><a id="restartId" href="#" onclick="ui.bem_clearAllSessions_0();return false;">Clear all sessions (Logs everyone out)</a></p>
 <p><a id="restartId" href="#" onclick="ui.bem_clearAllTracking_0();return false;">Clear all bad ip tracking</a></p>
 </div>
+<!--Security Extras-->
+
 <div id="actionLinksDiv"></div>
 <div id="devLinksListDiv"></div>
 <div id="devLinksDiv"></div>
-<p><a href="#" id="clearPicId" onclick="ui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
-<div id="imgdiv"></div>
-<div id="browseFilesDiv" style="display: none;">
-<p>Upload a File <input type="file" id="files" name="files[]" multiple /></p>
-<p>Confirm file deletion <input type="checkbox" id="confirmDeleteId"/><input id="deleteSubmit" type="submit" value="Delete Selected File" onclick="deleteSelected();return false;"></p>
-<p><label class="luiForm">Copy to Name</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy Selected File" onclick="copySelected();return false;"></p>
-<p><input id="upgradeSubmit" type="submit" value="Upgrade Using Selected File" onclick="upgradeSelected();return false;"></p>
-<div id="localBrowseListDiv"></div>
-</div>
-<script>
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
-</script>
-</div>
 </body>
 </html>

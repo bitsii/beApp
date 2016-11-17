@@ -2,13 +2,13 @@
 =====
 ______________
 
-
-drop down email fillin (gmail, etc, with signup links)
+moar pretty
+  only show own connections, just links for other devices
+    put service behind open/close
+    keep them all in the imap/email
   
 handle cam on/off like a service add
   separate list of other active suffixes in wc, substr etc for them
-  
-imap folder -w- default
 
 test wake, all the things - check power for wifi to ethernet
   
@@ -20,10 +20,14 @@ cam names
 upload in progress indicator
 update check/auto update
 
-moar pretty
-
 mac, win
   static build miniupnpc mac
+  
+rest of email svcs in dropdown (from notes)
+
+labels under pics
+
+instead of omitting unshowable configs put stars and only a delete link
 ______________
 
 homeauto - light
@@ -48,6 +52,8 @@ check for updates - two places (sf and github?)
 get pipeline going
 
 =====
+
+secure tunnel for vnc (encrypted port fwd)
 
 no-upnp ssh version
   putty for win

@@ -48,6 +48,7 @@ copy /y scripts\iuhrun.sh ..\apprun\App\IUHub
 copy /y scripts\iuhcmdrs.sh ..\apprun\App\IUHub
 copy /y scripts\iuhcmd.sh ..\apprun\App\IUHub
 copy /y source\IUHub*.html ..\apprun\App\IUHub
+copy /y icons\*.* ..\apprun\App\IUHub
 copy /y source\Version.txt ..\apprun\App\IUHub
 copy /y extlibs\IUHub\* ..\apprun\App\IUHub
 

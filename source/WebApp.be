@@ -213,6 +213,8 @@ use class App:AuthenticatedWebApp(AuthedApp) {
             mtype = "text/html";
           } elseIf (uri.ends(".jpg")) {
             mtype = "image/jpeg";
+          } elseIf (uri.ends(".svg")) {
+            mtype = "image/svg+xml";
           } elseIf (uri.ends(".js")) {
             mtype = "text/javascript";
           } else {

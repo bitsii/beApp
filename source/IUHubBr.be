@@ -87,6 +87,12 @@ function fpChange(dropdown) {
     callUI('fillForwardPort', SelValue);
 }
 
+function imChange(dropdown) {
+    var myindex  = dropdown.selectedIndex
+    var SelValue = dropdown.options[myindex].value
+    callUI('fillImap', SelValue);
+}
+
 window.onload = startup;
 """
 }
@@ -154,25 +160,6 @@ use class IUHub:Eui {
       Map arg = Map.new();
       arg["action"] = "clearAllTrackingRequest";
       handleCallOut(arg);
-   }
-   
-   showAccountSettings() {
-     if (HD.getElementById("accountSettingsDiv").display == "block") {
-       hideAccountSettings();
-     } else {
-       HD.getElementById("accountSettingsDiv").display = "block";
-       if (def(perms) && perms.has("admin")) {
-        showAdmin();
-       }
-     }
-   }
-   
-   hideAccountSettings() {
-     HD.getElementById("accountSettingsDiv").display = "none";
-     HD.getElementById("sessionsListDiv").display = "none";
-     if (def(perms) && perms.has("admin")) {
-      hideAdmin();
-     }
    }
 
    showAccountAdminRequest() {
@@ -253,6 +240,9 @@ use class IUHub:Eui {
      }
      if (arg.has("imapAccount")) {
       HD.getElementById("imapAccount").value = arg["imapAccount"];
+     }
+     if (arg.has("imapFolder")) {
+      HD.getElementById("imapFolder").value = arg["imapFolder"];
      }
      HD.getElementById("imapSettingsDiv").display = "block";
    }
@@ -382,7 +372,7 @@ use class IUHub:Eui {
      }
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
       //String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
-      String lmsg = "Welcome to " + arg["deviceName"] + " on Version " + arg["appVersion"];
+      String lmsg = arg["deviceName"];
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
@@ -404,7 +394,6 @@ use class IUHub:Eui {
           perms.put(perm);
         }
       }
-      HD.getElementById("admindiv").display = "none";
     }
    }
    
@@ -415,14 +404,6 @@ use class IUHub:Eui {
    clearImage() {
      HD.getElementById("imgdiv").innerHTML = "";
      HD.getElementById("clearPicId").display = "none";
-   }
-   
-   showAdmin() { 
-     HD.getElementById("admindiv").display = "block";
-   }
-   
-   hideAdmin() {
-     HD.getElementById("admindiv").display = "none";
    }
    
    changePassRequest() {
@@ -463,6 +444,7 @@ use class IUHub:Eui {
    imapSettingsRequest() {
     String iac = HD.getElementById("imapAccount").value;
     String iep = HD.getElementById("imapEndpoint").value;
+    String isf = HD.getElementById("imapFolder").value;
     String ip = HD.getElementById("imapPass").value;
     String ip2 = HD.getElementById("imapPass2").value;
     HD.getElementById("imapPass").value = "";
@@ -472,6 +454,7 @@ use class IUHub:Eui {
     arg["action"] = "imapSettingsRequest";
     arg["imapAccount"] = iac;
     arg["imapEndpoint"] = iep;
+    arg["imapFolder"] = isf;
     arg["imapPass"] = ip;
     handleCallOut(arg);
     } else {
@@ -608,6 +591,16 @@ use class IUHub:Eui {
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "";
         HD.getElementById("fpDitty").innerHTML = "";
+      }
+   }
+   
+   fillImap(String forService) {
+      if (forService.ends("GMail")) {
+        HD.getElementById("imapEndpoint").value = "imap.gmail.com";
+        HD.getElementById("imDitty").innerHTML = "<p>Use full email address as account name.  A dedicated account is recommended";
+      } else {
+        HD.getElementById("imapEndpoint").value = "";
+        HD.getElementById("imDitty").innerHTML = "";
       }
    }
   
