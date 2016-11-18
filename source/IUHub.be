@@ -963,7 +963,7 @@ use class IUHub:HubPlugin {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
     for (any kv in app.plugin.linksol.o) {
       WebConnect wc = kv.value;
-      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay', 'devLinksDiv');callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\">Links for  " += wc.deviceName += "</a></p>";
+      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay', 'devLinksDiv');callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"shotwell.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
     }
      return(devLinks);
    }

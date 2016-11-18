@@ -3,10 +3,10 @@
 ______________
 
 moar pretty 
-
-  show service connections and get links behind icons
   
-  keep them all in the imap/email (add cam to service links) updateNetAddresses serviceLinks
+  keep all cons / links in the imap/email (add cam to service links - as first after hub) updateNetAddresses serviceLinks
+  
+  name on hover
   
   make cam like hub style, rm everything but cam specific and wayback to hub
   
