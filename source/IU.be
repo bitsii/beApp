@@ -102,12 +102,12 @@ class IU:WebConnect {
       if (TS.notEmpty(internalAddress)) {
         internalBase = protocol + internalAddress + intPort + "/";
         internalUrl = internalBase + path;
-        internalLink = "<a href=\"" + internalUrl + "\">Internal Link to Hub UI - use on same network as the device is on.</a>";
+        internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
       }
       if (TS.notEmpty(externalAddress)) {
         externalBase = protocol + externalAddress + extPort + "/";          
         externalUrl = externalBase + path;
-        externalLink = "<a href=\"" + externalUrl + "\">External Link to Hub UI - use from the internet, outside the network the device is on.</a>";
+        externalLink = "<a href=\"" + externalUrl + "\">External Link to " + deviceName + " Hub, use outside device's network (the internet).</a>";
       }
       
   }
@@ -218,13 +218,13 @@ class IU:WebConnect {
         if (TS.notEmpty(intUrl) && TS.notEmpty(internalAddress)) {
           intUrl = intUrl.swap("$ip$", internalAddress);
           intUrl = intUrl.swap("$port$", intPort);
-          service.put("intLink", intUrl + " Internal Connection for " += conf.get("name") += " - use from the same network the device is on.")
+          service.put("intLink", intUrl + " Internal Connection for " += conf.get("name") += " - use on device's network.")
         }
         String extUrl = conf.get("urlPat").copy();
         if (TS.notEmpty(extUrl) && TS.notEmpty(externalAddress)) {
           extUrl = extUrl.swap("$ip$", externalAddress);
           extUrl = extUrl.swap("$port$", service.get("intPort"));
-          service.put("extLink", extUrl + " External Connection for " += conf.get("name") += " - use from the internet, outside the network the device is on.");
+          service.put("extLink", extUrl + " External Connection for " += conf.get("name") += " - use outside device's network (the internet).");
         }
       }
       return(services);

@@ -2,23 +2,34 @@
 =====
 ______________
 
-moar pretty
-  only show own connections, just links for other devices
-    put service behind open/close
-    keep them all in the imap/email
+moar pretty 
+
+  show service connections and get links behind icons
   
-handle cam on/off like a service add
-  separate list of other active suffixes in wc, substr etc for them
+  keep them all in the imap/email (add cam to service links) updateNetAddresses serviceLinks
+  
+  make cam like hub style, rm everything but cam specific and wayback to hub
+  
+  have 2 dev ids for testing, flip-flop
+  
+attach port to session, refuse if changes in referrer (external(?internal) port for xss) - actually, just referrer in session, must be same up to port/
+  test by changing ext and int ports
+
+login only accepted from whitelist of referrer pages
+separate page token at login used (required) in all ajax calls
+non-ajax calls require login or cant do ajax things
+no html files in filemanager - or everything is mimetype encoded
+service calls will use tokens not cookies, token with put and get
 
 test wake, all the things - check power for wifi to ethernet
-  
-do your own links no matter what (whether imap or no)
 
 does not like spaces in the names, or names with same part + space (dogcam high dogcam low) have a toAlphaNum (alphanumeric) (file name stuff for pic)
 
 cam names
 upload in progress indicator
 update check/auto update
+
+start from 0 test deploy
 
 mac, win
   static build miniupnpc mac
@@ -28,6 +39,9 @@ rest of email svcs in dropdown (from notes)
 labels under pics
 
 instead of omitting unshowable configs put stars and only a delete link
+
+cs imap
+
 ______________
 
 homeauto - light
@@ -37,7 +51,8 @@ ______________
 android, ios client only
   there look to be command line ssh miniupnpc's (for android at least)
 
-cert on link
+certprint on link
+certprint in email
 optional password to encrypte/decrypte imap blob
 have option to not put link info in imap emails
 force deviceid to certain characteristics (in get)
@@ -48,6 +63,10 @@ easy setup
   make install work when upnp failes (virtualbox)
   
 check for updates - two places (sf and github?)
+  auto upgrade
+  build profile for lxrel with settings in it (release build params)
+  disable local upgrade from form (release build)
+  hard code upgrade urls
 
 get pipeline going
 
@@ -75,12 +94,6 @@ ______________
 ______________
 
 cam periodic pic
-
-native jv upnp
-
-cs imap
-
-native jv cs ssh (jcsh, looks like ssh.net should work)
 
 persist the last update time, have an update now (refresh) option
 

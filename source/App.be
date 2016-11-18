@@ -476,7 +476,7 @@ use class App:AuthPlugin {
       String accountLinks = String.new();
       List logins = app.accountManager.getLogins();
       for (String login in logins) {
-        accountLinks += "<p><a href=\"#\" onclick=\"callApp('loadAccountRequest', '" += login += "');return false;\">Modify " += login += "</a></p>";
+        accountLinks += "<p><a href=\"#\" onclick=\"callApp('loadAccountRequest', '" += login += "');return false;\">Modify Account " += login += "</a></p>";
       }
       Map res = Map.new();
       res["action"] = "showAccountAdminResponse";
@@ -971,30 +971,35 @@ class AuthedApp {
     String ref = request.getInputHeader("referer");
     String la = request.localAddress;
     if (TS.isEmpty(ref) || TS.isEmpty(la)) {
-    //  log.log(lvl, "isCrossSite true empty");
+      //log.log(lvl, "isCrossSite true empty");
       return(true);
     }
     la = "https://" + la;
     if (ref.begins(la)) {
-    //  log.log(lvl, "isCrossSite false begins " + la + " " + ref);
+      //log.log(lvl, "isCrossSite false begins " + la + " " + ref);
       return(false);
     }
     if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
-    //  log.log(lvl, "isCrossSite false extUrl begins " + extUrl + " " + ref);
+      //log.log(lvl, "isCrossSite false extUrl begins " + extUrl + " " + ref);
       return(false);
     }
-    String extAddress = self.configManager.get("upnp.extAddress");
-    String extPort = self.configManager.get("wui.extPort");
+    
+    String extAddress = self.plugin.wcol.o.externalAddress;
+    String extPort = self.plugin.wcol.o.externalPort;
+    
+    //String extAddress = self.configManager.get("upnp.extAddress");
+    //String extPort = self.configManager.get("wui.extPort");
+    
     if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
       extUrl = "https://" + extAddress + ":" + extPort;
-    //  log.log(lvl, "new extUrl " + extUrl);
+      //log.log(lvl, "new extUrl " + extUrl);
     } else {
-    //  log.log(lvl, "extAddress or extPort empty");
+      //log.log(lvl, "extAddress or extPort empty");
       if (TS.isEmpty(extAddress)) { log.log(lvl, "extAddress empty"); }
       if (TS.isEmpty(extPort)) { log.log(lvl, "extPort empty"); }
     }
     if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
-    //  log.log(lvl, "isCrossSite false new extUrl begins " + extUrl + " " + ref);
+      //log.log(lvl, "isCrossSite false new extUrl begins " + extUrl + " " + ref);
       return(false);
     }
     //log.log(lvl, "isCrossSite true not begins " + la + " " + ref);

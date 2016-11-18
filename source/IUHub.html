@@ -3,6 +3,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+  
+body {
+    font-family: Roboto, 'Segoe UI', Tahoma, sans-serif;
+    /*font-size: 81.25%;*/
+    font-size: 90%;
+    font-weight: 600;
+    background-color:rgb(200,200,200);
+}
+
+:link { color: #000000; }
+:visited { color: #000000; }
+
+img { 
+margin-left:5px; 
+margin-right:5px; 
+margin-top:5px; 
+margin-bottom:5px; 
+} 
 
 label.luiForm {
     width: 120px; float: left;margin:0;padding:0;
@@ -53,13 +71,56 @@ h5.luiForm {
 </div>
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
-  
+
+<!--IUCam-->
+<a href="IUCam.html"><img src="accessories-camera.svg" alt="IUCam"/></a>
+<!--IUCam-->
+
+<!--Files-->
+<img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" alt="Files"/>
+<!--Files-->
+
+<!--Service Connections-->
+<img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" alt="Service Connections"/>
+<!--Service Connections-->
+
+<!--Restart-->
+<img src="system-software-update.svg" onclick="ui.bem_restart_0();return false;" alt="Restart"/>
+<!--Restart-->
+
+<!--Services-->
+<img src="system-upgrade.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" alt="Imap"/>
+<!--Services-->
+
+<!--Accounts-->
+<img src="system-users.svg" onclick="ui.bem_showAccountAdminRequest_0();return false;" alt="Accounts"/>
+<!--Accounts-->
+
+<!--Device Name-->
+<img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" alt="Device Name"/>
+<!--Device Name-->
+
+<!--Imap-->
+<img src="applications-mail.svg" onclick="ui.bem_showImapRequest_0();return false;" alt="Imap"/>
+<!--Imap-->
+
+<!--Configuration-->
+<img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="ui.bem_showConfig_0();return false;" alt="Configuration"/>
+<!--Configuration-->
+
+<!--Security Extras-->
+<img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');ui.bem_showSessionsRequest_0();return false;" alt="Security Extras"/>
+<!--Security Extras-->
+
+<!--Password-->
+<img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" alt="Password"/>
+<!--Password-->
+
 <!--Logout-->
 <img src="system-log-out.svg" onclick="ui.bem_logout_0();return false;" alt="Logout"/>
 <!--Logout-->
 
 <!--Password-->
-<img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" alt="Password"/>
 <div id="passwordDiv" style="display: none;">
 <p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
 <p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
@@ -69,7 +130,6 @@ h5.luiForm {
 <!--Password-->
 
 <!--Files-->
-<img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" alt="Files"/>
 <p><a href="#" id="clearPicId" onclick="ui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
 <div id="imgdiv"></div>
 <div id="browseFilesDiv" style="display: none;">
@@ -85,7 +145,6 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <!--Files-->
 
 <!--Imap-->
-<img src="applications-mail.svg" onclick="ui.bem_showImapRequest_0();return false;" alt="Imap"/>
 <div id="imapSettingsDiv" style="display: none;">
 <form>
 <select name=imFillin onchange='imChange(this.form.imFillin);return false;'>
@@ -104,7 +163,6 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <!--Imap-->
 
 <!--Services-->
-<img src="system-upgrade.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" alt="Imap"/>
 <div id="forwardPortsDiv" style="display: none;">
 <form>
 <select name=fpFillin onchange='fpChange(this.form.fpFillin);return false;'>
@@ -127,17 +185,10 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <!--Services-->
 
 <!--Configuration-->
-<img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="ui.bem_showConfig_0();return false;" alt="Configuration"/>
 <div id="configsDiv"></div>
 <!--Configuration-->
 
-<!--Sessions-->
-<img src="system-users.svg" onclick="ui.bem_showSessionsRequest_0();return false;" alt="Sessions"/>
-<div id="sessionsListDiv" style="display: none;"></div>
-<!--Sessions-->
-
 <!--Accounts-->
-<img src="contact-new.svg" onclick="ui.bem_showAccountAdminRequest_0();return false;" alt="Accounts"/>
 <div id="accountAdminDiv" style="display: none;">
 <p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
 <p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
@@ -149,20 +200,15 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <!--Accounts-->
 
 <!--Device Name-->
-<img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" alt="Device Name"/>
 <div id="deviceNameDiv" style="display: none;">
 <p><label class="luiForm">Device Name</label><input type="text" id="newDeviceName"</input></p>
 <p><a href="#" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Change Device Name</a> <a href="#" onclick="callUI('toggleDisplay', 'deviceNameDiv');return false;">Cancel</a></p>
 </div>
 <!--Device Name-->
 
-<!--Restart-->
-<p><img src="system-software-update.svg" onclick="ui.bem_restart_0();return false;" alt="Restart"/>
-<!--Restart-->
-
 <!--Security Extras-->
-<img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');return false;" alt="Security Extras"/>
-<div id="seDiv">
+<div id="seDiv" style="display: none;">
+<div id="sessionsListDiv" style="display: none;"></div>
 <p><a id="restartId" href="#" onclick="ui.bem_clearAllSessions_0();return false;">Clear all sessions (Logs everyone out)</a></p>
 <p><a id="restartId" href="#" onclick="ui.bem_clearAllTracking_0();return false;">Clear all bad ip tracking</a></p>
 </div>

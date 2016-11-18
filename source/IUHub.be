@@ -66,6 +66,7 @@ use class IUHub:ConnectionUpdate {
       log.log(lvl, "deserializing wcs");
       WebConnect wc = WebConnect.new();
       wc.fromMap(Json:Unmarshaller.unmarshall(wcs));
+      //log.log(lvl, "after load ext port " + wc.externalPort);
       app.plugin.wcol.o = wc;
     }  
   }
@@ -84,6 +85,10 @@ use class IUHub:ConnectionUpdate {
       wc.fromMap(unmar.unmarshall(kv.value));
       links.put(wc.deviceId, wc);
       log.log(lvl, "loaded link " + wc.deviceName);
+    }
+    wc = app.plugin.wcol.o;
+    if (def(wc)) {
+      links.put(wc.deviceId, wc);
     }
     app.plugin.linksol.o = links;
   }
@@ -123,11 +128,14 @@ use class IUHub:ConnectionUpdate {
       wc.certificatePrint = certificateThumbprint;
       wc.deviceId = app.plugin.deviceId;
       wc.deviceName = app.plugin.deviceName; 
-      wc.externalPort = app.configManager.get("wui.extPort");
+      if (TS.isEmpty(wc.externalPort)) {
+        wc.externalPort = app.configManager.get("wui.extPort");
+      }
       log.log(lvl, "starting wc update");
       wc.update();
       if (fwd) {
         log.log(lvl, "wc forwarding ports");
+        //log.log(lvl, "wc ext port " + wc.externalPort);
         wc.forwardPorts();
       }
       log.log(lvl, "setting links");
@@ -692,8 +700,8 @@ use class IUHub:HubPlugin {
         log.log(lvl, "In doimap3");
         Pair sl = self.serviceLinks;
         msg += "<p>Service connections for " += self.deviceName += "</p>";
-        msg += "<p>" += sl.first += "</p>";
-        msg += "<p>" += sl.second += "</p>";
+        msg += sl.first;
+        msg += sl.second;
         //for (any kv in wc.extraPortMap) {
         //  msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
         //}
@@ -902,10 +910,10 @@ use class IUHub:HubPlugin {
       key = key.substring(key.find("!") + 1, key.size);
       actionLinks += "<p><a href=\"#\" onclick=\"ui.bem_runCommand_1(new be_BEC_2_4_6_TextString().bems_new('" + kv.key + "'));return false;\">" + key + "</a></p>";
      }
-     String showCam = app.configManager.get("PLUGIN.cam");
+     /*String showCam = app.configManager.get("PLUGIN.cam");
      if (TS.isEmpty(showCam) || showCam == "enabled") {
        actionLinks += "<p><a href=\"IUCam.html\">Go to IUCam</a></p>";
-     }
+     }*/
      //is remote
      //add links
      Bool internal = false;
@@ -919,18 +927,21 @@ use class IUHub:HubPlugin {
         }
       }
       Pair sl = self.serviceLinks;
-      actionLinks += "<p>Service connections for " += self.deviceName += "</p>";
       if (internal) {
+        actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.first;
         actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show external service connections</a>";
         actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.second;
         actionLinks += "</div>";
+        actionLinks += "</div>";
       } else {
+        actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.second;
         actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show internal service connections</a>";
         actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.first;
+        actionLinks += "</div>";
         actionLinks += "</div>";
       }
      return(actionLinks);
@@ -952,7 +963,7 @@ use class IUHub:HubPlugin {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
     for (any kv in app.plugin.linksol.o) {
       WebConnect wc = kv.value;
-      devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\">Get links for  " += wc.deviceName += "</a></p>";
+      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay', 'devLinksDiv');callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\">Links for  " += wc.deviceName += "</a></p>";
     }
      return(devLinks);
    }
@@ -1017,7 +1028,6 @@ use class IUHub:HubPlugin {
          }
          devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'ext');return false;\">Or get external links for  " += wc.deviceName += "...</a></p>";
        }
-       devLinks += "<p><a href=\"#\" onclick=\"document.getElementById('devLinksDiv').innerHTML = '';return false;\">Close Links</a></p>";
     }
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
    }
