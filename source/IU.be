@@ -24,11 +24,16 @@ class IU:WebConnect {
       String protocol = "https://";
       String internalBase;
       String externalBase;
-      String path = "";
       String internalUrl;
       String externalUrl;
       String internalLink;
       String externalLink;
+      
+      String internalCamUrl;
+      String externalCamUrl;
+      String internalCamLink;
+      String externalCamLink;
+      
       String certificatePrint = "";
       List internalMacAddresses = List.new();
       String extraPorts;
@@ -101,13 +106,17 @@ class IU:WebConnect {
       }
       if (TS.notEmpty(internalAddress)) {
         internalBase = protocol + internalAddress + intPort + "/";
-        internalUrl = internalBase + path;
+        internalUrl = internalBase + "App/IUHub/IUHub.html";
+        internalCamUrl = internalBase + "App/IUHub/IUCam.html";
         internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
+        internalCamLink = "<a href=\"" + internalCamUrl + "\">Internal Link to " + deviceName + " Cam, use on device's network.</a>";
       }
       if (TS.notEmpty(externalAddress)) {
         externalBase = protocol + externalAddress + extPort + "/";          
-        externalUrl = externalBase + path;
+        externalUrl = externalBase + "App/IUHub/IUHub.html";
+        externalCamUrl = externalBase + "App/IUHub/IUCam.html";
         externalLink = "<a href=\"" + externalUrl + "\">External Link to " + deviceName + " Hub, use outside device's network (the internet).</a>";
+        externalCamLink = "<a href=\"" + externalCamUrl + "\">External Link to " + deviceName + " Cam, use outside device's network (the internet).</a>";
       }
       
   }

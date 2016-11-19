@@ -673,7 +673,7 @@ use class IUCam:CamPlugin {
             clabel = Path.apNew(c).steps.last;
             app.configManager.put("cam." + c + ".label", clabel);
           }
-          actionLinks += "<p><a href=\"#\" onclick=\"ui.bem_updateImage_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">Take Picture with " + clabel + "</a></p>";
+          actionLinks += "<p><a href=\"#\" onclick=\"ui.bem_updateImage_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"applets-screenshooter.svg\" alt=\"Take Picture\"/>Take Picture with " + clabel + "</a></p>";
           if (showMotion) {
             String mcp = app.configManager.get("cam." + c + ".motion");
             if (TS.notEmpty(mcp) && Bool.new(mcp)) {
@@ -687,7 +687,6 @@ use class IUCam:CamPlugin {
      }
      String showCam = app.configManager.get("PLUGIN.hub");
      if (showMotion) {
-      actionLinks += "<p><a href=\"#\" onclick=\"callUI('toggleCamSettings');return false;\">Cam Settings</a></p>";
       actionLinks += "<div id=\"camSettingsDiv\" style=\"display: none;\">"
       actionLinks += moLinks;
       actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"ui.bem_detectCams_0();return false;\" >Detect WebCams</a></p>";
@@ -697,9 +696,6 @@ use class IUCam:CamPlugin {
       }
       actionLinks += "<p><label class=\"luiForm\">Days before Deleting Cam Pics</label><input type=\"text\" id=\"camCleanDays\" value=\"" += cps += "\"></input> (-1 to disable) <a id=\"setCamCleanId\" href=\"#\" onclick=\"callApp('setCamCleanRequest', document.getElementById('camCleanDays').value);return false;\" >Save Cam Delete Days</a></p>";
       actionLinks += "</div>";
-     }
-     if (TS.isEmpty(showCam) || showCam == "enabled") {
-       actionLinks += "<p style=\"clear:both;\"><a href=\"IUHub.html\">Go to IUHub</a></p>";
      }
      return(actionLinks);
    }

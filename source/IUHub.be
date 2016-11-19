@@ -118,7 +118,6 @@ use class IUHub:ConnectionUpdate {
       } else {
         log.log(lvl, "new wc");
         wc = WebConnect.new();
-        wc.path = "App/IUHub/IUHub.html";
         wc.extraPorts = app.configManager.get("upnp.extraPorts");
       }
       log.log(lvl, "after wc init");
@@ -695,6 +694,9 @@ use class IUHub:HubPlugin {
         if (TS.notEmpty(wc.externalLink)) {
           msg += "<p>" + wc.externalLink += "</p>\n<p>" += wc.internalLink += "</p>\n";
         }
+        if (TS.notEmpty(wc.externalCamLink)) {
+          msg += "<p>" + wc.externalCamLink += "</p>\n<p>" += wc.internalCamLink += "</p>\n";
+        }
         String payload = Encode:Hex.new().encode(Json:Marshaller.marshall(wc.toMap()));
         msg += "<input type=\"hidden\" name=\"payload\" value=\"" += payload += "\"/>";
         log.log(lvl, "In doimap3");
@@ -963,7 +965,7 @@ use class IUHub:HubPlugin {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
     for (any kv in app.plugin.linksol.o) {
       WebConnect wc = kv.value;
-      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay', 'devLinksDiv');callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"shotwell.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
+      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay', 'devLinksDiv');callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
     }
      return(devLinks);
    }
@@ -1020,11 +1022,17 @@ use class IUHub:HubPlugin {
        if (type == "ext") {
          if (TS.notEmpty(wc.externalLink)) {
           devLinks += wc.externalLink;
+          if (TS.notEmpty(wc.externalCamLink)) {
+            devLinks += "<p>" += wc.externalCamLink;
+          }
          }
          devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'int');return false;\">Or get internal links for  " += wc.deviceName += "...</a></p>";
        } else {
          if (TS.notEmpty(wc.internalLink)) {
           devLinks += wc.internalLink;
+          if (TS.notEmpty(wc.internalCamLink)) {
+            devLinks += "<p>" += wc.internalCamLink;
+          }
          }
          devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'ext');return false;\">Or get external links for  " += wc.deviceName += "...</a></p>";
        }
