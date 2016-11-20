@@ -7,15 +7,15 @@ mkdir -p ../apprun/Data
 rm -rf ../apprun/App/IUHub
 mkdir -p ../apprun/App/IUHub
 
-java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/App/IUHubd --buildPath ../apprun/App/IUHub --emitLang jv  --outputPlatform linux -mainClass=IUHub:HubStart source/IUHubTest.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be
+java -classpath ../abe-pl/target5/BEL_system_be_jv.jar:../abe-pl/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/shared.txt --deployPath ../apprun/App/IUHubd --buildPath ../apprun/App/IUHub --emitLang jv  --outputPlatform linux -mainClass=IUHub:HubStart source/IUHubTest.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-javac -classpath extlibs/IUHub/* ../be/system/jv/be/BELS_Base/*.java ../apprun/App/IUHub/Base/target/jv/be/BEL_4_Base/*.java
+javac -classpath extlibs/IUHub/* ../abe-pl/system/jv/be/BELS_Base/*.java ../apprun/App/IUHub/Base/target/jv/be/BEL_4_Base/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-java -classpath ../be/target5/BEL_system_be_jv.jar:../be/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/base.txt --deployPath ../apprun/App/IUHubd --buildPath ../apprun/App/IUHub --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUHub:Eui source/IUHubBr.be source/BrowserEUI.be
+java -classpath ../abe-pl/target5/BEL_system_be_jv.jar:../abe-pl/target5/BEL_4_Base_be_jv.jar be.BEL_4_Base.BEL_4_Base --buildFile build/base.txt --deployPath ../apprun/App/IUHubd --buildPath ../apprun/App/IUHub --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUHub:Eui source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -23,11 +23,11 @@ cd ../apprun/App/IUHub/Base/target/jv
 jar -cf ../../../BEL_4_Base_lui_jv.jar .
 cd ../../../../../../app
 
-cd ../be/system/jv
+cd ../abe-pl/system/jv
 jar -cf ../../../apprun/App/IUHub/BEL_4_Base_lib_jv.jar .
 cd ../../../app
 
-find ../be/system -name "*.class" -exec rm {} \;
+find ../abe-pl/system -name "*.class" -exec rm {} \;
 
 cp ../apprun/App/IUHub/Base/target/js/be/BEL_4_Base/BEL_4_Base.js ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub

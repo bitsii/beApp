@@ -6,35 +6,35 @@ del /s /q ..\apprun\App\IUHub
 rmdir /s /q ..\apprun\App\IUHub
 mkdir ..\apprun\App\IUHub
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\shared.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang jv --outputPlatform linux -mainClass=IUHub:BigHubStart source\IUHubTest.be source\IUHub.be source\IUCam.be source\IUBigHub.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be source\WebApp.be
+java -classpath ..\abe-pl\target5\BEL_system_be_jv.jar;..\abe-pl\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build\shared.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang jv --outputPlatform linux -mainClass=IUHub:BigHubStart source\IUHubTest.be source\IUHub.be source\IUCam.be source\IUBigHub.be source\Db.be source\BrowserUI.be source\BrowserJvFx.be source\WebServer.be source\App.be source\WebApp.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-javac -classpath extlibs\IUHub\* ..\be\system\jv\be\*.java ..\apprun\App\IUHub\Base\target\jv\be\*.java
+javac -classpath extlibs\IUHub\* ..\abe-pl\system\jv\be\*.java ..\apprun\App\IUHub\Base\target\jv\be\*.java
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUHub:Eui source\IUHubBr.be source\BrowserEUI.be
+java -classpath ..\abe-pl\target5\BEL_system_be_jv.jar;..\abe-pl\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUHub\d --buildPath ..\apprun\App\IUHub --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUHub:Eui source\IUHubBr.be source\BrowserEUI.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-java -classpath ..\be\target5\BEL_system_be_jv.jar;..\be\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../be/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUCam:Eui source\IUCamBr.be source\BrowserEUI.be
+java -classpath ..\abe-pl\target5\BEL_system_be_jv.jar;..\abe-pl\target5\BEL_4_Base_be_jv.jar be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build\base.txt --deployPath ..\apprun\App\IUCam\d --buildPath ..\apprun\App\IUCam --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUCam:Eui source\IUCamBr.be source\BrowserEUI.be
 
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 del ..\apprun\App\IUHub\BEL_4_Base_lui_jv.jar
 cd ..\apprun\App\IUHub\Base\target\jv
 jar -cf ..\..\..\BEL_4_Base_lui_jv.jar .
-cd ..\..\..\..\..\..\app
+cd ..\..\..\..\..\..\ioturl
 
 del ..\apprun\App\IUHub\BEL_4_Base_lib_jv.jar
-cd ..\be\system\jv
+cd ..\abe-pl\system\jv
 jar -cf ..\..\..\apprun\App\IUHub\BEL_4_Base_lib_jv.jar .
-cd ..\..\..\app
+cd ..\..\..\ioturl
 
-cd ..\be\system
+cd ..\abe-pl\system
 del /s *.class
-cd ..\..\app
+cd ..\..\ioturl
 
 REM hub
 copy /y ..\apprun\App\IUHub\Base\target\js\be\BEL_4_Base.js ..\apprun\App\IUHub\IUHub_BEL_4_Base.js
@@ -88,5 +88,5 @@ zip ../IUBHub.zip ./*
 
 move ..\IUBHub.zip ..\..\..
 
-cd ..\..\..\app
+cd ..\..\..\ioturl
 
