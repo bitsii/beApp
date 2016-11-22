@@ -2,49 +2,23 @@
 =====
 ______________
 
-test wake, all the things - check power for wifi to ethernet
-
 does not like spaces in the names, or names with same part + space (dogcam high dogcam low) have a toAlphaNum (alphanumeric) (file name stuff for pic)
-
-cam names
-
-about with version information and link
-
-start from 0 test deploy
   
 rest of email svcs in dropdown (from notes)
 
-instead of omitting unshowable configs put stars and only a delete link
-extra security with thumbprint
-upload in progress indicator
+start from 0 test deploy
 
-help?
-? picture (help text under Device name too...) shows help next to everything(<p> hidden)
+test wake, all the things - check power for wifi to ethernet
 
 out to mac, win under java
 
 easy setup
   step by step install instructions for noobs
-  
+
 check for updates - two places (sf and github?)
 
 get pipeline going / pages up
 
-=====
-______________
-
-attach port to session, refuse if changes in referrer (external(?internal) port for xss) - actually, just referrer in session, must be same up to port/
-  test by changing ext and int ports
-
-login only accepted from whitelist of referrer pages
-separate page token at login used (required) in all ajax calls
-non-ajax calls require login or cant do ajax things
-no html files in filemanager - or everything is mimetype encoded
-service calls will use tokens not cookies, token with put and get
-
-certprint on link
-certprint in email
-optional password to encrypte/decrypte imap blob
 ______________
 
 no-upnp ssh version - jsch
@@ -52,12 +26,45 @@ no-upnp ssh version - jsch
   presesnce of ssh info
   show if upnp is working (did I get external ip from upnp? portforward 
     result check?)
+______________
+
+client app - link
+android
+working under cs
+  win embedded, xamarin ios mac
+  imap
+______________
+
+login only accepted from whitelist of referrer pages (built off known internal/exteral ips/ports)
+  page token set and required after that for all ajax calls
+  separate thing in session at login
+  even gets for non-public pages require token as header
+no html files in filemanager - or everything is mimetype encoded
+
+certprint on link
+certprint in email
+
+upload in progress indicator
+  id for upload process
+  periodic/timer calls from ui
+
+help - shows images with meaning
 
 =====
+
+optional password to encrypte/decrypte imap blob
+sending email to update folks on change
+  using linking / tokens for link
+  ability to auto sync pics, sms, etc
+  
+simple event stuff, alert/notify
+
+launch ec2 from imap info for no-ssh version
+______________
   
 jv native upnp
 
-android
+android hub
 
 auto-download pics to app with retention time
 
@@ -76,12 +83,6 @@ ______________
 homeauto - light
   java wrapper openzw? node + openzw?
 
-______________
-
-working under cs
-  mono, webserver, xamarin (ios, android)
-  upnp, imap
-
 homeauto - locks
 
 doc dev env - good on all plats
@@ -93,6 +94,9 @@ ______________
 cam periodic pic
 
 persist the last update time, have an update now (refresh) option
+
+instead of omitting unshowable configs put stars and only a delete link
+extra security with thumbprint
 ______________
 
 easy setup

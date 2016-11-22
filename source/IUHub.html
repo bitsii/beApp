@@ -123,6 +123,12 @@ h5.luiForm {
 <!--Logout-->
 
 <p>
+
+<!--About-->
+<img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/>
+<!--About-->
+
+<p>
   
 <!--Password-->
 <div id="passwordDiv" style="display: none;">
@@ -217,6 +223,10 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <p><a id="restartId" href="#" onclick="ui.bem_clearAllTracking_0();return false;">Clear all bad ip tracking</a></p>
 </div>
 <!--Security Extras-->
+
+<!--About-->
+<div id="aboutDiv" style="display: none;"></div>
+<!--About-->
 
 <div id="actionLinksDiv"></div>
 <div id="devLinksListDiv"></div>

@@ -1040,6 +1040,11 @@ use class IUHub:HubPlugin {
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
    }
    
+   aboutRequest(request) Map {
+     String about = "<p>IotUrl Hub Version " + self.version + "<p>";
+     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDiv", about)))
+   }
+   
    getForwardPortsListRequest(request) Map {
      String fpl = String.new();
      WebConnect wc = wcol.o;

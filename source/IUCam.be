@@ -17,6 +17,7 @@ use System:Command as Com;
 use Time:Sleep;
 
 use App:Alert;
+use App:CallBackUI;
 
 emit(jv) {
 """
@@ -682,6 +683,7 @@ use class IUCam:CamPlugin {
               endis = "Enable";
             }
             moLinks += "<p><a href=\"#\" onclick=\"ui.bem_toggleMotion_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">" += endis += " motion for " + clabel + "</a></p>";
+            moLinks += "<p><label class=\"luiForm\">Rename Cam " += clabel += "</label><input type=\"text\" id=\"camRename" += c += "\" value=\"" += clabel += "\"></input> <a id=\"camRenameLink\" href=\"#\" onclick=\"callApp('renameCamRequest', document.getElementById('camRename" += c += "').value, '" += c += "');return false;\" >Save New Cam Name</a> <a id=\"camRenameCancel\" href=\"#\" onclick=\"callUI('reloadResponse');return false;\" >Cancel</a></p>";
           }
         }
      }
@@ -698,6 +700,13 @@ use class IUCam:CamPlugin {
       actionLinks += "</div>";
      }
      return(actionLinks);
+   }
+   
+   renameCamRequest(String toName, String c, request) Map {
+     if (app.requestFromAdmin(request)) {
+        app.configManager.put("cam." + c + ".label", toName);
+      }
+      return(CallBackUI.reloadResponse());
    }
    
    setCamCleanRequest(String days, request) {

@@ -51,6 +51,8 @@ copy /y source\IUHub*.html ..\apprun\App\IUHub
 copy /y icons\*.* ..\apprun\App\IUHub
 copy /y source\Version.txt ..\apprun\App\IUHub
 copy /y extlibs\IUHub\* ..\apprun\App\IUHub
+copy /y LICENSE.txt ..\apprun\App\IUHub
+copy /y LICENSE-MPL.txt ..\apprun\App\IUHub
 
 REM cam
 copy /y ..\apprun\App\IUCam\Base\target\js\be\BEL_4_Base.js ..\apprun\App\IUHub\IUCam_BEL_4_Base.js
