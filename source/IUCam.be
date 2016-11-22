@@ -520,6 +520,8 @@ use class IUCam:CamPlugin {
       String rv = app.configManager.get("cam." + cam + ".label");
       if (undef(rv)) {
         rv = System:Random.getString(6);
+      } else {
+        rv = TS.toAlphaNum(rv);
       }
       String myhn = System:Environment.getVariable("MYHN");
       String picBaseName = "Pic-" + myhn + "-" + rv + "-";

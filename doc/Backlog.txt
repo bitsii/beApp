@@ -2,8 +2,6 @@
 =====
 ______________
 
-does not like spaces in the names, or names with same part + space (dogcam high dogcam low) have a toAlphaNum (alphanumeric) (file name stuff for pic)
-  
 rest of email svcs in dropdown (from notes)
 
 start from 0 test deploy
