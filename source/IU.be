@@ -110,6 +110,7 @@ class IU:WebConnect {
         internalCamUrl = internalBase + "App/IUHub/IUCam.html";
         internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
         internalCamLink = "<a href=\"" + internalCamUrl + "\">Internal Link to " + deviceName + " Cam, use on device's network.</a>";
+        log.log(lvl, "Internal url " + internalUrl);
       }
       if (TS.notEmpty(externalAddress)) {
         externalBase = protocol + externalAddress + extPort + "/";          
@@ -117,6 +118,7 @@ class IU:WebConnect {
         externalCamUrl = externalBase + "App/IUHub/IUCam.html";
         externalLink = "<a href=\"" + externalUrl + "\">External Link to " + deviceName + " Hub, use outside device's network (the internet).</a>";
         externalCamLink = "<a href=\"" + externalCamUrl + "\">External Link to " + deviceName + " Cam, use outside device's network (the internet).</a>";
+        log.log(lvl, "External url " + externalUrl);
       }
       
   }

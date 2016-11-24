@@ -2,21 +2,32 @@
 =====
 ______________
 
-rest of email svcs in dropdown (from notes)
-
-start from 0 test deploy
-
+easy setup
+  step by step install instructions for noobs
+  pretty sure setup got broken
+  
 test wake, all the things - check power for wifi to ethernet
 
 out to mac, win under java
 
-easy setup
-  step by step install instructions for noobs
-
 check for updates - two places (sf and github?)
+auto update (turn off able, on by defaul)
 
 get pipeline going / pages up
 
+______________
+
+login only accepted from whitelist of referrer pages (built off known internal/exteral ips/ports/urls)
+  page token set and required after that for all ajax calls
+  separate random thing in session at login
+  even gets for non-public pages require token as param
+
+certprint on link
+certprint in email
+
+help - shows images with meaning
+
+=====
 ______________
 
 no-upnp ssh version - jsch
@@ -33,37 +44,31 @@ working under cs
   imap
 ______________
 
-login only accepted from whitelist of referrer pages (built off known internal/exteral ips/ports)
-  page token set and required after that for all ajax calls
-  separate thing in session at login
-  even gets for non-public pages require token as header
-no html files in filemanager - or everything is mimetype encoded
+=====
 
-certprint on link
-certprint in email
+simple event stuff, alert/notify
+
+support hostname (only ip works now) - must be configured (external and internal names)
+
+support dyn dns options (duck, ?)
+
+=====
 
 upload in progress indicator
   id for upload process
   periodic/timer calls from ui
 
-help - shows images with meaning
-
-=====
+android hub - just wake and pictures
+  jv native upnp
 
 optional password to encrypte/decrypte imap blob
 sending email to update folks on change
   using linking / tokens for link
   ability to auto sync pics, sms, etc
-  
-simple event stuff, alert/notify
 
-launch ec2 from imap info for no-ssh version
+launch ec2 from imap info for no-ssh version (on demand)
 ______________
   
-jv native upnp
-
-android hub
-
 auto-download pics to app with retention time
 
 force deviceid to certain characteristics (in get)

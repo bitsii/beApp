@@ -1005,6 +1005,9 @@ use class IUHub:HubPlugin {
             type = "int";
           }
         }
+        if (request.remoteAddress == "127.0.0.1") {
+          type = "int";
+        }
         showWake = false;
         cp = TS.commonPrefix(mywc.internalAddress, wc.internalAddress);
         if (TS.notEmpty(cp)) {

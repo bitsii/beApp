@@ -597,7 +597,13 @@ use class IUHub:Eui {
    fillImap(String forService) {
       if (forService.ends("GMail")) {
         HD.getElementById("imapEndpoint").value = "imap.gmail.com";
-        HD.getElementById("imDitty").innerHTML = "<p>Use full email address as account name.  A dedicated account is recommended";
+        HD.getElementById("imDitty").innerHTML = "<p>Use full email address as account name.  A dedicated account is recommended, you can create one here, <a href='https://accounts.google.com/SignUp?service=mail'>GMail Signup</a>";
+      } elseIf (forService.ends("GMX Mail")) {
+        HD.getElementById("imapEndpoint").value = "imap.gmx.com";
+        HD.getElementById("imDitty").innerHTML = "<p>Use full email address as account name.  A dedicated account is recommended, you can create one here, <a href='https://service.gmx.com/registration.html'>GMX Signup</a>";
+      } elseIf (forService.ends("Yahoo Mail")) {
+        HD.getElementById("imapEndpoint").value = "imap.mail.yahoo.com";
+        HD.getElementById("imDitty").innerHTML = "<p>Use full email address as account name.  A dedicated account is recommended, you can create one here, <a href='https://login.yahoo.com/account/create'>Yahoo Signup</a>";
       } else {
         HD.getElementById("imapEndpoint").value = "";
         HD.getElementById("imDitty").innerHTML = "";

@@ -521,7 +521,7 @@ use class IUCam:CamPlugin {
       if (undef(rv)) {
         rv = System:Random.getString(6);
       } else {
-        rv = TS.toAlphaNum(rv);
+        rv = rv.toAlphaNum();
       }
       String myhn = System:Environment.getVariable("MYHN");
       String picBaseName = "Pic-" + myhn + "-" + rv + "-";
