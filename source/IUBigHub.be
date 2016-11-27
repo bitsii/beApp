@@ -203,13 +203,13 @@ use class IUHub:BigHubStart {
         log.log(lvl, "Deleting config " + key);
         ui.configManager.delete(key);
       }
-      /*if (TS.notEmpty(mode) && mode == "saveIntUrl") {
+      if (TS.notEmpty(mode) && mode == "saveIntUrl") {
         log.log(lvl, "saveIntUrl");
         ui.plugin.bg.init().uu.doUpdate();
-        log.log(lvl, "int url is " + ui.plugin.links.o.get("intUrl"));
-        File.apNew(args[2]).writer.open().write(ui.plugin.links.o.get("intUrl")).close();
-        File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.links.o.get("intUrl") + "\n").close();
-      }*/
+        log.log(lvl, "int url is " + ui.plugin.wcol.o.internalUrl);
+        File.apNew(args[2]).writer.open().write(ui.plugin.wcol.o.internalUrl).close();
+        File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.wcol.o.internalUrl + "\n").close();
+      }
       ui.configManager.close();
     }
 

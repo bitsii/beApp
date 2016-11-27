@@ -2,9 +2,10 @@
 =====
 ______________
 
+play sounds from file manager, incl looop n times
+
 easy setup
   step by step install instructions for noobs
-  pretty sure setup got broken
   
 test wake, all the things - check power for wifi to ethernet
 
@@ -26,6 +27,14 @@ certprint on link
 certprint in email
 
 help - shows images with meaning
+
+session timeout, default, update, expiration never (-1)
++(advanced) for session name and timeout
+
+setup wizard
+  first hub then cam
+reset admin from javafx
+changed name ? port changed
 
 =====
 ______________
