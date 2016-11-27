@@ -694,9 +694,9 @@ use class IUHub:HubPlugin {
         if (TS.notEmpty(wc.externalLink)) {
           msg += "<p>" + wc.externalLink += "</p>\n<p>" += wc.internalLink += "</p>\n";
         }
-        if (TS.notEmpty(wc.externalCamLink)) {
-          msg += "<p>" + wc.externalCamLink += "</p>\n<p>" += wc.internalCamLink += "</p>\n";
-        }
+        //if (TS.notEmpty(wc.externalCamLink)) {
+        //  msg += "<p>" + wc.externalCamLink += "</p>\n<p>" += //wc.internalCamLink += "</p>\n";
+        //}
         String payload = Encode:Hex.new().encode(Json:Marshaller.marshall(wc.toMap()));
         msg += "<input type=\"hidden\" name=\"payload\" value=\"" += payload += "\"/>";
         log.log(lvl, "In doimap3");
@@ -1025,17 +1025,17 @@ use class IUHub:HubPlugin {
        if (type == "ext") {
          if (TS.notEmpty(wc.externalLink)) {
           devLinks += wc.externalLink;
-          if (TS.notEmpty(wc.externalCamLink)) {
-            devLinks += "<p>" += wc.externalCamLink;
-          }
+          //if (TS.notEmpty(wc.externalCamLink)) {
+          //  devLinks += "<p>" += wc.externalCamLink;
+          //}
          }
          devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'int');return false;\">Or get internal links for  " += wc.deviceName += "...</a></p>";
        } else {
          if (TS.notEmpty(wc.internalLink)) {
           devLinks += wc.internalLink;
-          if (TS.notEmpty(wc.internalCamLink)) {
-            devLinks += "<p>" += wc.internalCamLink;
-          }
+          //if (TS.notEmpty(wc.internalCamLink)) {
+          //  devLinks += "<p>" += wc.internalCamLink;
+          //}
          }
          devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'ext');return false;\">Or get external links for  " += wc.deviceName += "...</a></p>";
        }

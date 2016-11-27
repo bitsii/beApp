@@ -72,10 +72,6 @@ h5.luiForm {
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
 
-<!--IUCam-->
-<a href="IUCam.html"><img src="accessories-camera.svg" title="IUCam"/></a>
-<!--IUCam-->
-
 <!--Files-->
 <img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" title="Files"/>
 <!--Files-->
@@ -109,7 +105,7 @@ h5.luiForm {
 <!--Configuration-->
 <img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="ui.bem_showConfig_0();return false;" title="Configuration"/>
 <!--Configuration-->
-
+  
 <!--Security Extras-->
 <img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');ui.bem_showSessionsRequest_0();return false;" title="Security Extras"/>
 <!--Security Extras-->
@@ -118,15 +114,23 @@ h5.luiForm {
 <img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/>
 <!--Password-->
 
+<p>
+
 <!--Logout-->
 <img src="system-log-out.svg" onclick="ui.bem_logout_0();return false;" title="Logout"/>
 <!--Logout-->
 
-<p>
-
 <!--About-->
 <img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/>
 <!--About-->
+  
+<!--IUCam-->
+<a href="IUCam.html"><img src="accessories-camera.svg" title="IUCam"/></a>
+<!--IUCam-->
+
+<!--Files-->
+<img src="folder-videos.svg" onclick="ui.bem_browseWebCam_0();return false;" title="WebCam Files"/>
+<!--Files-->
 
 <p>
   

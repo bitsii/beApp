@@ -2,20 +2,14 @@
 =====
 ______________
 
-play sounds from file manager, incl looop n times
+test pi install, make sure console install friendly (copy/paste)
 
-easy setup
-  step by step install instructions for noobs
-  
-test wake, all the things - check power for wifi to ethernet
-
-out to mac, win under java
+mac, win java installers
 
 check for updates - two places (sf and github?)
 auto update (turn off able, on by defaul)
 
 get pipeline going / pages up
-
 ______________
 
 login only accepted from whitelist of referrer pages (built off known internal/exteral ips/ports/urls)
@@ -69,6 +63,9 @@ upload in progress indicator
 
 android hub - just wake and pictures
   jv native upnp
+  
+play sounds from file manager, incl looop n times
+record sound snapshot (also after pic from motion)
 
 optional password to encrypte/decrypte imap blob
 sending email to update folks on change

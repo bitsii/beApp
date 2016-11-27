@@ -303,7 +303,7 @@ use class IUCam:Eui {
           perms.put(perm);
         }
       }
-      HD.getElementById("admindiv").display = "none";
+      //HD.getElementById("admindiv").display = "none";
     }
    }
    

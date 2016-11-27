@@ -234,6 +234,22 @@ use class IUHub:Eui {
      }
    }
    
+   updateImage(String cam) {
+      Map arg = Map.new();
+      arg["action"] = "updateImageRequest";
+      arg["cam"] = cam;
+      handleCallOut(arg);
+   }
+   
+   browseWebCam() {
+     if (HD.getElementById("browseFilesDiv").display == "block") {
+      closeFileBrowser();
+     } else {
+      HD.getElementById("browseFilesDiv").display = "block";
+      localBrowseRequest(Encode:Hex.encode("./Shared/WebCam"));
+     }
+   }
+   
    showImapResponse(Map arg) {
      if (arg.has("imapEndpoint")) {
       HD.getElementById("imapEndpoint").value = arg["imapEndpoint"];
