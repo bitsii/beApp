@@ -2,20 +2,22 @@
 =====
 ______________
 
-test pi install, make sure console install friendly (copy/paste)
+have a bookmark link with the relogin token in it
+only with that can the relogin happen
+after login refresh to a page without the relogin bit
+checklogin requires it
+
+wizard - device name, imap, detect cams
 
 mac, win java installers
 
 check for updates - two places (sf and github?)
-auto update (turn off able, on by defaul)
+auto update (turn off able, on by default)
 
 get pipeline going / pages up
-______________
 
-login only accepted from whitelist of referrer pages (built off known internal/exteral ips/ports/urls)
-  page token set and required after that for all ajax calls
-  separate random thing in session at login
-  even gets for non-public pages require token as param
+all accounts admin
+______________
 
 certprint on link
 certprint in email

@@ -57,9 +57,10 @@ sudo -- sh -c 'cat tmp/stadd > /etc/rc.local'
 echo -n "To get started, you can open the following url on a browser from a device on the same network as this server and login with the account you just created - "
 cat ./apprun/shu.txt
 echo
-echo "Note, the certificate is self signed and you will need to accept it permanently once on each device you use to connect to this server.  If you are asked to accept it in the same browser after adding permanently be careful, it may indicate a security issue.  If in doubt verify the certificate thumbprint for the site in your browser against the one in email before entering your username and password"
-echo "Waiting for the server to start for the first time, this can take awhile, then will open a browser"
+echo "Waiting for the server to start for the first time, this can take awhile, then will open a browser - you can also copy and paste the above url into any browser on the same network as the device and then login with the account username and password you just created. Please wait until the below message indicates the server is ready."
+echo "Note, the certificate is self signed and you will need to accept it permanently once on each device you use to connect to this server."
 sleep 40
+echo "Server should now be ready"
 echo "Now opening a browser on this box to the url above, to continue, login with the account you just created"
 
 chmod +x ./apprun/opu.sh
