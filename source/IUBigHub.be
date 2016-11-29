@@ -230,6 +230,7 @@ use class IUHub:BigHubPlugin(HubPlugin) {
       res["devLinksList"] = getDevLinks(a, arg, request);
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
+      res["loginUri"] = self.getLoginUri(request);
       return(res);
     }
     

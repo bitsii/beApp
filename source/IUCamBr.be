@@ -251,6 +251,7 @@ use class IUCam:Eui {
       clearImage();
       Map arg = Map.new();
       arg["action"] = "checkLoggedInRequest";
+      arg["href"] = HD.href;
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       handleCallOut(arg);
@@ -295,6 +296,9 @@ use class IUCam:Eui {
     }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
+    }
+    if (arg.has("loginToken")) {
+      HD.getElementById("hubLink").href = "IUHub.html?loginToken=" + arg["loginToken"];
     }
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];

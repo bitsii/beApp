@@ -103,6 +103,9 @@ use class IUHub:Eui {
         fields {
           String currentlyCheckedId;
           String name = "hub";
+          IO:Log log = IO:Log.new();
+          log.level = log.error;
+          Int lvl = log.level;
         }
     }
     
@@ -352,8 +355,10 @@ use class IUHub:Eui {
       clearImage();
       Map arg = Map.new();
       arg["action"] = "checkLoggedInRequest";
+      arg["href"] = HD.href;
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
+      //log.log(lvl, "href at startup " + HD.href);
       handleCallOut(arg);
    }
    
@@ -393,6 +398,13 @@ use class IUHub:Eui {
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
       HC.new(self).pageToken = arg["pageToken"];
+      if (TS.notEmpty(arg["loginUri"])) {
+        String li = arg["loginUri"];
+        if (HD.href.has(li)!) {
+          HD.href = li;
+        }
+      }
+      //log.log(lvl, "updateResponse2 just logged in");
     }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
@@ -401,6 +413,9 @@ use class IUHub:Eui {
       HD.getElementById("devLinksListDiv").innerHTML = arg["devLinksList"];
     } else {
       HD.getElementById("devLinksListDiv").innerHTML = "";
+    }
+    if (arg.has("loginToken")) {
+      HD.getElementById("camLink").href = "IUCam.html?loginToken=" + arg["loginToken"];
     }
     HD.getElementById("devLinksDiv").innerHTML = "";
     if (arg.has("permsString")) {

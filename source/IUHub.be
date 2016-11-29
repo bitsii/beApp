@@ -525,6 +525,7 @@ use class IUHub:HubPlugin {
       res["devLinksList"] = getDevLinks(a, arg, request);
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
+      res["loginUri"] = self.getLoginUri(request);
       return(res);
     }
     
@@ -902,6 +903,11 @@ use class IUHub:HubPlugin {
         }
      }
      return(null);
+   }
+   
+   getLoginUri(request) String {
+     String loginBookmark = "/App/IUHub/IUHub.html?loginToken=" + request.getSession("loginToken");
+     return(loginBookmark);
    }
    
   getActionLinks(Account a, Map arg, request) String {

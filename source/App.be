@@ -539,10 +539,27 @@ use class App:AuthPlugin {
       Account a = app.accountManager.getAccount(accountName);
       if (def(a)) {
         log.log(lvl, "Found logged in account " + accountName);
-        Map res = Map.new();
-        res["action"] = "loggedInResponse";
-        res["name"] = accountName;
-        return(app.loggedIn(a, res, arg, request));
+        log.log(lvl, "Checking loginToken");
+        String lt = arg["href"];
+        if (TS.notEmpty(lt) && lt.has("loginToken=")) {
+          lt = lt.substring(lt.find("loginToken=") + 11, lt.size);
+        }
+        String st = request.getSession("loginToken");
+        if (TS.notEmpty(lt) && TS.notEmpty(st) && lt == st) {
+          log.log(lvl, "loginToken ok");
+          Map res = Map.new();
+          res["action"] = "loggedInResponse";
+          res["name"] = accountName;
+          res = app.loggedIn(a, res, arg, request);
+          res.delete("loginUri");
+          return(res);
+        } else {
+          log.log(lvl, "loginToken notok");
+          if (TS.isEmpty(lt)) { log.log(lvl, "lt empty"); }
+          else { log.log(lvl, "lt " + lt); }
+          if (TS.isEmpty(st)) { log.log(lvl, "st empty"); }
+          else { log.log(lvl, "st " + st); }
+        }
       } else {
         log.log(lvl, "No such account " + accountName);
       }
@@ -1293,8 +1310,15 @@ class AuthedApp {
     
     loggedIn(Account a, Map res, Map arg, request) {
       String pageToken = System:Random.getString(32);
+      String loginToken = request.getSession("loginToken");
+      if (TS.isEmpty(loginToken)) {
+        loginToken = System:Random.getString(32);
+        request.putSession("loginToken", loginToken);
+      }
       request.putSession("pageToken", pageToken);
       res["pageToken"] = pageToken;
+      res["loginToken"] = loginToken;
+      //log.log("loggedIn request uri " + request.uri);
       return(self.plugin.loggedIn(a, res, arg, request));
     }
     

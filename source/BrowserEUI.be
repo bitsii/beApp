@@ -107,6 +107,14 @@ class HD {
     }
   }
   
+  hrefSet(String url) {
+    emit(js) {
+    """
+      location = beva_url.bems_toJsString();
+    """
+    }
+  }
+  
   call(List args) any {
      String aname = args[0];
      args.delete(0);
@@ -115,6 +123,17 @@ class HD {
      }         
      return(null);
    }
+   
+   hrefGet() String {
+     String res;
+      emit(js) {
+      """
+      bevl_res = new be_$class/Text:String$().bems_new(window.location.href);
+      """
+      }
+      return(res);     
+   }
+   
 }
 
 class HE {
@@ -194,6 +213,24 @@ class HE {
     emit(js) {
     """
     bevl_res = new be_$class/Text:String$().bems_new(this.bevi_element.style.display);
+    """
+    }
+    return(res);
+  }
+  
+  hrefSet(String val) self {
+    emit(js) {
+    """
+    this.bevi_element.href = beva_val.bems_toJsString();
+    """
+    }
+  }
+  
+  hrefGet() String {
+    String res;
+    emit(js) {
+    """
+    bevl_res = new be_$class/Text:String$().bems_new(this.bevi_element.href);
     """
     }
     return(res);

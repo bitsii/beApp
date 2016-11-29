@@ -2,12 +2,22 @@
 =====
 ______________
 
-have a bookmark link with the relogin token in it
-only with that can the relogin happen
-after login refresh to a page without the relogin bit
-checklogin requires it
+fs gets/puts for anything not public requires pagetoken in param
+  (try images w/o token, then add it)
+  no html (or htm) in filemanager
+
+session timeout, default, update, expiration never (-1)
+update session every n minutes
++(advanced) for session name and timeout
 
 wizard - device name, imap, detect cams
+
+rerun background stuff after device name, imap updates
+
+all accounts admin
+______________
+
+allbash
 
 mac, win java installers
 
@@ -16,21 +26,9 @@ auto update (turn off able, on by default)
 
 get pipeline going / pages up
 
-all accounts admin
-______________
-
-certprint on link
-certprint in email
+certprint in email, on links
 
 help - shows images with meaning
-
-session timeout, default, update, expiration never (-1)
-+(advanced) for session name and timeout
-
-setup wizard
-  first hub then cam
-reset admin from javafx
-changed name ? port changed
 
 =====
 ______________
