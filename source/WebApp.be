@@ -192,7 +192,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
        log.log(lvl, "uri " + uri);
        File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
        if (TS.notEmpty(rmtd) && rmtd == "PUT") {
-         if (checkWritePath(imgfile.path, request)) {
+         if (checkWritePath(imgfile.path, null, request)) {
            log.log(lvl, "put for " + imgfile.path);
            if (imgfile.path.parent.file.exists!) {
             imgfile.path.parent.file.makeDirs();
@@ -205,7 +205,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
             outw.close();
             request.outputContent = "UPLOAD COMPLETE";
          }
-       } elseIf (checkReadPath(imgfile.path, request)) {
+       } elseIf (checkReadPath(imgfile.path, arg, request)) {
          log.log(lvl, "imgfile " + imgfile.path);
          if (imgfile.exists) {
           String mtype;

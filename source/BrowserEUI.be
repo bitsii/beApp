@@ -19,6 +19,7 @@ emit(js) {
 var ui;
 var hc;
 var hd;
+var pageToken;
 
 var uiStartup = function(_ui) {
   ui = _ui;
@@ -248,6 +249,15 @@ class HC {
       Json:Unmarshaller unmar = Json:Unmarshaller.new();
       any callback = _callback;
       String pageToken;
+    }
+  }
+  
+  pageTokenSet(String _pageToken) this {
+    pageToken = _pageToken;
+    emit(js) {
+    """
+    pageToken = beva__pageToken.bems_toJsString();
+    """
     }
   }
   

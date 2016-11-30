@@ -61,7 +61,7 @@ var upgradeSelected = function() {
     var files = evt.target.files; // FileList object
     for (var i = 0, f; f = files[i]; i++) {
       var req = new XMLHttpRequest();
-      req.open("PUT", "/".concat(dpath.concat("/".concat(escape(f.name)))));
+      req.open("PUT", "/".concat(dpath.concat("/".concat(escape(f.name)))).concat("?pageToken=").concat(pageToken));
       req.setRequestHeader("Content-type", "application/octet-stream");
       req.send(f);
     }

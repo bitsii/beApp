@@ -584,7 +584,7 @@ use class IUCam:CamPlugin {
       Map res = Map.new();
       res["action"] = "updateImageResponse";
       //res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
-      res["imghtm"] = "<img src=\"../../" + picFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
+      res["imghtm"] = "<img src=\"../../" + picFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + "&cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
       return(res);
    }
    

@@ -2,10 +2,6 @@
 =====
 ______________
 
-fs gets/puts for anything not public requires pagetoken in param
-  (try images w/o token, then add it)
-  no html (or htm) in filemanager
-
 session timeout, default, update, expiration never (-1)
 update session every n minutes
 +(advanced) for session name and timeout

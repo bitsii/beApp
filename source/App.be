@@ -627,7 +627,7 @@ use class App:FileManagerPlugin {
      }
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
-       if (dirFile.exists && app.checkWritePath(dirFile.path, request)) {
+       if (dirFile.exists && app.checkWritePath(dirFile.path, arg, request)) {
          log.log(lvl, "deleting " + dirFile.path);
          dirFile.delete();
        }
@@ -644,11 +644,11 @@ use class App:FileManagerPlugin {
      }
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
-       if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, request)) {
+       if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, arg, request)) {
          any dpath = Path.apNew(arg["toName"]);
          dpath = dirFile.path.parent.copy() + dpath;
          log.log(lvl, "precheck write " + dpath);
-         if (app.checkWritePath(dpath, request)) {
+         if (app.checkWritePath(dpath, arg, request)) {
            log.log(lvl, "copying " + dirFile.path + " to " + dpath);
            if (dpath.parent.file.exists!) {
              dpath.parent.file.makeDirs();
@@ -691,7 +691,7 @@ use class App:FileManagerPlugin {
       }
       String dirListHtml = String.new();
       dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
-      if (dirFile.exists && app.checkReadPath(dirFile.path, request)) {
+      if (dirFile.exists && app.checkReadPath(dirFile.path, arg, request)) {
         dirListHtml += "<p>Listing for " += htmle.encode(dirFile.path.toString()) += "</p>";
         dirListHtml += "<table>";
         if (adminLinks) {
@@ -737,11 +737,13 @@ use class App:FileManagerPlugin {
             } else {
               if (p.toString().ends(".jpg")) {
                 String jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
+              } elseIf (p.toString().ends(".html") || p.toString().ends(".htm")) {
+                jscall = " onclick = \"return false;\"";
               } else {
                 jscall = "";
               }
               dirListHtml += "<tr>";
-              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += TS.quote + jscall + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
+              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
               dirListHtml += "<td><input type=\"checkbox\" id=\"FCB"
               += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\"></td>";
               dirListHtml += "</tr>";
@@ -751,7 +753,7 @@ use class App:FileManagerPlugin {
         } elseIf (dirFile.path.toString().ends(".jpg")) {
           Map res = Map.new();
           res["action"] = "updateImageResponse";
-          res["imghtm"] = "<img src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
+          res["imghtm"] = "<img src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + "&cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
           return(res);
         }
         dirListHtml += "</table>";
@@ -1023,11 +1025,22 @@ class AuthedApp {
     return(true);
   }
   
-  checkWritePath(Path p, request) Bool {
+  checkWritePath(Path p, Map arg, request) Bool {
     if (isCrossSite(request)) {
       return(false);
     }
     Account a = self.accountManager.getAccountForRequest(request);
+    if (def(arg)) {
+      String pageToken = arg["pageToken"];
+    }
+    if (TS.isEmpty(pageToken)) {
+      pageToken = request.getParameter("pageToken");
+    }
+    String stoken = request.getSession("pageToken");
+    if (TS.isEmpty(pageToken) || undef(a) || undef(stoken) || pageToken != stoken) {
+      log.log(lvl, "checkWritePath false due to page token fail");
+      return(false);
+    }
     if (def(a) && a.perms.has("admin")) {
       return(true);
     }
@@ -1051,7 +1064,7 @@ class AuthedApp {
     return(isOk);
    }
    
-   checkReadPath(Path p, request) Bool {
+   checkReadPath(Path p, Map arg, request) Bool {
     Path pa = p.file.absPath;
     String pas = pa.toString();
     if (self.plugin.checkPublicReadPath(pa, request)) {
@@ -1061,6 +1074,17 @@ class AuthedApp {
       return(false);
     }
     Account a = self.accountManager.getAccountForRequest(request);
+    if (def(arg)) {
+      String pageToken = arg["pageToken"];
+    }
+    if (TS.isEmpty(pageToken)) {
+      pageToken = request.getParameter("pageToken");
+    }
+    String stoken = request.getSession("pageToken");
+    if (TS.isEmpty(pageToken) || undef(a) || undef(stoken) || pageToken != stoken) {
+      log.log(lvl, "checkReadPath false due to page token fail");
+      return(false);
+    }
     if (def(a) && a.perms.has("admin")) {
       return(true);
     }
