@@ -264,6 +264,7 @@ use class IUCam:Eui {
       arg["accountName"] = HD.getElementById("accountName").value;
       arg["accountPass"] = HD.getElementById("accountPass").value;
       arg["sessionName"] = HD.getElementById("sessionName").value;
+      arg["sessionLength"] = HD.getElementById("sessionLength").value;
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       HD.getElementById("sessionName").value = "";

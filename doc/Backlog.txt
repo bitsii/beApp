@@ -2,13 +2,9 @@
 =====
 ______________
 
-session timeout, default, update, expiration never (-1)
-update session every n minutes
-+(advanced) for session name and timeout
+rerun background stuff after device name, imap updates (refresh?)
 
 wizard - device name, imap, detect cams
-
-rerun background stuff after device name, imap updates
 
 all accounts admin
 ______________

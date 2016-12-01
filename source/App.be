@@ -578,6 +578,22 @@ use class App:AuthPlugin {
         if (TS.notEmpty(arg["sessionName"])) {
           request.putSession("session.name", arg["sessionName"]);
         }
+        String sessionLength = arg["sessionLength"];
+        if (TS.isEmpty(sessionLength) || sessionLength.isInteger()!) {
+          sessionLength = "30";
+        }
+        Int sessionLengthI = Int.new(sessionLength) * 60;
+        log.log(lvl, "sessionLength " + sessionLengthI.toString());
+        request.putSession("sessionLength", sessionLengthI.toString());
+        if (sessionLengthI < 0) {
+          request.putSession("sessionExp", sessionLengthI.toString());
+        } else {
+          Int snow = Time:Interval.now().seconds;
+          Int ssd = snow + sessionLengthI;
+          request.putSession("sessionExp", ssd.toString());
+          Int ssu = snow + 60;
+          request.putSession("sessionUpdate", ssu.toString());
+        }
         Map res = Map.new();
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
@@ -1242,6 +1258,36 @@ class AuthedApp {
     return(trackingManager);
   }
   
+  checkRenewSession(request) Bool {
+    String sessionExp = request.getSession("sessionExp");
+    if (TS.isEmpty(sessionExp)) {
+      log.log(lvl, "no sessionExp");
+      request.deleteSession();
+      return(false);
+    }
+    Int sei = Int.new(sessionExp);
+    if (sei < 0) {
+      log.log(lvl, "session never expires");
+      return(true); //never expires
+    }
+    Int ns = Time:Interval.now().seconds;
+    if (ns > sei) {
+      log.log(lvl, "session expired");
+      request.deleteSession();
+      return(false);
+    }
+    Int nu = Int.new(request.getSession("sessionUpdate"));
+    if (ns > nu) {
+      log.log(lvl, "refreshing sessionUpdate");
+      nu = ns + 60;
+      request.putSession("sessionUpdate", nu.toString());
+      Int ne = Int.new(request.getSession("sessionLength")) + ns;
+      request.putSession("sessionExp", ne.toString());
+    }
+    log.log(lvl, "checkRenewSession returning true");
+    return(true);
+  }
+  
   handleWeb(request, Map arg) {
     unless (checkRequest(request)) {
       return(null);
@@ -1261,6 +1307,11 @@ class AuthedApp {
                 return(null);
               }
             } else {
+            
+              unless (aname == "loginRequest" || checkRenewSession(request)) {
+                log.log(lvl, "rejecting expired session request");
+                return(null);
+              }
             
               //checkLoggedInRequest is ok
                

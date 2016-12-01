@@ -369,6 +369,13 @@ use class IUHub:Eui {
       arg["accountName"] = HD.getElementById("accountName").value;
       arg["accountPass"] = HD.getElementById("accountPass").value;
       arg["sessionName"] = HD.getElementById("sessionName").value;
+      arg["sessionLength"] = HD.getElementById("sessionLength").value;
+      if (HD.getElementById("sessionNeverExpires").checked) {
+        arg["sessionLength"] = "-1";
+        //log.log(lvl, "set sel neg");
+      } else {
+         //log.log(lvl, "set sel neg not");
+      }
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       HD.getElementById("sessionName").value = "";
