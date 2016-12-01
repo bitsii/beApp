@@ -2,16 +2,13 @@
 =====
 ______________
 
-rerun background stuff after device name, imap updates (refresh?)
+ioturl allbash
+
+mac, win java installers
 
 wizard - device name, imap, detect cams
 
 all accounts admin
-______________
-
-allbash
-
-mac, win java installers
 
 check for updates - two places (sf and github?)
 auto update (turn off able, on by default)

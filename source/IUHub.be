@@ -46,6 +46,12 @@ use class IUHub:ConnectionUpdate {
   
   }
   
+  clear() {
+    lastPoll = 0;
+    lastUpdate = 0;
+    lastFwd = 0;
+  }
+  
   updateOnInterval() {
     Int currSec = Time:Interval.now().seconds;
     if (currSec - lastPoll > pollSecs) {
@@ -500,6 +506,7 @@ use class IUHub:HubPlugin {
     if (TS.notEmpty(_deviceName)) {
       deviceName = _deviceName;
       app.configManager.put("deviceName", deviceName);
+      bg.uu.clear(); 
     }
   }
   
@@ -834,6 +841,7 @@ use class IUHub:HubPlugin {
       app.configManager.put("imap.endpoint", arg["imapEndpoint"]);
       app.configManager.put("imap.pass", arg["imapPass"]);
       app.configManager.put("imap.subFolder", arg["imapFolder"]);
+      bg.uu.clear();
       Map res = Map.new();
       res["action"] = "hideImapResponse";
       return(res);
