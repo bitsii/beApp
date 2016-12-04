@@ -57,7 +57,7 @@ h5.luiForm {
 <body>
 <div id="informDiv" style="display: none;">
 <div id="informMessageDiv"></div>
-<p><a href="#" onclick="ui.bem_hideInform_0();return false;">Clear Error</a></p>
+<p><a href="#" onclick="ui.bem_hideInform_0();return false;">Clear Message</a></p>
 </div>
 <div id="logindiv">
 <p>Login</p>
@@ -139,6 +139,33 @@ h5.luiForm {
 <!--Files-->
 
 <p>
+
+<!--Device Name-->
+<div id="deviceNameDiv" style="display: none;">
+<p><label class="luiForm">Device Name</label><input type="text" id="newDeviceName"</input></p>
+<p><a href="#" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Change Device Name</a> <a href="#" onclick="callUI('toggleDisplay', 'deviceNameDiv');return false;">Cancel</a></p>
+</div>
+<!--Device Name-->
+
+<!--Imap-->
+<div id="imapSettingsDiv" style="display: none;">
+<form>
+<select name=imFillin onchange='imChange(this.form.imFillin);return false;'>
+<option >(Select a mail provider to start)</option>
+<option>GMail</option>
+<option>GMX Mail</option>
+<option>Yahoo Mail</option>
+</select>
+</form>
+<p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
+<p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
+<p><label class="luiForm">Message Folder</label><input type="text" id="imapFolder"</input></p>
+<p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
+<p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
+<div id="imDitty"></div>
+<p><a href="#" onclick="ui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
+</div>
+<!--Imap-->
   
 <!--Password-->
 <div id="passwordDiv" style="display: none;">
@@ -163,26 +190,6 @@ h5.luiForm {
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
 </script>
 <!--Files-->
-
-<!--Imap-->
-<div id="imapSettingsDiv" style="display: none;">
-<form>
-<select name=imFillin onchange='imChange(this.form.imFillin);return false;'>
-<option >(Select a mail provider to start)</option>
-<option>GMail</option>
-<option>GMX Mail</option>
-<option>Yahoo Mail</option>
-</select>
-</form>
-<p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
-<p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
-<p><label class="luiForm">Message Folder</label><input type="text" id="imapFolder"</input></p>
-<p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
-<p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
-<div id="imDitty"></div>
-<p><a href="#" onclick="ui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
-</div>
-<!--Imap-->
 
 <!--Services-->
 <div id="forwardPortsDiv" style="display: none;">
@@ -220,13 +227,6 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <div id="accountLinksDiv"></div>
 </div>
 <!--Accounts-->
-
-<!--Device Name-->
-<div id="deviceNameDiv" style="display: none;">
-<p><label class="luiForm">Device Name</label><input type="text" id="newDeviceName"</input></p>
-<p><a href="#" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Change Device Name</a> <a href="#" onclick="callUI('toggleDisplay', 'deviceNameDiv');return false;">Cancel</a></p>
-</div>
-<!--Device Name-->
 
 <!--Security Extras-->
 <div id="seDiv" style="display: none;">

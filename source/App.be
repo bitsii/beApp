@@ -799,6 +799,7 @@ use class App:ConfigPlugin {
       if (app.requestFromAdmin(request) && TS.notEmpty(name)) {
         app.plugin.deviceName = deviceName;
       }
+      app.configManager.put("deviceNameSetOnce", "true");
       //return(CallBackUI.setElementsDisplaysResponse(Maps.from("deviceNameDiv", "none")));
       return(CallBackUI.reloadResponse());
       }

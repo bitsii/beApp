@@ -841,6 +841,7 @@ use class IUHub:HubPlugin {
       app.configManager.put("imap.endpoint", arg["imapEndpoint"]);
       app.configManager.put("imap.pass", arg["imapPass"]);
       app.configManager.put("imap.subFolder", arg["imapFolder"]);
+      app.configManager.put("imapSetOnce", "true");
       bg.uu.clear();
       Map res = Map.new();
       res["action"] = "hideImapResponse";
@@ -959,6 +960,10 @@ use class IUHub:HubPlugin {
         actionLinks += sl.first;
         actionLinks += "</div>";
         actionLinks += "</div>";
+      }
+      String cdo = app.configManager.get("camsDetectedOnce");
+      if (TS.isEmpty(cdo) || cdo != "true") {
+        actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"ui.bem_detectCams_0();return false;\" >Detect WebCams</a></p>";
       }
      return(actionLinks);
    }

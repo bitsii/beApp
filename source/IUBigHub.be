@@ -231,6 +231,14 @@ use class IUHub:BigHubPlugin(HubPlugin) {
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       res["loginUri"] = self.getLoginUri(request);
+      String dnso = app.configManager.get("deviceNameSetOnce");
+      if (TS.isEmpty(dnso) || dnso != "true") {
+        res["deviceNameSetOnce"] = "false";
+      }
+      String imso = app.configManager.get("imapSetOnce");
+      if (TS.isEmpty(imso) || imso != "true") {
+        res["imapSetOnce"] = "false";
+      }
       return(res);
     }
     

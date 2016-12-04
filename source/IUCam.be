@@ -593,6 +593,7 @@ use class IUCam:CamPlugin {
         log.log(lvl, "Account not admin, not detecting cams");
         return(null);
       }
+      app.configManager.put("camsDetectedOnce", "true");
       Account a = app.accountManager.getAccountForRequest(request);
       updateCams();
       Map res = Map.new();

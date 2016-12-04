@@ -433,6 +433,24 @@ use class IUHub:Eui {
         }
       }
     }
+    String oinf = "";
+    if (TS.notEmpty(arg["deviceNameSetOnce"]) && arg["deviceNameSetOnce"] == "false") {
+      HC.toggleDisplay("deviceNameDiv");
+      oinf += "Please provide a name for the device.  ";
+    }
+    if (TS.notEmpty(arg["imapSetOnce"]) && arg["imapSetOnce"] == "false") {
+      HC.toggleDisplay("imapSettingsDiv");
+      oinf += "Please connect the device to an email account.  ";
+    }
+    if (TS.notEmpty(oinf)) {
+      inform(oinf);
+    }
+   }
+   
+   detectCams() {
+      Map arg = Map.new();
+      arg["action"] = "detectCamsRequest";
+      handleCallOut(arg);
    }
    
    logoutResponse(Map arg) {

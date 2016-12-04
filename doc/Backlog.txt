@@ -2,31 +2,27 @@
 =====
 ______________
 
-ioturl allbash
-
-mac, win java installers
-
-wizard - device name, imap, detect cams
-
 all accounts admin
+
+certprint in email, on links
+
+get pipeline going / pages up
+
+help - shows images with meaning
 
 check for updates - two places (sf and github?)
 auto update (turn off able, on by default)
 
-get pipeline going / pages up
+jvlx bash
 
-certprint in email, on links
-
-help - shows images with meaning
+jvlxrel bash
 
 =====
 ______________
 
 no-upnp ssh version - jsch
-  putty for win
+  putty for win?
   presesnce of ssh info
-  show if upnp is working (did I get external ip from upnp? portforward 
-    result check?)
 ______________
 
 client app - link
@@ -36,7 +32,7 @@ working under cs
   imap
 ______________
 
-=====
+mac, win java installers
 
 simple event stuff, alert/notify
 
