@@ -138,6 +138,12 @@ h5.luiForm {
 <img src="folder-videos.svg" onclick="ui.bem_browseWebCam_0();return false;" title="WebCam Files"/>
 <!--Files-->
 
+<!--Help-->
+<img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/>
+<p>  
+<a href="#" onclick="callUI('toggleDisplay', 'helpDiv');return false;">Click here for Help</a>
+<!--Help-->
+
 <p>
 
 <!--Device Name-->
@@ -166,6 +172,42 @@ h5.luiForm {
 <p><a href="#" onclick="ui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
 </div>
 <!--Imap-->
+
+<!--Help-->
+<div id="helpDiv" style="display: none;">
+General help - clicking on icons will open/close their functional areas - click Help again to close this area
+<!--Files-->
+<p><img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" title="Files"/> Browse Files on the device filesystem (remotely)
+<!--Service Connections-->
+<p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>  Get service connections to device
+<!--Restart-->
+<p><img src="system-software-update.svg" onclick="ui.bem_restart_0();return false;" title="Restart"/> Restart the Hub application
+<!--Services-->
+<p><img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/> View and create service connections (remote connectivity to the device desktop and other services)
+<!--Accounts-->
+<p><img src="system-users.svg" onclick="ui.bem_showAccountAdminRequest_0();return false;" title="Accounts"/> Create, modify, and delete accounts
+<!--Device Name-->
+<p><img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/> Change device name
+<!--Imap-->
+<p><img src="applications-mail.svg" onclick="ui.bem_showImapRequest_0();return false;" title="Imap"/> Connect device to email account
+<!--Configuration-->
+<p><img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="ui.bem_showConfig_0();return false;" title="Configuration"/> Direct access to configuration (advanced)
+<!--Security Extras-->
+<p><img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');ui.bem_showSessionsRequest_0();return false;" title="Security Extras"/> Manage extended security settings and logged in sessions
+<!--Password-->
+<p><img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/> Change Password
+<!--Logout-->
+<p><img src="system-log-out.svg" onclick="ui.bem_logout_0();return false;" title="Logout"/> Logout
+<!--About-->
+<p><img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/> Information about this software and device
+<!--IUCam-->
+<p><a id="camLink" href="IUCam.html"><img src="accessories-camera.svg" title="IUCam"/></a> Cam configuration
+<!--Files-->
+<p><img src="folder-videos.svg" onclick="ui.bem_browseWebCam_0();return false;" title="WebCam Files"/> Browse cam pictures
+<!--Help-->
+<p><img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/> Help (this...)
+</div>
+<!--Help-->
   
 <!--Password-->
 <div id="passwordDiv" style="display: none;">
@@ -222,8 +264,9 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
 <p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
 <p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
-<p>Admin Account <input type="checkbox" id="aadminIsAdmin"/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p>
-<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="ui.bem_saveAccountRequest_0();return false;">&nbsp;Confirm account Deletion <input type="checkbox" id="confirmAccountDelete"/><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="deleteAccount();return false;"></p>
+<div style="display: none;">
+<p>Admin Account <input type="checkbox" id="aadminIsAdmin" checked/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p></div>
+<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');ui.bem_saveAccountRequest_0();return false;"><p><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');deleteAccount();return false;"><input type="checkbox" id="confirmAccountDelete"/>Confirm account Deletion</p>
 <div id="accountLinksDiv"></div>
 </div>
 <!--Accounts-->

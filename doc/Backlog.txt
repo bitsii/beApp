@@ -2,13 +2,9 @@
 =====
 ______________
 
-all accounts admin
-
 certprint in email, on links
 
 get pipeline going / pages up
-
-help - shows images with meaning
 
 check for updates - two places (sf and github?)
 auto update (turn off able, on by default)
