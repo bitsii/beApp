@@ -2,18 +2,27 @@
 =====
 ______________
 
-certprint in email, on links
+failes after session timeout, set a custom response code to cause reload
 
-get pipeline going / pages up
+restore config from file
 
-check for updates - two places (sf and github?)
-auto update (turn off able, on by default)
+toggle in Links for doesn't make sense always with >1, check the id
 
-jvlx bash
+step-by-step instructions
 
 jvlxrel bash
 
+check for updates - two places (sf and github?)
+  size? sha?
+auto update (turn off able, on by default)
+
+get pipeline going
+
 =====
+______________
+
+client app - link
+android
 ______________
 
 no-upnp ssh version - jsch
@@ -21,12 +30,16 @@ no-upnp ssh version - jsch
   presesnce of ssh info
 ______________
 
-client app - link
-android
-working under cs
+link working under cs
   win embedded, xamarin ios mac
   imap
 ______________
+
+certprint in email, on links
+
+outside of db config key for secure items, need to know for backup/restore
+  old key new key
+  change key
 
 mac, win java installers
 

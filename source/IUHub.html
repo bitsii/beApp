@@ -177,7 +177,7 @@ h5.luiForm {
 <div id="helpDiv" style="display: none;">
 General help - clicking on icons will open/close their functional areas - click Help again to close this area
 <!--Files-->
-<p><img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" title="Files"/> Browse Files on the device filesystem (remotely)
+<p><img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" title="Files"/> Work with the device's filesystem (remotely)
 <!--Service Connections-->
 <p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>  Get service connections to device
 <!--Restart-->
@@ -257,6 +257,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 
 <!--Configuration-->
 <div id="configsDiv"></div>
+<a id="downloadJsonElem" style="display:none"></a>
 <!--Configuration-->
 
 <!--Accounts-->

@@ -819,6 +819,9 @@ use class App:ConfigPlugin {
          }
       }
       conf += "<tr><td>Add New:&nbsp;<input type=\"text\" id=\"addConfigKeyId\" value=\"\"></td><td><a href=\"#\" onclick=\"ui.bem_addConfig_0();return false;\">+</a><input type=\"hidden\" id=\"addConfigValId\" value=\"\"></td></tr>";
+      
+      conf += "<tr><td><a href=\"#\" onclick=\"callApp('backupConfigRequest');return false;\">Download Configuration Backup</a></td></tr>";
+      
       conf += "</table>";
        Map res = Map.new();
       res["action"] = "showConfigResponse";
@@ -826,6 +829,21 @@ use class App:ConfigPlugin {
       return(res);
     }
     return(null);
+   }
+   
+   backupConfigRequest(request) Map {
+     if (app.requestFromAdmin(request)) {
+       Map ecm = app.configManager.getMap();
+       if (ecm.isEmpty) {
+         ecm = Map.new();
+       }
+       Map res = Map.new();
+       res["action"] = "backupConfigResponse";
+       res["configJson"] = Json:Marshaller.marshall(ecm);
+       log.log(lvl, "ret configJson " + res["configJson"]);
+       return(res);
+     }
+     return(null);
    }
    
    updateConfigRequest(Map arg, request) Map {
@@ -916,7 +934,7 @@ class AuthedApp {
   
   checkRequest(request) Bool {
   
-    Int maxBad =@ 40;
+    Int maxBad =@ 160;
     Int clearSecs =@ 40;
     Int updateSecs =@ 20;
   

@@ -84,6 +84,14 @@ var callHD = function() {
   return hd.bem_call_1(alist);
 }
 
+var downloadJson = function(jsonData, fileName) {
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonData);
+  var downloadJsonElem = document.getElementById('downloadJsonElem');
+  downloadJsonElem.setAttribute("href", dataStr );
+  downloadJsonElem.setAttribute("download", fileName);
+  downloadJsonElem.click();
+}
+
 """
 }
 
@@ -326,6 +334,7 @@ class HC {
           if (req.readyState != 4) return;
           if (req.status != 200 && req.status != 304) {
               //logmsg('HTTP error ' + req.status);
+              //location.reload();
               return;
           }
           //logmsg(req.responseText);

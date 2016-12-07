@@ -538,6 +538,16 @@ use class IUHub:Eui {
       handleCallOut(arg);
    }
    
+   backupConfigResponse(Map arg) {
+     String configJson = arg["configJson"];
+     String name = "HubConfig.json";//TODO add device name
+     emit(js) {
+     """
+     downloadJson(bevl_configJson.bems_toJsString(), bevl_name.bems_toJsString());
+     """
+     }
+   }
+   
    deleteRequest() {
       Bool isChecked = HD.getElementById("confirmDeleteId").checked;
       HD.getElementById("confirmDeleteId").checked = false;
