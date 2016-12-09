@@ -56,6 +56,11 @@ var upgradeSelected = function() {
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
+var restoreSelected = function() {
+  ui.bem_restoreConfigRequest_0();
+  callUI('logoutResponse');
+}
+
   function handleFileSelect(evt) {
     var dpath = ui.bem_browsingDirGet_0().bems_toJsString();
     var files = evt.target.files; // FileList object
@@ -235,6 +240,16 @@ use class IUHub:Eui {
       arg["action"] = "showImapRequest";
       handleCallOut(arg);
      }
+   }
+   
+   toggleDevLinks(String devId) {
+     fields {
+      String lastDevId;
+     }
+     if (TS.notEmpty(lastDevId) && lastDevId == devId) {
+      HC.toggleDisplay("devLinksDiv");
+     }
+     lastDevId = devId;
    }
    
    updateImage(String cam) {
@@ -610,6 +625,21 @@ use class IUHub:Eui {
           String path = ci.substring(3);
           Map arg = Map.new();
           arg["action"] = "upgradeRequest";
+          arg["path"] = path;
+          handleCallOut(arg);
+      }
+   }
+   
+   restoreConfigRequest() {
+      String ci = currentlyCheckedId;
+      if (TS.notEmpty(ci)) {
+        HD.getElementById(currentlyCheckedId).checked = false;
+        currentlyCheckedId = null;
+      }
+      if (TS.notEmpty(ci)) {
+          String path = ci.substring(3);
+          Map arg = Map.new();
+          arg["action"] = "restoreConfigRequest";
           arg["path"] = path;
           handleCallOut(arg);
       }

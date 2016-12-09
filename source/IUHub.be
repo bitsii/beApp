@@ -207,7 +207,10 @@ use class IUHub:Background {
     fields {
       Int lastTrackClear;
       Int clearSeconds =@ 7200;
+      Int lastUpdCheck;
+      Int updCheckSeconds =@ 43200;
     }
+    
     if (def(lastTrackClear)) {
       Int ns = Time:Interval.now().seconds;
       if (ns - lastTrackClear > clearSeconds) {
@@ -217,6 +220,17 @@ use class IUHub:Background {
     } else {
       lastTrackClear = 0;
     }
+    
+    if (def(lastUpdCheck)) {
+      ns = Time:Interval.now().seconds;
+      if (ns - lastUpdCheck > updCheckSeconds) {
+        app.plugin.checkAndUpdate();
+        lastUpdCheck = ns;
+      }
+    } else {
+      lastUpdCheck = 0;
+    }
+    
   }
   
   runTasks() {
@@ -865,6 +879,28 @@ use class IUHub:HubPlugin {
       return(null);
    }
    
+   restoreConfigRequest(Map arg, request) Map {
+     log.log(lvl, "rs request");
+     String path = arg["path"];
+     Account a = app.accountManager.getAccountForRequest(request);
+     unless (app.requestFromAdmin(request)) {
+      throw(Alert.new("must be admin"));
+     }
+     if (TS.notEmpty(path)) {
+       File dirFile = File.apNew(Encode:Hex.new().decode(path));
+       any e;
+       IO:Reader inr = dirFile.reader.open();
+       String res = dirFile.contents;
+       Map conf = Json:Unmarshaller.unmarshall(res);
+       any ac = app.configManager;
+       for (any kv in conf) {
+         ac.put(kv.key, kv.value);
+       }
+     }
+     bg.uu.clear();
+     return(null);
+   }
+   
    upgradeRequest(Map arg, request) Map {
      log.log(lvl, "upgrade request");
      String path = arg["path"];
@@ -984,7 +1020,7 @@ use class IUHub:HubPlugin {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
     for (any kv in app.plugin.linksol.o) {
       WebConnect wc = kv.value;
-      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay', 'devLinksDiv');callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
+      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDevLinks', '" += wc.deviceId += "');callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
     }
      return(devLinks);
    }
@@ -1109,6 +1145,21 @@ use class IUHub:HubPlugin {
        return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
        }
        return(null);
+   }
+   
+   checkAndUpdate() this {
+     any e;
+     //Web:Client:CertificateManager.validateHosts = true;
+     try {
+      //get sha, if diff update
+      Web:Client client = Web:Client.new();
+      client.url = "";
+      //String received = client.openInput().readString();
+      Web:Client:CertificateManager.validateHosts = false;
+     } catch (e) {
+      Web:Client:CertificateManager.validateHosts = false;
+     }
+     
    }
    
    
