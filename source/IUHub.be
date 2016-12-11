@@ -552,7 +552,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.4.9";
+        String version =@ "5.5.0";
       }
       return(version);
     }
@@ -1142,7 +1142,8 @@ use class IUHub:HubPlugin {
        wc.putService(fpName, port, exPort, urlPat);
        app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
-       return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
+       bg.uu.clear();
+        return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
        }
        return(null);
    }

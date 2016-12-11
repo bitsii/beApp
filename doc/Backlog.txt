@@ -5,8 +5,6 @@ failes after session timeout, set a custom response code to cause reload
 
 step-by-step instructions
 
-jvlxrel bash
-
 get pipeline going
 
 =====
