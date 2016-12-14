@@ -1028,6 +1028,16 @@ class AuthedApp {
       //log.log(lvl, "isCrossSite true empty");
       return(true);
     }
+    //log.log(lvl, "referer is " + ref);
+    String snlist = self.configManager.get("siteNames");
+    if (TS.notEmpty(snlist)) {
+      for (String sn in snlist.split(",")) {
+        if (ref.begins(sn)) {
+          //log.log(lvl, "ixs false sitelist");
+          return(false);
+        }
+      }
+    }
     la = "https://" + la;
     if (ref.begins(la)) {
       //log.log(lvl, "isCrossSite false begins " + la + " " + ref);

@@ -462,7 +462,7 @@ use class IUCam:CamPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.5.0";
+        String version =@ "5.6.0";
       }
       return(version);
     }
