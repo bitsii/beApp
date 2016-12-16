@@ -1,5 +1,10 @@
 ______________
 
+no-upnp ssh version - jsch
+  haproxy for privilaged -> localhost
+  ssh for tunnel
+  siteNames
+  
 failes after session timeout, set a custom response code to cause reload
   or just see why reload doesn't work during ajax
 
@@ -24,11 +29,6 @@ mac, win java installers
 link working under cs
   win embedded, xamarin ios mac
   imap
-______________
-
-no-upnp ssh version - jsch
-  putty for win?
-  presesnce of ssh info
 ______________
 
 certprint in email, on links
