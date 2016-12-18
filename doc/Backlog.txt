@@ -8,9 +8,7 @@ no-upnp ssh version - jsch
 failes after session timeout, set a custom response code to cause reload
   or just see why reload doesn't work during ajax
 
-step-by-step instructions
-
-get pipeline going
+dev instructs
 
 =====
 

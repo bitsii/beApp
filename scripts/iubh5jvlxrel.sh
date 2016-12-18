@@ -7,7 +7,15 @@ mkdir -p ../apprun/Data
 rm -rf ../apprun/App/IUHub
 mkdir -p ../apprun/App/IUHub
 
-export CLASSPATH="../abe-pl/target5/*;extlibs/IUHub/*"
+una=`uname -a`
+case "$una" in
+  *Msys*)
+    export CLASSPATH="../abe-pl/target5/*;extlibs/IUHub/*"
+    ;;
+  *)
+    export CLASSPATH="../abe-pl/target5/*:extlibs/IUHub/*"
+    ;;
+esac
 
 java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv --outputPlatform linux -mainClass=IUHub:BigHubStart source/IU.be source/IUHubTest.be source/IUHub.be source/IUCam.be source/IUBigHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
@@ -46,6 +54,8 @@ cp scripts/startiuh.sh ../apprun/App/IUHub
 cp scripts/iuhrun.sh ../apprun/App/IUHub
 cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
+cp scripts/createAdminAccount.sh ../apprun/App/IUHub
+cp scripts/upgrade.bat ../apprun/App/IUHub
 cp source/IUHub*.html ../apprun/App/IUHub
 cp extlibs/IUHub/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub
