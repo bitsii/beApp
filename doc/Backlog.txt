@@ -1,5 +1,7 @@
 ______________
 
+need to have link param which allows autologin and is put into links
+
 no-upnp ssh version - jsch
   haproxy for privilaged -> localhost
   ssh for tunnel

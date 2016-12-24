@@ -1432,14 +1432,10 @@ class CallBackUI {
 
   default() self { }
 
-  forwardCall(System:ForwardCall fcall) {
-      //fcall.name.print();
-      //fcall.args.length.print(); //list
-      //make a map, name action, args args
-      
+  forwardCall(String name, List args) {
       Map retc = Map.new();
-      retc["action"] = fcall.name;
-      retc["args"] = fcall.args;
+      retc["action"] = name;
+      retc["args"] = args;
       return(retc);
    }
 
