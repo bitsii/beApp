@@ -1,14 +1,9 @@
 ______________
 
-need to have link param which allows autologin and is put into links
-
 no-upnp ssh version - jsch
   haproxy for privilaged -> localhost
   ssh for tunnel
   siteNames
-  
-failes after session timeout, set a custom response code to cause reload
-  or just see why reload doesn't work during ajax
 
 dev instructs
 
@@ -76,6 +71,8 @@ force deviceid to certain characteristics (in get)
 
 secure tunnel for vnc (encrypted port fwd)
 ______________
+
+failes after session timeout, set timer on request to len of session and force reload
 
 homeauto - light
   java wrapper openzw? node + openzw?

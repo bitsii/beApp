@@ -546,12 +546,27 @@ use class App:AuthPlugin {
         }
         String st = request.getSession("loginToken");
         if (TS.notEmpty(lt) && TS.notEmpty(st) && lt == st) {
+          Bool tokOkMine = true;
+        } else {
+          tokOkMine = false;
+        }
+        unless (tokOkMine) {
+          String ct = app.configManager.get("auth.sharedLoginToken");
+        }
+        if (tokOkMine! && TS.notEmpty(lt) && TS.notEmpty(ct) && lt == ct) {
+          Bool tokOkShared = true;
+        } else {
+          tokOkShared = false;
+        }
+        if (tokOkMine || tokOkShared) {
           log.log(lvl, "loginToken ok");
           Map res = Map.new();
           res["action"] = "loggedInResponse";
           res["name"] = accountName;
           res = app.loggedIn(a, res, arg, request);
-          res.delete("loginUri");
+          if (tokOkMine) {
+            res.delete("loginUri");
+          }
           return(res);
         } else {
           log.log(lvl, "loginToken notok");

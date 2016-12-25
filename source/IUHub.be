@@ -137,11 +137,16 @@ use class IUHub:ConnectionUpdate {
         wc.externalPort = app.configManager.get("wui.extPort");
       }
       log.log(lvl, "starting wc update");
-      wc.update();
       if (fwd) {
         log.log(lvl, "wc forwarding ports");
         //log.log(lvl, "wc ext port " + wc.externalPort);
+        String slt = System:Random.getString(32);
+        app.configManager.put("auth.sharedLoginToken", slt);
+        wc.sharedLoginToken = slt;
+        wc.update();
         wc.forwardPorts();
+      } else {
+        wc.update();
       }
       log.log(lvl, "setting links");
       app.plugin.wcol.o = wc;
@@ -951,8 +956,11 @@ use class IUHub:HubPlugin {
    }
    
    getLoginUri(request) String {
-     //TODO FIX THIS this is where it errors because no logintoken (after timeout)
-     String loginBookmark = "/App/IUHub/IUHub.html?loginToken=" + request.getSession("loginToken");
+     String loginBookmark = "/App/IUHub/IUHub.html";
+     String lt = request.getSession("loginToken");
+     if (TS.notEmpty(lt)) {
+        loginBookmark += "?loginToken=" += lt;
+     }
      return(loginBookmark);
    }
    

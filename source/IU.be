@@ -43,6 +43,8 @@ class IU:WebConnect {
       String deviceId;
       String deviceName;
       
+      String sharedLoginToken;
+      
     }
     log = IO:Log.new();
     lvl = log.level;
@@ -107,6 +109,9 @@ class IU:WebConnect {
       if (TS.notEmpty(internalAddress)) {
         internalBase = protocol + internalAddress + intPort + "/";
         internalUrl = internalBase + "App/IUHub/IUHub.html";
+        if (TS.notEmpty(sharedLoginToken)) {
+          internalUrl += "?loginToken=" += sharedLoginToken;
+        }
         internalCamUrl = internalBase + "App/IUHub/IUCam.html";
         internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
         internalCamLink = "<a href=\"" + internalCamUrl + "\">Internal Link to " + deviceName + " Cam, use on device's network.</a>";
@@ -115,6 +120,9 @@ class IU:WebConnect {
       if (TS.notEmpty(externalAddress)) {
         externalBase = protocol + externalAddress + extPort + "/";          
         externalUrl = externalBase + "App/IUHub/IUHub.html";
+        if (TS.notEmpty(sharedLoginToken)) {
+          externalUrl += "?loginToken=" += sharedLoginToken;
+        }
         externalCamUrl = externalBase + "App/IUHub/IUCam.html";
         externalLink = "<a href=\"" + externalUrl + "\">External Link to " + deviceName + " Hub, use outside device's network (the internet).</a>";
         externalCamLink = "<a href=\"" + externalCamUrl + "\">External Link to " + deviceName + " Cam, use outside device's network (the internet).</a>";
