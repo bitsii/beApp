@@ -34,7 +34,7 @@ use class IULink:Background {
   new(LinkPlugin _link) self {
     fields {
       any app;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
       LinkPlugin link = _link;
     }
   }
@@ -103,7 +103,7 @@ use class IULink:LinkStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
         }
     }
 
@@ -275,7 +275,7 @@ use class IULink:LinkPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "IULink";
           String homePage = "/App/IULink/IULink.html";

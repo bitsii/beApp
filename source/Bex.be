@@ -16,7 +16,7 @@ use class Bex:BHandler {
 
      new() self {
        fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           any app;
         }
      }
@@ -40,7 +40,7 @@ use class App:BrowserExample {
         fields {
           WeBr webr;
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           BHandler requestHandler;
         }
         

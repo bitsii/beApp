@@ -13,7 +13,7 @@ class IU:WebConnect {
 
   new() self {
     fields {
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
       
       String gateway;
       String internalAddress;
@@ -45,7 +45,6 @@ class IU:WebConnect {
       String sharedLoginToken;
       
     }
-    IO:Log log = IO:Logs.get(self);
   }
   
   toMap() Map {
@@ -56,6 +55,7 @@ class IU:WebConnect {
   
   fromMap(Map fr) this {
     Maps.mapIntoFields(fr, self);
+    log = IO:Logs.get(self);
   }
   
   getAPort() String {
@@ -538,7 +538,7 @@ class Upnp {
   new() self {
     fields {
       String netGw;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
     }
   }
   
@@ -848,7 +848,7 @@ class Wol {
 
   default() self {
     fields {
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
     }
   }
 

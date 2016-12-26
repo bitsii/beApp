@@ -108,7 +108,7 @@ use class IUHub:Eui {
         fields {
           String currentlyCheckedId;
           String name = "hub";
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
         }
     }
     
@@ -365,6 +365,7 @@ use class IUHub:Eui {
    }
    
    startup() {
+      IO:Logs.turnOnAll();
       clearImage();
       Map arg = Map.new();
       arg["action"] = "checkLoggedInRequest";

@@ -66,7 +66,7 @@ use class Web:Server {
       Bool ssl = false;
       String sslPath;
       any sessionManager;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
       Bool gzipOutput = false;
     }
   }
@@ -651,7 +651,7 @@ class Net:PortForward {
       Int localPort = _localPort;
       String remoteHost = _remoteHost;
       Int remotePort = _remotePort;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
      }
    }
    

@@ -31,7 +31,7 @@ use class RLBeacon:Background {
   new() self {
     fields {
       any app;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
     }
   }
   
@@ -114,7 +114,7 @@ use class RLBeacon:SiteStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
         }
     }
 
@@ -274,7 +274,7 @@ use class RLBeacon:CamPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "RLBeacon";
           String homePage = "/App/RLBeacon/RLBeacon.html";

@@ -104,7 +104,7 @@ class WfBr(WebImp) {
      
      fields {
       Map session = Map.new();
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
      }
    }
    

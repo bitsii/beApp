@@ -248,6 +248,7 @@ use class IUCam:Eui {
    }
    
    startup() {
+      IO:Logs.turnOnAll();
       clearImage();
       Map arg = Map.new();
       arg["action"] = "checkLoggedInRequest";

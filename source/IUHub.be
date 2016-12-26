@@ -31,7 +31,7 @@ use class IUHub:ConnectionUpdate {
   
     fields {
       any app;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
       Int lastPoll = 0;
       Int lastUpdate = 0;
       Int lastFwd = 0;
@@ -199,7 +199,7 @@ use class IUHub:Background {
   new() self {
     fields {
       any app;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
       ConnectionUpdate uu = ConnectionUpdate.new();
     }
   }
@@ -285,7 +285,7 @@ use class IUHub:HubStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
         }
     }
 
@@ -474,7 +474,7 @@ use class IUHub:HubPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "IUHub";
           String homePage = "/App/IUHub/IUHub.html";

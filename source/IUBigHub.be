@@ -34,7 +34,7 @@ use class IUHub:BigHubStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
         }
     }
 
@@ -106,7 +106,6 @@ use class IUHub:BigHubStart {
 
     cmdMain(List args, plugins) {
       AuthedApp ui = AuthedApp.new(plugins);
-      
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
         log.log("cmd " + mode);

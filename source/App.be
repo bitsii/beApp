@@ -410,7 +410,7 @@ use class App:AuthPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "Auth";
         }
@@ -638,7 +638,7 @@ use class App:FileManagerPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "FileManager";
         }
@@ -796,7 +796,7 @@ use class App:ConfigPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "Conf";
         }
@@ -919,7 +919,7 @@ class AuthedApp {
       fields {
         List plugins = _plugins;
         any plugin = plugins.first;
-        IO:Log log = IO:Logs.get(self);
+        IO:Log log =@ IO:Logs.get(self);
         Lock lock = Lock.new();
         OLocker lastLoginBad = OLocker.new(false);
         String certificateThumbprint;

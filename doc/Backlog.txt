@@ -10,7 +10,6 @@ dev instructs
 
 turn on and off for logging based on config value (for all)
   in startup, as early as possible
-  ?also in background?
 
 =====
 ______________

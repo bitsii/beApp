@@ -34,7 +34,7 @@ use class IUCam:MotionUpdate {
       Set mocams = Set.new();
       Set configuredMocams = Set.new();
       any app;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
       Int lastPoll = 0;
       Int pollSecs = 10800;
       Int lastClean = 0;
@@ -148,7 +148,7 @@ use class IUCam:Background {
   new() self {
     fields {
       any app;
-      IO:Log log = IO:Logs.get(self);
+      IO:Log log =@ IO:Logs.get(self);
       MotionUpdate mu = MotionUpdate.new();
     }
   }
@@ -220,7 +220,7 @@ use class IUCam:CamStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
         }
     }
 
@@ -385,7 +385,7 @@ use class IUCam:CamPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Logs.get(self);
+          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "IUCam";
           String homePage = "/App/IUCam/IUCam.html";
