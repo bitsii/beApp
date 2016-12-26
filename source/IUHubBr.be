@@ -108,9 +108,7 @@ use class IUHub:Eui {
         fields {
           String currentlyCheckedId;
           String name = "hub";
-          IO:Log log = IO:Log.new();
-          log.level = log.error;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
         }
     }
     
@@ -373,7 +371,7 @@ use class IUHub:Eui {
       arg["href"] = HD.href;
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
-      //log.log(lvl, "href at startup " + HD.href);
+      //log.log("href at startup " + HD.href);
       handleCallOut(arg);
    }
    
@@ -387,9 +385,9 @@ use class IUHub:Eui {
       arg["sessionLength"] = HD.getElementById("sessionLength").value;
       if (HD.getElementById("sessionNeverExpires").checked) {
         arg["sessionLength"] = "-1";
-        //log.log(lvl, "set sel neg");
+        //log.log("set sel neg");
       } else {
-         //log.log(lvl, "set sel neg not");
+         //log.log("set sel neg not");
       }
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
@@ -426,7 +424,7 @@ use class IUHub:Eui {
           HD.href = li;
         }
       }
-      //log.log(lvl, "updateResponse2 just logged in");
+      //log.log("updateResponse2 just logged in");
     }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];

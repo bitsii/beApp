@@ -31,8 +31,7 @@ use class IUHub:ConnectionUpdate {
   
     fields {
       any app;
-      Int lvl;
-      IO:Log log;
+      IO:Log log = IO:Logs.get(self);
       Int lastPoll = 0;
       Int lastUpdate = 0;
       Int lastFwd = 0;
@@ -69,10 +68,10 @@ use class IUHub:ConnectionUpdate {
   loadWcInner() {
     String wcs = app.configManager.get("wui.webConnect");
     if (TS.notEmpty(wcs)) {
-      log.log(lvl, "deserializing wcs");
+      log.log("deserializing wcs");
       WebConnect wc = WebConnect.new();
       wc.fromMap(Json:Unmarshaller.unmarshall(wcs));
-      //log.log(lvl, "after load ext port " + wc.externalPort);
+      //log.log("after load ext port " + wc.externalPort);
       app.plugin.wcol.o = wc;
     }  
   }
@@ -90,7 +89,7 @@ use class IUHub:ConnectionUpdate {
       WebConnect wc = WebConnect.new();
       wc.fromMap(unmar.unmarshall(kv.value));
       links.put(wc.deviceId, wc);
-      log.log(lvl, "loaded link " + wc.deviceName);
+      log.log("loaded link " + wc.deviceName);
     }
     wc = app.plugin.wcol.o;
     if (def(wc)) {
@@ -101,7 +100,7 @@ use class IUHub:ConnectionUpdate {
   
   doUpdate() {
     any e;
-    log.log(lvl, "In upnp doUpdate");
+    log.log("In upnp doUpdate");
     unless (disable) {
       
       Bool update = false;
@@ -116,19 +115,17 @@ use class IUHub:ConnectionUpdate {
         lastFwd = currSec;
         fwd = true;
       }
-      log.log(lvl, "getting wc");
+      log.log("getting wc");
       loadWc();
       WebConnect wc = app.plugin.wcol.o;
       if (def(wc)) {
-        log.log(lvl, "wc from wcol");
+        log.log("wc from wcol");
       } else {
-        log.log(lvl, "new wc");
+        log.log("new wc");
         wc = WebConnect.new();
         wc.extraPorts = app.configManager.get("upnp.extraPorts");
       }
-      log.log(lvl, "after wc init");
-      wc.log = log;
-      wc.lvl = lvl;
+      log.log("after wc init");
       wc.internalPort = webPort;
       wc.certificatePrint = certificateThumbprint;
       wc.deviceId = app.plugin.deviceId;
@@ -136,10 +133,10 @@ use class IUHub:ConnectionUpdate {
       if (TS.isEmpty(wc.externalPort)) {
         wc.externalPort = app.configManager.get("wui.extPort");
       }
-      log.log(lvl, "starting wc update");
+      log.log("starting wc update");
       if (fwd) {
-        log.log(lvl, "wc forwarding ports");
-        //log.log(lvl, "wc ext port " + wc.externalPort);
+        log.log("wc forwarding ports");
+        //log.log("wc ext port " + wc.externalPort);
         String slt = System:Random.getString(32);
         app.configManager.put("auth.sharedLoginToken", slt);
         wc.sharedLoginToken = slt;
@@ -148,14 +145,14 @@ use class IUHub:ConnectionUpdate {
       } else {
         wc.update();
       }
-      log.log(lvl, "setting links");
+      log.log("setting links");
       app.plugin.wcol.o = wc;
-      log.log(lvl, "updating addresses");
+      log.log("updating addresses");
       app.plugin.updateNetAddresses();
       app.plugin.updateUrls();
-      log.log(lvl, "saving");
+      log.log("saving");
       app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
-      log.log(lvl, "upnp doUpdate done");
+      log.log("upnp doUpdate done");
     }
   }
   
@@ -202,8 +199,7 @@ use class IUHub:Background {
   new() self {
     fields {
       any app;
-      Int lvl;
-      IO:Log log;
+      IO:Log log = IO:Logs.get(self);
       ConnectionUpdate uu = ConnectionUpdate.new();
     }
   }
@@ -239,7 +235,7 @@ use class IUHub:Background {
   }
   
   runTasks() {
-    //log.log(lvl, "Running tasks");
+    //log.log("Running tasks");
     runMyTasks();
     uu.updateOnInterval();
   }
@@ -250,12 +246,12 @@ use class IUHub:Background {
       try {
         runTasks();
       } catch (e) {
-        log.log(lvl, "Caught exception running tasks " + e);
+        log.log("Caught exception running tasks " + e);
       }
       try {          
         Time:Sleep.sleepMilliseconds(sleepTime);
       } catch (e) {
-        log.log(lvl, "Caught exception sleeping " + e);
+        log.log("Caught exception sleeping " + e);
       }
     }
   }
@@ -274,8 +270,6 @@ use class IUHub:Background {
       sleepTime = _sleepTime;
     }
     uu.app = app;
-    uu.lvl = lvl;
-    uu.log = log;
     uu.init();
   }
   
@@ -291,9 +285,7 @@ use class IUHub:HubStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
         }
     }
 
@@ -306,7 +298,7 @@ use class IUHub:HubStart {
       /*try {
         app.configManager.close();
       } catch (any e) {
-        log.log(lvl, "Exception closing db in CmdUI, error is " + e);
+        log.log("Exception closing db in CmdUI, error is " + e);
       }*/
     }
     
@@ -314,7 +306,7 @@ use class IUHub:HubStart {
       try {
         innerMain(System:Process.new().args);
       } catch (any e) {
-        log.log(lvl, "Exception in CmdUI, error is " + e);
+        log.log("Exception in CmdUI, error is " + e);
       }
     }
     
@@ -324,32 +316,30 @@ use class IUHub:HubStart {
 
       if (args.length > 0) {
         String mode = args[0]; //ui, svc, both, [absent]
-        log.log(lvl, "mode " + mode);
+        log.log("mode " + mode);
       } else {
-        log.log(lvl, "mode empty");
+        log.log("mode empty");
       }
       if (TS.isEmpty(mode)) {
         mode = "wui";
       }
       if (mode == "lui" || mode == "wui" || mode == "cmd") {
-        log.log(lvl, "making hub");
+        log.log("making hub");
         HubPlugin hub = HubPlugin.new();
         if (mode == "cmd") {
           hub.runBackground = false;
         }
-        hub.log = log;
-        hub.lvl = lvl;
-        log.log(lvl, "adding plugins");
+        log.log("adding plugins");
         List plugins = List.new();
         plugins += hub;
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
         plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins, log, lvl).main();
+          AuthenticatedLocalApp.new(plugins).main();
         }
         if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins, log, lvl).main();
+          AuthenticatedWebApp.new(plugins).main();
         }        
         if (mode == "cmd") {
           cmdMain(args, plugins);
@@ -361,34 +351,32 @@ use class IUHub:HubStart {
     }
 
     cmdMain(List args, plugins) {
-      AuthedApp ui = AuthedApp.new(plugins, log, lvl);
+      AuthedApp ui = AuthedApp.new(plugins);
       
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
-        log.log(lvl, "cmd " + mode);
+        log.log("cmd " + mode);
       } 
       if (TS.isEmpty(mode)) {
-        log.log(lvl, "cmd empty");
+        log.log("cmd empty");
       }
       if (mode == "help") {
-        log.log(lvl, "Help");
-        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+        log.log("Help");
+        log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
       if (TS.notEmpty(mode) && mode == "portForward") {
         Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.log = log;
-        pf.lvl = lvl;
         pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         for (String login in ui.accountManager.getLogins()) {
-          log.log(lvl, "Account login " + login);
+          log.log("Account login " + login);
         }
       }
       if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
         String user = args[2];
         String pass = args[3];
-        log.log(lvl, "Putting Account " + user);
+        log.log("Putting Account " + user);
         Account ac = Account.new();
         ac.user = user;
         ac.pass = pass;
@@ -399,64 +387,64 @@ use class IUHub:HubStart {
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
-        log.log(lvl, "Get Account " + user);
+        log.log("Get Account " + user);
         ac = ui.accountManager.getAccount(user);
-        log.log(lvl, "Account " + ac);
+        log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPermsString") {
         user = args[2];
         String ps = args[3];
-        log.log(lvl, "Set Perms " + user);
+        log.log("Set Perms " + user);
         ac = ui.accountManager.getAccount(user);
         ac.permsString = ps;
         ui.accountManager.putAccount(ac);
-        log.log(lvl, "Account " + ac);
+        log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
         user = args[2];
         pass = args[3];
-        log.log(lvl, "Set Pass " + user);
+        log.log("Set Pass " + user);
         ac = ui.accountManager.getAccount(user);
         ac.pass = pass;
         ui.accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
-        log.log(lvl, "Deleting Account " + user);
+        log.log("Deleting Account " + user);
         ac = ui.accountManager.getAccount(user);
         if (def(ac)) {
           ui.accountManager.deleteAccount(ac);
-          log.log(lvl, "Deleted account " + user);
+          log.log("Deleted account " + user);
         } else {
-          log.log(lvl, "No such account for deletion " + user);
+          log.log("No such account for deletion " + user);
         }
       }
       if (TS.notEmpty(mode) && mode == "updateConfig") {
         String key = args[2];
         String value = args[3];
-        log.log(lvl, "Updating config " + key + " " + value);
+        log.log("Updating config " + key + " " + value);
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
         for (any kv in ui.configManager.getMap()) {
-          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
+          log.log("Config name " + kv.key + " value " + kv.value);
         }
       }
       if (TS.notEmpty(mode) && mode == "createConfig") {
         key = args[2];
         value = args[3];
-        log.log(lvl, "Creating config " + key + " " + value);
+        log.log("Creating config " + key + " " + value);
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "deleteConfig") {
         key = args[2];
-        log.log(lvl, "Deleting config " + key);
+        log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
       /*if (TS.notEmpty(mode) && mode == "saveIntUrl") {
-        log.log(lvl, "saveIntUrl");
+        log.log("saveIntUrl");
         ui.plugin.bg.init().uu.doUpdate();
-        log.log(lvl, "int url is " + ui.plugin.links.o.get("intUrl"));
+        log.log("int url is " + ui.plugin.links.o.get("intUrl"));
         File.apNew(args[2]).writer.open().write(ui.plugin.links.o.get("intUrl")).close();
         File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.links.o.get("intUrl") + "\n").close();
       }*/
@@ -486,8 +474,7 @@ use class IUHub:HubPlugin {
 
      new() self {
        fields {
-          IO:Log log;
-          Int lvl;
+          IO:Log log = IO:Logs.get(self);
           any app;
           String name = "IUHub";
           String homePage = "/App/IUHub/IUHub.html";
@@ -499,8 +486,6 @@ use class IUHub:HubPlugin {
      }
      
      start() {
-      bg.log = log;
-      bg.lvl = lvl;
       bg.app = app;
       if (runBackground) {
       bg.startBackground();
@@ -557,19 +542,19 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.6.0";
+        String version =@ "5.6.2";
       }
       return(version);
     }
     
     updateUrls() {
-      log.log(lvl, "updateLinks");
+      log.log("updateLinks");
       String user = app.configManager.get("imap.user");
       String endpoint = app.configManager.get("imap.endpoint");
       String pass = app.configManager.get("imap.pass");
       Map links = Map.new();
       if (TS.notEmpty(user) && TS.notEmpty(endpoint) && TS.notEmpty(pass)) {
-        log.log(lvl, "have imap info");
+        log.log("have imap info");
         any e;
         try {
             String prot = app.configManager.get("imap.protocol");
@@ -648,7 +633,7 @@ use class IUHub:HubPlugin {
           }
           Set dids = Set.new();
           for (String con in contents) {
-            //log.log(lvl, "got con " + con);
+            //log.log("got con " + con);
             try {
               String beg = "type=\"hidden\" name=\"payload\" value=\"";
               Int d = con.find(beg);
@@ -657,49 +642,49 @@ use class IUHub:HubPlugin {
                 d = con.find("\"");
                 if (def(d)) {
                   con = con.substring(0, d);
-                  //log.log(lvl, "final con " + con);
+                  //log.log("final con " + con);
                   String conjs = Encode:Hex.decode(con);
-                  log.log(lvl, "conjs " + conjs);
+                  log.log("conjs " + conjs);
                   Map lm = unmar.unmarshall(conjs);
                   if (def(lm)) {
-                    log.log(lvl, "putting into links");
+                    log.log("putting into links");
                     WebConnect wc = WebConnect.new().fromMap(lm);
                     links.put(wc.deviceId, wc);
                     dids.put(wc.deviceId);
                     app.configManager.put("link." + wc.deviceId, conjs);
                   }
-                  //log.log(lvl, "done with unmar " + lm.get("extAddress"));
+                  //log.log("done with unmar " + lm.get("extAddress"));
                 }
               }
             } catch (e) {
-             log.log(lvl, "Exception during imap stuff " );
+             log.log("Exception during imap stuff " );
             }
           }
           linksol.o = links;
           for (any kv in app.configManager.getMap("link.")) {
             String kid = kv.key.substring(5);
-            log.log(lvl, "checking kid " + kid);
+            log.log("checking kid " + kid);
             unless (dids.has(kid)) {
-              log.log(lvl, "deleteing " + kv.key);
+              log.log("deleteing " + kv.key);
               app.configManager.delete(kv.key);
             }
           }
-          log.log(lvl, "Done with imap stuff");
+          log.log("Done with imap stuff");
       } catch (e) {
         if(def(e)) {
-          log.log(lvl, "Exception during imap stuff ");
+          log.log("Exception during imap stuff ");
         }
       }
     }
   }
     
   updateNetAddresses() {
-    log.log(lvl, "In doimap");
+    log.log("In doimap");
     any e;
     try {
       WebConnect wc = wcol.o;
       if(def(wc)) {
-        log.log(lvl, "In doimap1");
+        log.log("In doimap1");
         String prot = app.configManager.get("imap.protocol");
         if (TS.isEmpty(prot)) {
           prot = "imaps";
@@ -716,7 +701,7 @@ use class IUHub:HubPlugin {
         if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
           return(null);
         }
-        log.log(lvl, "In doimap2");
+        log.log("In doimap2");
         String msg = "";
         if (TS.notEmpty(wc.externalLink)) {
           msg += "<p>" + wc.externalLink += "</p>\n<p>" += wc.internalLink += "</p>\n";
@@ -726,7 +711,7 @@ use class IUHub:HubPlugin {
         //}
         String payload = Encode:Hex.new().encode(Json:Marshaller.marshall(wc.toMap()));
         msg += "<input type=\"hidden\" name=\"payload\" value=\"" += payload += "\"/>";
-        log.log(lvl, "In doimap3");
+        log.log("In doimap3");
         Pair sl = self.serviceLinks;
         msg += "<p>Service connections for " += self.deviceName += "</p>";
         msg += sl.first;
@@ -734,14 +719,14 @@ use class IUHub:HubPlugin {
         //for (any kv in wc.extraPortMap) {
         //  msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
         //}
-        log.log(lvl, "In doimap4");
+        log.log("In doimap4");
         //msg += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
         String subjPref = "DeviceLinks " + self.deviceId + " ";
         String subj = subjPref + Time:Interval.now().seconds + " " + self.deviceName;
-        log.log(lvl, "In doimap5");
-        log.log(lvl, "doing email subj " + subj);
-        log.log(lvl, "doing email msg " + msg);
-        log.log(lvl, "In doimap6");
+        log.log("In doimap5");
+        log.log("doing email subj " + subj);
+        log.log("doing email msg " + msg);
+        log.log("In doimap6");
         emit(jv) {
         """
         Properties props = new Properties();
@@ -797,20 +782,20 @@ use class IUHub:HubPlugin {
           store.close();
         """
         }
-        log.log(lvl, "Done with imap stuff");
+        log.log("Done with imap stuff");
       }
     } catch (e) {
       if(def(e)) {
-        log.log(lvl, "Exception during imap update " + e);
+        log.log("Exception during imap update " + e);
       } else {
-        log.log(lvl, "Exception during imap update null");
+        log.log("Exception during imap update null");
       }
     }
   }
   
    restartRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-        log.log(lvl, "Restarting as requested, will have exit code 3 by login " + app.accountManager.getAccountForRequest(request).user);
+        log.log("Restarting as requested, will have exit code 3 by login " + app.accountManager.getAccountForRequest(request).user);
         System:Process.exit(3);
      }
      return(null);
@@ -871,21 +856,21 @@ use class IUHub:HubPlugin {
       Account a = app.accountManager.getAccountForRequest(request);
       String cmdKey = arg["cmdKey"];
       String user = cmdKey.substring(4, cmdKey.find("!"));
-      log.log(lvl, "cmd user " + user + " acct user " + a.user);
+      log.log("cmd user " + user + " acct user " + a.user);
       unless (user == a.user) {
-        log.log(lvl, "Cmd not for user");
+        log.log("Cmd not for user");
         return(null);
       }
       String cmd = app.configManager.get(cmdKey);
       if (TS.notEmpty(cmd)) {
-        log.log(lvl, "running command " + cmd);
+        log.log("running command " + cmd);
         System:Command.new(cmd).run();
       }
       return(null);
    }
    
    restoreConfigRequest(Map arg, request) Map {
-     log.log(lvl, "rs request");
+     log.log("rs request");
      String path = arg["path"];
      Account a = app.accountManager.getAccountForRequest(request);
      unless (app.requestFromAdmin(request)) {
@@ -907,7 +892,7 @@ use class IUHub:HubPlugin {
    }
    
    upgradeRequest(Map arg, request) Map {
-     log.log(lvl, "upgrade request");
+     log.log("upgrade request");
      String path = arg["path"];
      Account a = app.accountManager.getAccountForRequest(request);
      unless (app.requestFromAdmin(request)) {
@@ -919,7 +904,7 @@ use class IUHub:HubPlugin {
        any e;
        try {
        app.lock.lock();
-       log.log(lvl, "copying " + dirFile.path + " to " + dpath);
+       log.log("copying " + dirFile.path + " to " + dpath);
        if (dpath.file.exists) { dpath.file.delete(); }
         IO:Writer outw = dpath.file.writer.open();
         IO:Reader inr = dirFile.reader.open();
@@ -983,7 +968,7 @@ use class IUHub:HubPlugin {
      String cp = TS.commonPrefix(request.remoteAddress, wc.internalAddress);
       if (TS.notEmpty(cp)) {
         LinkedList ll = cp.split(".");
-        log.log(lvl, " rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
+        log.log(" rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
         if (ll.size > 2) {
           internal = true;
         }
@@ -1036,15 +1021,13 @@ use class IUHub:HubPlugin {
    
    wakeDevRequest(String deviceId, request) {
      Wol wol = Wol.new();
-     wol.log = log;
-     wol.lvl = lvl;
      WebConnect wc = app.plugin.linksol.o.get(deviceId);
      if (def(wc)) {
-       log.log(lvl, "waking " + wc.deviceName);
+       log.log("waking " + wc.deviceName);
        for (Int i = 0;i < 3;i++=) {
          for (String mac in wc.internalMacAddresses) {
            if (TS.notEmpty(mac)) {
-            log.log(lvl, "wake for mac addr " + mac);
+            log.log("wake for mac addr " + mac);
             wol.wakeMacAddr(mac);
            }
          }
@@ -1064,7 +1047,7 @@ use class IUHub:HubPlugin {
         String cp = TS.commonPrefix(request.remoteAddress, wc.internalAddress);
         if (TS.notEmpty(cp)) {
           LinkedList ll = cp.split(".");
-          log.log(lvl, " rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
+          log.log(" rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
           if (ll.size > 2) {
             type = "int";
           }
@@ -1126,9 +1109,9 @@ use class IUHub:HubPlugin {
      WebConnect wc = wcol.o;
      Map fp = wc.getServices().get(port);
      for (any kv in fp) {
-      log.log(lvl, "fp " + kv.key + " " + kv.value);
+      log.log("fp " + kv.key + " " + kv.value);
      }
-     log.log(lvl, "urlPat " + fp.get("urlPat"));
+     log.log("urlPat " + fp.get("urlPat"));
     return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpExPort", wc.extraPortMap.get(port), "fpPattern", fp.get("urlPat"))));
    }
    

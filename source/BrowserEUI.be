@@ -98,9 +98,7 @@ var downloadJson = function(jsonData, fileName) {
 class HD {
   default() self {
     fields {
-      IO:Log log = IO:Log.new();
-      log.level = log.error;
-      Int lvl = log.level;
+      IO:Log log = IO:Logs.get(self);
     }
   }
   

@@ -34,8 +34,7 @@ use class IULink:Background {
   new(LinkPlugin _link) self {
     fields {
       any app;
-      Int lvl;
-      IO:Log log;
+      IO:Log log = IO:Logs.get(self);
       LinkPlugin link = _link;
     }
   }
@@ -58,7 +57,7 @@ use class IULink:Background {
   }
   
   runTasks() {
-    //log.log(lvl, "Running tasks");
+    //log.log("Running tasks");
     runMyTasks();
   }
   
@@ -68,12 +67,12 @@ use class IULink:Background {
       try {
         runTasks();
       } catch (e) {
-        log.log(lvl, "Caught exception running tasks " + e);
+        log.log("Caught exception running tasks " + e);
       }
       try {          
         Time:Sleep.sleepMilliseconds(sleepTime);
       } catch (e) {
-        log.log(lvl, "Caught exception sleeping " + e);
+        log.log("Caught exception sleeping " + e);
       }
     }
   }
@@ -104,9 +103,7 @@ use class IULink:LinkStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
         }
     }
 
@@ -119,7 +116,7 @@ use class IULink:LinkStart {
       /*try {
         app.configManager.close();
       } catch (any e) {
-        log.log(lvl, "Exception closing db in CmdUI, error is " + e);
+        log.log("Exception closing db in CmdUI, error is " + e);
       }*/
     }
     
@@ -127,7 +124,7 @@ use class IULink:LinkStart {
       try {
         innerMain(System:Process.new().args);
       } catch (any e) {
-        log.log(lvl, "Exception in CmdUI, error is " + e);
+        log.log("Exception in CmdUI, error is " + e);
       }
     }
     
@@ -137,29 +134,27 @@ use class IULink:LinkStart {
 
       if (args.length > 0) {
         String mode = args[0]; //ui, svc, both, [absent]
-        log.log(lvl, "mode " + mode);
+        log.log("mode " + mode);
       } else {
-        log.log(lvl, "mode empty");
+        log.log("mode empty");
       }
       if (TS.isEmpty(mode)) {
         mode = "lui";
       }
       if (mode == "lui" || mode == "cmd") {
-        log.log(lvl, "making cam");
+        log.log("making cam");
         LinkPlugin link = LinkPlugin.new();
         if (mode == "cmd") {
           link.runBackground = false;
         }
-        link.log = log;
-        link.lvl = lvl;
-        log.log(lvl, "adding plugins");
+        log.log("adding plugins");
         List plugins = List.new();
         plugins += link;
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
         //plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins, log, lvl).main();
+          AuthenticatedLocalApp.new(plugins).main();
         }      
         if (mode == "cmd") {
           cmdMain(args, plugins);
@@ -168,28 +163,28 @@ use class IULink:LinkStart {
     }
 
     cmdMain(List args, plugins) {
-      AuthedApp ui = AuthedApp.new(plugins, log, lvl);
+      AuthedApp ui = AuthedApp.new(plugins);
       
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
-        log.log(lvl, "cmd " + mode);
+        log.log("cmd " + mode);
       } 
       if (TS.isEmpty(mode)) {
-        log.log(lvl, "cmd empty");
+        log.log("cmd empty");
       }
       if (mode == "help") {
-        log.log(lvl, "Help");
-        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+        log.log("Help");
+        log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         for (String login in ui.accountManager.getLogins()) {
-          log.log(lvl, "Account login " + login);
+          log.log("Account login " + login);
         }
       }
       if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
         String user = args[2];
         String pass = args[3];
-        log.log(lvl, "Putting Account " + user);
+        log.log("Putting Account " + user);
         Account ac = Account.new();
         ac.user = user;
         ac.pass = pass;
@@ -200,58 +195,58 @@ use class IULink:LinkStart {
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
-        log.log(lvl, "Get Account " + user);
+        log.log("Get Account " + user);
         ac = ui.accountManager.getAccount(user);
-        log.log(lvl, "Account " + ac);
+        log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPermsString") {
         user = args[2];
         String ps = args[3];
-        log.log(lvl, "Set Perms " + user);
+        log.log("Set Perms " + user);
         ac = ui.accountManager.getAccount(user);
         ac.permsString = ps;
         ui.accountManager.putAccount(ac);
-        log.log(lvl, "Account " + ac);
+        log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
         user = args[2];
         pass = args[3];
-        log.log(lvl, "Set Pass " + user);
+        log.log("Set Pass " + user);
         ac = ui.accountManager.getAccount(user);
         ac.pass = pass;
         ui.accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
-        log.log(lvl, "Deleting Account " + user);
+        log.log("Deleting Account " + user);
         ac = ui.accountManager.getAccount(user);
         if (def(ac)) {
           ui.accountManager.deleteAccount(ac);
-          log.log(lvl, "Deleted account " + user);
+          log.log("Deleted account " + user);
         } else {
-          log.log(lvl, "No such account for deletion " + user);
+          log.log("No such account for deletion " + user);
         }
       }
       if (TS.notEmpty(mode) && mode == "updateConfig") {
         String key = args[2];
         String value = args[3];
-        log.log(lvl, "Updating config " + key + " " + value);
+        log.log("Updating config " + key + " " + value);
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
         for (any kv in ui.configManager.getMap()) {
-          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
+          log.log("Config name " + kv.key + " value " + kv.value);
         }
       }
       if (TS.notEmpty(mode) && mode == "createConfig") {
         key = args[2];
         value = args[3];
-        log.log(lvl, "Creating config " + key + " " + value);
+        log.log("Creating config " + key + " " + value);
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "deleteConfig") {
         key = args[2];
-        log.log(lvl, "Deleting config " + key);
+        log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
       ui.configManager.close();
@@ -280,9 +275,7 @@ use class IULink:LinkPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
           any app;
           String name = "IULink";
           String homePage = "/App/IULink/IULink.html";
@@ -294,8 +287,6 @@ use class IULink:LinkPlugin {
      
     start() {
       if (runBackground) {
-      bg.log = log;
-      bg.lvl = lvl;
       bg.app = app;
       bg.startBackground();
       }
@@ -345,7 +336,7 @@ use class IULink:LinkPlugin {
       res["actionLinks"] = getActionLinks(a, arg, request);
       res["appVersion"] = self.majorVer.toString() + "." + self.minorVer.toString();
       res["deviceName"] = self.deviceName;
-      log.log(lvl, "sending updateResponse from loggedIn");
+      log.log("sending updateResponse from loggedIn");
       return(res);
     }
     
@@ -387,7 +378,7 @@ use class IULink:LinkPlugin {
    }
    
    fakeUrls() {
-    log.log(lvl, "fakeUrls");
+    log.log("fakeUrls");
     Map furls = Map.new();
     Map furl = Map.new();
     furl.put("deviceId", "did");
@@ -419,13 +410,13 @@ use class IULink:LinkPlugin {
       fakeUrls();
       return(self);
     }
-    log.log(lvl, "updateUrls");
+    log.log("updateUrls");
     String user = app.configManager.get("imap.user");
     String endpoint = app.configManager.get("imap.endpoint");
     String pass = app.configManager.get("imap.pass");
     Map nurls = Map.new();
     if (TS.notEmpty(user) && TS.notEmpty(endpoint) && TS.notEmpty(pass)) {
-      log.log(lvl, "have imap info");
+      log.log("have imap info");
       any e;
       try {
           String prot = app.configManager.get("imap.protocol");
@@ -503,7 +494,7 @@ use class IULink:LinkPlugin {
           """
           }
           for (String con in contents) {
-            //log.log(lvl, "got con " + con);
+            //log.log("got con " + con);
             try {
               String beg = "type=\"hidden\" value=\"";
               Int d = con.find(beg);
@@ -512,33 +503,33 @@ use class IULink:LinkPlugin {
                 d = con.find("\"");
                 if (def(d)) {
                   con = con.substring(0, d);
-                  //log.log(lvl, "final con " + con);
+                  //log.log("final con " + con);
                   String conjs = Encode:Hex.decode(con);
-                  log.log(lvl, "conjs " + conjs);
+                  log.log("conjs " + conjs);
                   Map lm = unmar.unmarshall(conjs);
                   if (def(lm) && TS.notEmpty(lm["deviceId"])) {
-                    log.log(lvl, "putting into nurls " + lm["deviceId"]);
+                    log.log("putting into nurls " + lm["deviceId"]);
                     nurls.put(lm["deviceId"], lm);
                   }
-                  //log.log(lvl, "done with unmar " + lm.get("extAddress"));
+                  //log.log("done with unmar " + lm.get("extAddress"));
                 }
               }
             } catch (e) {
-             log.log(lvl, "Exception during imap stuff " );
+             log.log("Exception during imap stuff " );
             }
           }
           urls.o = nurls;
-          log.log(lvl, "Done with imap stuff");
+          log.log("Done with imap stuff");
       } catch (e) {
         if(def(e)) {
-          log.log(lvl, "Exception during imap stuff ");
+          log.log("Exception during imap stuff ");
         }
       }
     }
   }
 
   hiRequest(Map arg, request) {
-      log.log(lvl, "In hi");
+      log.log("In hi");
       Map res = Map.new();
       res["action"] = "hiResponse";
       res["msg"] = "hello2 " + arg["who"];
@@ -571,15 +562,15 @@ use class IULink:LinkPlugin {
    urlsRequest(Map arg, request) {
       Map urls = self.urlsMap;
       String uh = String.new();
-      log.log(lvl, "in urlsreq 1");
+      log.log("in urlsreq 1");
       for (MNode kv in urls) {
-          log.log(lvl, "in urlsreq 2");
+          log.log("in urlsreq 2");
           //uh += "<p>" += kv.value["intLink"] += "</p>";
           //uh += "<p>" += kv.value["extLink"] += "</p>";
           
           String mygw = Net:Gateway.defaultAddress;
-          log.log(lvl,  " mygw " + mygw);
-          log.log(lvl, "dev gw is " + kv.value["gw"]);
+          log.log( " mygw " + mygw);
+          log.log("dev gw is " + kv.value["gw"]);
           
           String extLink = "<p><a href=\"#\" onclick=\"openExtLink('" += kv.value["deviceId"] += "');return false;\">Go to  " += kv.value["deviceName"] += " " += kv.value["deviceId"] += " from the internet or outside the network the device is on</a></p>";
           
@@ -591,7 +582,7 @@ use class IULink:LinkPlugin {
             uh += extLink;
           }
           
-          log.log(lvl, "in urlsreq 3");
+          log.log("in urlsreq 3");
           
           String ldiv = "shLinkDiv" + kv.value["deviceId"];
           uh += "<p><a href=\"#\" onclick=\"showADiv('" += ldiv += "');return false;\">+" += kv.value["deviceName"] += "</a></p>";
@@ -608,7 +599,7 @@ use class IULink:LinkPlugin {
    }
    
    openLinkRequest(Map arg, request) {
-    log.log(lvl, "Open link request " + arg["deviceId"] + " from " + arg["from"]);
+    log.log("Open link request " + arg["deviceId"] + " from " + arg["from"]);
     Map urlsm = self.urlsMap;
     if (def(urlsm)) {
       Map md = urlsm.get(arg["deviceId"]);
@@ -618,7 +609,7 @@ use class IULink:LinkPlugin {
         } else {
           tourl = md["extUrl"];
         }
-        log.log(lvl, "opening in browser: " + tourl);
+        log.log("opening in browser: " + tourl);
         UI:ExternalBrowser.openToUrl(tourl);
       }
     }

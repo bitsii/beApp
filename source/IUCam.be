@@ -34,8 +34,7 @@ use class IUCam:MotionUpdate {
       Set mocams = Set.new();
       Set configuredMocams = Set.new();
       any app;
-      Int lvl;
-      IO:Log log;
+      IO:Log log = IO:Logs.get(self);
       Int lastPoll = 0;
       Int pollSecs = 10800;
       Int lastClean = 0;
@@ -57,14 +56,14 @@ use class IUCam:MotionUpdate {
   }
   
   doClean() {
-    log.log(lvl, "in mocams clean");
+    log.log("in mocams clean");
     String cps = app.configManager.get("cam.cleanDays");
     if (TS.notEmpty(cps)) {
       Int dz = Int.new(cps);
       if (dz > 0) {
         String cmd = app.paths.appPath.copy().addStep("camclean.sh").toString();
         cmd += " " + cps;
-        log.log(lvl, "running clean cmd " + cmd);
+        log.log("running clean cmd " + cmd);
         Com.run(cmd);
       }
     } else {
@@ -74,7 +73,7 @@ use class IUCam:MotionUpdate {
   }
   
   doUpdate() {
-    //log.log(lvl, "in mocams update");
+    //log.log("in mocams update");
     getMocams();
     configureMocams();
   }
@@ -94,13 +93,13 @@ use class IUCam:MotionUpdate {
     configuredMocams = Set.new();
     //make sure configs present
     for (String cp in mocams) {
-      log.log(lvl, cp + " is a mocam not setup yet");
+      log.log(cp + " is a mocam not setup yet");
       Path p = Path.apNew(cp);
       String mcn = p.steps.last;
-      log.log(lvl, "mocam name " + mcn);
+      log.log("mocam name " + mcn);
       Path confp = Path.apNew(app.paths.dataPath.toString() + "/WebCamConfig/MOCAM-" + mcn + ".conf");
       if (confp.file.exists!) {
-        log.log(lvl, "no conf, creating " + confp);
+        log.log("no conf, creating " + confp);
         Path.apNew(app.paths.appPath.toString() + "/MOCAM.conf").file.copyFile(confp.file);
         IO:File:Writer cw = confp.file.writer.openAppend();
         cw.write("videodevice " + cp + "\n");
@@ -116,7 +115,7 @@ use class IUCam:MotionUpdate {
       //start it in background
       String toRun = app.paths.appPath.copy().addStep("motionrun.sh").toString();
       toRun += " " + confp;
-      log.log(lvl, "motion torun " + toRun);
+      log.log("motion torun " + toRun);
       if (runit) {
         Com.run(toRun);
       }
@@ -125,7 +124,7 @@ use class IUCam:MotionUpdate {
   }
   
   getMocams() {
-    //log.log(lvl, "Doing getmocams");
+    //log.log("Doing getmocams");
     mocams = Set.new();
     String cps = app.configManager.get("cam.paths");
     if (TS.notEmpty(cps)) {
@@ -149,8 +148,7 @@ use class IUCam:Background {
   new() self {
     fields {
       any app;
-      Int lvl;
-      IO:Log log;
+      IO:Log log = IO:Logs.get(self);
       MotionUpdate mu = MotionUpdate.new();
     }
   }
@@ -172,7 +170,7 @@ use class IUCam:Background {
   }
   
   runTasks() {
-    //log.log(lvl, "Running tasks");
+    //log.log("Running tasks");
     runMyTasks();
     mu.updateOnInterval();
   }
@@ -183,12 +181,12 @@ use class IUCam:Background {
       try {
         runTasks();
       } catch (e) {
-        log.log(lvl, "Caught exception running tasks " + e);
+        log.log("Caught exception running tasks " + e);
       }
       try {          
         Time:Sleep.sleepMilliseconds(sleepTime);
       } catch (e) {
-        log.log(lvl, "Caught exception sleeping " + e);
+        log.log("Caught exception sleeping " + e);
       }
     }
   }
@@ -207,8 +205,6 @@ use class IUCam:Background {
       sleepTime = _sleepTime;
     }
     mu.app = app;
-    mu.lvl = lvl;
-    mu.log = log;
     mu.init();
     myThread = System:Thread.new(self);
     myThread.start();
@@ -224,9 +220,7 @@ use class IUCam:CamStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
         }
     }
 
@@ -239,7 +233,7 @@ use class IUCam:CamStart {
       /*try {
         app.configManager.close();
       } catch (any e) {
-        log.log(lvl, "Exception closing db in CmdUI, error is " + e);
+        log.log("Exception closing db in CmdUI, error is " + e);
       }*/
     }
     
@@ -247,7 +241,7 @@ use class IUCam:CamStart {
       try {
         innerMain(System:Process.new().args);
       } catch (any e) {
-        log.log(lvl, "Exception in CmdUI, error is " + e);
+        log.log("Exception in CmdUI, error is " + e);
       }
     }
     
@@ -257,32 +251,30 @@ use class IUCam:CamStart {
 
       if (args.length > 0) {
         String mode = args[0]; //ui, svc, both, [absent]
-        log.log(lvl, "mode " + mode);
+        log.log("mode " + mode);
       } else {
-        log.log(lvl, "mode empty");
+        log.log("mode empty");
       }
       if (TS.isEmpty(mode)) {
         mode = "wui";
       }
       if (mode == "lui" || mode == "wui" || mode == "cmd") {
-        log.log(lvl, "making cam");
+        log.log("making cam");
         CamPlugin cam = CamPlugin.new();
         if (mode == "cmd") {
           cam.runBackground = false;
         }
-        cam.log = log;
-        cam.lvl = lvl;
-        log.log(lvl, "adding plugins");
+        log.log("adding plugins");
         List plugins = List.new();
         plugins += cam;
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
         plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins, log, lvl).main();
+          AuthenticatedLocalApp.new(plugins).main();
         }
         if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins, log, lvl).main();
+          AuthenticatedWebApp.new(plugins).main();
         }        
         if (mode == "cmd") {
           cmdMain(args, plugins);
@@ -291,34 +283,32 @@ use class IUCam:CamStart {
     }
 
     cmdMain(List args, plugins) {
-      AuthedApp ui = AuthedApp.new(plugins, log, lvl);
+      AuthedApp ui = AuthedApp.new(plugins);
       
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
-        log.log(lvl, "cmd " + mode);
+        log.log("cmd " + mode);
       } 
       if (TS.isEmpty(mode)) {
-        log.log(lvl, "cmd empty");
+        log.log("cmd empty");
       }
       if (mode == "help") {
-        log.log(lvl, "Help");
-        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+        log.log("Help");
+        log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
       if (TS.notEmpty(mode) && mode == "portForward") {
         Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.log = log;
-        pf.lvl = lvl;
         pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         for (String login in ui.accountManager.getLogins()) {
-          log.log(lvl, "Account login " + login);
+          log.log("Account login " + login);
         }
       }
       if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
         String user = args[2];
         String pass = args[3];
-        log.log(lvl, "Putting Account " + user);
+        log.log("Putting Account " + user);
         Account ac = Account.new();
         ac.user = user;
         ac.pass = pass;
@@ -329,58 +319,58 @@ use class IUCam:CamStart {
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
-        log.log(lvl, "Get Account " + user);
+        log.log("Get Account " + user);
         ac = ui.accountManager.getAccount(user);
-        log.log(lvl, "Account " + ac);
+        log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPermsString") {
         user = args[2];
         String ps = args[3];
-        log.log(lvl, "Set Perms " + user);
+        log.log("Set Perms " + user);
         ac = ui.accountManager.getAccount(user);
         ac.permsString = ps;
         ui.accountManager.putAccount(ac);
-        log.log(lvl, "Account " + ac);
+        log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
         user = args[2];
         pass = args[3];
-        log.log(lvl, "Set Pass " + user);
+        log.log("Set Pass " + user);
         ac = ui.accountManager.getAccount(user);
         ac.pass = pass;
         ui.accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
-        log.log(lvl, "Deleting Account " + user);
+        log.log("Deleting Account " + user);
         ac = ui.accountManager.getAccount(user);
         if (def(ac)) {
           ui.accountManager.deleteAccount(ac);
-          log.log(lvl, "Deleted account " + user);
+          log.log("Deleted account " + user);
         } else {
-          log.log(lvl, "No such account for deletion " + user);
+          log.log("No such account for deletion " + user);
         }
       }
       if (TS.notEmpty(mode) && mode == "updateConfig") {
         String key = args[2];
         String value = args[3];
-        log.log(lvl, "Updating config " + key + " " + value);
+        log.log("Updating config " + key + " " + value);
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
         for (any kv in ui.configManager.getMap()) {
-          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
+          log.log("Config name " + kv.key + " value " + kv.value);
         }
       }
       if (TS.notEmpty(mode) && mode == "createConfig") {
         key = args[2];
         value = args[3];
-        log.log(lvl, "Creating config " + key + " " + value);
+        log.log("Creating config " + key + " " + value);
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "deleteConfig") {
         key = args[2];
-        log.log(lvl, "Deleting config " + key);
+        log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
       ui.configManager.close();
@@ -395,9 +385,7 @@ use class IUCam:CamPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
           any app;
           String name = "IUCam";
           String homePage = "/App/IUCam/IUCam.html";
@@ -407,8 +395,6 @@ use class IUCam:CamPlugin {
      }
      
     start() {
-      bg.log = log;
-      bg.lvl = lvl;
       bg.app = app;
       if (runBackground) {
       bg.startBackground();
@@ -462,7 +448,7 @@ use class IUCam:CamPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.6.0";
+        String version =@ "5.6.2";
       }
       return(version);
     }
@@ -510,10 +496,10 @@ use class IUCam:CamPlugin {
       String countKey = "image.count." + cam + "." + an;
       String c = app.configManager.get(countKey);
       if (def(c)) {
-        log.log(lvl, "count def " + c);
+        log.log("count def " + c);
         count = Int.new(c);
       } else {
-        log.log(lvl, "count undef");
+        log.log("count undef");
         Int count = 0;
         app.configManager.put(countKey, count.toString());
       }
@@ -563,7 +549,7 @@ use class IUCam:CamPlugin {
       } else {
         piccmd = app.paths.appPath.copy().addStep("uppic.sh").toStringWithSeparator("/");
       }
-      log.log(lvl, "pic path " + picFile.path);
+      log.log("pic path " + picFile.path);
       //curl http://127.0.0.1:10994/0/action/snapshot
       if (isMo) {
         mcp = app.configManager.get("cam." + cam + ".motionPort");
@@ -580,7 +566,7 @@ use class IUCam:CamPlugin {
         tries--=;
       }
       Time:Sleep.sleepMilliseconds(500);
-      log.log(lvl, "In load image");
+      log.log("In load image");
       Map res = Map.new();
       res["action"] = "updateImageResponse";
       //res["imghtm"] = "<img src=\"" + picFile.path.toStringWithSeparator("/") + "\" >";
@@ -590,7 +576,7 @@ use class IUCam:CamPlugin {
    
    detectCamsRequest(Map arg, request) {
       unless (app.requestFromAdmin(request)) {
-        log.log(lvl, "Account not admin, not detecting cams");
+        log.log("Account not admin, not detecting cams");
         return(null);
       }
       app.configManager.put("camsDetectedOnce", "true");
@@ -604,7 +590,7 @@ use class IUCam:CamPlugin {
    
    updateCams() {
       Path appP = app.paths.appPath;
-      log.log(lvl, "app path " + appP);
+      log.log("app path " + appP);
       if (System:CurrentPlatform.name == "mswin") {
         //String gccmd = "App\\IUCam\\getcams.bat";
         appP = appP.copy().addStep("getcams.bat");
@@ -615,28 +601,28 @@ use class IUCam:CamPlugin {
         gccmd = appP.toStringWithSeparator("/");
       }
       String res = System:Command.new(gccmd).open().output.readStringClose();
-      log.log(lvl, "res from cmd " + res);
+      log.log("res from cmd " + res);
       if (TS.notEmpty(res)) {
         //res.swap("\r", "\n");
         String cres = String.new();
         for (String v in res.split("\n")) {
-          log.log(lvl, "v is " + v);
+          log.log("v is " + v);
           if (TS.notEmpty(v)) {
             if (v.ends("\r")) {
-              log.log(lvl, "ends r");
+              log.log("ends r");
               v = v.substring(0, v.size - 1);
-              log.log(lvl, "now |" + v + "|");
+              log.log("now |" + v + "|");
             }
             if (TS.notEmpty(cres)) {
-              log.log(lvl, "cres v is " + cres);
+              log.log("cres v is " + cres);
               cres += ",";
-              log.log(lvl, "cres v v is " + cres);
+              log.log("cres v v is " + cres);
             }
             cres += v;
-            log.log(lvl, "v v v cres is " + cres);
+            log.log("v v v cres is " + cres);
           }
         }
-        log.log(lvl, "commares " + cres);
+        log.log("commares " + cres);
         updateCams(cres);
       }
    }

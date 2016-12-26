@@ -104,8 +104,7 @@ class WfBr(WebImp) {
      
      fields {
       Map session = Map.new();
-      IO:Log log = IO:Log.new();
-      Int lvl = log.debug;
+      IO:Log log = IO:Logs.get(self);
      }
    }
    
@@ -146,12 +145,12 @@ class WfBr(WebImp) {
    }
    
    handleWeb(String arg) String {
-      log.log(lvl, "in handleWeb, arg " + arg);
+      log.log("in handleWeb, arg " + arg);
       BrowserScriptRequest r = BrowserScriptRequest.new(session);
       r.scriptArgJson = arg;
       webHandler.handleWeb(r);
       String ret = r.scriptReturnJson;
-      log.log(lvl, "in handleWeb, ret " + ret);
+      log.log("in handleWeb, ret " + ret);
       return(ret);
    }
    

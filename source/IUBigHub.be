@@ -34,9 +34,7 @@ use class IUHub:BigHubStart {
 
    new() self {
       fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
         }
     }
 
@@ -49,7 +47,7 @@ use class IUHub:BigHubStart {
       /*try {
         app.configManager.close();
       } catch (any e) {
-        log.log(lvl, "Exception closing db in CmdUI, error is " + e);
+        log.log("Exception closing db in CmdUI, error is " + e);
       }*/
     }
     
@@ -57,38 +55,34 @@ use class IUHub:BigHubStart {
       try {
         innerMain(System:Process.new().args);
       } catch (any e) {
-        log.log(lvl, "Exception in CmdUI, error is " + e);
+        log.log("Exception in CmdUI, error is " + e);
       }
     }
     
     innerMain(List args) {
 
       Web:Client:CertificateManager.validateHosts = false;
-
+      IO:Logs.turnOnAll();
       if (args.length > 0) {
         String mode = args[0]; //ui, svc, both, [absent]
-        log.log(lvl, "mode " + mode);
+        log.log("mode " + mode);
       } else {
-        log.log(lvl, "mode empty");
+        log.log("mode empty");
       }
       if (TS.isEmpty(mode)) {
         mode = "wui";
       }
       if (mode == "lui" || mode == "wui" || mode == "cmd") {
-        log.log(lvl, "making hub");
+        log.log("making hub");
         BigHubPlugin hub = BigHubPlugin.new();
         if (mode == "cmd") {
           hub.runBackground = false;
         }
-        hub.log = log;
-        hub.lvl = lvl;
         CamPlugin cam = CamPlugin.new();
         if (mode == "cmd") {
           cam.runBackground = false;
         }
-        cam.log = log;
-        cam.lvl = lvl;
-        log.log(lvl, "adding plugins");
+        log.log("adding plugins");
         List plugins = List.new();
         plugins += hub;
         plugins += cam;
@@ -96,10 +90,10 @@ use class IUHub:BigHubStart {
         plugins += App:ConfigPlugin.new();
         plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins, log, lvl).main();
+          AuthenticatedLocalApp.new(plugins).main();
         }
         if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins, log, lvl).main();
+          AuthenticatedWebApp.new(plugins).main();
         }        
         if (mode == "cmd") {
           cmdMain(args, plugins);
@@ -111,34 +105,32 @@ use class IUHub:BigHubStart {
     }
 
     cmdMain(List args, plugins) {
-      AuthedApp ui = AuthedApp.new(plugins, log, lvl);
+      AuthedApp ui = AuthedApp.new(plugins);
       
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
-        log.log(lvl, "cmd " + mode);
+        log.log("cmd " + mode);
       } 
       if (TS.isEmpty(mode)) {
-        log.log(lvl, "cmd empty");
+        log.log("cmd empty");
       }
       if (mode == "help") {
-        log.log(lvl, "Help");
-        log.log(lvl, "listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+        log.log("Help");
+        log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
       if (TS.notEmpty(mode) && mode == "portForward") {
         Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.log = log;
-        pf.lvl = lvl;
         pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         for (String login in ui.accountManager.getLogins()) {
-          log.log(lvl, "Account login " + login);
+          log.log("Account login " + login);
         }
       }
       if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
         String user = args[2];
         String pass = args[3];
-        log.log(lvl, "Putting Account " + user);
+        log.log("Putting Account " + user);
         Account ac = Account.new();
         ac.user = user;
         ac.pass = pass;
@@ -149,64 +141,64 @@ use class IUHub:BigHubStart {
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
-        log.log(lvl, "Get Account " + user);
+        log.log("Get Account " + user);
         ac = ui.accountManager.getAccount(user);
-        log.log(lvl, "Account " + ac);
+        log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPermsString") {
         user = args[2];
         String ps = args[3];
-        log.log(lvl, "Set Perms " + user);
+        log.log("Set Perms " + user);
         ac = ui.accountManager.getAccount(user);
         ac.permsString = ps;
         ui.accountManager.putAccount(ac);
-        log.log(lvl, "Account " + ac);
+        log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
         user = args[2];
         pass = args[3];
-        log.log(lvl, "Set Pass " + user);
+        log.log("Set Pass " + user);
         ac = ui.accountManager.getAccount(user);
         ac.pass = pass;
         ui.accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
-        log.log(lvl, "Deleting Account " + user);
+        log.log("Deleting Account " + user);
         ac = ui.accountManager.getAccount(user);
         if (def(ac)) {
           ui.accountManager.deleteAccount(ac);
-          log.log(lvl, "Deleted account " + user);
+          log.log("Deleted account " + user);
         } else {
-          log.log(lvl, "No such account for deletion " + user);
+          log.log("No such account for deletion " + user);
         }
       }
       if (TS.notEmpty(mode) && mode == "updateConfig") {
         String key = args[2];
         String value = args[3];
-        log.log(lvl, "Updating config " + key + " " + value);
+        log.log("Updating config " + key + " " + value);
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "showConfig") {
         for (any kv in ui.configManager.getMap()) {
-          log.log(lvl, "Config name " + kv.key + " value " + kv.value);
+          log.log("Config name " + kv.key + " value " + kv.value);
         }
       }
       if (TS.notEmpty(mode) && mode == "createConfig") {
         key = args[2];
         value = args[3];
-        log.log(lvl, "Creating config " + key + " " + value);
+        log.log("Creating config " + key + " " + value);
         ui.configManager.put(key, value);
       }
       if (TS.notEmpty(mode) && mode == "deleteConfig") {
         key = args[2];
-        log.log(lvl, "Deleting config " + key);
+        log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
       if (TS.notEmpty(mode) && mode == "saveIntUrl") {
-        log.log(lvl, "saveIntUrl");
+        log.log("saveIntUrl");
         ui.plugin.bg.init().uu.doUpdate();
-        log.log(lvl, "int url is " + ui.plugin.wcol.o.internalUrl);
+        log.log("int url is " + ui.plugin.wcol.o.internalUrl);
         File.apNew(args[2]).writer.open().write(ui.plugin.wcol.o.internalUrl).close();
         File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.wcol.o.internalUrl + "\n").close();
       }

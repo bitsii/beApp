@@ -62,7 +62,7 @@ class Gw {
     String res = sc.output.readString();
     sc.close();
     
-    //log.log(lvl, "netstat output " + res);
+    //log.log("netstat output " + res);
     
     if (System:CurrentPlatform.name == "mswin") {
       Int fz = res.find("0.0.0.0"); //win
@@ -410,9 +410,7 @@ use class App:AuthPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
           any app;
           String name = "Auth";
         }
@@ -421,7 +419,7 @@ use class App:AuthPlugin {
      
     clearAllSessionsRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-        log.log(lvl, "Clearing all sessions request by login " + app.accountManager.getAccountForRequest(request).user);
+        log.log("Clearing all sessions request by login " + app.accountManager.getAccountForRequest(request).user);
         app.sessionManager.sessions.clear();
      }
      return(null);
@@ -429,7 +427,7 @@ use class App:AuthPlugin {
    
    clearAllTrackingRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-        log.log(lvl, "Clearing all tracking requested by login "  + app.accountManager.getAccountForRequest(request).user);
+        log.log("Clearing all tracking requested by login "  + app.accountManager.getAccountForRequest(request).user);
         app.trackingManager.clear();
      }
      return(null);
@@ -445,7 +443,7 @@ use class App:AuthPlugin {
    changePassRequest(Map arg, request) {
       Account a = app.accountManager.getAccountForRequest(request);
       unless (TS.notEmpty(arg["newPass"]) && a.checkPass(arg["oldPass"])) {
-        log.log(lvl, "incorrect old pass");
+        log.log("incorrect old pass");
         throw(Alert.new("Old password incorrect"));
       }
       a.pass = arg["newPass"];
@@ -504,17 +502,17 @@ use class App:AuthPlugin {
       }
       Account a = app.accountManager.getAccount(arg["accountName"]);
       if (undef(a)) {
-        log.log(lvl, arg["accountName"] + " not found, creating new");
+        log.log(arg["accountName"] + " not found, creating new");
         a = Account.new();
         a.user = arg["accountName"];
       } else {
         if (a.user == app.accountManager.getAccountForRequest(request).user) {
           throw(Alert.new("Cannot change own account"));
         }
-        log.log(lvl, arg["accountName"] + " found, use existing");
+        log.log(arg["accountName"] + " found, use existing");
       }
       if (TS.notEmpty(arg["accountPass"])) {
-        log.log(lvl, "pass set, changing");
+        log.log("pass set, changing");
         a.pass = arg["accountPass"];
       }
       if (arg["admin"]) {
@@ -538,8 +536,8 @@ use class App:AuthPlugin {
     if (TS.notEmpty(accountName)) {
       Account a = app.accountManager.getAccount(accountName);
       if (def(a)) {
-        log.log(lvl, "Found logged in account " + accountName);
-        log.log(lvl, "Checking loginToken");
+        log.log("Found logged in account " + accountName);
+        log.log("Checking loginToken");
         String lt = arg["href"];
         if (TS.notEmpty(lt) && lt.has("loginToken=")) {
           lt = lt.substring(lt.find("loginToken=") + 11, lt.size);
@@ -559,7 +557,7 @@ use class App:AuthPlugin {
           tokOkShared = false;
         }
         if (tokOkMine || tokOkShared) {
-          log.log(lvl, "loginToken ok");
+          log.log("loginToken ok");
           Map res = Map.new();
           res["action"] = "loggedInResponse";
           res["name"] = accountName;
@@ -569,14 +567,14 @@ use class App:AuthPlugin {
           }
           return(res);
         } else {
-          log.log(lvl, "loginToken notok");
-          if (TS.isEmpty(lt)) { log.log(lvl, "lt empty"); }
-          else { log.log(lvl, "lt " + lt); }
-          if (TS.isEmpty(st)) { log.log(lvl, "st empty"); }
-          else { log.log(lvl, "st " + st); }
+          log.log("loginToken notok");
+          if (TS.isEmpty(lt)) { log.log("lt empty"); }
+          else { log.log("lt " + lt); }
+          if (TS.isEmpty(st)) { log.log("st empty"); }
+          else { log.log("st " + st); }
         }
       } else {
-        log.log(lvl, "No such account " + accountName);
+        log.log("No such account " + accountName);
       }
     }
     return(logoutRequest(arg, request));
@@ -585,9 +583,9 @@ use class App:AuthPlugin {
   loginRequest(Map arg, request) {
     Account a = app.accountManager.getAccount(arg["accountName"]);
     if (def(a) && app.preLoginCheck(request)) {
-      log.log(lvl, "Found account " + arg["accountName"]);
+      log.log("Found account " + arg["accountName"]);
       if (a.checkPass(arg["accountPass"])) {
-        log.log(lvl, "Login ok");
+        log.log("Login ok");
         request.putSession("account.name", arg["accountName"]);
         request.putSession("ip", request.remoteAddress);
         if (TS.notEmpty(arg["sessionName"])) {
@@ -598,7 +596,7 @@ use class App:AuthPlugin {
           sessionLength = "30";
         }
         Int sessionLengthI = Int.new(sessionLength) * 60;
-        log.log(lvl, "sessionLength " + sessionLengthI.toString());
+        log.log("sessionLength " + sessionLengthI.toString());
         request.putSession("sessionLength", sessionLengthI.toString());
         if (sessionLengthI < 0) {
           request.putSession("sessionExp", sessionLengthI.toString());
@@ -615,22 +613,22 @@ use class App:AuthPlugin {
         app.goodLogin(request);
         return(app.loggedIn(a, res, arg, request));
       } else {
-        log.log(lvl, "Login notok");
+        log.log("Login notok");
         app.badLogin(request);
       }
     } else {
-      log.log(lvl, "No such account " + arg["accountName"]);
+      log.log("No such account " + arg["accountName"]);
       app.badLogin(request);
     }
     return(logoutRequest(arg, request));
   }
   
   logoutRequest(Map arg, request) {
-    //log.log(lvl, "logging out");
+    //log.log("logging out");
     request.deleteSession();
     Map res = Map.new();
     res["action"] = "logoutResponse";
-    //log.log(lvl, "logged out, returning");
+    //log.log("logged out, returning");
     return(res);
   }
    
@@ -640,9 +638,7 @@ use class App:FileManagerPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
           any app;
           String name = "FileManager";
         }
@@ -650,7 +646,7 @@ use class App:FileManagerPlugin {
      }
      
      deleteRequest(Map arg, request) Map {
-     log.log(lvl, "del request");
+     log.log("del request");
      String path = arg["path"];
      String accountName = request.getSession("account.name");
      if (TS.isEmpty(accountName)) {
@@ -659,7 +655,7 @@ use class App:FileManagerPlugin {
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
        if (dirFile.exists && app.checkWritePath(dirFile.path, arg, request)) {
-         log.log(lvl, "deleting " + dirFile.path);
+         log.log("deleting " + dirFile.path);
          dirFile.delete();
        }
      }
@@ -667,7 +663,7 @@ use class App:FileManagerPlugin {
    }
    
    copyRequest(Map arg, request) Map {
-     log.log(lvl, "copy request");
+     log.log("copy request");
      String path = arg["path"];
      String accountName = request.getSession("account.name");
      if (TS.isEmpty(accountName)) {
@@ -678,9 +674,9 @@ use class App:FileManagerPlugin {
        if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, arg, request)) {
          any dpath = Path.apNew(arg["toName"]);
          dpath = dirFile.path.parent.copy() + dpath;
-         log.log(lvl, "precheck write " + dpath);
+         log.log("precheck write " + dpath);
          if (app.checkWritePath(dpath, arg, request)) {
-           log.log(lvl, "copying " + dirFile.path + " to " + dpath);
+           log.log("copying " + dirFile.path + " to " + dpath);
            if (dpath.parent.file.exists!) {
              dpath.parent.file.makeDirs();
            }
@@ -697,7 +693,7 @@ use class App:FileManagerPlugin {
    }
    
    localBrowseRequest(Map arg, request) Map {
-     log.log(lvl, "in local browse req");
+     log.log("in local browse req");
      String accountName = request.getSession("account.name");
      if (TS.isEmpty(accountName)) {
       throw(Alert.new("must be authenticated"));
@@ -800,9 +796,7 @@ use class App:ConfigPlugin {
 
      new() self {
        fields {
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
           any app;
           String name = "Conf";
         }
@@ -810,7 +804,7 @@ use class App:ConfigPlugin {
      }
      
      changeDeviceNameRequest(String deviceName, request) {
-     log.log(lvl, "changing name");
+     log.log("changing name");
       if (app.requestFromAdmin(request) && TS.notEmpty(name)) {
         app.plugin.deviceName = deviceName;
       }
@@ -855,7 +849,7 @@ use class App:ConfigPlugin {
        Map res = Map.new();
        res["action"] = "backupConfigResponse";
        res["configJson"] = Json:Marshaller.marshall(ecm);
-       log.log(lvl, "ret configJson " + res["configJson"]);
+       log.log("ret configJson " + res["configJson"]);
        return(res);
      }
      return(null);
@@ -863,7 +857,7 @@ use class App:ConfigPlugin {
    
    updateConfigRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-      log.log(lvl, "update for " + arg["configKey"] + " value " + arg["configValue"]);
+      log.log("update for " + arg["configKey"] + " value " + arg["configValue"]);
       app.configManager.put(arg["configKey"], arg["configValue"]);
       return(showConfigRequest(arg, request));
       }
@@ -872,7 +866,7 @@ use class App:ConfigPlugin {
    
    deleteConfigRequest(Map arg, request) Map {
      if (app.requestFromAdmin(request)) {
-      log.log(lvl, "delete for " + arg["configKey"]);
+      log.log("delete for " + arg["configKey"]);
       app.configManager.delete(arg["configKey"]);
       return(showConfigRequest(arg, request));
       }
@@ -883,12 +877,12 @@ use class App:ConfigPlugin {
 
 use class App:AuthenticatedLocalApp(AuthedApp) {
 
-  new(_plugins, log, lvl) self {
+  new(_plugins) self {
         fields {
           WeBr webr;
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
         }
-        super.new(_plugins, log, lvl);
+        super.new(_plugins);
     }
 
     main() {
@@ -921,12 +915,11 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
 use App:AuthenticatedApp as AuthedApp;
 class AuthedApp {
 
-  new(_plugins, _log, _lvl) self {
+  new(_plugins) self {
       fields {
         List plugins = _plugins;
         any plugin = plugins.first;
-        IO:Log log = _log;
-        Int lvl = _lvl;
+        IO:Log log = IO:Logs.get(self);
         Lock lock = Lock.new();
         OLocker lastLoginBad = OLocker.new(false);
         String certificateThumbprint;
@@ -934,8 +927,6 @@ class AuthedApp {
       
       for (any pl in plugins) {
         pl.app = self;
-        pl.log = log;
-        pl.lvl = lvl;
         if (pl.can("start", 0)) {
           pl.start();
         }
@@ -960,7 +951,7 @@ class AuthedApp {
   */
   
     /*
-    log.log(lvl, "checking origins");
+    log.log("checking origins");
     String org = request.getInputHeader("origin");
     String ref = request.getInputHeader("referer");
     String uri = request.uri;
@@ -968,13 +959,13 @@ class AuthedApp {
     String ra = request.remoteAddress;
     if (true) {
       if (def(org)) {
-        log.log(lvl, "orgin " + org);
+        log.log("orgin " + org);
       }
       if (def(ref)) {
-        log.log(lvl, "referer " + ref);
+        log.log("referer " + ref);
       }
       if (def(uri) && def(la) && def(ra)) {
-        log.log(lvl, "uri, la, ra " + uri + " " + la + " " + ra);
+        log.log("uri, la, ra " + uri + " " + la + " " + ra);
       }
     }
     */
@@ -997,7 +988,7 @@ class AuthedApp {
         if (TS.notEmpty(ltm)) {
           Int ltmi = Int.new(ltm);
           if (ns - ltmi > clearSecs) {
-            log.log(lvl, "clear bad " + ip);
+            log.log("clear bad " + ip);
             badcount = 0;
           } else {
             badcount = Int.new(ct);
@@ -1010,17 +1001,17 @@ class AuthedApp {
       }
     }
     if (badcount > maxBad) {
-      log.log(lvl, "toomany bad " + ip);
+      log.log("toomany bad " + ip);
       if (def(ltmi) && ns - ltmi > updateSecs) {
-        log.log(lvl, "lp update");
+        log.log("lp update");
         self.trackingManager.put("LB." + ip, ns.toString());
       } else {
-        log.log(lvl, "no update");
+        log.log("no update");
       }
       return(false);
     }
     if (TS.isEmpty(accountName)) {
-      log.log(lvl, "upping bad");
+      log.log("upping bad");
       badcount++=;
       self.trackingManager.put("IP." + ip, badcount.toString());
       self.trackingManager.put("LB." + ip, ns.toString());
@@ -1040,26 +1031,26 @@ class AuthedApp {
     String ref = request.getInputHeader("referer");
     String la = request.localAddress;
     if (TS.isEmpty(ref) || TS.isEmpty(la)) {
-      //log.log(lvl, "isCrossSite true empty");
+      //log.log("isCrossSite true empty");
       return(true);
     }
-    //log.log(lvl, "referer is " + ref);
+    //log.log("referer is " + ref);
     String snlist = self.configManager.get("siteNames");
     if (TS.notEmpty(snlist)) {
       for (String sn in snlist.split(",")) {
         if (ref.begins(sn)) {
-          //log.log(lvl, "ixs false sitelist");
+          //log.log("ixs false sitelist");
           return(false);
         }
       }
     }
     la = "https://" + la;
     if (ref.begins(la)) {
-      //log.log(lvl, "isCrossSite false begins " + la + " " + ref);
+      //log.log("isCrossSite false begins " + la + " " + ref);
       return(false);
     }
     if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
-      //log.log(lvl, "isCrossSite false extUrl begins " + extUrl + " " + ref);
+      //log.log("isCrossSite false extUrl begins " + extUrl + " " + ref);
       return(false);
     }
     
@@ -1071,17 +1062,17 @@ class AuthedApp {
     
     if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
       extUrl = "https://" + extAddress + ":" + extPort;
-      //log.log(lvl, "new extUrl " + extUrl);
+      //log.log("new extUrl " + extUrl);
     } else {
-      //log.log(lvl, "extAddress or extPort empty");
-      if (TS.isEmpty(extAddress)) { log.log(lvl, "extAddress empty"); }
-      if (TS.isEmpty(extPort)) { log.log(lvl, "extPort empty"); }
+      //log.log("extAddress or extPort empty");
+      if (TS.isEmpty(extAddress)) { log.log("extAddress empty"); }
+      if (TS.isEmpty(extPort)) { log.log("extPort empty"); }
     }
     if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
-      //log.log(lvl, "isCrossSite false new extUrl begins " + extUrl + " " + ref);
+      //log.log("isCrossSite false new extUrl begins " + extUrl + " " + ref);
       return(false);
     }
-    //log.log(lvl, "isCrossSite true not begins " + la + " " + ref);
+    //log.log("isCrossSite true not begins " + la + " " + ref);
     return(true);
   }
   
@@ -1098,7 +1089,7 @@ class AuthedApp {
     }
     String stoken = request.getSession("pageToken");
     if (TS.isEmpty(pageToken) || undef(a) || undef(stoken) || pageToken != stoken) {
-      log.log(lvl, "checkWritePath false due to page token fail");
+      log.log("checkWritePath false due to page token fail");
       return(false);
     }
     if (def(a) && a.perms.has("admin")) {
@@ -1118,9 +1109,9 @@ class AuthedApp {
         isOk = true;
       }
     } catch (e) {
-      log.log(lvl, "Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
+      log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
     }
-    //log.log(lvl, "checkPath isOk " + isOk);
+    //log.log("checkPath isOk " + isOk);
     return(isOk);
    }
    
@@ -1142,7 +1133,7 @@ class AuthedApp {
     }
     String stoken = request.getSession("pageToken");
     if (TS.isEmpty(pageToken) || undef(a) || undef(stoken) || pageToken != stoken) {
-      log.log(lvl, "checkReadPath false due to page token fail");
+      log.log("checkReadPath false due to page token fail");
       return(false);
     }
     if (def(a) && a.perms.has("admin")) {
@@ -1160,9 +1151,9 @@ class AuthedApp {
         isOk = true;
       }
     } catch (e) {
-      log.log(lvl, "Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
+      log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
     }
-    //log.log(lvl, "checkPath isOk " + isOk);
+    //log.log("checkPath isOk " + isOk);
     return(isOk);
    }
   
@@ -1262,17 +1253,17 @@ class AuthedApp {
     Map all = self.sessionManager.sessions.getMap();
     for (any kv in all) {
       if (kv.key.ends("account.name") && kv.value == accountName) {
-        //log.log(lvl, "Found session " + kv.key);
+        //log.log("Found session " + kv.key);
         any kp = kv.key.split(".");
         String sessLabel = String.new();
         String name = self.sessionManager.sessions.get(kp.first + ".session.name");
         if (def(name)) {
-          log.log(lvl, "sess name " + name);
+          log.log("sess name " + name);
           sessLabel += "Session named " += name;
         }
         String ip = self.sessionManager.sessions.get(kp.first + ".ip");
         if (def(ip)) {
-          log.log(lvl, "sess ip " + ip);
+          log.log("sess ip " + ip);
           if (TS.notEmpty(sessLabel)) {
             sessLabel += " from ";
           } else {
@@ -1305,30 +1296,30 @@ class AuthedApp {
   checkRenewSession(request) Bool {
     String sessionExp = request.getSession("sessionExp");
     if (TS.isEmpty(sessionExp)) {
-      log.log(lvl, "no sessionExp");
+      log.log("no sessionExp");
       request.deleteSession();
       return(false);
     }
     Int sei = Int.new(sessionExp);
     if (sei < 0) {
-      log.log(lvl, "session never expires");
+      log.log("session never expires");
       return(true); //never expires
     }
     Int ns = Time:Interval.now().seconds;
     if (ns > sei) {
-      log.log(lvl, "session expired");
+      log.log("session expired");
       request.deleteSession();
       return(false);
     }
     Int nu = Int.new(request.getSession("sessionUpdate"));
     if (ns > nu) {
-      log.log(lvl, "refreshing sessionUpdate");
+      log.log("refreshing sessionUpdate");
       nu = ns + 60;
       request.putSession("sessionUpdate", nu.toString());
       Int ne = Int.new(request.getSession("sessionLength")) + ns;
       request.putSession("sessionExp", ne.toString());
     }
-    log.log(lvl, "checkRenewSession returning true");
+    log.log("checkRenewSession returning true");
     return(true);
   }
   
@@ -1338,7 +1329,7 @@ class AuthedApp {
      }
         try {
             if (isCrossSite(request)) {
-              log.log(lvl, "rejecting cross site request");
+              log.log("rejecting cross site request");
               return(null);
             }
             String aname = arg.get("action");
@@ -1353,7 +1344,7 @@ class AuthedApp {
             } else {
             
               unless (aname == "loginRequest" || checkRenewSession(request)) {
-                log.log(lvl, "rejecting expired session request");
+                log.log("rejecting expired session request");
                 return(null);
               }
             
@@ -1363,30 +1354,30 @@ class AuthedApp {
               String atok = arg["pageToken"];
               unless (aname == "checkLoggedInRequest" && TS.isEmpty(atok)) {
                 if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
-                  log.log(lvl, "stok or atok emtpy failing due to pageToken");
+                  log.log("stok or atok emtpy failing due to pageToken");
                   return(null);
                 }
                 if (stok != atok) {
-                  log.log(lvl, "stok != atok failing due to pageToken");
+                  log.log("stok != atok failing due to pageToken");
                   return(null);
                 }
               }
             
-              //log.log(lvl, "pageToken action " + aname);
-              //if (def(arg["pageToken"])) { log.log(lvl, "pageToken " + //arg["pageToken"]); } else { log.log(lvl, "no pageToken"); }
-              //if (def(stok)) { log.log(lvl, "session pageToken " + stok); }
+              //log.log("pageToken action " + aname);
+              //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
+              //if (def(stok)) { log.log("session pageToken " + stok); }
             }
-            log.log(lvl, "here");
+            log.log("here");
             if (arg.has("args")) {
               //is "standard call"
               args = arg["args"];
               args += request;
-              //log.log(lvl, "call type a " + aname + args.length);
+              //log.log("call type a " + aname + args.length);
             } else {
               List args = List.new(2);
               args[0] = arg;
               args[1] = request;
-              //log.log(lvl, "call type b");
+              //log.log("call type b");
             }
             for (any pl in plugins) {
               if (pl.can(aname, args.length)) {
@@ -1397,9 +1388,9 @@ class AuthedApp {
             request.scriptReturn = res;
         } catch (any e) {
            arg = Map.new();
-           log.log(lvl, "Caught exception during handleWeb B");
+           log.log("Caught exception during handleWeb B");
            if (def(e)) {
-            log.log(lvl, "Exception was " + e);
+            log.log("Exception was " + e);
            }
             arg["action"] = "failResponse";
             if (e.sameClass(Alert.new()@)) {

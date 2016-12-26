@@ -110,9 +110,7 @@ public static class MainActivity extends AppCompatActivity {
    
    setupStuff() {
      fields {
-        IO:Log log = IO:Log.new();
-        //Int lvl = log.debug;
-        Int lvl = log.info;
+        IO:Log log = IO:Logs.get(self);
         Map session = Map.new();
      }
    }
@@ -158,13 +156,13 @@ public static class MainActivity extends AppCompatActivity {
   }
   
   handleWeb(String arg) String {
-    log.log(lvl, "in handleWeb, arg " + arg);
+    log.log("in handleWeb, arg " + arg);
     BrowserScriptRequest r = BrowserScriptRequest.new(session);
     r.scriptArgJson = arg;
     webHandler.handleWeb(r);
     String ret = r.scriptReturnJson;
     if (def(ret)) {
-      log.log(lvl, "in handleWeb, ret " + ret);
+      log.log("in handleWeb, ret " + ret);
     }
     return(ret);
   }

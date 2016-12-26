@@ -41,10 +41,10 @@ use class App:AuthenticatedWebApp(AuthedApp) {
   """
   }
 
-  new(_plugins, log, lvl) self {
+  new(_plugins) self {
         fields {
         }
-        super.new(_plugins, log, lvl);
+        super.new(_plugins);
     }
     
     startWeb() {
@@ -65,7 +65,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
       fields {
         System:Thread myThread = System:Thread.new(vw);
       }
-      log.log(lvl, "Starting Web");
+      log.log("Starting Web");
       myThread.start();
     }
     
@@ -77,7 +77,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
   }
   
   handleStartWeb() {
-    log.log(lvl, "In handleStartWeb!!");
+    log.log("In handleStartWeb!!");
   }
   
   assureCertJv(Int port) String {
@@ -89,9 +89,9 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     //Path cerPath = Path.apNew("Data/IUHub/cert");
     Path cerPath = self.paths.dataPath.addStep("cert");
     String cerPathS = cerPath.toString();
-    log.log(lvl, "cerPath " + cerPathS);
+    log.log("cerPath " + cerPathS);
     if (cerPath.file.exists) {
-      log.log(lvl, "cer exist");
+      log.log("cer exist");
       emit(jv) {
       """
       KeyStore privateKS = KeyStore.getInstance("JKS");
@@ -100,8 +100,8 @@ use class App:AuthenticatedWebApp(AuthedApp) {
       """
       }
     } else {
-      log.log(lvl, "cer not exist");
-      log.log(lvl, "Start gencert");
+      log.log("cer not exist");
+      log.log("Start gencert");
       if (cerPath.parent.file.exists!) {
         cerPath.parent.file.makeDirs();
       }
@@ -131,7 +131,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
       cert = privateKS.getCertificate("jetty");
       """
       }
-      log.log(lvl, "End gencert");
+      log.log("End gencert");
     }
     emit(jv) {
     """
@@ -140,7 +140,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
               );
     """
     }
-    log.log(lvl, "certificateThumbprint " + certificateThumbprint);
+    log.log("certificateThumbprint " + certificateThumbprint);
     return(cerPathS);
   }
   
@@ -155,13 +155,13 @@ use class App:AuthenticatedWebApp(AuthedApp) {
    }
    
    handleWeb(request) {
-     //log.log(lvl, "in hw");
+     //log.log("in hw");
      unless (checkRequest(request)) {
       return(null);
      }
      String accountName = request.getSession("account.name");
      String rmtd = request.inputMethod;
-     //log.log(lvl, "rmtd is " + rmtd);
+     //log.log("rmtd is " + rmtd);
      if (TS.isEmpty(rmtd) || rmtd != "PUT") {
         Map arg = request.scriptArg;
      }
@@ -169,12 +169,12 @@ use class App:AuthenticatedWebApp(AuthedApp) {
        String ln = request.getParameter("accountName");
        String lp = request.getParameter("accountPass");
        if (TS.notEmpty(ln) && TS.notEmpty(lp)) {
-          log.log(lvl, "doing svc login");
+          log.log("doing svc login");
           Account a = self.accountManager.getAccount(ln);
           if (def(a) && preLoginCheck(request)) {
-            log.log(lvl, "Found account " + ln);
+            log.log("Found account " + ln);
             if (a.checkPass(lp)) {
-              log.log(lvl, "svc login ok");
+              log.log("svc login ok");
               request.putSession("account.name", ln);
               request.putSession("ip", request.remoteAddress);
               goodLogin(request);
@@ -189,11 +189,11 @@ use class App:AuthenticatedWebApp(AuthedApp) {
      }
      if (undef(arg)) {
        String uri = request.uri;
-       log.log(lvl, "uri " + uri);
+       log.log("uri " + uri);
        File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
        if (TS.notEmpty(rmtd) && rmtd == "PUT") {
          if (checkWritePath(imgfile.path, null, request)) {
-           log.log(lvl, "put for " + imgfile.path);
+           log.log("put for " + imgfile.path);
            if (imgfile.path.parent.file.exists!) {
             imgfile.path.parent.file.makeDirs();
            }
@@ -206,7 +206,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
             request.outputContent = "UPLOAD COMPLETE";
          }
        } elseIf (checkReadPath(imgfile.path, arg, request)) {
-         log.log(lvl, "imgfile " + imgfile.path);
+         log.log("imgfile " + imgfile.path);
          if (imgfile.exists) {
           String mtype;
           if (uri.ends(".html")) {

@@ -16,14 +16,13 @@ use class Bex:BHandler {
 
      new() self {
        fields {
-          IO:Log log;
-          Int lvl;
+          IO:Log log = IO:Logs.get(self);
           any app;
         }
      }
    
      hiRequest(Map arg, request) {
-      log.log(lvl, "In hi");
+      log.log("In hi");
       Map res = Map.new();
       res["action"] = "hiResponse";
       res["msg"] = "hello " + arg["who"];
@@ -41,15 +40,11 @@ use class App:BrowserExample {
         fields {
           WeBr webr;
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
-          IO:Log log = IO:Log.new();
-          log.level = log.info;
-          Int lvl = log.level;
+          IO:Log log = IO:Logs.get(self);
           BHandler requestHandler;
         }
         
         requestHandler = BHandler.new();
-        requestHandler.log = log;
-        requestHandler.lvl = lvl;
         requestHandler.app = self;
         
     }
@@ -113,9 +108,9 @@ use class App:BrowserExample {
             request.scriptReturn = res;
         } catch (any e) {
            arg = Map.new();
-           log.log(lvl, "Caught exception during handleWeb B");
+           log.log("Caught exception during handleWeb B");
            if (def(e)) {
-            log.log(lvl, "Error was " + e);
+            log.log("Error was " + e);
            }
             arg["action"] = "failResponse";
             if (e.sameClass(Alert.new()@)) {

@@ -3,21 +3,29 @@ ______________
 no-upnp ssh version - jsch
   haproxy for privilaged -> localhost
   ssh for tunnel
-  siteNames
+  siteNames ui
+  real certs (let's encrypt and the other one, pay ones)
 
 dev instructs
 
+turn on and off for logging based on config value (for all)
+  in startup, as early as possible
+  ?also in background?
+
 =====
+______________
+
+client app - link
+android
+
+pics autosend/get
 
 check for updates - two places (sf and github?)
   size? sha?
 auto update (turn off able, on by default)
 ______________
 
-client app - link
-android
-
-pics autosend
+=====
 
 mac, win java installers
 

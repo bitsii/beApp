@@ -66,8 +66,7 @@ use class Web:Server {
       Bool ssl = false;
       String sslPath;
       any sessionManager;
-      IO:Log log = IO:Log.new();
-      Int lvl = log.debug;
+      IO:Log log = IO:Logs.get(self);
       Bool gzipOutput = false;
     }
   }
@@ -97,8 +96,8 @@ use class Web:Server {
     } catch (e) {
       ("got exception " + e).print();
       try {
-        log.log(lvl, "Caught exception handling request");
-        if (log.will(lvl)) { log.log(lvl, e.toString()); }
+        log.log("Caught exception handling request");
+        if (log.will()) { log.log(e.toString()); }
       } catch (e) {
       }
     }
@@ -453,13 +452,13 @@ use class Web:ScriptRequest {
    
    scriptArgGet() {
      String ic = self.inputContent;
-     IO:Log.log(IO:Log.debug, "In scriptArgGet, inputContent " + ic);
+     IO:Logs.get(self).log("In scriptArgGet, inputContent " + ic);
      return(unmar.unmarshall(ic));
    }
    
    scriptReturnSet(ret) {
      String oc = mar.marshall(ret);
-     IO:Log.log(IO:Log.debug, "In scriptReturnSet, outputContent " + oc);
+     IO:Logs.get(self).log("In scriptReturnSet, outputContent " + oc);
      self.outputContentType =@ "application/json";
      self.outputContent = oc;
    }
@@ -652,26 +651,25 @@ class Net:PortForward {
       Int localPort = _localPort;
       String remoteHost = _remoteHost;
       Int remotePort = _remotePort;
-      IO:Log log = IO:Log.new();
-      Int lvl = log.debug;
+      IO:Log log = IO:Logs.get(self);
      }
    }
    
    start() self {
-     log.log(lvl, "Listening on " + localHost + ":" + localPort + " forwarding to " + remoteHost + ":" + remotePort);
+     log.log("Listening on " + localHost + ":" + localPort + " forwarding to " + remoteHost + ":" + remotePort);
      Listener l = Listener.new(localHost, localPort);
      l.bind();
      while (true) {
       Socket loc = l.accept();
-      log.log(lvl, "Received connection");
+      log.log("Received connection");
       Socket rem = Socket.new(remoteHost, remotePort);
-      log.log(lvl, "Connected Remotely");
+      log.log("Connected Remotely");
       ThinThread a = ThinThread.new(DataCopy.new(loc.reader, rem.writer));
       ThinThread b = ThinThread.new(DataCopy.new(rem.reader, loc.writer));
-      log.log(lvl, "Starting Threads");
+      log.log("Starting Threads");
       a.start();
       b.start();
-      log.log(lvl, "Threads Started");
+      log.log("Threads Started");
      }
    }
    

@@ -13,8 +13,7 @@ class IU:WebConnect {
 
   new() self {
     fields {
-      Int lvl;
-      IO:Log log;
+      IO:Log log = IO:Logs.get(self);
       
       String gateway;
       String internalAddress;
@@ -46,14 +45,12 @@ class IU:WebConnect {
       String sharedLoginToken;
       
     }
-    log = IO:Log.new();
-    lvl = log.level;
+    IO:Log log = IO:Logs.get(self);
   }
   
   toMap() Map {
     Map res = Maps.fieldsIntoMap(self, Map.new());
     res.delete("log");
-    res.delete("lvl");
     return(res);
   }
   
@@ -69,8 +66,6 @@ class IU:WebConnect {
 
   update() self {
     Upnp upnp = Upnp.new();
-    upnp.log = log;
-    upnp.lvl = lvl;
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
     internalAddress = upnp.internalIP;
@@ -92,8 +87,8 @@ class IU:WebConnect {
         }
       } catch (any e) {
         //don't change external ip when upnp fails
-        log.log(lvl, "Upnp externalAddress failed");
-        if (def(e)) { log.log(lvl, e.toString()); }
+        log.log("Upnp externalAddress failed");
+        if (def(e)) { log.log(e.toString()); }
       }
     
       if (TS.notEmpty(internalPort)) {
@@ -115,7 +110,7 @@ class IU:WebConnect {
         internalCamUrl = internalBase + "App/IUHub/IUCam.html";
         internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
         internalCamLink = "<a href=\"" + internalCamUrl + "\">Internal Link to " + deviceName + " Cam, use on device's network.</a>";
-        log.log(lvl, "Internal url " + internalUrl);
+        log.log("Internal url " + internalUrl);
       }
       if (TS.notEmpty(externalAddress)) {
         externalBase = protocol + externalAddress + extPort + "/";          
@@ -126,18 +121,16 @@ class IU:WebConnect {
         externalCamUrl = externalBase + "App/IUHub/IUCam.html";
         externalLink = "<a href=\"" + externalUrl + "\">External Link to " + deviceName + " Hub, use outside device's network (the internet).</a>";
         externalCamLink = "<a href=\"" + externalCamUrl + "\">External Link to " + deviceName + " Cam, use outside device's network (the internet).</a>";
-        log.log(lvl, "External url " + externalUrl);
+        log.log("External url " + externalUrl);
       }
       
   }
   
   forwardPorts() {
       if (TS.notEmpty(externalAddress)) {
-        log.log(lvl, "Forwarding");
+        log.log("Forwarding");
         Int fwdSecs = 7200;//fwd upnp for how long
         Upnp upnp = Upnp.new();
-        upnp.log = log;
-        upnp.lvl = lvl;
         upnp.netGw = upnp.gatewayAddress;
         upnp.forwardPort(fwdSecs, Int.new(externalPort), Int.new(internalPort));
         if (TS.notEmpty(extraPorts)) {
@@ -147,7 +140,7 @@ class IU:WebConnect {
               currPortS = getAPort();
               extraPortMap.put(ep, currPortS);
             }
-            log.log(lvl, "Forwarding extraport external " + currPortS + " to " + ep);
+            log.log("Forwarding extraport external " + currPortS + " to " + ep);
             upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
           }
         }
@@ -155,7 +148,7 @@ class IU:WebConnect {
     }
     
     putService(String name, String port, String exPort, String urlPat) {
-      log.log(lvl, "adding service");
+      log.log("adding service");
       String extPort = self.extraPorts;
       if (TS.notEmpty(port)) {
        Bool present = false;
@@ -169,7 +162,7 @@ class IU:WebConnect {
          }       
        }
        unless (present) {
-        log.log(lvl, "extport notpresent");
+        log.log("extport notpresent");
         if (TS.notEmpty(extPort)) {
           extPort = extPort + "," + port;//no +=, effect existing svc
         } else {
@@ -182,24 +175,24 @@ class IU:WebConnect {
         extraPortMap.put(port, exPort);
         extraPorts = extPort;
        } else {
-         log.log(lvl, "extport present");
+         log.log("extport present");
          if (TS.notEmpty(exPort)) {
           //port selected
           extraPortMap.put(port, exPort);
          }
        }
-       log.log(lvl, "urlPat " + urlPat);
+       log.log("urlPat " + urlPat);
        Map epConf = Maps.from("name", name, "urlPat", urlPat);
        if (undef(servicesConf)) {
         servicesConf = Map.new();
        }
        servicesConf.put(port, epConf);
-       log.log(lvl, "added");
+       log.log("added");
       }
     }
     
     deleteService(String port) {
-      log.log(lvl, "deleting service");
+      log.log("deleting service");
       String newPorts = "";
       String extPort = self.extraPorts;
       if (TS.notEmpty(port)) {
@@ -217,7 +210,7 @@ class IU:WebConnect {
        extraPortMap.delete(port);
        extraPorts = newPorts;
        servicesConf.delete(port);
-       log.log(lvl, "deleted");
+       log.log("deleted");
       }
     }
     
@@ -233,7 +226,7 @@ class IU:WebConnect {
         service.put("name", conf.get("name"));
         service.put("urlPat", conf.get("urlPat"));
         String intUrl = conf.get("urlPat").copy();
-        log.log(lvl, "intUrl " + intUrl);
+        log.log("intUrl " + intUrl);
         if (TS.notEmpty(intUrl) && TS.notEmpty(internalAddress)) {
           intUrl = intUrl.swap("$ip$", internalAddress);
           intUrl = intUrl.swap("$port$", intPort);
@@ -545,8 +538,7 @@ class Upnp {
   new() self {
     fields {
       String netGw;
-      IO:Log log = IO:Log.new();
-      Int lvl = log.debug;
+      IO:Log log = IO:Logs.get(self);
     }
   }
   
@@ -561,7 +553,7 @@ class Upnp {
     String res = sc.output.readString();
     sc.close();
     
-    //log.log(lvl, "netstat output " + res);
+    //log.log("netstat output " + res);
     
     if (System:CurrentPlatform.name == "mswin") {
       Int fz = res.find("0.0.0.0"); //win
@@ -665,11 +657,11 @@ class Upnp {
       """
       }
       } catch (e) {
-        log.log(lvl, "got except during upnp bcast et all " + e);
+        log.log("got except during upnp bcast et all " + e);
       }
       if (def(received)) {
         received.lowerValue();
-        log.log(lvl, "deviceURLGet Received " + received);
+        log.log("deviceURLGet Received " + received);
         if (received.has("upnp:rootdevice")) {
           Int loc = received.find("location:");
           if (def(loc)) {
@@ -745,20 +737,20 @@ class Upnp {
     externalIPGet() String {
       String cmd = "upnpc -s";
       String res = System:Command.new(cmd).open().output.readStringClose();
-      //log.log(lvl, "res1 " + res);
+      //log.log("res1 " + res);
       if (TS.notEmpty(res)) {
         Int rf = res.find("ExternalIPAddress = ");
         if (def(rf)) {
           rf += 20;
           res = res.substring(rf, res.size);
-          //log.log(lvl, "res2 " + res);
+          //log.log("res2 " + res);
           rf = res.find("\n");
           Int rf2 = res.find("\r");
           if (def(rf2) && rf2 < rf) {
             rf = rf2;
           }
           res = res.substring(0, rf);
-          log.log(lvl, "res3 extipis " + res);
+          log.log("res3 extipis " + res);
           return(res);
         }
       }
@@ -797,9 +789,9 @@ class Upnp {
         return(internalIP);
       }
       Net:Interface ni = Net:Interface.new();
-      log.log(lvl, "getgw " + netGw);
+      log.log("getgw " + netGw);
       internalIP = ni.interfaceForNetwork(netGw).address;
-      log.log(lvl, "Got internal ip " + internalIP);
+      log.log("Got internal ip " + internalIP);
       return(internalIP);
     }
     
@@ -811,7 +803,7 @@ class Upnp {
       //upnpc -a 192.168.99.100 5555 9999 TCP
       String cmd = "upnpc -a " + internalIP + " " + internal + " " + external + " TCP";
       String res = System:Command.new(cmd).open().output.readStringClose();
-      log.log(lvl, "forwardPort result " + res);
+      log.log("forwardPort result " + res);
       return(true);
     }
       
@@ -854,13 +846,10 @@ local use Net:Wol;
 
 class Wol {
 
-  default() self { 
+  default() self {
     fields {
-      Int lvl;
-      IO:Log log;
+      IO:Log log = IO:Logs.get(self);
     }
-    log = IO:Log.new();
-    lvl = log.error;
   }
 
   emit(cs) {
@@ -939,7 +928,7 @@ private static void wakeOnLan(String hex) throws Exception
     addr = addr.swap(":", "");
     addr = addr.swap("-", "");
     addr = addr.strip();
-    log.log(lvl, "Waking " + addr);
+    log.log("Waking " + addr);
     emit(cs) {
     """
     WakeOnLan(beva_addr.bems_toCsString());
