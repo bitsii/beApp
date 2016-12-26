@@ -62,7 +62,6 @@ use class IUHub:BigHubStart {
     innerMain(List args) {
 
       Web:Client:CertificateManager.validateHosts = false;
-      IO:Logs.turnOnAll();
       if (args.length > 0) {
         String mode = args[0]; //ui, svc, both, [absent]
         log.log("mode " + mode);
@@ -105,6 +104,7 @@ use class IUHub:BigHubStart {
     }
 
     cmdMain(List args, plugins) {
+      IO:Logs.turnOnAll();
       AuthedApp ui = AuthedApp.new(plugins);
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]

@@ -486,9 +486,14 @@ use class IUHub:HubPlugin {
      }
      
      start() {
+     
+      if (Logic:Bools.fromString(app.configManager.get("logs.turnOnAll"))) {
+        IO:Logs.turnOnAll();
+      }
+     
       bg.app = app;
       if (runBackground) {
-      bg.startBackground();
+        bg.startBackground();
       }
     }
      
@@ -602,7 +607,7 @@ use class IUHub:HubPlugin {
                 {
                   String subj = messages[i].getSubject();
                   if (subj != null && subj.startsWith(ls)) {
-                    System.out.println("found message");
+                    //System.out.println("found message");
                     Message message = messages[i];
                     if (message != null) {
                       /*Address[] adda = message.getFrom();
@@ -771,7 +776,7 @@ use class IUHub:HubPlugin {
               {
                 String subj = messages[i].getSubject();
                 if (subj != null && subj.startsWith(ls) && !subj.equals(cs)) {
-                  System.out.println("deleting message");
+                  //System.out.println("deleting message");
                   messages[i].setFlag(Flag.DELETED, true);
                 }
               }
