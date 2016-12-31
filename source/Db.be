@@ -663,6 +663,14 @@ class KvDb {
     return(value);
   }
   
+  get(String name, String default) String {
+    String val = self.get(name);
+    if (undef(val)) {
+      return(default);
+    }
+    return(val);
+  }
+  
   insert(String name, String value) {
     try {
       List qa = List.new(2).put(0, name).put(1, value);

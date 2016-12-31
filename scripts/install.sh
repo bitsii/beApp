@@ -10,7 +10,7 @@ echo "Updating software lists"
 sudo apt -qq --assume-yes update
 echo "Installing required additional system software"
 sudo apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
-sudo apt -qq --assume-yes install mpg123
+sudo apt -qq --assume-yes install mpg123 sshpass
 
 echo "Preparing application area"
 rm -rf apprun/App/IUHub

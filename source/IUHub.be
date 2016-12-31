@@ -547,7 +547,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.6.2";
+        String version =@ "5.6.3";
       }
       return(version);
     }
@@ -804,6 +804,20 @@ use class IUHub:HubPlugin {
         System:Process.exit(3);
      }
      return(null);
+   }
+   
+   getInternetListenRequest(request) Map {
+     //String sshPass = app.configManager.get("il.sshHost", "");
+     return(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))));
+   }
+   
+   saveInternetListenRequest(String host, String login, String pass, request) Map {
+    if (app.requestFromAdmin(request)) {
+      app.configManager.put("il.sshHost", host);
+      app.configManager.put("il.sshLogin", login);
+      app.configManager.put("il.sshPass", pass);
+    }
+    return(null);
    }
    
    checkPublicReadPath(Path pa, request) Bool {

@@ -63,8 +63,10 @@ use class IUCam:MotionUpdate {
       if (dz > 0) {
         String cmd = app.paths.appPath.copy().addStep("camclean.sh").toString();
         cmd += " " + cps;
-        log.log("running clean cmd " + cmd);
-        Com.run(cmd);
+        if (System:CurrentPlatform.name != "mswin") {
+          log.log("running clean cmd " + cmd);
+          Com.run(cmd);
+        }
       }
     } else {
       //set sensible default
@@ -448,7 +450,7 @@ use class IUCam:CamPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.6.2";
+        String version =@ "5.6.3";
       }
       return(version);
     }

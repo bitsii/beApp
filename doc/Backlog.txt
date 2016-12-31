@@ -1,33 +1,45 @@
 ______________
 
-no-upnp ssh version - jsch
-  haproxy for privilaged -> localhost
-  ssh for tunnel
-  siteNames ui
-  real certs (let's encrypt and the other one, pay ones)
+no-upnp ssh version 
+  ssh (script) for tunnel (sshpass) or key (you setup)
+
+ssh setup instructs and script
+
+outside db key for en/decrypt passwords in config
 
 dev instructs
 
 =====
-______________
 
-client app - link
-android
+link working under cs
+  mono webserver
+  w10 vm - win embedded, xamarin ios mac ?android
+  
+mac, win cs?jv ver
 
-pics autosend/get
-
-check for updates - two places (sf and github?)
-  size? sha?
-auto update (turn off able, on by default)
 ______________
 
 =====
 
-mac, win java installers
+haproxy for privilaged -> localhost
 
-link working under cs
-  win embedded, xamarin ios mac
-  imap
+link  2 phase, with sig and check info, with deny (after valid user?)
+  and optional required OK
+  and notify
+
+pics autosend/get auto-download pics to app with retention time
+
+siteNames ui
+real certs (let's encrypt and the other one, pay ones)
+  
+client app - link
+android
+
+ping location
+
+check for updates - two places (sf and github?)
+  size? sha?
+auto update (turn off able, on by default)
 ______________
 
 certprint in email, on links
@@ -38,8 +50,6 @@ outside of db config key for secure items, need to know for backup/restore
 
 simple event stuff, alert/notify
 
-support hostname (only ip works now) - must be configured (external and internal names)
-
 support dyn dns options (duck, ?)
 
 =====
@@ -47,14 +57,13 @@ support dyn dns options (duck, ?)
 upload in progress indicator
   id for upload process
   periodic/timer calls from ui
-
-android hub - just wake and pictures
-  jv native upnp
   
-play sounds from file manager, incl looop n times
+temporary picture access/sharing on network (email link)
+  
+play sounds from file manager, incl looop n times (wh noise, include by dl?)
+mixer settings for output and vol?
 record sound snapshot (also after pic from motion)
 
-optional password to encrypte/decrypte imap blob
 sending email to update folks on change
   using linking / tokens for link
   ability to auto sync pics, sms, etc
@@ -62,21 +71,10 @@ sending email to update folks on change
 launch ec2 from imap info for no-ssh version (on demand)
 ______________
   
-auto-download pics to app with retention time
-
 force deviceid to certain characteristics (in get)
-
-  have 2 dev ids for testing, flip-flop
-
-  auto upgrade
-  build profile for lxrel with settings in it (release build params)
-  disable local upgrade from form (release build)
-  hard code upgrade urls
 
 secure tunnel for vnc (encrypted port fwd)
 ______________
-
-failes after session timeout, set timer on request to len of session and force reload
 
 homeauto - light
   java wrapper openzw? node + openzw?
@@ -84,9 +82,8 @@ homeauto - light
 homeauto - locks
 
 doc dev env - good on all plats
-android ver
 
-static forward for things like ssh from local port
+static forward for things like ssh from local port on client
 ______________
 
 cam periodic pic
@@ -96,50 +93,16 @@ persist the last update time, have an update now (refresh) option
 instead of omitting unshowable configs put stars and only a delete link
 extra security with thumbprint
 ______________
-
-easy setup
-  step by step install instructions for noobs
-  
-  make install work when upnp failes (virtualbox)
-  
-check for updates - two places (sf and github?)
-
-get pipeline going
-  
-doc dev env - good on all plats
-android ver
-
-static forward for things like ssh from local port
-______________
-
-homeauto - locks, light
-  java wrapper openzw? node + openzw?
-______________
-
-no-upnp option - ssh
-  use vm on box - get working first
-  jssh
-  remote host/ip/creds
-  mode switch
   
 direct hosting option with imap and webmail
-______________
-
-ui to add forwarding
-extraports
-wakeup (test device for wireless wakekup) - wake on wifi for mac, laptops
 ______________
 
 all in browser dev sandbox
 ______________
 
-link client (ad, ms, etc), keeps hub up to date with ip, gw, mac
-    
 reverse file order
 
 db pooling kvdb (no clocker) option
-  
-persistent ip tunnel based on same/diff router and background check
   
 scheduling 
 
@@ -154,41 +117,19 @@ hc default inst?
   
 video
 
-call args serialize/deserialize, gotta fix js serialize first
-check size
-have both options (subclass callback?)
-
-embedded plugin host (autoauth, etc)
-
-separate hub into upnp et all and just a container for other apps?
-  call upnp et all bridge (IUBridge)
-
 basic link working wincs, monoweb, xamarin
   use mono sqlite instead of firebird
   monoweb with just build module, link, hub
 
-link autoget pics
-
 robots
-
-plugin to build, on success install-restart (last start time)
-diff cmds for base lib and app
-
-freeform devel app (jv/mcs gen, js run) - win, mac, ios, android (plugin)
 
 good event development/scripting abilities!!! across devs (home auto, etc)
 
 library based dev env
 
-autodl pics, ping location
-
 record sound
 play uploaded sound
 alarm
-
-remote presense
-
-remoting for other apps
 
 also have a rasberry pi connected wakeup option
 
@@ -203,12 +144,6 @@ have a sync adapter/ios background thing that updates on occasion
 also working in c# windows imap  
 xamarin studio uwp - xamarin forms
 ios
- 
-only send on change of ext port or ip (make this work better)
-have timing and force update options for both email and folder saved
-
-home automation
-port fwd, admin acct
 
 imap coordinator as-is for links/entry (hub)
 also sends emails (see offerLinkRequest) - list of email addresses which are updated (comma sep)
@@ -226,13 +161,6 @@ duckdns (for fixed port)
 totally online option for hub - dreamhost
   host own imap
   no-upnp option ssh tunnel
-______________
-
-
-wake attached computer
-  dhcp serv and mac get?
-  just mac enough to wake (no dhcp/ip needed?)
-
 ______________
 
 

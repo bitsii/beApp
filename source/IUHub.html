@@ -138,6 +138,12 @@ h5.luiForm {
 <img src="folder-videos.svg" onclick="ui.bem_browseWebCam_0();return false;" title="WebCam Files"/>
 <!--Files-->
 
+<!--Internet Listen-->
+<img src="edit-redo.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/>
+<!--Internet Listen-->
+
+<p>
+  
 <!--Help-->
 <img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/>
 <p>  
@@ -280,6 +286,14 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <p><a id="restartId" href="#" onclick="ui.bem_clearAllTracking_0();return false;">Clear all bad ip tracking</a></p>
 </div>
 <!--Security Extras-->
+
+<!--Internet Listen-->
+<div id="internetListenDiv" style="display: none;">
+<p><label class="luiForm">SSH Hostname</label><input type="text" id="sshHost"></input></p>
+<p><label class="luiForm">SSH Login</label><input type="text" id="sshLogin"></input></p>
+<p><label class="luiForm">SSH Password</label><input type="password" id="sshPass"></input></p>
+<p><input id="saveListen" type="submit" value="Save" onclick="callUI('toggleDisplay', 'internetListenDiv');callApp('saveInternetListenRequest', document.getElementById('sshHost').value, document.getElementById('sshLogin').value, document.getElementById('sshPass').value);return false;"> <input id="cancelListen" type="submit" value="Cancel" onclick="callUI('toggleDisplay', 'internetListenDiv');return false;"></p>
+<!--Internet Listen-->
 
 <!--About-->
 <div id="aboutDiv" style="display: none;"></div>
