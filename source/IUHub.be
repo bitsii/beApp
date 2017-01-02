@@ -136,6 +136,7 @@ use class IUHub:ConnectionUpdate {
       log.log("starting wc update");
       if (fwd) {
         log.log("wc forwarding ports");
+        
         //log.log("wc ext port " + wc.externalPort);
         String slt = System:Random.getString(32);
         app.configManager.put("auth.sharedLoginToken", slt);
@@ -547,7 +548,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.6.3";
+        String version =@ "5.6.4";
       }
       return(version);
     }

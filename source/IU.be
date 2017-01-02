@@ -18,15 +18,20 @@ class IU:WebConnect {
       String gateway;
       String internalAddress;
       String externalAddress;
+      String hostedAddress;
       String internalPort = "";
       String externalPort = "";
+      String hostedPort = "";
       String protocol = "https://";
       String internalBase;
       String externalBase;
+      String hostedBase;
       String internalUrl;
       String externalUrl;
+      String hostedUrl;
       String internalLink;
       String externalLink;
+      String hostedLink;
       
       String internalCamUrl;
       String externalCamUrl;
@@ -840,6 +845,59 @@ class Upnp {
             
     
 
+}
+
+emit(jv) {
+"""
+import com.jcraft.jsch.*;
+"""
+}
+local use Net:Ssh {
+
+  emit(jv) {
+  """
+  JSch jSch;
+  Session session;
+  """
+  }
+  
+  new() self {
+    fields {
+      List remoteForwards = List.new();
+    }
+  }
+  
+  new(String _host, String _user, String _pass) this {
+    fields {
+      String host = _host;
+      String user = _user;
+      String pass = _pass;
+      remoteForwards = List.new(); 
+    }
+  }
+  
+  connect() this {
+  
+  }
+
+}
+
+use Net:Ssh:Forward {
+
+  new() self {
+    fields {
+      Int inPort;
+      String host;
+      Int outPort;
+    }
+  }
+  
+  new(Int _inPort, String _host, Int _outPort) {
+    inPort = _inPort;
+    host = _host;
+    outPort = _outPort;
+  }
+  
 }
 
 local use Net:Wol;

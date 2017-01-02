@@ -54,7 +54,6 @@ cp scripts/startiuh.sh ../apprun/App/IUHub
 cp scripts/iuhrun.sh ../apprun/App/IUHub
 cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
-cp scripts/sshtun.* ../apprun/App/IUHub
 cp scripts/createAdminAccount.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp source/IUHub*.html ../apprun/App/IUHub
@@ -76,6 +75,6 @@ cp source/IUCam*.html ../apprun/App/IUHub
 cp source/MOCAM.conf ../apprun/App/IUHub
 cp extlibs/IUCam/* ../apprun/App/IUHub
 
-#./scripts/iuh5jvrun.sh $*
+#./scripts/iubh5jvrun.sh $*
 
 ./scripts/iubrel.sh

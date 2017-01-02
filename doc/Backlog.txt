@@ -1,11 +1,9 @@
 ______________
 
 no-upnp ssh version 
-  ssh (script) for tunnel (sshpass) or key (you setup)
+  jsch
 
-ssh setup instructs and script
-
-outside db key for en/decrypt passwords in config
+on host ssh setup instructs and script (sshd_config change)
 
 dev instructs
 
@@ -20,6 +18,8 @@ mac, win cs?jv ver
 ______________
 
 =====
+
+outside db key for en/decrypt passwords in config
 
 haproxy for privilaged -> localhost
 
