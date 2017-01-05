@@ -41,6 +41,8 @@ use class IUHub:ConnectionUpdate {
       Bool disable = false;
       String webPort;
       String certificateThumbprint; 
+      Ssh ssh;
+      Set rforwarded;
     }
   
   }
@@ -136,14 +138,51 @@ use class IUHub:ConnectionUpdate {
       log.log("starting wc update");
       if (fwd) {
         log.log("wc forwarding ports");
-        
         //log.log("wc ext port " + wc.externalPort);
         String slt = System:Random.getString(32);
         app.configManager.put("auth.sharedLoginToken", slt);
         wc.sharedLoginToken = slt;
+        
+        String sshHost = app.configManager.get("il.sshHost");
+        String sshLogin = app.configManager.get("il.sshLogin");
+        String sshPass = app.configManager.get("il.sshPass");
+        try {
+          if (TS.notEmpty(sshHost) && TS.notEmpty(sshLogin) && TS.notEmpty(sshPass)) {
+            wc.hostedAddress = sshHost;
+            if (undef(ssh) || ssh.isClosed) {
+              log.log("ssh connecting " + sshHost + " " + sshLogin);
+              ssh = Ssh.new(sshHost, sshLogin, sshPass);
+              ssh.open();
+              rforwarded = Set.new();
+            } else {
+              ssh.sendKeepAlive();
+            }
+          }
+        } catch (any sshe) {
+          log.log("Error during ssh op " + sshe);
+          try {
+             ssh.close();
+             ssh = null;
+           } catch (sshe) {
+           
+           }
+        }
         wc.update();
-        wc.forwardPorts();
+        wc.forwardPorts(ssh, rforwarded);
       } else {
+        if (def(ssh) && ssh.isClosed!) {
+          try {
+            ssh.sendKeepAlive();
+          } catch (sshe) {
+           log.log("Error during ssh op " + sshe);
+           try {
+             ssh.close();
+             ssh = null;
+           } catch (sshe) {
+           
+           }
+          }
+        }
         wc.update();
       }
       log.log("setting links");

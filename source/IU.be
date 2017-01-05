@@ -21,7 +21,6 @@ class IU:WebConnect {
       String hostedAddress;
       String internalPort = "";
       String externalPort = "";
-      String hostedPort = "";
       String protocol = "https://";
       String internalBase;
       String externalBase;
@@ -131,7 +130,7 @@ class IU:WebConnect {
       
   }
   
-  forwardPorts() {
+  forwardPorts(Net:Ssh ssh, Set rforwarded) {
       if (TS.notEmpty(externalAddress)) {
         log.log("Forwarding");
         Int fwdSecs = 7200;//fwd upnp for how long
@@ -148,6 +147,13 @@ class IU:WebConnect {
             log.log("Forwarding extraport external " + currPortS + " to " + ep);
             upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
           }
+        }
+        if (def(ssh) && def(hostedAddress)) {
+          String rfpk = externalPort + ":" + internalPort;
+          if (rforwarded.has(rfpk)!) {
+            ssh.forwardPortR(Int.new(externalPort), "127.0.0.1", Int.new(internalPort));
+          }
+          rforwarded += rfpk;
         }
       }
     }
@@ -856,14 +862,13 @@ local use Net:Ssh {
 
   emit(jv) {
   """
-  JSch jSch;
-  Session session;
+  JSch bevi_jsch;
+  Session bevi_session;
   """
   }
   
   new() self {
     fields {
-      List remoteForwards = List.new();
     }
   }
   
@@ -871,13 +876,58 @@ local use Net:Ssh {
     fields {
       String host = _host;
       String user = _user;
-      String pass = _pass;
-      remoteForwards = List.new(); 
+      String pass = _pass; 
     }
   }
   
-  connect() this {
+  forwardPortR(Int rport, String host, Int lport) this {
+    emit(jv) {
+    """
+    bevi_session.setPortForwardingR(beva_rport.bevi_int, beva_host.bems_toJvString(), beva_lport.bevi_int);
+    """
+    }
+  }
   
+  isClosedGet() Bool {
+    Bool fval =@ false;
+    emit(jv) {
+    """
+    if (bevi_session != null && bevi_session.isConnected()) {
+      return bevl_fval;
+    }
+    """
+    }
+    return(true);
+  }
+  
+  open() this {
+    emit(jv) {
+    """
+    bevi_jsch = new JSch();
+    bevi_session = bevi_jsch.getSession(bevp_user.bems_toJvString(), bevp_host.bems_toJvString(), 22);
+    bevi_session.setPassword(bevp_pass.bems_toJvString());
+    bevi_session.setConfig("StrictHostKeyChecking", "no");
+    bevi_session.connect();
+    """
+    }
+  }
+  
+  close() this {
+    emit(jv) {
+    """
+    bevi_session.disconnect();
+    bevi_session = null;
+    bevi_jsch = null;
+    """
+    }
+  }
+  
+  sendKeepAlive() this {
+    emit(jv) {
+    """
+    bevi_session.sendKeepAliveMsg();
+    """
+    }
   }
 
 }

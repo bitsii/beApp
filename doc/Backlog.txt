@@ -1,7 +1,7 @@
 ______________
 
-no-upnp ssh version 
-  jsch
+do extra port forwards
+get hosted url and fwds into email et all (links)
 
 on host ssh setup instructs and script (sshd_config change)
 
@@ -14,10 +14,14 @@ link working under cs
   w10 vm - win embedded, xamarin ios mac ?android
   
 mac, win cs?jv ver
+  have hub to hub forward option (tunneling)
 
 ______________
 
 =====
+
+only accept host key until first successfull connect (for an address)
+  then retain it
 
 outside db key for en/decrypt passwords in config
 
