@@ -1,7 +1,5 @@
 ______________
 
-add hosted (url) into sitenames for iscrossite
-
 no more refresh after login for token, have a link icon with that url
   for bookmarking or the like instead
 

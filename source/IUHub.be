@@ -859,9 +859,21 @@ use class IUHub:HubPlugin {
    
    saveInternetListenRequest(String host, String login, String pass, request) Map {
     if (app.requestFromAdmin(request)) {
+      //need to remove old if present
       app.configManager.put("il.sshHost", host);
       app.configManager.put("il.sshLogin", login);
       app.configManager.put("il.sshPass", pass);
+      String siteNames = app.configManager.get("siteNames");
+      if (TS.notEmpty(host)) {
+        if (undef(siteNames)) { siteNames = ""; }
+        if (siteNames.has("https://" + host)!) {
+          if (TS.notEmpty(siteNames)) {
+            siteNames += ",";
+          }
+          siteNames += "https://" += host;
+          app.configManager.put("siteNames", siteNames);
+        }
+      }
     }
     return(null);
    }
