@@ -127,6 +127,15 @@ class IU:WebConnect {
         externalCamLink = "<a href=\"" + externalCamUrl + "\">External Link to " + deviceName + " Cam, use outside device's network (the internet).</a>";
         log.log("External url " + externalUrl);
       }
+      if (TS.notEmpty(hostedAddress)) {
+        hostedBase = protocol + hostedAddress + extPort + "/";          
+        hostedUrl = hostedBase + "App/IUHub/IUHub.html";
+        if (TS.notEmpty(sharedLoginToken)) {
+          hostedUrl += "?loginToken=" += sharedLoginToken;
+        }
+        hostedLink = "<a href=\"" + hostedUrl + "\">Hosted Link to " + deviceName + " Hub, use anywhere there is internet connectivity.</a>";
+        log.log("Hosted url use outside device's network (the internet)." + hostedUrl);
+      }
       
   }
   
@@ -149,11 +158,21 @@ class IU:WebConnect {
           }
         }
         if (def(ssh) && def(hostedAddress)) {
-          String rfpk = externalPort + ":" + internalPort;
-          if (rforwarded.has(rfpk)!) {
+          if (rforwarded.has(externalPort)!) {
             ssh.forwardPortR(Int.new(externalPort), "127.0.0.1", Int.new(internalPort));
           }
-          rforwarded += rfpk;
+          rforwarded += externalPort;
+          if (TS.notEmpty(extraPorts)) {
+            for (ep in extraPorts.split(",")) {
+              currPortS = extraPortMap.get(ep);
+              if (TS.notEmpty(currPortS)) {
+                if (rforwarded.has(currPortS)!) {
+                  ssh.forwardPortR(Int.new(currPortS), "127.0.0.1", Int.new(ep));
+                }
+                rforwarded += currPortS;
+              }
+            }
+          }
         }
       }
     }
@@ -248,6 +267,12 @@ class IU:WebConnect {
           extUrl = extUrl.swap("$ip$", externalAddress);
           extUrl = extUrl.swap("$port$", service.get("intPort"));
           service.put("extLink", extUrl + " External Connection for " += conf.get("name") += " - use outside device's network (the internet).");
+        }
+        String hstUrl = conf.get("urlPat").copy();
+        if (TS.notEmpty(hstUrl) && TS.notEmpty(hostedAddress)) {
+          hstUrl = hstUrl.swap("$ip$", hostedAddress);
+          hstUrl = hstUrl.swap("$port$", service.get("intPort"));
+          service.put("hstLink", hstUrl + " Hosted Connection for " += conf.get("name") += " - use anywhere there is internet connectivity.");
         }
       }
       return(services);

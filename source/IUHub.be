@@ -164,7 +164,7 @@ use class IUHub:ConnectionUpdate {
              ssh.close();
              ssh = null;
            } catch (sshe) {
-           
+             ssh = null;
            }
         }
         wc.update();
@@ -748,8 +748,14 @@ use class IUHub:HubPlugin {
         }
         log.log("In doimap2");
         String msg = "";
+        if (TS.notEmpty(wc.hostedLink)) {
+          msg += "<p>" + wc.hostedLink += "</p>\n";
+        }
         if (TS.notEmpty(wc.externalLink)) {
-          msg += "<p>" + wc.externalLink += "</p>\n<p>" += wc.internalLink += "</p>\n";
+          msg += "<p>" + wc.externalLink += "</p>\n";
+        }
+        if (TS.notEmpty(wc.internalLink)) {
+          msg += "<p>" += wc.internalLink += "</p>\n";
         }
         //if (TS.notEmpty(wc.externalCamLink)) {
         //  msg += "<p>" + wc.externalCamLink += "</p>\n<p>" += //wc.internalCamLink += "</p>\n";
@@ -1062,8 +1068,15 @@ use class IUHub:HubPlugin {
       String intsl = String.new();
       String extsl = String.new();
       for (any kv in wc.getServices()) {
-        intsl += "<p>" += kv.value.get("intLink") += "</p>";
-        extsl += "<p>" += kv.value.get("extLink") += "</p>";
+        if (TS.notEmpty(kv.value.get("intLink"))) {
+          intsl += "<p>" += kv.value.get("intLink") += "</p>";
+        } 
+        if (TS.notEmpty(kv.value.get("extLink"))) {
+          extsl += "<p>" += kv.value.get("extLink") += "</p>";
+        }
+        if (TS.notEmpty(kv.value.get("hstLink"))) {
+          extsl += "<p>" += kv.value.get("hstLink") += "</p>";
+        }
       }
       return(Pair.new(intsl, extsl));
    }
@@ -1129,7 +1142,11 @@ use class IUHub:HubPlugin {
         devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" += wc.deviceId += "');return false;\">Wakeup  " += wc.deviceName += "</a></p>";
         }
        if (type == "ext") {
+         if (TS.notEmpty(wc.hostedLink)) {
+          devLinks += wc.hostedLink;
+         }
          if (TS.notEmpty(wc.externalLink)) {
+          if (TS.notEmpty(wc.hostedLink)) { devLinks += "<p>"; }
           devLinks += wc.externalLink;
           //if (TS.notEmpty(wc.externalCamLink)) {
           //  devLinks += "<p>" += wc.externalCamLink;

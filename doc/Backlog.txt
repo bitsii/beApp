@@ -1,7 +1,9 @@
 ______________
 
-do extra port forwards
-get hosted url and fwds into email et all (links)
+add hosted (url) into sitenames for iscrossite
+
+no more refresh after login for token, have a link icon with that url
+  for bookmarking or the like instead
 
 on host ssh setup instructs and script (sshd_config change)
 
@@ -9,16 +11,23 @@ dev instructs
 
 =====
 
-link working under cs
+working under cs
   mono webserver
   w10 vm - win embedded, xamarin ios mac ?android
+  whole enchilada, have a "forwarding option" which uses local ui but sends on to other side, have breadcrumbs for multi-step
+  android?
   
-mac, win cs?jv ver
-  have hub to hub forward option (tunneling)
+mac, win cs ver
 
 ______________
 
 =====
+
+put hosted first, make sure it works when upnp is off
+be able to disable upnp but keep hosted
+let a raspi work as "hosted" (with upnp)
+
+have hub to hub forward option (tunneling)
 
 only accept host key until first successfull connect (for an address)
   then retain it
