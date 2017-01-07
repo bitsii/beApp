@@ -1,25 +1,22 @@
 ______________
 
-no more refresh after login for token, have a link icon with that url
-  for bookmarking or the like instead
-
-on host ssh setup instructs and script (sshd_config change)
-
-dev instructs
-
 =====
 
 working under cs
-  mono webserver
+  mono webserver - just do mcs ver of iubh5jv with built-in mono http listener, get it all workin
+    ?move to bouncy castle for cert gen?
   w10 vm - win embedded, xamarin ios mac ?android
   whole enchilada, have a "forwarding option" which uses local ui but sends on to other side, have breadcrumbs for multi-step
   android?
   
 mac, win cs ver
 
+on host ssh setup instructs and script (sshd_config change)
 ______________
 
 =====
+
+dev instructs
 
 put hosted first, make sure it works when upnp is off
 be able to disable upnp but keep hosted

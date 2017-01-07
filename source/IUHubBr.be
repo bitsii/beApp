@@ -421,9 +421,10 @@ use class IUHub:Eui {
       HC.new(self).pageToken = arg["pageToken"];
       if (TS.notEmpty(arg["loginUri"])) {
         String li = arg["loginUri"];
-        if (HD.href.has(li)!) {
-          HD.href = li;
-        }
+        HD.getElementById("liLink").href = li;
+        //if (HD.href.has(li)!) {
+        //  HD.href = li;
+        //}
       }
       //log.log("updateResponse2 just logged in");
     }
