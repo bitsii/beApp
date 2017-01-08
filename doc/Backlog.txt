@@ -16,6 +16,10 @@ ______________
 
 =====
 
+hide ilpass in config
+
+encrypt passes with key outside confdb
+
 dev instructs
 
 put hosted first, make sure it works when upnp is off
