@@ -1,30 +1,34 @@
-______________
 
-=====
-
-working under cs
-  mono webserver - just do mcs ver of iubh5jv with built-in mono http listener, get it all workin
-    ?move to bouncy castle for cert gen?
-  w10 vm - win embedded, xamarin ios mac ?android
-  whole enchilada, have a "forwarding option" which uses local ui but sends on to other side, have breadcrumbs for multi-step
-  android?
-  
-mac, win cs ver
+dev instructs
 
 on host ssh setup instructs and script (sshd_config change)
-______________
+
+iot (lights, etc)
+homeauto - light
+  java wrapper openzw? node + openzw?
+homeauto - locks
+
+Have a "forwarding option" which uses local ui but sends on to other side, have breadcrumbs for multi-step
+
+android
 
 =====
+
+cs/ios
+
+client behavior ios/android
+    disable local upnp et all (client only)
+  android
+  mono webserver - just do mcs ver of iubh5jv with built-in mono http listener, get it all workin
+    ?move to bouncy castle for cert gen?
+  
+mac, win ver
+
+remote access stuff
 
 hide ilpass in config
 
 encrypt passes with key outside confdb
-
-dev instructs
-
-put hosted first, make sure it works when upnp is off
-be able to disable upnp but keep hosted
-let a raspi work as "hosted" (with upnp)
 
 have hub to hub forward option (tunneling)
 
@@ -87,13 +91,6 @@ force deviceid to certain characteristics (in get)
 
 secure tunnel for vnc (encrypted port fwd)
 ______________
-
-homeauto - light
-  java wrapper openzw? node + openzw?
-
-homeauto - locks
-
-doc dev env - good on all plats
 
 static forward for things like ssh from local port on client
 ______________
