@@ -1,5 +1,5 @@
 
-dev instructs
+dev instructs, downloads
 
 on host ssh setup instructs and script (sshd_config change)
 
