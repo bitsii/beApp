@@ -194,6 +194,11 @@ use class IUHub:BigHubStart {
         log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
+      if (TS.notEmpty(mode) && mode == "getIntUrl") {
+        log.log("getIntUrl");
+        ui.plugin.bg.init().uu.doUpdate();
+        log.log("int url is " + ui.plugin.wcol.o.internalUrl);
+      }
       if (TS.notEmpty(mode) && mode == "saveIntUrl") {
         log.log("saveIntUrl");
         ui.plugin.bg.init().uu.doUpdate();
