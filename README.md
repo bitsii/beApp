@@ -11,6 +11,10 @@ To get started there's some [stuff you'll need] (https://gitlab.com/ioturl/iotur
 
 Once you have it you can [begin your installation] (https://gitlab.com/ioturl/ioturl/wikis/install-page)
 
+Or if there's something you can't figure out [ask about it] (https://stackoverflow.com/questions/tagged/ioturl)
+
+If you think there's a problem [let us know] (https://gitlab.com/ioturl/ioturl/issues)
+
 You might also feel like [taking a peek at the source] (https://bitbucket.org/ioturl/ioturl) ( you might even want to [make it better] (https://gitlab.com/ioturl/ioturl/wikis/developer-instructions) )
 
 ...or need to find your way back to [the authoritative version of this page] (https://gitlab.com/ioturl/ioturl/wikis/home) someday
