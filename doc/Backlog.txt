@@ -1,28 +1,24 @@
 
-on host ssh setup instructs and script (sshd_config change)
+mac, win, android, ios ver
+  upnp jv
+  project in subdir, build into it
+  mono webserver - just do mcs ver of iubh5jv with built-in mono http listener, get it all workin
+    ?move to bouncy castle for cert gen?
 
+Have a "forwarding option" which uses local ui but sends on to other side, have breadcrumbs for multi-step
+
+remote access stuff
+
+pics autosend/get auto-download pics to app with retention time
+
+ping location
+
+on host ssh setup instructs and script (sshd_config change)
+  
 iot (lights, etc)
 homeauto - light
   java wrapper openzw? node + openzw?
 homeauto - locks
-
-Have a "forwarding option" which uses local ui but sends on to other side, have breadcrumbs for multi-step
-
-android
-
-=====
-
-cs/ios
-
-client behavior ios/android
-    disable local upnp et all (client only)
-  android
-  mono webserver - just do mcs ver of iubh5jv with built-in mono http listener, get it all workin
-    ?move to bouncy castle for cert gen?
-  
-mac, win ver
-
-remote access stuff
 
 hide ilpass in config
 
@@ -41,15 +37,11 @@ link  2 phase, with sig and check info, with deny (after valid user?)
   and optional required OK
   and notify
 
-pics autosend/get auto-download pics to app with retention time
-
 siteNames ui
 real certs (let's encrypt and the other one, pay ones)
   
 client app - link
 android
-
-ping location
 
 check for updates - two places (sf and github?)
   size? sha?

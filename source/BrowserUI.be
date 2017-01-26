@@ -667,7 +667,7 @@ use class UI:ExternalBrowser {
     ifEmit(platDroid) {
     emit(jv) {
    """
-be.$class/UI:JvAd:WebBrowser$.MainActivity.openExternalBrowserToUrl(beva_url.bems_toJvString());
+//be.$class/UI:JvAd:WebBrowser$.MainActivity.openExternalBrowserToUrl(beva_url.bems_toJvString());
     """
     }
     }

@@ -1,1 +1,11 @@
 extlibs/*
+android/IUHub/app/src/main/java/be/*
+*.iml
+.gradle
+android/IUHub/local.properties
+android/IUHub/.idea/workspace.xml
+android/IUHub/.idea/libraries
+.DS_Store
+android/IUHub/build
+android/IUHub/captures
+android/IUHub/app/libs
