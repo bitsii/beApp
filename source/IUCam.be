@@ -464,6 +464,26 @@ use class IUCam:CamPlugin {
       return(false);
    }
    
+   okForPageToken(request) Bool {
+     if (request.embedded) {
+       return(true);
+     }
+     String ref = request.getInputHeader("referer");
+     if (TS.isEmpty(ref)) {
+      return(false);
+     }
+     Int pos = 0;
+     for (Int i = 0;i < 3;i++=) {
+       pos = ref.find("/", pos + 1);
+     }
+     ref = ref.substring(pos);
+     log.log("okForPageToken " + ref);
+     if (ref == "/App/IUHub/IUHub.html" || ref == "/App/IUHub/IUCam.html") {
+      return(true);
+     }
+     return(false);
+   }
+   
     toggleMotionRequest(Map arg, request) {
       Account a = app.accountManager.getAccountForRequest(request);
       if (app.requestFromAdmin(request)) {

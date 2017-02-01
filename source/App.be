@@ -552,11 +552,13 @@ use class App:AuthPlugin {
   
   pageTokenRequest(Map arg, request) {
     log.log("in pagetokenrequest");
-    Map res = Map.new();
-    String pageToken = System:Random.getString(32);
-    request.putSession("pageToken", pageToken);
-    res["pageToken"] = pageToken;
-    res["action"] = "pageTokenResponse";
+    if (app.plugin.okForPageToken(request)) {
+      Map res = Map.new();
+      String pageToken = System:Random.getString(32);
+      request.putSession("pageToken", pageToken);
+      res["pageToken"] = pageToken;
+      res["action"] = "pageTokenResponse";
+    }
     return(res);
   }
 
