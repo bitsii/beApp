@@ -251,11 +251,20 @@ use class IUCam:Eui {
       IO:Logs.turnOnAll();
       clearImage();
       Map arg = Map.new();
-      arg["action"] = "checkLoggedInRequest";
+      arg["action"] = "pageTokenRequest";
       arg["href"] = HD.href;
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       handleCallOut(arg);
+   }
+   
+   pageTokenResponse(Map arg) {
+      HC.new(self).pageToken = arg["pageToken"];
+      Map carg = Map.new();
+      carg["action"] = "checkLoggedInRequest";
+      carg["href"] = HD.href;
+      //log.log("href at startup " + HD.href);
+      handleCallOut(carg);
    }
    
    login() {
@@ -294,14 +303,11 @@ use class IUCam:Eui {
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
-      HC.new(self).pageToken = arg["pageToken"];
     }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
-    if (arg.has("loginToken")) {
-      HD.getElementById("hubLink").href = "IUHub.html?loginToken=" + arg["loginToken"];
-    }
+    HD.getElementById("hubLink").href = "IUHub.html";
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
       if (TS.notEmpty(permsString)) {

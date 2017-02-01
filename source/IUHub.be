@@ -138,10 +138,6 @@ use class IUHub:ConnectionUpdate {
       log.log("starting wc update");
       if (fwd) {
         log.log("wc forwarding ports");
-        //log.log("wc ext port " + wc.externalPort);
-        String slt = System:Random.getString(32);
-        app.configManager.put("auth.sharedLoginToken", slt);
-        wc.sharedLoginToken = slt;
         
         String sshHost = app.configManager.get("il.sshHost");
         String sshLogin = app.configManager.get("il.sshLogin");
@@ -587,7 +583,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.6.6";
+        String version =@ "5.6.7";
       }
       return(version);
     }
@@ -1019,10 +1015,6 @@ use class IUHub:HubPlugin {
    
    getLoginUri(request) String {
      String loginBookmark = "/App/IUHub/IUHub.html";
-     String lt = request.getSession("loginToken");
-     if (TS.notEmpty(lt)) {
-        loginBookmark += "?loginToken=" += lt;
-     }
      return(loginBookmark);
    }
    
@@ -1042,12 +1034,16 @@ use class IUHub:HubPlugin {
      //add links
      Bool internal = false;
      WebConnect wc = wcol.o;
-     String cp = TS.commonPrefix(request.remoteAddress, wc.internalAddress);
-      if (TS.notEmpty(cp)) {
-        LinkedList ll = cp.split(".");
-        log.log(" rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
-        if (ll.size > 2) {
-          internal = true;
+     if (request.embedded) {
+       internal = true;
+     } else {
+       String cp = TS.commonPrefix(request.remoteAddress, wc.internalAddress);
+        if (TS.notEmpty(cp)) {
+          LinkedList ll = cp.split(".");
+          log.log(" rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
+          if (ll.size > 2) {
+            internal = true;
+          }
         }
       }
       Pair sl = self.serviceLinks;
@@ -1098,7 +1094,11 @@ use class IUHub:HubPlugin {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
     for (any kv in app.plugin.linksol.o) {
       WebConnect wc = kv.value;
-      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDevLinks', '" += wc.deviceId += "');callApp('getDevLinksRequest', '" += wc.deviceId += "', '');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
+      
+      devLinks += "<p><a href=\"#\" onclick=\"callApp('connectToDeviceRequest', '" += wc.deviceId += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Go to  " += wc.deviceName += "</a></p>";
+      
+      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDevLinks', '" += wc.deviceId += "');callApp('getDevLinksRequest', '" += wc.deviceId += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Additional Links for  " += wc.deviceName += "</a></p>";
+      
     }
      return(devLinks);
    }
@@ -1119,60 +1119,22 @@ use class IUHub:HubPlugin {
      }
    }
    
-   getDevLinksRequest(String deviceId, String type, request) Map {
+   getDevLinksRequest(String deviceId, request) Map {
      String devLinks = String.new();
      //common prefix with target . and check for size of 3
      //later can use my netmask TODO
      WebConnect wc = app.plugin.linksol.o.get(deviceId);
      WebConnect mywc = app.plugin.wcol.o;
      if (def(wc)) {
-       if (TS.isEmpty(type)) {
-        type = "ext";
-        String cp = TS.commonPrefix(request.remoteAddress, wc.internalAddress);
-        if (TS.notEmpty(cp)) {
-          LinkedList ll = cp.split(".");
-          log.log(" rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
-          if (ll.size > 2) {
-            type = "int";
-          }
-        }
-        if (request.remoteAddress == "127.0.0.1") {
-          type = "int";
-        }
-        showWake = false;
-        cp = TS.commonPrefix(mywc.internalAddress, wc.internalAddress);
-        if (TS.notEmpty(cp)) {
-          ll = cp.split(".");
-          if (ll.size > 2) {
-            showWake = true;
-          }
-        }
-       } else {
-        Bool showWake = true;
+       devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" += wc.deviceId += "');return false;\">Wakeup  " += wc.deviceName += "</a></p>";
+       if (TS.notEmpty(wc.hostedLink)) {
+        devLinks += "<p>" += wc.hostedLink += "</p>";
        }
-       if (showWake) {
-        devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" += wc.deviceId += "');return false;\">Wakeup  " += wc.deviceName += "</a></p>";
-        }
-       if (type == "ext") {
-         if (TS.notEmpty(wc.hostedLink)) {
-          devLinks += wc.hostedLink;
-         }
-         if (TS.notEmpty(wc.externalLink)) {
-          if (TS.notEmpty(wc.hostedLink)) { devLinks += "<p>"; }
-          devLinks += wc.externalLink;
-          //if (TS.notEmpty(wc.externalCamLink)) {
-          //  devLinks += "<p>" += wc.externalCamLink;
-          //}
-         }
-         devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'int');return false;\">Or get internal links for  " += wc.deviceName += "...</a></p>";
-       } else {
-         if (TS.notEmpty(wc.internalLink)) {
-          devLinks += wc.internalLink;
-          //if (TS.notEmpty(wc.internalCamLink)) {
-          //  devLinks += "<p>" += wc.internalCamLink;
-          //}
-         }
-         devLinks += "<p><a href=\"#\" onclick=\"callApp('getDevLinksRequest', '" += wc.deviceId += "', 'ext');return false;\">Or get external links for  " += wc.deviceName += "...</a></p>";
+       if (TS.notEmpty(wc.externalLink)) {
+        devLinks += "<p>" += wc.externalLink += "</p>";
+       }
+       if (TS.notEmpty(wc.internalLink)) {
+        devLinks += "<p>" += wc.internalLink += "</p>";
        }
     }
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))

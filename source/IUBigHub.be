@@ -63,7 +63,7 @@ use class IUHub:BigHubStart {
 
       Web:Client:CertificateManager.validateHosts = false;
       if (args.length > 0) {
-        String mode = args[0]; //ui, svc, both, [absent]
+        String mode = args[0]; //lui, wui, both, [absent]
         log.log("mode " + mode);
       } else {
         log.log("mode empty");

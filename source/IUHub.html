@@ -82,6 +82,35 @@ h5.luiForm {
 <img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" title="Files"/>
 <!--Files-->
 
+<!--Files-->
+<img src="folder-videos.svg" onclick="ui.bem_browseWebCam_0();return false;" title="WebCam Files"/>
+<!--Files-->
+
+<!--Logout-->
+<img src="system-log-out.svg" onclick="ui.bem_logout_0();return false;" title="Logout"/>
+<!--Logout-->
+
+<!--LiLink-->
+<!--<a id="liLink" href="IUCam.html"><img src="help-about.svg" title="Logged In Bookmark"/></a>-->
+<!--LiLink-->
+  
+<!-- config stuff link -->
+<img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/>
+
+<p>
+  
+<!--Help-->
+<img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/>
+<p>  
+<a href="#" onclick="callUI('toggleDisplay', 'helpDiv');return false;">Click here for Help</a>
+<!--Help-->
+
+<p>
+  
+<!-- config stuff -->
+
+<div id="configItemsDiv" style="display: none;">
+
 <!--Service Connections-->
 <img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>
 <!--Service Connections-->
@@ -93,13 +122,13 @@ h5.luiForm {
 <!--Services-->
 <img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/>
 <!--Services-->
-  
+    
 <!--Accounts-->
 <img src="system-users.svg" onclick="ui.bem_showAccountAdminRequest_0();return false;" title="Accounts"/>
 <!--Accounts-->
 
 <p>
-  
+
 <!--Device Name-->
 <img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/>
 <!--Device Name-->
@@ -111,20 +140,16 @@ h5.luiForm {
 <!--Configuration-->
 <img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="ui.bem_showConfig_0();return false;" title="Configuration"/>
 <!--Configuration-->
-  
+    
 <!--Security Extras-->
 <img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');ui.bem_showSessionsRequest_0();return false;" title="Security Extras"/>
 <!--Security Extras-->
 
+<p>
+
 <!--Password-->
 <img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/>
 <!--Password-->
-
-<p>
-
-<!--Logout-->
-<img src="system-log-out.svg" onclick="ui.bem_logout_0();return false;" title="Logout"/>
-<!--Logout-->
 
 <!--About-->
 <img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/>
@@ -134,25 +159,11 @@ h5.luiForm {
 <a id="camLink" href="IUCam.html"><img src="accessories-camera.svg" title="IUCam"/></a>
 <!--IUCam-->
 
-<!--Files-->
-<img src="folder-videos.svg" onclick="ui.bem_browseWebCam_0();return false;" title="WebCam Files"/>
-<!--Files-->
-
 <!--Internet Listen-->
 <img src="preferences-desktop-online-accounts.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/>
 <!--Internet Listen-->
 
-<p>
-  
-<!--LiLink-->
-<a id="liLink" href="IUCam.html"><img src="help-about.svg" title="Logged In Bookmark"/></a>
-<!--LiLink-->
-  
-<!--Help-->
-<img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/>
-<p>  
-<a href="#" onclick="callUI('toggleDisplay', 'helpDiv');return false;">Click here for Help</a>
-<!--Help-->
+</div>
 
 <p>
 

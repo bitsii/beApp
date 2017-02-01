@@ -1,11 +1,21 @@
 
-mac, win, android, ios ver
-  upnp jv
-  project in subdir, build into it
-  mono webserver - just do mcs ver of iubh5jv with built-in mono http listener, get it all workin
-    ?move to bouncy castle for cert gen?
+separate, smaller client only for mobile (dt is full app)
+  drop webserver et all from it, may not need bcprov
+  diff extlibs
 
-Have a "forwarding option" which uses local ui but sends on to other side, have breadcrumbs for multi-step
+single signon - holds sessions, find / login / forward authed to other ui
+
+app for client, app for service
+  can live in same app, have own plugins and such
+
+mac, win, android, ios ver
+  local ui jfx
+  local ui android
+  auto-login option for embedded=true
+  upnp jv
+  cs ws - use the httplistener
+    ?move to bouncy castle for cert gen?
+    ?or just figure out why it's not liked?
 
 remote access stuff
 

@@ -368,12 +368,20 @@ use class IUHub:Eui {
       IO:Logs.turnOnAll();
       clearImage();
       Map arg = Map.new();
-      arg["action"] = "checkLoggedInRequest";
-      arg["href"] = HD.href;
+      arg["action"] = "pageTokenRequest";
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       //log.log("href at startup " + HD.href);
       handleCallOut(arg);
+   }
+   
+   pageTokenResponse(Map arg) {
+      HC.new(self).pageToken = arg["pageToken"];
+      Map carg = Map.new();
+      carg["action"] = "checkLoggedInRequest";
+      carg["href"] = HD.href;
+      //log.log("href at startup " + HD.href);
+      handleCallOut(carg);
    }
    
    login() {
@@ -418,14 +426,13 @@ use class IUHub:Eui {
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
-      HC.new(self).pageToken = arg["pageToken"];
-      if (TS.notEmpty(arg["loginUri"])) {
-        String li = arg["loginUri"];
-        HD.getElementById("liLink").href = li;
+      //if (TS.notEmpty(arg["loginUri"])) {
+        //String li = arg["loginUri"];
+        //HD.getElementById("liLink").href = li;
         //if (HD.href.has(li)!) {
         //  HD.href = li;
         //}
-      }
+      //}
       //log.log("updateResponse2 just logged in");
     }
     if (arg.has("actionLinks")) {
@@ -436,9 +443,7 @@ use class IUHub:Eui {
     } else {
       HD.getElementById("devLinksListDiv").innerHTML = "";
     }
-    if (arg.has("loginToken")) {
-      HD.getElementById("camLink").href = "IUCam.html?loginToken=" + arg["loginToken"];
-    }
+    HD.getElementById("camLink").href = "IUCam.html";
     HD.getElementById("devLinksDiv").innerHTML = "";
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];

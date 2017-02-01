@@ -537,47 +537,27 @@ use class App:AuthPlugin {
       Account a = app.accountManager.getAccount(accountName);
       if (def(a)) {
         log.log("Found logged in account " + accountName);
-        log.log("Checking loginToken");
-        String lt = arg["href"];
-        if (TS.notEmpty(lt) && lt.has("loginToken=")) {
-          lt = lt.substring(lt.find("loginToken=") + 11, lt.size);
-        }
-        String st = request.getSession("loginToken");
-        if (TS.notEmpty(lt) && TS.notEmpty(st) && lt == st) {
-          Bool tokOkMine = true;
-        } else {
-          tokOkMine = false;
-        }
-        unless (tokOkMine) {
-          String ct = app.configManager.get("auth.sharedLoginToken");
-        }
-        if (tokOkMine! && TS.notEmpty(lt) && TS.notEmpty(ct) && lt == ct) {
-          Bool tokOkShared = true;
-        } else {
-          tokOkShared = false;
-        }
-        if (tokOkMine || tokOkShared) {
-          log.log("loginToken ok");
-          Map res = Map.new();
-          res["action"] = "loggedInResponse";
-          res["name"] = accountName;
-          res = app.loggedIn(a, res, arg, request);
-          if (tokOkMine) {
-            res.delete("loginUri");
-          }
-          return(res);
-        } else {
-          log.log("loginToken notok");
-          if (TS.isEmpty(lt)) { log.log("lt empty"); }
-          else { log.log("lt " + lt); }
-          if (TS.isEmpty(st)) { log.log("st empty"); }
-          else { log.log("st " + st); }
-        }
+        Map res = Map.new();
+        res["action"] = "loggedInResponse";
+        res["name"] = accountName;
+        res = app.loggedIn(a, res, arg, request);
+        res.delete("loginUri");
+        return(res);
       } else {
         log.log("No such account " + accountName);
       }
     }
     return(logoutRequest(arg, request));
+  }
+  
+  pageTokenRequest(Map arg, request) {
+    log.log("in pagetokenrequest");
+    Map res = Map.new();
+    String pageToken = System:Random.getString(32);
+    request.putSession("pageToken", pageToken);
+    res["pageToken"] = pageToken;
+    res["action"] = "pageTokenResponse";
+    return(res);
   }
 
   loginRequest(Map arg, request) {
@@ -888,7 +868,10 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
     main() {
       webr = WeBr.new();
       webr.webHandler = self;
-      webr.height = 450;
+      //webr.height = 450;
+      //webr.width = 320;
+      
+      webr.height = 560;
       webr.width = 320;
       
       String mypwd = System:Environment.getVariable("MYPWD");
@@ -940,7 +923,7 @@ class AuthedApp {
   
   checkRequest(request) Bool {
   
-    Int maxBad =@ 160;
+    Int maxBad =@ 300;
     Int clearSecs =@ 40;
     Int updateSecs =@ 20;
   
@@ -970,14 +953,17 @@ class AuthedApp {
     }
     */
     
+    if (request.embedded) {
+      return(true);
+    }
+    
+    String accountName = request.getSession("account.name");
+    if (TS.notEmpty(accountName)) {
+        return(true);
+    }
+    
     String ip = request.remoteAddress;
     String sip = request.getSession("ip");
-    String accountName = request.getSession("account.name");
-    if (TS.notEmpty(ip) && TS.notEmpty(sip) && TS.notEmpty(accountName)) {
-      if (ip == sip) {
-        return(true);
-      }
-    }
     
     Int ns = Time:Interval.now().seconds;
     
@@ -1297,7 +1283,7 @@ class AuthedApp {
     String sessionExp = request.getSession("sessionExp");
     if (TS.isEmpty(sessionExp)) {
       log.log("no sessionExp");
-      request.deleteSession();
+      //request.deleteSession();
       return(false);
     }
     Int sei = Int.new(sessionExp);
@@ -1308,7 +1294,7 @@ class AuthedApp {
     Int ns = Time:Interval.now().seconds;
     if (ns > sei) {
       log.log("session expired");
-      request.deleteSession();
+      //request.deleteSession();
       return(false);
     }
     Int nu = Int.new(request.getSession("sessionUpdate"));
@@ -1336,23 +1322,24 @@ class AuthedApp {
             if (undef(aname) || aname.ends("Request")!) {
               throw(Exception.new("Invalid request"));
             }
-            String accountName = request.getSession("account.name");
-            if (TS.isEmpty(accountName)) {
-              unless (aname == "loginRequest") {
-                return(null);
-              }
-            } else {
             
-              unless (aname == "loginRequest" || checkRenewSession(request)) {
-                log.log("rejecting expired session request");
-                return(null);
-              }
-            
-              //checkLoggedInRequest is ok
-               
-              String stok = request.getSession("pageToken");
-              String atok = arg["pageToken"];
-              unless (aname == "checkLoggedInRequest" && TS.isEmpty(atok)) {
+            unless (aname == "pageTokenRequest") {
+              String accountName = request.getSession("account.name");
+              if (TS.isEmpty(accountName)) {
+                unless (aname == "loginRequest") {
+                  return(null);
+                }
+              } else {
+              
+                unless (aname == "loginRequest" || checkRenewSession(request)) {
+                  log.log("rejecting expired session request");
+                  return(null);
+                }
+              
+                //checkLoggedInRequest is ok
+                 
+                String stok = request.getSession("pageToken");
+                String atok = arg["pageToken"];
                 if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
                   log.log("stok or atok emtpy failing due to pageToken");
                   return(null);
@@ -1361,11 +1348,11 @@ class AuthedApp {
                   log.log("stok != atok failing due to pageToken");
                   return(null);
                 }
+              
+                //log.log("pageToken action " + aname);
+                //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
+                //if (def(stok)) { log.log("session pageToken " + stok); }
               }
-            
-              //log.log("pageToken action " + aname);
-              //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
-              //if (def(stok)) { log.log("session pageToken " + stok); }
             }
             log.log("here");
             if (arg.has("args")) {
@@ -1419,15 +1406,9 @@ class AuthedApp {
     }
     
     loggedIn(Account a, Map res, Map arg, request) {
-      String pageToken = System:Random.getString(32);
-      String loginToken = request.getSession("loginToken");
-      if (TS.isEmpty(loginToken)) {
-        loginToken = System:Random.getString(32);
-        request.putSession("loginToken", loginToken);
-      }
-      request.putSession("pageToken", pageToken);
-      res["pageToken"] = pageToken;
-      res["loginToken"] = loginToken;
+      //String pageToken = System:Random.getString(32);
+      //request.putSession("pageToken", pageToken);
+      //res["pageToken"] = pageToken;
       //log.log("loggedIn request uri " + request.uri);
       return(self.plugin.loggedIn(a, res, arg, request));
     }

@@ -559,8 +559,8 @@ use class UI:BrowserScriptRequest {
      session.clear();
    }
    
-   remoteAddressGet() {
-    return("local_browser");
+   remoteAddressGet() String {
+    return("");
    }
     
 }
