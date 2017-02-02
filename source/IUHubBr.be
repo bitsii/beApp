@@ -375,6 +375,13 @@ use class IUHub:Eui {
       handleCallOut(arg);
    }
    
+   toLoginResponse() {
+      HD.getElementById("logindiv").display = "block";
+      HD.getElementById("loggedindiv").display = "none";
+      HD.getElementById("spinnerdiv").display = "none";
+      HD.getElementById("loginmsgdiv").innerHTML = "";
+   }
+   
    pageTokenResponse(Map arg) {
       HC.new(self).pageToken = arg["pageToken"];
       Map carg = Map.new();
@@ -426,6 +433,7 @@ use class IUHub:Eui {
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
+      HD.getElementById("spinnerdiv").display = "none";
       //if (TS.notEmpty(arg["loginUri"])) {
         //String li = arg["loginUri"];
         //HD.getElementById("liLink").href = li;

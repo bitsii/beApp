@@ -554,8 +554,11 @@ use class App:AuthPlugin {
     log.log("in pagetokenrequest");
     if (app.plugin.okForPageToken(request)) {
       Map res = Map.new();
-      String pageToken = System:Random.getString(32);
-      request.putSession("pageToken", pageToken);
+      pageToken = request.getSession("pageToken");
+      if (TS.isEmpty(pageToken)) {
+        String pageToken = System:Random.getString(32);
+        request.putSession("pageToken", pageToken);
+      }
       res["pageToken"] = pageToken;
       res["action"] = "pageTokenResponse";
     }
@@ -606,11 +609,10 @@ use class App:AuthPlugin {
   }
   
   logoutRequest(Map arg, request) {
-    //log.log("logging out");
-    request.deleteSession();
+    //request.deleteSession();
+    request.putSession("account.name", "");
     Map res = Map.new();
     res["action"] = "logoutResponse";
-    //log.log("logged out, returning");
     return(res);
   }
    
@@ -1285,7 +1287,6 @@ class AuthedApp {
     String sessionExp = request.getSession("sessionExp");
     if (TS.isEmpty(sessionExp)) {
       log.log("no sessionExp");
-      //request.deleteSession();
       return(false);
     }
     Int sei = Int.new(sessionExp);
@@ -1296,7 +1297,6 @@ class AuthedApp {
     Int ns = Time:Interval.now().seconds;
     if (ns > sei) {
       log.log("session expired");
-      //request.deleteSession();
       return(false);
     }
     Int nu = Int.new(request.getSession("sessionUpdate"));
@@ -1311,14 +1311,19 @@ class AuthedApp {
     return(true);
   }
   
+  toLogin(request) Map {
+    request.scriptReturn = CallBackUI.toLoginResponse();
+    return(null);
+  }
+  
   handleWeb(request, Map arg) {
     unless (checkRequest(request)) {
-      return(null);
+      return(toLogin(request));
      }
         try {
             if (isCrossSite(request)) {
               log.log("rejecting cross site request");
-              return(null);
+              return(toLogin(request));
             }
             String aname = arg.get("action");
             if (undef(aname) || aname.ends("Request")!) {
@@ -1329,13 +1334,14 @@ class AuthedApp {
               String accountName = request.getSession("account.name");
               if (TS.isEmpty(accountName)) {
                 unless (aname == "loginRequest") {
-                  return(null);
+                  log.log("ret givelogin");
+                  return(toLogin(request));
                 }
               } else {
               
                 unless (aname == "loginRequest" || checkRenewSession(request)) {
                   log.log("rejecting expired session request");
-                  return(null);
+                  return(toLogin(request));
                 }
               
                 //checkLoggedInRequest is ok
@@ -1344,11 +1350,11 @@ class AuthedApp {
                 String atok = arg["pageToken"];
                 if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
                   log.log("stok or atok emtpy failing due to pageToken");
-                  return(null);
+                  return(toLogin(request));
                 }
                 if (stok != atok) {
                   log.log("stok != atok failing due to pageToken");
-                  return(null);
+                  return(toLogin(request));
                 }
               
                 //log.log("pageToken action " + aname);
