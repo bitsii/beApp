@@ -522,7 +522,19 @@ use class IUHub:HubPlugin {
      }
      
      start() {
-     
+      IO:Logs.turnOnAll();
+      log.log("in hubplugin start");
+      List acs = app.accountManager.getLogins();
+      if (undef(acs) || acs.size < 1) {
+        log.log("creating embedded account");
+        Account ac = Account.new();
+        ac.permsString = "admin";
+        ac.user = "embedded_admin";
+        ac.pass = System:Random.getString(64);
+        app.accountManager.putAccount(ac);
+        app.configManager.put("embeddedLogin", ac.user);
+      }
+      
       if (Logic:Bools.fromString(app.configManager.get("logs.turnOnAll"))) {
         IO:Logs.turnOnAll();
       }
@@ -1095,15 +1107,20 @@ use class IUHub:HubPlugin {
      WebConnect wc = wcol.o;
       String intsl = String.new();
       String extsl = String.new();
-      for (any kv in wc.getServices()) {
-        if (TS.notEmpty(kv.value.get("intLink"))) {
-          intsl += "<p>" += kv.value.get("intLink") += "</p>";
-        } 
-        if (TS.notEmpty(kv.value.get("extLink"))) {
-          extsl += "<p>" += kv.value.get("extLink") += "</p>";
-        }
-        if (TS.notEmpty(kv.value.get("hstLink"))) {
-          extsl += "<p>" += kv.value.get("hstLink") += "</p>";
+      if (def(wc)) {
+        Map svcs = wc.getServices();
+        if (def(svcs)) {
+          for (any kv in svcs) {
+            if (TS.notEmpty(kv.value.get("intLink"))) {
+              intsl += "<p>" += kv.value.get("intLink") += "</p>";
+            } 
+            if (TS.notEmpty(kv.value.get("extLink"))) {
+              extsl += "<p>" += kv.value.get("extLink") += "</p>";
+            }
+            if (TS.notEmpty(kv.value.get("hstLink"))) {
+              extsl += "<p>" += kv.value.get("hstLink") += "</p>";
+            }
+          }
         }
       }
       return(Pair.new(intsl, extsl));

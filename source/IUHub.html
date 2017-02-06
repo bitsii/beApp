@@ -169,6 +169,18 @@ h5.luiForm {
 </div>
 
 <p>
+  
+<!--Accounts-->
+<div id="accountAdminDiv" style="display: none;">
+<p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
+<div style="display: none;">
+<p>Admin Account <input type="checkbox" id="aadminIsAdmin" checked/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p></div>
+<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');ui.bem_saveAccountRequest_0();return false;"><p><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');deleteAccount();return false;"><input type="checkbox" id="confirmAccountDelete"/>Confirm account Deletion</p>
+<div id="accountLinksDiv"></div>
+</div>
+<!--Accounts-->
 
 <!--Device Name-->
 <div id="deviceNameDiv" style="display: none;">
@@ -284,18 +296,6 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <div id="configsDiv"></div>
 <a id="downloadJsonElem" style="display:none"></a>
 <!--Configuration-->
-
-<!--Accounts-->
-<div id="accountAdminDiv" style="display: none;">
-<p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
-<p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
-<p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
-<div style="display: none;">
-<p>Admin Account <input type="checkbox" id="aadminIsAdmin" checked/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p></div>
-<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');ui.bem_saveAccountRequest_0();return false;"><p><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');deleteAccount();return false;"><input type="checkbox" id="confirmAccountDelete"/>Confirm account Deletion</p>
-<div id="accountLinksDiv"></div>
-</div>
-<!--Accounts-->
 
 <!--Security Extras-->
 <div id="seDiv" style="display: none;">

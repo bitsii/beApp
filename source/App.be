@@ -533,10 +533,21 @@ use class App:AuthPlugin {
    
    checkLoggedInRequest(Map arg, request) {
     String accountName = request.getSession("account.name");
+    if (TS.isEmpty(accountName) && request.embedded) {
+      log.log("checking embeddedLogin");
+      String eml = app.configManager.get("embeddedLogin");
+      if (TS.notEmpty(eml)) {
+        log.log("checking embeddedLogin eml notempty");
+        accountName = eml;
+      }
+    }
     if (TS.notEmpty(accountName)) {
       Account a = app.accountManager.getAccount(accountName);
       if (def(a)) {
         log.log("Found logged in account " + accountName);
+        Map sarg = Map.new();
+        sarg["accountName"] = accountName;
+        setupSession(sarg, request);
         Map res = Map.new();
         res["action"] = "loggedInResponse";
         res["name"] = accountName;
@@ -547,7 +558,39 @@ use class App:AuthPlugin {
         log.log("No such account " + accountName);
       }
     }
-    return(logoutRequest(arg, request));
+    log.log("doing tologin return");
+    return(CallBackUI.toLoginResponse());
+  }
+  
+  setupSession(Map arg, request) {
+    request.putSession("account.name", arg["accountName"]);
+    if (request.embedded) {
+      log.log("putting embeddedLogin");
+      app.configManager.put("embeddedLogin", arg["accountName"]);
+    }
+    request.putSession("ip", request.remoteAddress);
+    if (TS.notEmpty(arg["sessionName"])) {
+      request.putSession("session.name", arg["sessionName"]);
+    }
+    String sessionLength = arg["sessionLength"];
+    if (TS.isEmpty(sessionLength) || sessionLength.isInteger()!) {
+      sessionLength = "30";
+    }
+    if (request.embedded) {
+      sessionLength = "-1";
+    }
+    Int sessionLengthI = Int.new(sessionLength) * 60;
+    log.log("sessionLength " + sessionLengthI.toString());
+    request.putSession("sessionLength", sessionLengthI.toString());
+    if (sessionLengthI < 0) {
+      request.putSession("sessionExp", sessionLengthI.toString());
+    } else {
+      Int snow = Time:Interval.now().seconds;
+      Int ssd = snow + sessionLengthI;
+      request.putSession("sessionExp", ssd.toString());
+      Int ssu = snow + 60;
+      request.putSession("sessionUpdate", ssu.toString());
+    }
   }
   
   pageTokenRequest(Map arg, request) {
@@ -571,27 +614,7 @@ use class App:AuthPlugin {
       log.log("Found account " + arg["accountName"]);
       if (a.checkPass(arg["accountPass"])) {
         log.log("Login ok");
-        request.putSession("account.name", arg["accountName"]);
-        request.putSession("ip", request.remoteAddress);
-        if (TS.notEmpty(arg["sessionName"])) {
-          request.putSession("session.name", arg["sessionName"]);
-        }
-        String sessionLength = arg["sessionLength"];
-        if (TS.isEmpty(sessionLength) || sessionLength.isInteger()!) {
-          sessionLength = "30";
-        }
-        Int sessionLengthI = Int.new(sessionLength) * 60;
-        log.log("sessionLength " + sessionLengthI.toString());
-        request.putSession("sessionLength", sessionLengthI.toString());
-        if (sessionLengthI < 0) {
-          request.putSession("sessionExp", sessionLengthI.toString());
-        } else {
-          Int snow = Time:Interval.now().seconds;
-          Int ssd = snow + sessionLengthI;
-          request.putSession("sessionExp", ssd.toString());
-          Int ssu = snow + 60;
-          request.putSession("sessionUpdate", ssu.toString());
-        }
+        setupSession(arg, request);
         Map res = Map.new();
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
@@ -611,6 +634,9 @@ use class App:AuthPlugin {
   logoutRequest(Map arg, request) {
     //request.deleteSession();
     request.putSession("account.name", "");
+    if (request.embedded) {
+      app.configManager.delete("embeddedLogin");
+    }
     Map res = Map.new();
     res["action"] = "logoutResponse";
     return(res);
@@ -1333,7 +1359,7 @@ class AuthedApp {
             unless (aname == "pageTokenRequest") {
               String accountName = request.getSession("account.name");
               if (TS.isEmpty(accountName)) {
-                unless (aname == "loginRequest") {
+                unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {
                   log.log("ret givelogin");
                   return(toLogin(request));
                 }

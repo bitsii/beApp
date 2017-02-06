@@ -1,21 +1,36 @@
 
-separate, smaller client only for mobile (dt is full app)
+remind user to create first account
+  set authplugin in the app and override it from hub to get control
+  use a config instead of checks for number of logins
+
+use ui during linux setup (ft/initial setup) and for later re-setup
+
+service login, single signon
+  click connect, if login works then forward with (one time use) token, else
+    open login
+  int or ext based on actual ip and remote, then hosted, then the other
+    put choice in session for reuse
+  go to it with one time token (in embedded)
+    or open browser (if embedded)
+    no refresh needed - token can stay (need to make ok in pagetoken)
+  
+get cert thumbprint into wcol, use bcprov
+  have/use the cert to limit secret passing for service/sso
+  in email text too, links
+
+separate, smaller client profile only for mobile (dt is full app)
   drop webserver et all from it, may not need bcprov
   diff extlibs
-
-single signon - holds sessions, find / login / forward authed to other ui
-
-app for client, app for service
-  can live in same app, have own plugins and such
 
 mac, win, android, ios ver
   local ui jfx
   local ui android
-  auto-login option for embedded=true
   upnp jv
   cs ws - use the httplistener
     ?move to bouncy castle for cert gen?
     ?or just figure out why it's not liked?
+
+outside db key for en/decrypt passwords in config
 
 remote access stuff
 
@@ -24,45 +39,26 @@ pics autosend/get auto-download pics to app with retention time
 ping location
 
 on host ssh setup instructs and script (sshd_config change)
+
+sending email to update folks on change
+  look in inbox, by subject, up to last check time (max date last time - some hours)
+  encrypting payload with key for verification, provide during servicelogin, paired with
+  deviceid
   
 iot (lights, etc)
 homeauto - light
   java wrapper openzw? node + openzw?
 homeauto - locks
 
-hide ilpass in config
-
-encrypt passes with key outside confdb
-
-have hub to hub forward option (tunneling)
-
-only accept host key until first successfull connect (for an address)
-  then retain it
-
-outside db key for en/decrypt passwords in config
-
 haproxy for privilaged -> localhost
-
-link  2 phase, with sig and check info, with deny (after valid user?)
-  and optional required OK
-  and notify
 
 siteNames ui
 real certs (let's encrypt and the other one, pay ones)
   
-client app - link
-android
-
 check for updates - two places (sf and github?)
   size? sha?
 auto update (turn off able, on by default)
 ______________
-
-certprint in email, on links
-
-outside of db config key for secure items, need to know for backup/restore
-  old key new key
-  change key
 
 simple event stuff, alert/notify
 
@@ -79,11 +75,7 @@ temporary picture access/sharing on network (email link)
 play sounds from file manager, incl looop n times (wh noise, include by dl?)
 mixer settings for output and vol?
 record sound snapshot (also after pic from motion)
-
-sending email to update folks on change
-  using linking / tokens for link
-  ability to auto sync pics, sms, etc
-
+  
 launch ec2 from imap info for no-ssh version (on demand)
 ______________
   
