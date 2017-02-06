@@ -462,6 +462,10 @@ use class IUHub:Eui {
       }
     }
     String oinf = "";
+    if (TS.notEmpty(arg["accountSetOnce"]) && arg["accountSetOnce"] == "false") {
+      HC.toggleDisplay("accountAdminDiv");
+      oinf += "Please create an account.  ";
+    }
     if (TS.notEmpty(arg["deviceNameSetOnce"]) && arg["deviceNameSetOnce"] == "false") {
       HC.toggleDisplay("deviceNameDiv");
       oinf += "Please provide a name for the device.  ";

@@ -521,6 +521,7 @@ use class App:AuthPlugin {
         a.perms.delete("admin");
       }
       app.accountManager.putAccount(a);
+      return(null);
    }
    
    showSessionsRequest(Map arg, request) {
@@ -936,10 +937,16 @@ class AuthedApp {
         Lock lock = Lock.new();
         OLocker lastLoginBad = OLocker.new(false);
         String certificateThumbprint;
+        Map pluginsByClassName = Map.new();
       }
       
       for (any pl in plugins) {
         pl.app = self;
+        pluginsByClassName.put(pl.className, pl);
+        //("PUT PLUGIN " + pl.className).print();
+      }
+      
+      for (pl in plugins) {
         if (pl.can("start", 0)) {
           pl.start();
         }

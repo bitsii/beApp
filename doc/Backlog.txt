@@ -1,9 +1,10 @@
 
-remind user to create first account
-  set authplugin in the app and override it from hub to get control
-  use a config instead of checks for number of logins
-
 use ui during linux setup (ft/initial setup) and for later re-setup
+  setup for autorun before starting lui
+  start lui
+  after imap setup do reload
+  have a "first exit" link with config and such
+  after setup exit app and start webapp
 
 service login, single signon
   click connect, if login works then forward with (one time use) token, else

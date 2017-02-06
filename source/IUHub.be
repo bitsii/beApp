@@ -544,6 +544,35 @@ use class IUHub:HubPlugin {
         bg.startBackground();
       }
     }
+    
+  saveAccountRequest(Map arg, request) {
+    log.log("in hub saveAccountRequest");
+    unless (app.requestFromAdmin(request)) {
+      throw(Alert.new("Must be administrator"));
+    }
+    any authPlug = app.pluginsByClassName.get("App:AuthPlugin");
+    authPlug.saveAccountRequest(arg, request);
+    if (request.embedded) {
+      String anso = app.configManager.get("accountSetOnce");
+      if (TS.isEmpty(anso) || anso != "true") {
+        if (arg["accountName"] != "embedded_admin") {
+          Account a = app.accountManager.getAccountForRequest(request);
+          if (a.user == "embedded_admin") {
+            Account b = app.accountManager.getAccount(arg["accountName"]);
+            if (def(b) && b.perms.has("admin")) {
+              log.log("first account, swapping and setting");
+              request.putSession("account.name", b.user);
+              app.configManager.put("embeddedLogin", b.user);
+              app.configManager.put("accountSetOnce", "true");
+              app.accountManager.deleteAccount(a);
+              return(CallBackUI.reloadResponse());
+            }
+          }
+        }
+      }
+    }
+    return(null);
+  }
      
   deviceNameGet() String {
     fields {

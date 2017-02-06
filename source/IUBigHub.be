@@ -235,6 +235,10 @@ use class IUHub:BigHubPlugin(HubPlugin) {
       if (TS.isEmpty(imso) || imso != "true") {
         res["imapSetOnce"] = "false";
       }
+      String anso = app.configManager.get("accountSetOnce");
+      if (TS.isEmpty(anso) || anso != "true") {
+        res["accountSetOnce"] = "false";
+      }
       return(res);
     }
     
