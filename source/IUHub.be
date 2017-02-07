@@ -979,8 +979,12 @@ use class IUHub:HubPlugin {
       app.configManager.put("imap.endpoint", arg["imapEndpoint"]);
       app.configManager.put("imap.pass", arg["imapPass"]);
       app.configManager.put("imap.subFolder", arg["imapFolder"]);
+      String lastImSo = app.configManager.get("imapSetOnce");
       app.configManager.put("imapSetOnce", "true");
       bg.uu.clear();
+      if (TS.isEmpty(lastImSo) || lastImSo != "true") {
+        return(CallBackUI.reloadResponse());
+      }
       Map res = Map.new();
       res["action"] = "hideImapResponse";
       return(res);

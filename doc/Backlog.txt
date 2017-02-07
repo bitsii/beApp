@@ -1,10 +1,8 @@
 
 use ui during linux setup (ft/initial setup) and for later re-setup
+  have a way to run both concurrently (lui and wui, one in sep thread)
   setup for autorun before starting lui
-  start lui
-  after imap setup do reload
-  have a "first exit" link with config and such
-  after setup exit app and start webapp
+  have a script to kill the background wui and start the both one
 
 service login, single signon
   click connect, if login works then forward with (one time use) token, else
@@ -19,14 +17,9 @@ get cert thumbprint into wcol, use bcprov
   have/use the cert to limit secret passing for service/sso
   in email text too, links
 
-separate, smaller client profile only for mobile (dt is full app)
-  drop webserver et all from it, may not need bcprov
-  diff extlibs
+android ver (full)
 
-mac, win, android, ios ver
-  local ui jfx
-  local ui android
-  upnp jv
+mac, win, ios ver (xamarin forms)
   cs ws - use the httplistener
     ?move to bouncy castle for cert gen?
     ?or just figure out why it's not liked?
