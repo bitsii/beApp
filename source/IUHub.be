@@ -31,6 +31,7 @@ use class IUHub:ConnectionUpdate {
   
     fields {
       any app;
+      any oapp;
       IO:Log log =@ IO:Logs.get(self);
       Int lastPoll = 0;
       Int lastUpdate = 0;
@@ -75,6 +76,7 @@ use class IUHub:ConnectionUpdate {
       wc.fromMap(Json:Unmarshaller.unmarshall(wcs));
       //log.log("after load ext port " + wc.externalPort);
       app.plugin.wcol.o = wc;
+      oapp.plugin.wcol.o = wc;
     }  
   }
   
@@ -98,6 +100,7 @@ use class IUHub:ConnectionUpdate {
       links.put(wc.deviceId, wc);
     }
     app.plugin.linksol.o = links;
+    oapp.plugin.linksol.o = links;
   }
   
   doUpdate() {
@@ -183,6 +186,7 @@ use class IUHub:ConnectionUpdate {
       }
       log.log("setting links");
       app.plugin.wcol.o = wc;
+      oapp.plugin.wcol.o = wc;
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
       app.plugin.updateUrls();
@@ -235,6 +239,7 @@ use class IUHub:Background {
   new() self {
     fields {
       any app;
+      any oapp;
       IO:Log log =@ IO:Logs.get(self);
       ConnectionUpdate uu = ConnectionUpdate.new();
     }
@@ -521,8 +526,13 @@ use class IUHub:HubPlugin {
         }
      }
      
-     cohostWith(HubPlugin ohp) {
-       log.log("in cohostWith");
+     cohostWith(IUHub:HubPlugin ohp) {
+       log.log("in Hub cohostWith");
+       runBackground = false;
+       ohp.bg.oapp = app;
+       ohp.bg.uu.oapp = app;
+       bg.oapp = ohp.app;
+       bg.uu.oapp = ohp.app;
      }
      
      start() {
@@ -542,6 +552,12 @@ use class IUHub:HubPlugin {
       }
      
       bg.app = app;
+      if (undef(bg.oapp)) {
+        bg.oapp = app;
+        if (undef(bg.uu.oapp)) {
+          bg.uu.oapp = app;
+        }
+      }
       if (runBackground) {
         bg.startBackground();
       }
@@ -744,7 +760,8 @@ use class IUHub:HubPlugin {
              log.log("Exception during imap stuff " );
             }
           }
-          linksol.o = links;
+          bg.app.plugin.linksol.o = links;
+          bg.oapp.plugin.linksol.o = links;
           for (any kv in app.configManager.getMap("link.")) {
             String kid = kv.key.substring(5);
             log.log("checking kid " + kid);
@@ -1224,6 +1241,8 @@ use class IUHub:HubPlugin {
       fpl += "<p><a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a></p>";
      }
      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", fpl)), CallBackUI.setElementsValuesResponse(Maps.from("fpName", "", "fpPort", "", "fpExPort", "", "fpPattern", "")))));
+     
+     //return(null);
    }
    
    loadForwardPortRequest(String port, request) Map {
@@ -1243,7 +1262,8 @@ use class IUHub:HubPlugin {
        //now fpname and urlpat tied to port
        wc.deleteService(port);
        app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
-       app.plugin.wcol.o = wc;
+       bg.app.plugin.wcol.o = wc;
+       bg.oapp.plugin.wcol.o = wc;
        return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
        }
        return(null);
@@ -1255,7 +1275,8 @@ use class IUHub:HubPlugin {
        //now fpname and urlpat tied to port
        wc.putService(fpName, port, exPort, urlPat);
        app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
-       app.plugin.wcol.o = wc;
+       bg.app.plugin.wcol.o = wc;
+       bg.oapp.plugin.wcol.o = wc;
        bg.uu.clear();
         return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
        }

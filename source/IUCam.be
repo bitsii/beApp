@@ -396,6 +396,11 @@ use class IUCam:CamPlugin {
         }
      }
      
+     cohostWith(IUCam:CamPlugin ohp) {
+       log.log("in cam cohostWith");
+       runBackground = false;
+     }
+     
     start() {
       bg.app = app;
       if (runBackground) {

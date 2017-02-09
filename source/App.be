@@ -954,12 +954,6 @@ class AuthedApp {
         //("PUT PLUGIN " + pl.className).print();
       }
       
-      for (pl in plugins) {
-        if (pl.can("start", 0)) {
-          pl.start();
-        }
-      }
-      
   }
   
   start() {

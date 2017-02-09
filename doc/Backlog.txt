@@ -1,6 +1,5 @@
 
-have a way to run both lui and wui concurrently (lui and wui, one in sep thread)
-  one background handles both apps
+getForwardPortsListRequest is broken
 
 use ui during linux setup (ft/initial setup) and for later re-setup
   setup for autorun before starting lui
