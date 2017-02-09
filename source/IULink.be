@@ -154,7 +154,7 @@ use class IULink:LinkStart {
         plugins += App:ConfigPlugin.new();
         //plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins).main();
+          //AuthenticatedLocalApp.new(plugins).main();
         }      
         if (mode == "cmd") {
           cmdMain(args, plugins);

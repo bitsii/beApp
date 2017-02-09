@@ -1,6 +1,8 @@
 
+have a way to run both lui and wui concurrently (lui and wui, one in sep thread)
+  one background handles both apps
+
 use ui during linux setup (ft/initial setup) and for later re-setup
-  have a way to run both concurrently (lui and wui, one in sep thread)
   setup for autorun before starting lui
   have a script to kill the background wui and start the both one
 
@@ -16,6 +18,9 @@ service login, single signon
 get cert thumbprint into wcol, use bcprov
   have/use the cert to limit secret passing for service/sso
   in email text too, links
+
+For embedded stay logged just need to store and retrieve the session from config not
+  all the other stuff - see checkin 2017-02-05
 
 android ver (full)
 

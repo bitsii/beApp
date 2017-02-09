@@ -59,8 +59,23 @@ use class IUHub:BigHubStart {
       }
     }
     
+    getPlugins(Bool bkg) List {
+      BigHubPlugin hub = BigHubPlugin.new();
+      hub.runBackground = bkg;
+      CamPlugin cam = CamPlugin.new();
+      cam.runBackground = bkg;
+      log.log("adding plugins");
+      List plugins = List.new();
+      plugins += hub;
+      plugins += cam;
+      plugins += App:AuthPlugin.new();
+      plugins += App:ConfigPlugin.new();
+      plugins += App:FileManagerPlugin.new();
+      return(plugins);
+    }
+    
     innerMain(List args) {
-
+      //IO:Logs.turnOnAll();
       Web:Client:CertificateManager.validateHosts = false;
       if (args.length > 0) {
         String mode = args[0]; //lui, wui, both, [absent]
@@ -71,31 +86,31 @@ use class IUHub:BigHubStart {
       if (TS.isEmpty(mode)) {
         mode = "wui";
       }
-      if (mode == "lui" || mode == "wui" || mode == "cmd") {
+      if (mode == "lwui" || mode == "lui" || mode == "wui" || mode == "cmd") {
         log.log("making hub");
-        BigHubPlugin hub = BigHubPlugin.new();
+        if (mode != "cmd") {
+          if (mode == "lui" || mode == "lwui") {
+            AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
+            luiapp.plugins = getPlugins(true);
+          }
+          if (mode == "wui" || mode == "lwui") {
+            AuthenticatedWebApp wuiapp = AuthenticatedWebApp.new();
+            wuiapp.plugins = getPlugins(true);
+          }  
+          if (mode == "lwui") {
+            luiapp.cohostWith(wuiapp);
+          }
+          if (def(wuiapp)) {
+            log.log("starting wui");
+            wuiapp.main();
+          }
+          if (def(luiapp)) {
+            log.log("starting lui");
+            luiapp.main();
+          }
+        }   
         if (mode == "cmd") {
-          hub.runBackground = false;
-        }
-        CamPlugin cam = CamPlugin.new();
-        if (mode == "cmd") {
-          cam.runBackground = false;
-        }
-        log.log("adding plugins");
-        List plugins = List.new();
-        plugins += hub;
-        plugins += cam;
-        plugins += App:AuthPlugin.new();
-        plugins += App:ConfigPlugin.new();
-        plugins += App:FileManagerPlugin.new();
-        if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins).main();
-        }
-        if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins).main();
-        }        
-        if (mode == "cmd") {
-          cmdMain(args, plugins);
+          cmdMain(args, getPlugins(false));
         }
       }
       if (mode == "test") {
@@ -105,7 +120,8 @@ use class IUHub:BigHubStart {
 
     cmdMain(List args, plugins) {
       IO:Logs.turnOnAll();
-      AuthedApp ui = AuthedApp.new(plugins);
+      AuthedApp ui = AuthedApp.new();
+      ui.plugins = getPlugins(false);
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
         log.log("cmd " + mode);

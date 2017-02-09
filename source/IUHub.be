@@ -372,10 +372,10 @@ use class IUHub:HubStart {
         plugins += App:ConfigPlugin.new();
         plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins).main();
+          //AuthenticatedLocalApp.new(plugins).main();
         }
         if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins).main();
+          //AuthenticatedWebApp.new(plugins).main();
         }        
         if (mode == "cmd") {
           cmdMain(args, plugins);
@@ -387,7 +387,7 @@ use class IUHub:HubStart {
     }
 
     cmdMain(List args, plugins) {
-      AuthedApp ui = AuthedApp.new(plugins);
+      AuthedApp ui = AuthedApp.new();
       
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
@@ -521,8 +521,14 @@ use class IUHub:HubPlugin {
         }
      }
      
+     cohostWith(HubPlugin ohp) {
+       log.log("in cohostWith");
+     }
+     
      start() {
-      IO:Logs.turnOnAll();
+      if (Logic:Bools.fromString(app.configManager.get("logs.turnOnAll"))) {
+        IO:Logs.turnOnAll();
+      }
       log.log("in hubplugin start");
       List acs = app.accountManager.getLogins();
       if (undef(acs) || acs.size < 1) {
@@ -533,10 +539,6 @@ use class IUHub:HubPlugin {
         ac.pass = System:Random.getString(64);
         app.accountManager.putAccount(ac);
         app.configManager.put("embeddedLogin", ac.user);
-      }
-      
-      if (Logic:Bools.fromString(app.configManager.get("logs.turnOnAll"))) {
-        IO:Logs.turnOnAll();
       }
      
       bg.app = app;

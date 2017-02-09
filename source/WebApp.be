@@ -41,10 +41,10 @@ use class App:AuthenticatedWebApp(AuthedApp) {
   """
   }
 
-  new(_plugins) self {
+  new() self {
         fields {
         }
-        super.new(_plugins);
+        super.new();
     }
     
     startWeb() {
@@ -146,7 +146,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
   
     main() {
       List args = System:Process.new().args;
-
+      start();
       startWeb();
    }
 

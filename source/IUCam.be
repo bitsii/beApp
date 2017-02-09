@@ -273,10 +273,10 @@ use class IUCam:CamStart {
         plugins += App:ConfigPlugin.new();
         plugins += App:FileManagerPlugin.new();
         if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins).main();
+          //AuthenticatedLocalApp.new(plugins).main();
         }
         if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins).main();
+          //AuthenticatedWebApp.new(plugins).main();
         }        
         if (mode == "cmd") {
           cmdMain(args, plugins);
@@ -285,7 +285,7 @@ use class IUCam:CamStart {
     }
 
     cmdMain(List args, plugins) {
-      AuthedApp ui = AuthedApp.new(plugins);
+      AuthedApp ui = AuthedApp.new();
       
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]

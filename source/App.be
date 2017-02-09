@@ -888,15 +888,18 @@ use class App:ConfigPlugin {
 
 use class App:AuthenticatedLocalApp(AuthedApp) {
 
-  new(_plugins) self {
+  new() self {
         fields {
           WeBr webr;
           UI:BrowserScriptRequest request = UI:BrowserScriptRequest.new();
         }
-        super.new(_plugins);
+        super.new();
     }
 
     main() {
+    
+      start();
+    
       webr = WeBr.new();
       webr.webHandler = self;
       //webr.height = 450;
@@ -929,14 +932,19 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
 use App:AuthenticatedApp as AuthedApp;
 class AuthedApp {
 
-  new(_plugins) self {
+  new() self {
+    fields {
+      IO:Log log =@ IO:Logs.get(self);
+      Lock lock = Lock.new();
+      OLocker lastLoginBad = OLocker.new(false);
+      String certificateThumbprint;
+    }
+  }
+
+  pluginsSet(_plugins) {
       fields {
         List plugins = _plugins;
         any plugin = plugins.first;
-        IO:Log log =@ IO:Logs.get(self);
-        Lock lock = Lock.new();
-        OLocker lastLoginBad = OLocker.new(false);
-        String certificateThumbprint;
         Map pluginsByClassName = Map.new();
       }
       
@@ -952,6 +960,14 @@ class AuthedApp {
         }
       }
       
+  }
+  
+  start() {
+    for (any pl in plugins) {
+      if (pl.can("start", 0)) {
+        pl.start();
+      }
+    }
   }
   
   badRequest(request) {
@@ -1230,6 +1246,21 @@ class AuthedApp {
       paths = App:Paths.new(self);
     }
     return(paths);
+  }
+  
+  cohostWith(AuthedApp other) {
+    other.configManager = self.configManager;
+    other.sessionDb = self.sessionManager;
+    other.trackingManager = self.trackingManager;
+    other.am = self.accountManager;
+    for (any pl in plugins) {
+      if (pl.can("cohostWith", 1)) {
+        any opl = other.pluginsByClassName.get(pl.className);
+        if (def(opl)) {
+          pl.cohostWith(opl);
+        }
+      }
+    }
   }
   
   configManagerGet() CLocker {

@@ -164,10 +164,10 @@ use class RLBeacon:SiteStart {
         plugins += App:AuthPlugin.new();
         plugins += App:ConfigPlugin.new();
         if (mode == "lui") {
-          AuthenticatedLocalApp.new(plugins).main();
+          //AuthenticatedLocalApp.new(plugins).main();
         }
         if (mode == "wui") {
-          AuthenticatedWebApp.new(plugins).main();
+          //AuthenticatedWebApp.new(plugins).main();
         }        
         if (mode == "cmd") {
           cmdMain(args, plugins);
