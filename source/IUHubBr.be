@@ -423,12 +423,13 @@ use class IUHub:Eui {
       Map arg = Map.new();
       arg["action"] = "deviceLoginRequest";
       arg["accountName"] = HD.getElementById("dcAccountName").value;
-      arg["accountPass"] = HD.getElementById("accountPass").value;
+      arg["accountPass"] = HD.getElementById("dcAccountPass").value;
       arg["deviceId"] = devIdForCreds;
       arg["sessionName"] = "";
       arg["sessionLength"] = "-1";
       HD.getElementById("dcAccountName").value = "";
       HD.getElementById("dcAccountPass").value = "";
+      HD.getElementById("devCredsDiv").display = "none";//reopen on fail
       handleCallOut(arg);
    }
    

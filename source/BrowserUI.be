@@ -594,6 +594,7 @@ use class Web:SessionManager {
   getSessionKey(request) String {
     String sk;
     //sk = request.getInputHeader(keyName);
+    sk = request.serviceSessionKey;
     if (TS.isEmpty(sk)) {
       sk = request.getInputCookie(keyName);
     }

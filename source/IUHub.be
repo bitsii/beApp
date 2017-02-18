@@ -588,9 +588,42 @@ use class IUHub:HubPlugin {
           Bool internal = onSameNet(ia, iao);
         }
         log.log("down in wc wco internal is " + internal);
-        Map newArg = arg.copy();
-        arg["action"] = "loginRequest";
-        
+        Map argOut = Map.new();
+        argOut["accountName"] = arg["accountName"];
+        argOut["accountPass"] = arg["accountPass"];
+        argOut["sessionLength"] = arg["sessionLength"];
+        argOut["action"] = "loginRequest";
+        argOut["serviceLogin"] = "yup";
+        Web:Client client = Web:Client.new();
+        String payload = Json:Marshaller.marshall(argOut);
+        //referer
+        if (internal) {
+          client.outputHeaders.put("referer", wco.internalUrl);
+          client.url = wco.internalUrl;
+        } else {
+          //?hosted?
+          client.outputHeaders.put("referer", wco.externalUrl);
+          client.url = wco.externalUrl;
+        }
+        try {
+          Web:Client:CertificateManager.validateHosts = false;
+          Web:Client:CertificateManager.validateCertificates = false;
+          client.openOutput().write(payload);
+          String res = client.openInput().readString();
+          log.log("GOT SOMETHING BACK!!!");
+          client.close();
+          if (TS.notEmpty(res)) {
+            Map resMap = Json:Unmarshaller.unmarshall(res);
+            //store stuff
+            //do what you would have done if stuff was there
+            //(open browser to special thing)
+          }
+          log.log("!!! got res from dev loginrequest " + res);
+        } finally {
+          Web:Client:CertificateManager.validateHosts = true;
+          Web:Client:CertificateManager.validateCertificates = true;
+        }
+        //log.log("got res from dev loginRequest");
       }
     }
   }

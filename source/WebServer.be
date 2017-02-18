@@ -494,6 +494,7 @@ use class Web:ScriptRequest {
    getSession(String name) String {
      fields {
        any sessionManager;
+       String serviceSessionKey;
      }
      if (def(sessionManager)) {
        return(sessionManager.getSession(self, name));

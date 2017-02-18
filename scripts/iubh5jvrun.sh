@@ -6,6 +6,6 @@ export MYPWD=`pwd`
 
 export MYHN=`hostname`
 
-java -classpath "App/IUHub/*" be.BEL_4_Base $*
+java -Djava.security.properties=App/IUHub/java.security -classpath "App/IUHub/*" be.BEL_4_Base $*
 
 cd ../ioturl

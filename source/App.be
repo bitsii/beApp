@@ -615,8 +615,16 @@ use class App:AuthPlugin {
       log.log("Found account " + arg["accountName"]);
       if (a.checkPass(arg["accountPass"])) {
         log.log("Login ok");
-        setupSession(arg, request);
         Map res = Map.new();
+        if (arg.has("serviceLogin")) {
+          String pageToken = System:Random.getString(32);
+          String serviceSessionKey = System:Random.getString(64);
+          request.serviceSessionKey = serviceSessionKey;
+          request.putSession("pageToken", pageToken);
+          res["serviceSessionKey"] = serviceSessionKey;
+          res["pageToken"] = pageToken;
+        }
+        setupSession(arg, request);
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
         app.goodLogin(request);

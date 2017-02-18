@@ -13,6 +13,8 @@ service login, single signon
 use ui during linux setup (ft/initial setup) and for later re-setup
   test install with new script and update wiki docs and release (update bins)
 
+need to beef up cert gen to where only hosts is an issue (with cert thumbs)
+
 android client
 
 ios client
@@ -25,6 +27,8 @@ get cert thumbprint into wcol, use bcprov
   in email text too, links
   turn off always ignore cert issues and stick with known ok cert
     have a lock for duration of event
+    
+
 
 ====
     
