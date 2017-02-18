@@ -312,6 +312,14 @@ use class IUHub:Eui {
      HD.getElementById("offerDevLinkDiv").display = "block";
    }
    
+   getDevCredsResponse(String devId, String devName) {
+     fields {
+      String devIdForCreds = devId;
+     }
+     HD.getElementById("devCredsNameDiv").innerHTML = devName;
+     HC.toggleDisplay("devCredsDiv");
+   }
+   
    hideDevLinks() {
      HD.getElementById("offerDevLinkDiv").display = "none";
    }
@@ -408,6 +416,19 @@ use class IUHub:Eui {
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       HD.getElementById("sessionName").value = "";
+      handleCallOut(arg);
+   }
+   
+   deviceLogin() {
+      Map arg = Map.new();
+      arg["action"] = "deviceLoginRequest";
+      arg["accountName"] = HD.getElementById("dcAccountName").value;
+      arg["accountPass"] = HD.getElementById("accountPass").value;
+      arg["deviceId"] = devIdForCreds;
+      arg["sessionName"] = "";
+      arg["sessionLength"] = "-1";
+      HD.getElementById("dcAccountName").value = "";
+      HD.getElementById("dcAccountPass").value = "";
       handleCallOut(arg);
    }
    

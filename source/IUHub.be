@@ -563,6 +563,38 @@ use class IUHub:HubPlugin {
       }
     }
     
+  connectToDeviceRequest(String devId, String devName, request) Map {
+    //get one time login token    
+    String devToken = app.configManager.get("DeviceToken." + devId);
+    if (TS.isEmpty(devToken)) {
+      return(CallBackUI.getDevCredsResponse(devId, devName));
+    }
+    return(null);
+  }
+  
+  deviceLoginRequest(Map arg, request) {
+    log.log("in devlogin");
+    Account a = app.accountManager.getAccountForRequest(request);
+    if (def(a)) {
+      Map links = self.linksol.o;
+      if (def(links)) {
+        WebConnect wco = links.get(arg.get("deviceId"));
+      }
+      WebConnect wc = app.plugin.wcol.o;
+      if (def(wc) && def(wco)) {
+        String ia = wc.internalAddress;
+        String iao = wco.internalAddress;
+        if (def(ia) && def(iao)) {
+          Bool internal = onSameNet(ia, iao);
+        }
+        log.log("down in wc wco internal is " + internal);
+        Map newArg = arg.copy();
+        arg["action"] = "loginRequest";
+        
+      }
+    }
+  }
+  
   saveAccountRequest(Map arg, request) {
     log.log("in hub saveAccountRequest");
     unless (app.requestFromAdmin(request)) {
@@ -1102,6 +1134,32 @@ use class IUHub:HubPlugin {
      return(loginBookmark);
    }
    
+   
+  
+  isInternal(request) Bool {
+    WebConnect wc = wcol.o;
+    Bool internal = false;
+    if (request.embedded) {
+       internal = true;
+     } else {
+       internal = onSameNet(request.remoteAddress, wc.internalAddress);
+     }
+     return(internal);
+  }
+  
+  onSameNet(String firstAddr, String secondAddr) Bool {
+     Bool internal = false;
+     String cp = TS.commonPrefix(firstAddr, secondAddr);
+      if (TS.notEmpty(cp)) {
+        LinkedList ll = cp.split(".");
+        log.log(" rint dotsplit size " + ll.size + " ra " + firstAddr + " ia " + secondAddr);
+        if (ll.size > 2) {
+          internal = true;
+        }
+      }
+      return(internal);
+    }
+   
   getActionLinks(Account a, Map arg, request) String {
      String actionLinks = String.new();
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
@@ -1116,20 +1174,8 @@ use class IUHub:HubPlugin {
      }*/
      //is remote
      //add links
-     Bool internal = false;
+     Bool internal = isInternal(request);
      WebConnect wc = wcol.o;
-     if (request.embedded) {
-       internal = true;
-     } else {
-       String cp = TS.commonPrefix(request.remoteAddress, wc.internalAddress);
-        if (TS.notEmpty(cp)) {
-          LinkedList ll = cp.split(".");
-          log.log(" rint dotsplit size " + ll.size + " ra " + request.remoteAddress + " ia " + wc.internalAddress);
-          if (ll.size > 2) {
-            internal = true;
-          }
-        }
-      }
       Pair sl = self.serviceLinks;
       if (internal) {
         actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
@@ -1184,9 +1230,11 @@ use class IUHub:HubPlugin {
     for (any kv in app.plugin.linksol.o) {
       WebConnect wc = kv.value;
       
-      devLinks += "<p><a href=\"#\" onclick=\"callApp('connectToDeviceRequest', '" += wc.deviceId += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Go to  " += wc.deviceName += "</a></p>";
-      
-      devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDevLinks', '" += wc.deviceId += "');callApp('getDevLinksRequest', '" += wc.deviceId += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Additional Links for  " += wc.deviceName += "</a></p>";
+      if (request.embedded) {
+        devLinks += "<p><a href=\"#\" onclick=\"callApp('connectToDeviceRequest', '" += wc.deviceId += "', '" += wc.deviceName += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Go to  " += wc.deviceName += "</a></p>";
+      } else {
+        devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDevLinks', '" += wc.deviceId += "');callApp('getDevLinksRequest', '" += wc.deviceId += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
+      }
       
     }
      return(devLinks);
@@ -1210,21 +1258,29 @@ use class IUHub:HubPlugin {
    
    getDevLinksRequest(String deviceId, request) Map {
      String devLinks = String.new();
-     //common prefix with target . and check for size of 3
-     //later can use my netmask TODO
+     Pair links = Pair.new();
      WebConnect wc = app.plugin.linksol.o.get(deviceId);
      WebConnect mywc = app.plugin.wcol.o;
      if (def(wc)) {
-       devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" += wc.deviceId += "');return false;\">Wakeup  " += wc.deviceName += "</a></p>";
+       Bool internal = isInternal(request);
+       if (internal) {
+        links.first = wc.internalLink;
+        links.second = wc.externalLink;
+       } else {
+        links.second = wc.internalLink;
+        links.first = wc.externalLink;
+       }
+       if (TS.notEmpty(links.first)) {
+        devLinks += "<p>" += links.first += " (recommended)</p>";
+       }
        if (TS.notEmpty(wc.hostedLink)) {
         devLinks += "<p>" += wc.hostedLink += "</p>";
        }
-       if (TS.notEmpty(wc.externalLink)) {
-        devLinks += "<p>" += wc.externalLink += "</p>";
+       if (TS.notEmpty(links.second)) {
+        devLinks += "<p>" += links.second += "</p>";
        }
-       if (TS.notEmpty(wc.internalLink)) {
-        devLinks += "<p>" += wc.internalLink += "</p>";
-       }
+       //check to see if I am on same network as device first
+       devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" += wc.deviceId += "');return false;\">Wakeup  " += wc.deviceName += "</a></p>";
     }
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
    }

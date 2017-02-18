@@ -48,20 +48,4 @@ echo "su $USER -c \"$HOME/apprun/App/IUHub/startiuh.sh\"" >> tmp/stadd
 echo "exit 0" >> tmp/stadd
 sudo -- sh -c 'cat tmp/stadd > /etc/rc.local'
 
-./apprun/App/IUHub/createAdminAccount.sh
-
-./apprun/App/IUHub/iuhcmd.sh cmd saveIntUrl shu.txt opu.sh
-
-./apprun/App/IUHub/startiuh.sh
-
-echo -n "To get started, you can open the following url on a browser from a device on the same network as this server and login with the account you just created - "
-cat ./apprun/shu.txt
-echo
-echo "Waiting for the server to start for the first time, this can take awhile, then will open a browser - you can also copy and paste the above url into any browser on the same network as the device and then login with the account username and password you just created. Please wait until the below message indicates the server is ready."
-echo "Note, the certificate is self signed and you will need to accept it permanently once on each device you use to connect to this server."
-sleep 40
-echo "Server should now be ready"
-echo "Now opening a browser on this box to the url above, to continue, login with the account you just created"
-
-chmod +x ./apprun/opu.sh
-./apprun/opu.sh
+./apprun/App/IUHub/startiuhlw.sh

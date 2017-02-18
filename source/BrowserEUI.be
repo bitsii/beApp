@@ -372,13 +372,17 @@ class HC {
       }
     }
   
-   toggleDisplay(String id) {
+   toggleDisplay(String id) Bool {
+     //returns true if was opened by this action, false else
+     Bool didOpen = false;
      HE he = HD.getElementById(id);
      if (he.display == "block") {
       he.display = "none";
      } else {
       he.display = "block";
+      didOpen = true;
      }
+     return(didOpen);
    }
    
    multiResponse(List res) {

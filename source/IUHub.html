@@ -320,6 +320,14 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 
 <div id="actionLinksDiv"></div>
 <div id="devLinksListDiv"></div>
+<div id="devCredsDiv" style="display: none;">
+<p>Login to <div id="devCredsNameDiv"></div></p>
+<form>
+<p><label class="luiForm">Account Name</label><input type="text" id="dcAccountName"></input></p>
+<p><label class="luiForm">Account Password</label><input type="password" id="dcAccountPass"></input></p>
+</form>
+<p><a href="#" onclick="ui.bem_deviceLogin_0();return false;">Login</a></p>
+</div>
 <div id="devLinksDiv"></div>
 </body>
 </html>

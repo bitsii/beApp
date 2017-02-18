@@ -51,10 +51,10 @@ cp scripts/upgrade.sh ../apprun/App/IUHub
 cp scripts/upgrade2.sh ../apprun/App/IUHub
 cp scripts/postupgrade.sh ../apprun/App/IUHub
 cp scripts/startiuh.sh ../apprun/App/IUHub
+cp scripts/startiuhlw.sh ../apprun/App/IUHub
 cp scripts/iuhrun.sh ../apprun/App/IUHub
 cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
-cp scripts/createAdminAccount.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp source/IUHub*.html ../apprun/App/IUHub
 cp extlibs/IUHub/* ../apprun/App/IUHub
