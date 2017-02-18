@@ -565,11 +565,67 @@ use class IUHub:HubPlugin {
     
   connectToDeviceRequest(String devId, String devName, request) Map {
     //get one time login token    
-    String devToken = app.configManager.get("DeviceToken." + devId);
-    if (TS.isEmpty(devToken)) {
+    Account a = app.accountManager.getAccountForRequest(request);
+    String devSession = app.configManager.get("DeviceSession." + a.user + "!" + devId);
+    if (TS.isEmpty(devSession)) {
       return(CallBackUI.getDevCredsResponse(devId, devName));
+    } else {
+      Map ds = Json:Unmarshaller.unmarshall(devSession);
+      openBrowserFromDeviceSession(ds);
     }
     return(null);
+  }
+  
+  onceLoginTokenRequest(Map arg, request) {
+    log.log("in oncelogintokenreq");
+    Map res = Map.new();
+    return(res);
+  }
+  
+  openBrowserFromDeviceSession(Map ds) {
+    Map links = self.linksol.o;
+    if (def(links)) {
+      WebConnect wco = links.get(ds.get("deviceId"));
+      WebConnect wc = app.plugin.wcol.o;
+      if (def(wc) && def(wco)) {
+        String ia = wc.internalAddress;
+        String iao = wco.internalAddress;
+        if (def(ia) && def(iao)) {
+          Bool internal = onSameNet(ia, iao);
+        }
+        Map argOut = Map.new();
+        argOut["action"] = "onceLoginTokenRequest";
+        argOut["pageToken"] = ds["pageToken"];
+        argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+        Web:Client client = Web:Client.new();
+        String payload = Json:Marshaller.marshall(argOut);
+        //referer
+        if (internal) {
+          client.outputHeaders.put("referer", wco.internalUrl);
+          client.url = wco.internalUrl;
+        } else {
+          //?hosted?
+          client.outputHeaders.put("referer", wco.externalUrl);
+          client.url = wco.externalUrl;
+        }
+        try {
+          Web:Client:CertificateManager.validateHosts = false;
+          Web:Client:CertificateManager.validateCertificates = false;
+          client.openOutput().write(payload);
+          String res = client.openInput().readString();
+          client.close();
+          if (TS.notEmpty(res)) {
+            Map resMap = Json:Unmarshaller.unmarshall(res);
+            
+            
+          }
+          log.log("!!! got res from obfds  " + res);
+        } finally {
+          Web:Client:CertificateManager.validateHosts = true;
+          Web:Client:CertificateManager.validateCertificates = true;
+        }
+      }
+    }
   }
   
   deviceLoginRequest(Map arg, request) {
@@ -615,8 +671,13 @@ use class IUHub:HubPlugin {
           if (TS.notEmpty(res)) {
             Map resMap = Json:Unmarshaller.unmarshall(res);
             //store stuff
-            //do what you would have done if stuff was there
-            //(open browser to special thing)
+            Map ds = Map.new();
+            ds["serviceSessionKey"] = resMap["serviceSessionKey"];
+            ds["pageToken"] = resMap["pageToken"];
+            ds["deviceId"] = arg["deviceId"];
+            String dss = Json:Marshaller.marshall(ds);
+            app.configManager.put("DeviceSession." + a.user + "!" + arg["deviceId"], dss);
+            openBrowserFromDeviceSession(ds);
           }
           log.log("!!! got res from dev loginrequest " + res);
         } finally {

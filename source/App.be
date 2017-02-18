@@ -1383,6 +1383,9 @@ class AuthedApp {
   }
   
   handleWeb(request, Map arg) {
+    if (request.embedded! && TS.notEmpty(arg["serviceSessionKey"])) {
+      request.serviceSessionKey = arg["serviceSessionKey"];
+    }
     unless (checkRequest(request)) {
       return(toLogin(request));
      }
