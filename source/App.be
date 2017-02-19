@@ -543,6 +543,8 @@ use class App:AuthPlugin {
       }
     } elseIf (TS.isEmpty(accountName) && arg.has("onceToken")) {
       accountName = app.configManager.get("OnceToken." + arg["onceToken"]);
+    }
+    if (arg.has("onceToken")) {
       app.configManager.delete("OnceToken." + arg["onceToken"]);
     }
     if (TS.notEmpty(accountName)) {

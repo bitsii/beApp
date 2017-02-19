@@ -15,8 +15,6 @@ get cert thumbprint into wcol, use bcprov
 use ui during linux setup (ft/initial setup) and for later re-setup
   test install with new script and update wiki docs and release (update bins)
 
-need to beef up cert gen to where only hosts is an issue for jv (with cert thumbs)
-
 optional encrypte/decrypt pass for payloads in imap
 
 outside db key for en/decrypt passwords in config
@@ -35,6 +33,8 @@ getForwardPortsListRequest is broken
     
 backup stuff (pic, etc) to pi from clients
 
+android ver (full)
+
 sending email to update folks on change
   look in inbox, by subject, up to last check time (max date last time - some hours)
   encrypting payload with key for verification, provide during servicelogin, paired with
@@ -45,8 +45,6 @@ For embedded stay logged just need to store and retrieve the session from config
   can just always use the embedded thing instead of looking for cookie for embedded req
   test that expiration works
   ?make initial login non-expiring?  Or just really long, like 12-24 hours
-
-android ver (full)
 
 zwave etc
 

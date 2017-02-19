@@ -73,7 +73,6 @@ cp scripts/motionrun.sh ../apprun/App/IUHub
 cp scripts/camclean.sh ../apprun/App/IUHub
 cp source/IUCam*.html ../apprun/App/IUHub
 cp source/MOCAM.conf ../apprun/App/IUHub
-cp source/java.security ../apprun/App/IUHub
 cp extlibs/IUCam/* ../apprun/App/IUHub
 
 ./scripts/iubh5jvrun.sh $*

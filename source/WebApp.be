@@ -118,7 +118,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
           v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365*10)));
           v3CertGen.setSubjectDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
       v3CertGen.setPublicKey(KPair.getPublic());
-      v3CertGen.setSignatureAlgorithm("MD5WithRSAEncryption"); 
+      v3CertGen.setSignatureAlgorithm("SHA256withRSA"); 
       X509Certificate PKCertificate = v3CertGen.generateX509Certificate(KPair.getPrivate());
       
       KeyStore privateKS = KeyStore.getInstance("JKS");
