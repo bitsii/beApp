@@ -571,14 +571,18 @@ use class IUHub:HubPlugin {
       return(CallBackUI.getDevCredsResponse(devId, devName));
     } else {
       Map ds = Json:Unmarshaller.unmarshall(devSession);
-      openBrowserFromDeviceSession(ds);
+      if (true) { return(openBrowserFromDeviceSession(ds)) };
     }
     return(null);
   }
   
   onceLoginTokenRequest(Map arg, request) {
     log.log("in oncelogintokenreq");
+    Account a = app.accountManager.getAccountForRequest(request);
+    String olt = System:Random.getString(64);
+    app.configManager.put("OnceToken." + olt, a.user);
     Map res = Map.new();
+    res["OnceToken"] = olt;
     return(res);
   }
   
@@ -600,14 +604,14 @@ use class IUHub:HubPlugin {
         Web:Client client = Web:Client.new();
         String payload = Json:Marshaller.marshall(argOut);
         //referer
+        //?hosted?
         if (internal) {
-          client.outputHeaders.put("referer", wco.internalUrl);
-          client.url = wco.internalUrl;
+          String destUrl = wco.internalUrl;
         } else {
-          //?hosted?
-          client.outputHeaders.put("referer", wco.externalUrl);
-          client.url = wco.externalUrl;
+          destUrl = wco.externalUrl;
         }
+        client.outputHeaders.put("referer", destUrl);
+        client.url = destUrl;
         try {
           Web:Client:CertificateManager.validateHosts = false;
           Web:Client:CertificateManager.validateCertificates = false;
@@ -616,10 +620,19 @@ use class IUHub:HubPlugin {
           client.close();
           if (TS.notEmpty(res)) {
             Map resMap = Json:Unmarshaller.unmarshall(res);
-            
-            
+            log.log("!!! got res from obfds  " + res);
+            if (resMap.has("OnceToken")) {
+              worked = true;
+              UI:ExternalBrowser.openToUrl(destUrl + "?onceToken=" + resMap.get("OnceToken"));
+            } else {
+              worked = false;
+            }
+          } else {
+            Bool worked = false;
           }
-          log.log("!!! got res from obfds  " + res);
+          unless (worked) {
+            return(CallBackUI.getDevCredsResponse(wco.deviceId, wco.deviceName));
+          }
         } finally {
           Web:Client:CertificateManager.validateHosts = true;
           Web:Client:CertificateManager.validateCertificates = true;
@@ -677,7 +690,7 @@ use class IUHub:HubPlugin {
             ds["deviceId"] = arg["deviceId"];
             String dss = Json:Marshaller.marshall(ds);
             app.configManager.put("DeviceSession." + a.user + "!" + arg["deviceId"], dss);
-            openBrowserFromDeviceSession(ds);
+            if (true) { return(openBrowserFromDeviceSession(ds)) };
           }
           log.log("!!! got res from dev loginrequest " + res);
         } finally {
@@ -1083,6 +1096,10 @@ use class IUHub:HubPlugin {
      }
      ref = ref.substring(pos);
      log.log("okForPageToken " + ref);
+     if (ref.has("?") && ref.has("&")! && ref.has("?onceToken=")) {
+      ref = ref.substring(0, ref.find("?"));
+     }
+     log.log("okForPageToken second " + ref);
      if (ref == "/App/IUHub/IUHub.html" || ref == "/App/IUHub/IUCam.html") {
       return(true);
      }

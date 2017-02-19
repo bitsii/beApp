@@ -252,7 +252,6 @@ use class IUCam:Eui {
       clearImage();
       Map arg = Map.new();
       arg["action"] = "pageTokenRequest";
-      arg["href"] = HD.href;
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       handleCallOut(arg);
@@ -269,7 +268,6 @@ use class IUCam:Eui {
       HC.new(self).pageToken = arg["pageToken"];
       Map carg = Map.new();
       carg["action"] = "checkLoggedInRequest";
-      carg["href"] = HD.href;
       //log.log("href at startup " + HD.href);
       handleCallOut(carg);
    }

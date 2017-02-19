@@ -1,39 +1,38 @@
 
-service login, single signon
-  if no devtoken or it fails challenge for creds
-  for dev login default to never expires
-  use own machine address and remote machine internal to decide to try internal
-    or external first, then hosted, then the other, then fail
-      get one time use token
-      open browser with it
-      use in checkLoggedIn (then delete)
-      expire
-      if internal wake first
+test embedded goto
+  internal and external and hosted
+  change order of try ext int
+  change token
+  (give session name during setup?  devname?)
+
+get cert thumbprint into wcol, use bcprov
+  validateHosts
+  use the cert for web client cases
+  show in email text and when forwarding
+  turn off always ignore cert issues and stick with known ok cert
+    have a lock for duration of event
 
 use ui during linux setup (ft/initial setup) and for later re-setup
   test install with new script and update wiki docs and release (update bins)
 
-need to beef up cert gen to where only hosts is an issue (with cert thumbs)
+need to beef up cert gen to where only hosts is an issue for jv (with cert thumbs)
+
+optional encrypte/decrypt pass for payloads in imap
+
+outside db key for en/decrypt passwords in config
+
+expiration for once login (deletem on cleanup)
+old session cleanup (do on bad ip cleanup)
 
 android client
-
+  store key safe somewhere
+  
 ios client
 
-getForwardPortsListRequest is broken
-
-get cert thumbprint into wcol, use bcprov
-  validateHosts
-  have/use the cert to limit secret passing for service/sso
-  in email text too, links
-  turn off always ignore cert issues and stick with known ok cert
-    have a lock for duration of event
-    
-
+getForwardPortsListRequest is broken    
 
 ====
     
-outside db key for en/decrypt passwords in config
-
 backup stuff (pic, etc) to pi from clients
 
 sending email to update folks on change

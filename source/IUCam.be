@@ -483,6 +483,10 @@ use class IUCam:CamPlugin {
      }
      ref = ref.substring(pos);
      log.log("okForPageToken " + ref);
+     if (ref.has("?") && ref.has("&")! && ref.has("?onceToken=")) {
+      ref = ref.substring(0, ref.find("?"));
+     }
+     log.log("okForPageToken second " + ref);
      if (ref == "/App/IUHub/IUHub.html" || ref == "/App/IUHub/IUCam.html") {
       return(true);
      }
