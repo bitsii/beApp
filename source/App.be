@@ -1414,8 +1414,10 @@ class AuthedApp {
               } else {
               
                 unless (aname == "loginRequest" || checkRenewSession(request)) {
-                  log.log("rejecting expired session request");
-                  return(toLogin(request));
+                  unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(self.configManager.get("OnceToken." + arg["onceToken"]))) {
+                    log.log("rejecting expired session request");
+                    return(toLogin(request));
+                  }
                 }
               
                 //checkLoggedInRequest is ok

@@ -1,9 +1,8 @@
-
-test embedded goto
-  internal and external and hosted
-  change order of try ext int
-  change token
-  (give session name during setup?  devname?)
+  
+have a check for int, ext, hosted first, use this to decide where onSameNet is
+  test getting it wrong to verify retry :-)
+  
+cleanup expired sessions and old oncetokens in same thing that cleans up tracking
 
 get cert thumbprint into wcol, use bcprov
   validateHosts
