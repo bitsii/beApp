@@ -599,6 +599,14 @@ use class App:AuthPlugin {
     }
   }
   
+  pingRequest(Map arg, request) {
+    log.log("in pingrequest");
+    Map res = Map.new();
+    res["msg"] = "Here";
+    res["action"] = "pingResponse";
+    return(res);
+  }
+  
   pageTokenRequest(Map arg, request) {
     log.log("in pagetokenrequest");
     if (app.plugin.okForPageToken(request)) {
@@ -1404,7 +1412,7 @@ class AuthedApp {
               throw(Exception.new("Invalid request"));
             }
             
-            unless (aname == "pageTokenRequest") {
+            unless (aname == "pageTokenRequest" || aname == "pingRequest") {
               String accountName = request.getSession("account.name");
               if (TS.isEmpty(accountName)) {
                 unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {

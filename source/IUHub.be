@@ -586,7 +586,7 @@ use class IUHub:HubPlugin {
     return(res);
   }
   
-  openBrowserFromDeviceSession(Map ds) {
+  openBrowserFromDeviceSession(Map ds) Map {
     Map links = self.linksol.o;
     if (def(links)) {
       WebConnect wco = links.get(ds.get("deviceId"));
@@ -594,9 +594,7 @@ use class IUHub:HubPlugin {
       if (def(wc) && def(wco)) {
         String ia = wc.internalAddress;
         String iao = wco.internalAddress;
-        if (def(ia) && def(iao)) {
-          Bool internal = onSameNet(ia, iao);
-        }
+        String utype = chooseUrlType(wco);
         Map argOut = Map.new();
         argOut["action"] = "onceLoginTokenRequest";
         argOut["pageToken"] = ds["pageToken"];
@@ -605,7 +603,7 @@ use class IUHub:HubPlugin {
         String payload = Json:Marshaller.marshall(argOut);
         //referer
         //?hosted?
-        if (internal) {
+        if (utype == "internal") {
           String destUrl = wco.internalUrl;
         } else {
           destUrl = wco.externalUrl;
@@ -639,6 +637,7 @@ use class IUHub:HubPlugin {
         }
       }
     }
+    return(null);
   }
   
   deviceLoginRequest(Map arg, request) {
@@ -653,10 +652,8 @@ use class IUHub:HubPlugin {
       if (def(wc) && def(wco)) {
         String ia = wc.internalAddress;
         String iao = wco.internalAddress;
-        if (def(ia) && def(iao)) {
-          Bool internal = onSameNet(ia, iao);
-        }
-        log.log("down in wc wco internal is " + internal);
+        String utype = chooseUrlType(wco);
+        log.log("down in wc wco utype is " + utype);
         Map argOut = Map.new();
         argOut["accountName"] = arg["accountName"];
         argOut["accountPass"] = arg["accountPass"];
@@ -666,7 +663,7 @@ use class IUHub:HubPlugin {
         Web:Client client = Web:Client.new();
         String payload = Json:Marshaller.marshall(argOut);
         //referer
-        if (internal) {
+        if (utype == "internal") {
           client.outputHeaders.put("referer", wco.internalUrl);
           client.url = wco.internalUrl;
         } else {
@@ -1256,6 +1253,73 @@ use class IUHub:HubPlugin {
        internal = onSameNet(request.remoteAddress, wc.internalAddress);
      }
      return(internal);
+  }
+  
+  chooseUrlType(WebConnect wco) String {
+    WebConnect wc = app.plugin.wcol.o;
+    String ia = wc.internalAddress;
+    String iao = wco.internalAddress;
+    if (def(ia) && def(iao)) {
+      Bool internal = onSameNet(ia, iao);
+    }
+    String ut;
+    if (internal) {
+      ut = "internal";
+    } else {
+      ut = "external";
+    }
+    //Try first choice, if no good try other, if no good try hosted
+    //have a "prefer hosted" for the device id option
+    //do ping request, return what works
+    if (ut == "internal") {
+      List tio = Lists.from("internal", "hosted", "external");
+    } else {
+      tio = Lists.from("external", "hosted", "internal");
+    }
+    for (String c in tio) {
+      log.log("c in tio is " + c);
+      if (c == "internal") {
+        String utry = wco.internalUrl;
+      } elseIf (c == "external") {
+        utry = wco.externalUrl;
+      } else {
+        utry = wco.hostedUrl;
+      }
+      if (TS.notEmpty(utry)) {
+        if (pingUrl(utry)) {
+          log.log("chooseurl ret " + c);
+          return(c);
+        }
+      }
+    }
+    return(ut);
+  }
+  
+  pingUrl(String destUrl) Bool {
+    Bool worked = false;
+    Map argOut = Maps.from("action", "pingRequest");
+    Web:Client client = Web:Client.new();
+    String payload = Json:Marshaller.marshall(argOut);
+    client.outputHeaders.put("referer", destUrl);
+    client.url = destUrl;
+    try {
+      Web:Client:CertificateManager.validateHosts = false;
+      Web:Client:CertificateManager.validateCertificates = false;
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      client.close();
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        log.log("!!! got res from pingRequest  " + res);
+        if (TS.notEmpty(resMap.get("action")) && resMap["action"] == "pingResponse") {
+          worked = true;
+        }
+      }
+    } finally {
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
+    }
+    return(worked);
   }
   
   onSameNet(String firstAddr, String secondAddr) Bool {
