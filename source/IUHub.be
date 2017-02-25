@@ -132,7 +132,15 @@ use class IUHub:ConnectionUpdate {
       }
       log.log("after wc init");
       wc.internalPort = webPort;
-      wc.certificatePrint = certificateThumbprint;
+      if (TS.isEmpty(certificateThumbprint)) {
+        certificateThumbprint = app.certificateThumbprint; 
+      }
+      if (TS.notEmpty(certificateThumbprint)) {
+        wc.certificatePrint = certificateThumbprint;
+        log.log("CERT PRINT IS " + certificateThumbprint);
+      } else {
+        log.log("CERT PRINT EMPTY");
+      }
       wc.deviceId = app.plugin.deviceId;
       wc.deviceName = app.plugin.deviceName; 
       if (TS.isEmpty(wc.externalPort)) {
@@ -283,6 +291,7 @@ use class IUHub:Background {
   
   main() {
     any e;
+    Time:Sleep.sleepSeconds(10);
     while (true) {
       try {
         runTasks();
@@ -612,7 +621,8 @@ use class IUHub:HubPlugin {
         client.url = destUrl;
         try {
           Web:Client:CertificateManager.validateHosts = false;
-          Web:Client:CertificateManager.validateCertificates = false;
+          //Web:Client:CertificateManager.validateCertificates = false;
+          Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
           client.openOutput().write(payload);
           String res = client.openInput().readString();
           client.close();
@@ -633,7 +643,8 @@ use class IUHub:HubPlugin {
           }
         } finally {
           Web:Client:CertificateManager.validateHosts = true;
-          Web:Client:CertificateManager.validateCertificates = true;
+          //Web:Client:CertificateManager.validateCertificates = true;
+          Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
         }
       }
     }
@@ -673,7 +684,8 @@ use class IUHub:HubPlugin {
         }
         try {
           Web:Client:CertificateManager.validateHosts = false;
-          Web:Client:CertificateManager.validateCertificates = false;
+          //Web:Client:CertificateManager.validateCertificates = false;
+          Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
           client.openOutput().write(payload);
           String res = client.openInput().readString();
           log.log("GOT SOMETHING BACK!!!");
@@ -692,7 +704,8 @@ use class IUHub:HubPlugin {
           log.log("!!! got res from dev loginrequest " + res);
         } finally {
           Web:Client:CertificateManager.validateHosts = true;
-          Web:Client:CertificateManager.validateCertificates = true;
+          //Web:Client:CertificateManager.validateCertificates = true;
+          Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
         }
         //log.log("got res from dev loginRequest");
       }
@@ -949,6 +962,9 @@ use class IUHub:HubPlugin {
         if (TS.notEmpty(wc.internalLink)) {
           msg += "<p>" += wc.internalLink += "</p>\n";
         }
+        if (TS.notEmpty(wc.certificatePrint)) {
+          msg += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
+        }
         //if (TS.notEmpty(wc.externalCamLink)) {
         //  msg += "<p>" + wc.externalCamLink += "</p>\n<p>" += //wc.internalCamLink += "</p>\n";
         //}
@@ -963,7 +979,6 @@ use class IUHub:HubPlugin {
         //  msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
         //}
         log.log("In doimap4");
-        //msg += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
         String subjPref = "DeviceLinks " + self.deviceId + " ";
         String subj = subjPref + Time:Interval.now().seconds + " " + self.deviceName;
         log.log("In doimap5");
@@ -1259,6 +1274,7 @@ use class IUHub:HubPlugin {
     WebConnect wc = app.plugin.wcol.o;
     String ia = wc.internalAddress;
     String iao = wco.internalAddress;
+    String certificatePrint = wco.certificatePrint;
     if (def(ia) && def(iao)) {
       Bool internal = onSameNet(ia, iao);
     }
@@ -1286,7 +1302,7 @@ use class IUHub:HubPlugin {
         utry = wco.hostedUrl;
       }
       if (TS.notEmpty(utry)) {
-        if (pingUrl(utry)) {
+        if (pingUrl(utry, certificatePrint)) {
           log.log("chooseurl ret " + c);
           return(c);
         }
@@ -1295,7 +1311,7 @@ use class IUHub:HubPlugin {
     return(ut);
   }
   
-  pingUrl(String destUrl) Bool {
+  pingUrl(String destUrl, String print) Bool {
     Bool worked = false;
     Map argOut = Maps.from("action", "pingRequest");
     Web:Client client = Web:Client.new();
@@ -1304,7 +1320,8 @@ use class IUHub:HubPlugin {
     client.url = destUrl;
     try {
       Web:Client:CertificateManager.validateHosts = false;
-      Web:Client:CertificateManager.validateCertificates = false;
+      //Web:Client:CertificateManager.validateCertificates = false;
+      Web:Client:CertificateManager.acceptedThumbprints.put(print);
       client.openOutput().write(payload);
       String res = client.openInput().readString();
       client.close();
@@ -1317,7 +1334,8 @@ use class IUHub:HubPlugin {
       }
     } finally {
       Web:Client:CertificateManager.validateHosts = true;
-      Web:Client:CertificateManager.validateCertificates = true;
+      //Web:Client:CertificateManager.validateCertificates = true;
+      Web:Client:CertificateManager.acceptedThumbprints.delete(print);
     }
     return(worked);
   }
@@ -1456,6 +1474,9 @@ use class IUHub:HubPlugin {
        }
        //check to see if I am on same network as device first
        devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" += wc.deviceId += "');return false;\">Wakeup  " += wc.deviceName += "</a></p>";
+       if (TS.notEmpty(wc.certificatePrint)) {
+         devLinks += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
+       }
     }
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
    }

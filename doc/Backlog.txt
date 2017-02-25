@@ -1,37 +1,37 @@
-  
-have a check for int, ext, hosted first, use this to decide where onSameNet is
-  test getting it wrong to verify retry :-)
-  
-cleanup expired sessions and old oncetokens in same thing that cleans up tracking
 
-get cert thumbprint into wcol, use bcprov
-  validateHosts
-  use the cert for web client cases
-  show in email text and when forwarding
-  turn off always ignore cert issues and stick with known ok cert
-    have a lock for duration of event
+hostedFirst option
+
+async for the ping (future/callback of some sort + js timer)
+
+cleanup expired sessions and old oncetokens in same thing that cleans up tracking
+expiration for once login (deletem on cleanup)
+old session cleanup (do on bad ip cleanup)
+
+can change expiration during session
+once login time optionally from config, default not forever
+default on regular login from config
+  
+xam/ad/ios client
 
 use ui during linux setup (ft/initial setup) and for later re-setup
   test install with new script and update wiki docs and release (update bins)
+
+====
+
+should do reference counting for certificate print in/out
+
+add sha256 thumbprint too (for viewing)
+
+switch to sha256 for verification
+
+backup stuff (pic, etc) to pi from clients
 
 optional encrypte/decrypt pass for payloads in imap
 
 outside db key for en/decrypt passwords in config
 
-expiration for once login (deletem on cleanup)
-old session cleanup (do on bad ip cleanup)
-
-android client
-  store key safe somewhere
-  
-ios client
-
 getForwardPortsListRequest is broken    
-
-====
     
-backup stuff (pic, etc) to pi from clients
-
 android ver (full)
 
 sending email to update folks on change
@@ -53,6 +53,7 @@ iot dev sec (wifi, bt, ?)
   (instructs ssid key) per-dev
 
 mac, win ver (xamarin forms)
+  have the notion of a proxy that can wake a box, call it (def by devid)
   cs ws - use the httplistener
     ?move to bouncy castle for cert gen?
     ?or just figure out why it's not liked?
