@@ -1,5 +1,6 @@
 
-test new install and setup
+update wiki
+bring back createadmin
 
 jv/xamad/ios client
 
@@ -20,6 +21,9 @@ need retry script for failure to launch during install
 outside db key for en/decrypt passwords in config, in sec store on mobile
 
 ====
+
+options for problems in wiki
+make sure contact method works to ping me (?email fwd)
 
 optional encrypte/decrypt pass for payloads in imap
 
