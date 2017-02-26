@@ -491,13 +491,6 @@ use class IUHub:HubStart {
         log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
-      /*if (TS.notEmpty(mode) && mode == "saveIntUrl") {
-        log.log("saveIntUrl");
-        ui.plugin.bg.init().uu.doUpdate();
-        log.log("int url is " + ui.plugin.links.o.get("intUrl"));
-        File.apNew(args[2]).writer.open().write(ui.plugin.links.o.get("intUrl")).close();
-        File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.links.o.get("intUrl") + "\n").close();
-      }*/
       ui.configManager.close();
     }
 
@@ -551,10 +544,10 @@ use class IUHub:HubPlugin {
       log.log("in hubplugin start");
       List acs = app.accountManager.getLogins();
       if (undef(acs) || acs.size < 1) {
-        log.log("creating embedded account");
+        log.log("creating setup account");
         Account ac = Account.new();
         ac.permsString = "admin";
-        ac.user = "embedded_admin";
+        ac.user = "setup_admin";
         ac.pass = System:Random.getString(64);
         app.accountManager.putAccount(ac);
         app.configManager.put("embeddedLogin", ac.user);
@@ -719,12 +712,12 @@ use class IUHub:HubPlugin {
     }
     any authPlug = app.pluginsByClassName.get("App:AuthPlugin");
     authPlug.saveAccountRequest(arg, request);
-    if (request.embedded) {
+    //if (request.embedded) {
       String anso = app.configManager.get("accountSetOnce");
       if (TS.isEmpty(anso) || anso != "true") {
-        if (arg["accountName"] != "embedded_admin") {
+        if (arg["accountName"] != "setup_admin") {
           Account a = app.accountManager.getAccountForRequest(request);
-          if (a.user == "embedded_admin") {
+          if (a.user == "setup_admin") {
             Account b = app.accountManager.getAccount(arg["accountName"]);
             if (def(b) && b.perms.has("admin")) {
               log.log("first account, swapping and setting");
@@ -737,7 +730,7 @@ use class IUHub:HubPlugin {
           }
         }
       }
-    }
+    //}
     return(null);
   }
      
@@ -791,7 +784,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.6.8";
+        String version =@ "5.7.0";
       }
       return(version);
     }

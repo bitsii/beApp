@@ -215,12 +215,20 @@ use class IUHub:BigHubStart {
         ui.plugin.bg.init().uu.doUpdate();
         log.log("int url is " + ui.plugin.wcol.o.internalUrl);
       }
-      if (TS.notEmpty(mode) && mode == "saveIntUrl") {
-        log.log("saveIntUrl");
-        ui.plugin.bg.init().uu.doUpdate();
-        log.log("int url is " + ui.plugin.wcol.o.internalUrl);
-        File.apNew(args[2]).writer.open().write(ui.plugin.wcol.o.internalUrl).close();
-        File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + ui.plugin.wcol.o.internalUrl + "\n").close();
+      if (TS.notEmpty(mode) && mode == "saveSetupUrl") {
+        log.log("saveSetupUrl");
+        String olt = System:Random.getString(64);
+        ui.configManager.put("OnceToken." + olt, "setup_admin");
+        
+        Int intPorti = System:Random.getInt(Int.new(), 6000);
+        intPorti += 3000;
+        String intPort = intPorti.toString();
+        ui.configManager.put("wui.port", intPort);
+        
+        String iurl = "https://127.0.0.1:" += intPort += "/App/IUHub/IUHub.html?onceToken=" += olt;
+        //log.log("int url is " + iurl);
+        File.apNew(args[2]).writer.open().write(iurl).close();
+        File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
       }
       ui.configManager.close();
     }

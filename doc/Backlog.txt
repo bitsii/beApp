@@ -1,4 +1,8 @@
 
+test new install and setup
+
+jv/xamad/ios client
+
 hostedFirst option
 
 async for the ping (future/callback of some sort + js timer)
@@ -8,15 +12,16 @@ expiration for once login (deletem on cleanup)
 old session cleanup (do on bad ip cleanup)
 
 can change expiration during session
-once login time optionally from config, default not forever
-default on regular login from config
-  
-xam/ad/ios client
 
-use ui during linux setup (ft/initial setup) and for later re-setup
-  test install with new script and update wiki docs and release (update bins)
+default session time on regular login from config
+
+need retry script for failure to launch during install
+
+outside db key for en/decrypt passwords in config, in sec store on mobile
 
 ====
+
+optional encrypte/decrypt pass for payloads in imap
 
 should do reference counting for certificate print in/out
 
@@ -25,10 +30,6 @@ add sha256 thumbprint too (for viewing)
 switch to sha256 for verification
 
 backup stuff (pic, etc) to pi from clients
-
-optional encrypte/decrypt pass for payloads in imap
-
-outside db key for en/decrypt passwords in config
 
 getForwardPortsListRequest is broken    
     
