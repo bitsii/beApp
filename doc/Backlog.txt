@@ -1,7 +1,4 @@
 
-update wiki
-bring back createadmin
-
 jv/xamad/ios client
 
 hostedFirst option
@@ -11,6 +8,8 @@ async for the ping (future/callback of some sort + js timer)
 cleanup expired sessions and old oncetokens in same thing that cleans up tracking
 expiration for once login (deletem on cleanup)
 old session cleanup (do on bad ip cleanup)
+
+bring back createadmin
 
 can change expiration during session
 
