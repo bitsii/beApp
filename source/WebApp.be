@@ -190,6 +190,10 @@ use class App:AuthenticatedWebApp(AuthedApp) {
      if (undef(arg)) {
        String uri = request.uri;
        log.log("uri " + uri);
+       if (TS.isEmpty(uri) || uri == "/") {
+        log.log("empty uri going to base page");
+        request.outputContent = "<html><head><script>location=\"" + self.plugin.homePage + "\"</script></html>";
+       }
        File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
        if (TS.notEmpty(rmtd) && rmtd == "PUT") {
          if (checkWritePath(imgfile.path, null, request)) {

@@ -1,5 +1,10 @@
 
-jv/xamad/ios client
+thin client jvlui only
+  
+  have IULink as parent to IUHub (like iuhub is to iubhub)
+  separate getting list from imap from rest of background (in link)
+  no upnp, no wui/webserver, just lui + imap list get
+  xam/ad/ios
 
 hostedFirst option
 
@@ -224,17 +229,3 @@ other app support
     paste into pasteboard, or just callback
     callback
     (only do this if last one in pasteboard no workie, or age, or empty)
-
-______________
-
-______________
-
-Debt/Bugs:
-
-keep last update time and create time for sessions
-delete unnamed sessions after some idle time (named too, diff time?)
-have a login time for session, user agent for session?
-something is causing the background to run when hitting the dz url first time
-  put in a stack trace to see why
-for end session check if same user first
-second cookie to bypass bad ip check, single fail invalidates
