@@ -110,11 +110,12 @@ use class IUHub:Eui {
           String name = "hub";
           IO:Log log =@ IO:Logs.get(self);
           List callbacks = Lists.from(self); //plugins
+          HC hc = HC.new(callbacks);
         }
     }
     
     handleCallOut(Map arg) {
-      HC.new(callbacks).call(arg);
+      hc.call(arg);
     }
     
     fileChecked(String id) {
@@ -139,7 +140,7 @@ use class IUHub:Eui {
     
     handleCallback(String res) {
       hideInform();
-      HC.new(callbacks).handleCallback(res);
+      hc.handleCallback(res);
     }
     
     tryThing() {
@@ -389,7 +390,7 @@ use class IUHub:Eui {
    }
    
    pageTokenResponse(Map arg) {
-      HC.new(callbacks).pageToken = arg["pageToken"];
+      hc.pageToken = arg["pageToken"];
       Map carg = Map.new();
       carg["action"] = "checkLoggedInRequest";
       String ot = HD.href;

@@ -51,6 +51,7 @@ use class IUCam:Eui {
         fields {
           String name = "cam";
           List callbacks = Lists.from(self); //plugins
+          HC hc = HC.new(callbacks);
         }
     }
     
@@ -59,12 +60,12 @@ use class IUCam:Eui {
     }
     
     handleCallOut(Map arg) {
-      HC.new(callbacks).call(arg);
+      hc.call(arg);
     }
     
     handleCallback(String res) {
       hideInform();
-      HC.new(callbacks).handleCallback(res);
+      hc.handleCallback(res);
     }
     
     tryThing() {
@@ -263,7 +264,7 @@ use class IUCam:Eui {
    }
    
    pageTokenResponse(Map arg) {
-      HC.new(callbacks).pageToken = arg["pageToken"];
+      hc.pageToken = arg["pageToken"];
       Map carg = Map.new();
       carg["action"] = "checkLoggedInRequest";
       //log.log("href at startup " + HD.href);

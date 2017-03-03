@@ -27,7 +27,6 @@ var uiStartup = function(_ui) {
   ui.bem_main_0();
   hc = new be_$class/UI:HtmlDom:Call$();
   hc = hc.bemc_getInitial();
-  hc.bem_new_1(ui);
   hd = new be_$class/UI:HtmlDom:Document$();
   hd = hd.bemc_getInitial();
   hd.bem_new_0();
