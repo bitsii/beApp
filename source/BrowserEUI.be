@@ -252,7 +252,7 @@ class HC {
     fields {
       Json:Marshaller mar = Json:Marshaller.new();
       Json:Unmarshaller unmar = Json:Unmarshaller.new();
-      List callbacks = _callbacks;
+      List callbacks = _callbacks.copy().addValue(self);
       String pageToken;
     }
   }
@@ -277,11 +277,11 @@ class HC {
    callUI(List args) any {
      String aname = args[0];
      args.delete(0);
-     if (callbacks[0].can(aname, args.length)) {
-       return(callbacks[0].invoke(aname, args));
-     } elseIf (self.can(aname, args.length)) {
-       return(self.invoke(aname, args));
-     }         
+     for (any callback in callbacks) {
+       if (callback.can(aname, args.length)) {
+         return(callback.invoke(aname, args));
+       }
+     }       
      return(null);
    }
 
@@ -362,10 +362,11 @@ class HC {
           rargs[0] = resm;
         }
         String show = rargs.size.toString();
-        if (callbacks[0].can(mname, rargs.length)) {
-          callbacks[0].invoke(mname, rargs);
-        } elseIf(self.can(mname, rargs.length)) {
-          self.invoke(mname, rargs); 
+        for (any callback in callbacks) {
+          if (callback.can(mname, rargs.length)) {
+            callback.invoke(mname, rargs);
+            break;
+          } 
         }
       }
     }
