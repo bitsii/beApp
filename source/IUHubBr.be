@@ -109,6 +109,7 @@ use class IUHub:Eui {
           String currentlyCheckedId;
           String name = "hub";
           IO:Log log =@ IO:Logs.get(self);
+          List callbacks = Lists.from(self);
         }
     }
     

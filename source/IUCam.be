@@ -487,7 +487,7 @@ use class IUCam:CamPlugin {
       ref = ref.substring(0, ref.find("?"));
      }
      log.log("okForPageToken second " + ref);
-     if (ref == "/App/IUHub/IUHub.html" || ref == "/App/IUHub/IUCam.html") {
+     if (ref == "/App/IUHub/IU.html" || ref == "/App/IUHub/IUCam.html") {
       return(true);
      }
      return(false);

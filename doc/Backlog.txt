@@ -1,12 +1,17 @@
 
 thin client jvlui only
-  
-  have IULink as parent to IUHub (like iuhub is to iubhub)
-  separate getting list from imap from rest of background (in link)
+  one html with everything, js plugins in list like plugins in app
+    plugin list in eui, list of one each
+    plugins decide what icos are available in menu
+    move in cam, drop builds for it and links b/f
+  separate getting list from imap from rest of background upnp (in link)
   no upnp, no wui/webserver, just lui + imap list get
   xam/ad/ios
+    mono webserve
+    xamad
+    xamios
 
-hostedFirst option
+hostedFirst option for connect to
 
 async for the ping (future/callback of some sort + js timer)
 
@@ -26,6 +31,10 @@ outside db key for en/decrypt passwords in config, in sec store on mobile
 
 ====
 
+don't create new hcs all the time
+
+android ver (full)
+
 options for problems in wiki
 make sure contact method works to ping me (?email fwd)
 
@@ -40,8 +49,6 @@ switch to sha256 for verification
 backup stuff (pic, etc) to pi from clients
 
 getForwardPortsListRequest is broken    
-    
-android ver (full)
 
 sending email to update folks on change
   look in inbox, by subject, up to last check time (max date last time - some hours)

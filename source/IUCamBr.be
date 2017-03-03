@@ -313,7 +313,7 @@ use class IUCam:Eui {
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
-    HD.getElementById("hubLink").href = "IUHub.html";
+    HD.getElementById("hubLink").href = "IU.html";
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
       if (TS.notEmpty(permsString)) {

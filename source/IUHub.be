@@ -520,7 +520,7 @@ use class IUHub:HubPlugin {
           IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "IUHub";
-          String homePage = "/App/IUHub/IUHub.html";
+          String homePage = "/App/IUHub/IU.html";
           OLocker wcol = OLocker.new();
           OLocker linksol = OLocker.new();
           Background bg = Background.new();
@@ -1105,7 +1105,7 @@ use class IUHub:HubPlugin {
       ref = ref.substring(0, ref.find("?"));
      }
      log.log("okForPageToken second " + ref);
-     if (ref == "/App/IUHub/IUHub.html" || ref == "/App/IUHub/IUCam.html") {
+     if (ref == "/App/IUHub/IU.html" || ref == "/App/IUHub/IUCam.html") {
       return(true);
      }
      return(false);
@@ -1246,7 +1246,7 @@ use class IUHub:HubPlugin {
    }
    
    getLoginUri(request) String {
-     String loginBookmark = "/App/IUHub/IUHub.html";
+     String loginBookmark = "/App/IUHub/IU.html";
      return(loginBookmark);
    }
    

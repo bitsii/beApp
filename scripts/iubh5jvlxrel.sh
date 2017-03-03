@@ -56,7 +56,7 @@ cp scripts/iuhrun.sh ../apprun/App/IUHub
 cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
-cp source/IUHub*.html ../apprun/App/IUHub
+cp source/IU.html ../apprun/App/IUHub
 cp extlibs/IUHub/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub
 cp LICENSE.txt ../apprun/App/IUHub
