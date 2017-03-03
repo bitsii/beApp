@@ -265,13 +265,6 @@ use class IUHub:BigHubPlugin(HubPlugin) {
       }
       return(res);
     }
-    
-    oldgetActionLinks(Account a, Map arg, request) String {
-     if (TS.notEmpty(arg["plugin"]) && arg["plugin"] == "cam") {
-      return(self.cam.getActionLinks(a, arg, request));
-     }
-     return(super.getActionLinks(a, arg, request));
-   }
    
    getActionLinks(Account a, Map arg, request) String {
      return(self.cam.getActionLinks(a, arg, request) + super.getActionLinks(a, arg, request));
