@@ -694,7 +694,7 @@ use class IUCam:CamPlugin {
             clabel = Path.apNew(c).steps.last;
             app.configManager.put("cam." + c + ".label", clabel);
           }
-          actionLinks += "<p><a href=\"#\" onclick=\"ui.bem_updateImage_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"applets-screenshooter.svg\" alt=\"Take Picture\"/>Take Picture with " + clabel + "</a></p>";
+          actionLinks += "<p><a href=\"#\" onclick=\"callUI('updateImage', '" + c + "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"applets-screenshooter.svg\" alt=\"Take Picture\"/>Take Picture with " + clabel + "</a></p>";
           if (showMotion) {
             String mcp = app.configManager.get("cam." + c + ".motion");
             if (TS.notEmpty(mcp) && Bool.new(mcp)) {
@@ -702,7 +702,7 @@ use class IUCam:CamPlugin {
             } else {
               endis = "Enable";
             }
-            moLinks += "<p><a href=\"#\" onclick=\"ui.bem_toggleMotion_1(new be_BEC_2_4_6_TextString().bems_new('" + c + "'));return false;\">" += endis += " motion for " + clabel + "</a></p>";
+            moLinks += "<p><a href=\"#\" onclick=\"callUI('toggleMotion', '" + c + "');return false;\">" += endis += " motion for " + clabel + "</a></p>";
             moLinks += "<p><label class=\"luiForm\">Rename Cam " += clabel += "</label><input type=\"text\" id=\"camRename" += c += "\" value=\"" += clabel += "\"></input> <a id=\"camRenameLink\" href=\"#\" onclick=\"callApp('renameCamRequest', document.getElementById('camRename" += c += "').value, '" += c += "');return false;\" >Save New Cam Name</a> <a id=\"camRenameCancel\" href=\"#\" onclick=\"callUI('reloadResponse');return false;\" >Cancel</a></p>";
           }
         }
@@ -711,7 +711,7 @@ use class IUCam:CamPlugin {
      if (showMotion) {
       actionLinks += "<div id=\"camSettingsDiv\" style=\"display: none;\">"
       actionLinks += moLinks;
-      actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"ui.bem_detectCams_0();return false;\" >Detect WebCams</a></p>";
+      actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";
       String cps = app.configManager.get("cam.cleanDays");
       if (TS.isEmpty(cps)) {
         cps = "7";

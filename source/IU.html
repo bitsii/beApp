@@ -57,7 +57,7 @@ h5.luiForm {
 <body>
 <div id="informDiv" style="display: none;">
 <div id="informMessageDiv"></div>
-<p><a href="#" onclick="ui.bem_hideInform_0();return false;">Clear Message</a></p>
+<p><a href="#" onclick="callUI('hideInform');return false;">Clear Message</a></p>
 </div>
 <div id="spinnerdiv">
   
@@ -66,8 +66,7 @@ h5.luiForm {
 <p>Login</p>
 <form>
 <p><label class="luiForm">Account Name</label><input type="text" id="accountName"></input></p>
-<p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input></p>
-<!--<p><label class="luiForm">Session Name</label><input type="text" id="sessionName" onkeydown = "if (event.keyCode == 13) ui.bem_login_0()"></input>(Optional)</p>-->
+<p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) callUI('login')"></input></p>
 <a href="#" onclick="callUI('toggleDisplay', 'advancedLoginDiv');return false;"/>Advanced</a>
 <div id="advancedLoginDiv" style="display: none;">
 <input type="hidden" id="sessionName" value=""/>
@@ -76,21 +75,21 @@ h5.luiForm {
 <p><input type="checkbox" id="sessionNeverExpires"/> never expires.
 </div>
 </form>
-<p><a href="#" onclick="ui.bem_login_0();return false;">Login</a></p>
+<p><a href="#" onclick="callUI('login');return false;">Login</a></p>
 </div>
 <div id="loginmsgdiv"></div>
 <div id="loggedindiv" style="display: none;">
 
 <!--Files-->
-<img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" title="Files"/>
+<img src="system-file-manager.svg" onclick="callUI('localBrowseRequest');return false;" title="Files"/>
 <!--Files-->
 
 <!--Files-->
-<img src="folder-videos.svg" onclick="ui.bem_browseWebCam_0();return false;" title="WebCam Files"/>
+<img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/>
 <!--Files-->
 
 <!--Logout-->
-<img src="system-log-out.svg" onclick="ui.bem_logout_0();return false;" title="Logout"/>
+<img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/>
 <!--Logout-->
 
 <!--LiLink-->
@@ -119,7 +118,7 @@ h5.luiForm {
 <!--Service Connections-->
 
 <!--Restart-->
-<img src="system-software-update.svg" onclick="ui.bem_restart_0();return false;" title="Restart"/>
+<img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/>
 <!--Restart-->
 
 <!--Services-->
@@ -127,7 +126,7 @@ h5.luiForm {
 <!--Services-->
     
 <!--Accounts-->
-<img src="system-users.svg" onclick="ui.bem_showAccountAdminRequest_0();return false;" title="Accounts"/>
+<img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/>
 <!--Accounts-->
 
 <p>
@@ -137,15 +136,15 @@ h5.luiForm {
 <!--Device Name-->
 
 <!--Imap-->
-<img src="applications-mail.svg" onclick="ui.bem_showImapRequest_0();return false;" title="Imap"/>
+<img src="applications-mail.svg" onclick="callUI('showImapRequest');return false;" title="Imap"/>
 <!--Imap-->
 
 <!--Configuration-->
-<img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="ui.bem_showConfig_0();return false;" title="Configuration"/>
+<img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="callUI('showConfig');return false;" title="Configuration"/>
 <!--Configuration-->
     
 <!--Security Extras-->
-<img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');ui.bem_showSessionsRequest_0();return false;" title="Security Extras"/>
+<img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');callUI('showSessionsRequest');return false;" title="Security Extras"/>
 <!--Security Extras-->
 
 <p>
@@ -177,7 +176,7 @@ h5.luiForm {
 <p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
 <div style="display: none;">
 <p>Admin Account <input type="checkbox" id="aadminIsAdmin" checked/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p></div>
-<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');ui.bem_saveAccountRequest_0();return false;"><p><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');deleteAccount();return false;"><input type="checkbox" id="confirmAccountDelete"/>Confirm account Deletion</p>
+<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');callUI('saveAccountRequest');return false;"><p><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');deleteAccount();return false;"><input type="checkbox" id="confirmAccountDelete"/>Confirm account Deletion</p>
 <div id="accountLinksDiv"></div>
 </div>
 <!--Accounts-->
@@ -205,7 +204,7 @@ h5.luiForm {
 <p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
 <p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
 <div id="imDitty"></div>
-<p><a href="#" onclick="ui.bem_imapSettingsRequest_0();return false;">Save Imap Settings</a></p>
+<p><a href="#" onclick="callUI('imapSettingsRequest');return false;">Save Imap Settings</a></p>
 </div>
 <!--Imap-->
 
@@ -213,33 +212,33 @@ h5.luiForm {
 <div id="helpDiv" style="display: none;">
 General help - clicking on icons will open/close their functional areas - click Help again to close this area
 <!--Files-->
-<p><img src="system-file-manager.svg" onclick="ui.bem_localBrowseRequest_0();return false;" title="Files"/> Work with the device's filesystem (remotely)
+<p><img src="system-file-manager.svg" onclick="callUI('localBrowseRequest');return false;" title="Files"/> Work with the device's filesystem (remotely)
 <!--Service Connections-->
 <p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>  Get service connections to device
 <!--Restart-->
-<p><img src="system-software-update.svg" onclick="ui.bem_restart_0();return false;" title="Restart"/> Restart the Hub application
+<p><img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/> Restart the Hub application
 <!--Services-->
 <p><img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/> View and create service connections (remote connectivity to the device desktop and other services)
 <!--Accounts-->
-<p><img src="system-users.svg" onclick="ui.bem_showAccountAdminRequest_0();return false;" title="Accounts"/> Create, modify, and delete accounts
+<p><img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/> Create, modify, and delete accounts
 <!--Device Name-->
 <p><img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/> Change device name
 <!--Imap-->
-<p><img src="applications-mail.svg" onclick="ui.bem_showImapRequest_0();return false;" title="Imap"/> Connect device to email account
+<p><img src="applications-mail.svg" onclick="callUI('showImapRequest');return false;" title="Imap"/> Connect device to email account
 <!--Configuration-->
-<p><img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="ui.bem_showConfig_0();return false;" title="Configuration"/> Direct access to configuration (advanced)
+<p><img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="callUI('showConfig');return false;" title="Configuration"/> Direct access to configuration (advanced)
 <!--Security Extras-->
-<p><img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');ui.bem_showSessionsRequest_0();return false;" title="Security Extras"/> Manage extended security settings and logged in sessions
+<p><img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');callUI('showSessionsRequest');return false;" title="Security Extras"/> Manage extended security settings and logged in sessions
 <!--Password-->
 <p><img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/> Change Password
 <!--Logout-->
-<p><img src="system-log-out.svg" onclick="ui.bem_logout_0();return false;" title="Logout"/> Logout
+<p><img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/> Logout
 <!--About-->
 <p><img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/> Information about this software and device
 <!--IUCam-->
 <p><a id="camLink" href="IUCam.html"><img src="accessories-camera.svg" title="IUCam"/></a> Cam configuration
 <!--Files-->
-<p><img src="folder-videos.svg" onclick="ui.bem_browseWebCam_0();return false;" title="WebCam Files"/> Browse cam pictures
+<p><img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/> Browse cam pictures
 <!--Help-->
 <p><img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/> Help (this...)
 </div>
@@ -250,12 +249,12 @@ General help - clicking on icons will open/close their functional areas - click 
 <p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
 <p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
 <p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
-<p><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');ui.bem_changePassRequest_0();return false;">Change Password</a></p>
+<p><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');callUI('changePassRequest');return false;">Change Password</a></p>
 </div>
 <!--Password-->
 
 <!--Files-->
-<p><a href="#" id="clearPicId" onclick="ui.bem_clearImage_0();return false;" style="display: none;">Clear Picture</a></p>
+<p><a href="#" id="clearPicId" onclick="callUI('clearImage');return false;" style="display: none;">Clear Picture</a></p>
 <div id="imgdiv"></div>
 <div id="browseFilesDiv" style="display: none;">
 <p>Upload a File <input type="file" id="files" name="files[]" multiple /></p>
@@ -300,8 +299,8 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <!--Security Extras-->
 <div id="seDiv" style="display: none;">
 <div id="sessionsListDiv" style="display: none;"></div>
-<p><a id="restartId" href="#" onclick="ui.bem_clearAllSessions_0();return false;">Clear all sessions (Logs everyone out)</a></p>
-<p><a id="restartId" href="#" onclick="ui.bem_clearAllTracking_0();return false;">Clear all bad ip tracking</a></p>
+<p><a id="restartId" href="#" onclick="callUI('clearAllSessions');return false;">Clear all sessions (Logs everyone out)</a></p>
+<p><a id="restartId" href="#" onclick="callUI('clearAllTracking');return false;">Clear all bad ip tracking</a></p>
 </div>
 <!--Security Extras-->
 
@@ -326,7 +325,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <p><label class="luiForm">Account Name</label><input type="text" id="dcAccountName"></input></p>
 <p><label class="luiForm">Account Password</label><input type="password" id="dcAccountPass"></input></p>
 </form>
-<p><a href="#" onclick="ui.bem_deviceLogin_0();return false;">Login</a></p>
+<p><a href="#" onclick="callUI('deviceLogin');return false;">Login</a></p>
 </div>
 <div id="devLinksDiv"></div>
 </body>

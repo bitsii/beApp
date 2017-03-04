@@ -1,9 +1,10 @@
 
 thin client jvlui only
-  one html with everything, js plugins in list like plugins in app
-    plugin list in eui, list of one each
-    plugins decide what icos are available in menu
+  one html with everything
+    plugins decide what icos are available in menu (startup/visibility)
     move in cam, drop builds for it and links b/f
+  deploy
+  separate ui for link stuff into link - js and icon activation
   separate getting list from imap from rest of background upnp (in link)
   no upnp, no wui/webserver, just lui + imap list get
   xam/ad/ios
@@ -30,8 +31,6 @@ need retry script for failure to launch during install
 outside db key for en/decrypt passwords in config, in sec store on mobile
 
 ====
-
-don't create new hcs all the time
 
 android ver (full)
 

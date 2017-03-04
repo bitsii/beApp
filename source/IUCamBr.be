@@ -38,7 +38,7 @@ var localBrowseRequest = function(forId) {
 }
 
 var deleteAccount = function() {
-  ui.bem_deleteAccountRequest_1(new be_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
+  callUI('deleteAccountRequest', document.getElementById("aadminName").value);
 }
 
 window.onload = startup;

@@ -22,47 +22,43 @@ var startup = function() {
 }
 
 var endSession = function(forId) {
-  var theId = new be_$class/Text:String$().bems_new(forId);
-  ui.bem_endSessionRequest_1(theId);
+  callUI('endSessionRequest', forId);
 }
 
 var updateConfig = function(forKey, forId) {
-  var theKey = new be_$class/Text:String$().bems_new(forKey);
-  var theId = new be_$class/Text:String$().bems_new(forId);
-  ui.bem_updateConfig_2(theKey, theId);
+  callUI('updateConfig', forKey, forId);
 }
 
 var localBrowseRequest = function(forId) {
-  var theId = new be_$class/Text:String$().bems_new(forId);
-  ui.bem_localBrowseRequest_1(theId);
+  callUI('localBrowseRequest', forId);
 }
 
 var deleteSelected = function() {
-  ui.bem_deleteRequest_0();
+  callUI('deleteRequest');
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
 var deleteAccount = function() {
-  ui.bem_deleteAccountRequest_1(new be_$class/Text:String$().bems_new(document.getElementById("aadminName").value));
+  callUI('deleteAccountRequest', document.getElementById("aadminName").value);
 }
 
 var copySelected = function() {
-  ui.bem_copyRequest_0();
+  callUI('copyRequest');
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
 var upgradeSelected = function() {
-  ui.bem_upgradeRequest_0();
+  callUI('upgradeRequest');
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
 var restoreSelected = function() {
-  ui.bem_restoreConfigRequest_0();
+  callUI('restoreConfigRequest');
   callUI('logoutResponse');
 }
 
   function handleFileSelect(evt) {
-    var dpath = ui.bem_browsingDirGet_0().bems_toJsString();
+    var dpath = callUI('browsingDirGet').bems_toJsString();
     var files = evt.target.files; // FileList object
     for (var i = 0, f; f = files[i]; i++) {
       var req = new XMLHttpRequest();
@@ -75,13 +71,10 @@ var restoreSelected = function() {
   }
   
 function fileChecked(box) {
-  var theId = new be_$class/Text:String$().bems_new(box.id);
   if (box.checked) {
-    ui.bem_fileChecked_1(theId);
-    //alert("checked ".concat(box.id));
+    callUI('fileChecked', box.id);
   } else {
-    ui.bem_fileUnchecked_1(theId);
-    //alert("unchecked ".concat(box.id));
+    callUI('fileUnchecked', box.id);
   }
   
 }
@@ -109,7 +102,7 @@ use class IUHub:Eui {
           String currentlyCheckedId;
           String name = "hub";
           IO:Log log =@ IO:Logs.get(self);
-          List callbacks = Lists.from(self); //plugins
+          List callbacks = Lists.from(self, CamUI.new()); //plugins
           HC hc = HC.new(callbacks);
         }
     }
@@ -247,22 +240,6 @@ use class IUHub:Eui {
       HC.toggleDisplay("devLinksDiv");
      }
      lastDevId = devId;
-   }
-   
-   updateImage(String cam) {
-      Map arg = Map.new();
-      arg["action"] = "updateImageRequest";
-      arg["cam"] = cam;
-      handleCallOut(arg);
-   }
-   
-   browseWebCam() {
-     if (HD.getElementById("browseFilesDiv").display == "block") {
-      closeFileBrowser();
-     } else {
-      HD.getElementById("browseFilesDiv").display = "block";
-      localBrowseRequest(Encode:Hex.encode("./Shared/WebCam"));
-     }
    }
    
    showImapResponse(Map arg) {
@@ -748,4 +725,107 @@ use class IUHub:Eui {
       }
    }
   
+}
+
+use class IUCam:CamUI {
+
+  new() self {
+        fields {
+          String name = "cam";
+          HC hc = HC.new();
+        }
+    }
+    
+    main() {
+    
+    }
+    
+    handleCallOut(Map arg) {
+      hc.call(arg);
+    }
+    
+    handleCallback(String res) {
+      hideInform();
+      hc.handleCallback(res);
+    }
+       
+    updateImage(String cam) {
+      Map arg = Map.new();
+      arg["action"] = "updateImageRequest";
+      arg["cam"] = cam;
+      handleCallOut(arg);
+   }
+   
+   toggleMotion(String cam) {
+      Map arg = Map.new();
+      arg["action"] = "toggleMotionRequest";
+      arg["cam"] = cam;
+      handleCallOut(arg);
+   }
+   
+   toggleCamSettings() {
+     if (HD.getElementById("camSettingsDiv").display == "block") {
+       HD.getElementById("camSettingsDiv").display = "none";
+     } else {
+       HD.getElementById("camSettingsDiv").display = "block";
+     }
+   }
+   
+   startup() {
+      IO:Logs.turnOnAll();
+      clearImage();
+      Map arg = Map.new();
+      arg["action"] = "pageTokenRequest";
+      HD.getElementById("accountName").value = "";
+      HD.getElementById("accountPass").value = "";
+      handleCallOut(arg);
+   }
+   
+   updateImageResponse(Map arg) {
+     HD.getElementById("clearPicId").display = "block";
+     HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
+   }
+   
+   clearImage() {
+     HD.getElementById("imgdiv").innerHTML = "";
+     HD.getElementById("clearPicId").display = "none";
+   }
+   
+   detectCams() {
+      Map arg = Map.new();
+      arg["action"] = "detectCamsRequest";
+      handleCallOut(arg);
+   }
+   
+   browseWebCam() {
+     if (HD.getElementById("browseFilesDiv").display == "block") {
+      closeFileBrowser();
+     } else {
+      HD.getElementById("browseFilesDiv").display = "block";
+      localBrowseRequest(Encode:Hex.encode("./Shared/WebCam"));
+     }
+   }
+   
+   closeFileBrowser() {
+     HD.getElementById("browseFilesDiv").display = "none";
+   }
+   
+   localBrowseRequest(String path) {
+      Map arg = Map.new();
+      arg["action"] = "localBrowseRequest";
+      arg["path"] = path;
+      handleCallOut(arg);
+   }
+   
+   inform(String r) {
+     if (TS.notEmpty(r)) {
+      HD.getElementById("informMessageDiv").innerHTML = r;
+      HD.getElementById("informDiv").display = "block";
+     }
+   }
+   
+   hideInform() {
+     HD.getElementById("informDiv").display = "none";
+   }
+   
 }
