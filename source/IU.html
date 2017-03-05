@@ -91,10 +91,6 @@ h5.luiForm {
 <!--Logout-->
 <img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/>
 <!--Logout-->
-
-<!--LiLink-->
-<!--<a id="liLink" href="IUCam.html"><img src="help-about.svg" title="Logged In Bookmark"/></a>-->
-<!--LiLink-->
   
 <!-- config stuff link -->
 <img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/>
@@ -158,7 +154,7 @@ h5.luiForm {
 <!--About-->
   
 <!--IUCam-->
-<a id="camLink" href="IUCam.html"><img src="accessories-camera.svg" title="IUCam"/></a>
+<img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/>
 <!--IUCam-->
 
 <!--Internet Listen-->
@@ -236,7 +232,7 @@ General help - clicking on icons will open/close their functional areas - click 
 <!--About-->
 <p><img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/> Information about this software and device
 <!--IUCam-->
-<p><a id="camLink" href="IUCam.html"><img src="accessories-camera.svg" title="IUCam"/></a> Cam configuration
+<p><img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/> Cam configuration
 <!--Files-->
 <p><img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/> Browse cam pictures
 <!--Help-->

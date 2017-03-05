@@ -453,7 +453,7 @@ use class IUHub:Eui {
     } else {
       HD.getElementById("devLinksListDiv").innerHTML = "";
     }
-    HD.getElementById("camLink").href = "IUCam.html";
+    //HD.getElementById("camLink").href = "IUCam.html";
     HD.getElementById("devLinksDiv").innerHTML = "";
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];

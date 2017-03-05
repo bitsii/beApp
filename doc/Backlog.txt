@@ -1,11 +1,13 @@
 
 thin client jvlui only
-  one html with everything
-    plugins decide what icos are available in menu (startup/visibility)
-    move in cam, drop builds for it and links b/f
   deploy
+  naming
+    link - connection
+    hub - ssh upnp
+    bridge (bighub) - cam, etc, etc
   separate ui for link stuff into link - js and icon activation
   separate getting list from imap from rest of background upnp (in link)
+    simplify background/abstract away with "how often" to do (for android, etc)
   no upnp, no wui/webserver, just lui + imap list get
   xam/ad/ios
     mono webserve
