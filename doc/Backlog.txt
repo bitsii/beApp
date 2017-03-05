@@ -1,10 +1,5 @@
 
 thin client jvlui only
-  deploy
-  naming
-    link - connection
-    hub - ssh upnp
-    bridge (bighub) - cam, etc, etc
   separate ui for link stuff into link - js and icon activation
   separate getting list from imap from rest of background upnp (in link)
     simplify background/abstract away with "how often" to do (for android, etc)

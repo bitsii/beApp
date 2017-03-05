@@ -30,7 +30,7 @@ emit(jv) {
 import java.net.*;
 """
 }
-use class IUHub:BigHubStart {
+use class IUBridge:BridgeStart {
 
    new() self {
       fields {
@@ -60,7 +60,7 @@ use class IUHub:BigHubStart {
     }
     
     getPlugins(Bool bkg) List {
-      BigHubPlugin hub = BigHubPlugin.new();
+      BridgePlugin hub = BridgePlugin.new();
       hub.runBackground = bkg;
       CamPlugin cam = CamPlugin.new();
       cam.runBackground = bkg;
@@ -239,7 +239,7 @@ use class IUHub:BigHubStart {
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
-use class IUHub:BigHubPlugin(HubPlugin) {
+use class IUBridge:BridgePlugin(HubPlugin) {
 
     
     loggedIn(Account a, Map res, Map arg, request) {
