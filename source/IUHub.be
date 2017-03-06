@@ -331,172 +331,6 @@ use class IUHub:Background {
 
 }
 
-use class IUHub:HubStart {
-
-   new() self {
-      fields {
-          IO:Log log =@ IO:Logs.get(self);
-        }
-    }
-
-  main() {
-      main(System:Process.new().args);
-    }
-    
-    main(List args) {
-      outerMain(System:Process.new().args);
-      /*try {
-        app.configManager.close();
-      } catch (any e) {
-        log.log("Exception closing db in CmdUI, error is " + e);
-      }*/
-    }
-    
-    outerMain(List args) {
-      try {
-        innerMain(System:Process.new().args);
-      } catch (any e) {
-        log.log("Exception in CmdUI, error is " + e);
-      }
-    }
-    
-    innerMain(List args) {
-
-      Web:Client:CertificateManager.validateHosts = false;
-
-      if (args.length > 0) {
-        String mode = args[0]; //ui, svc, both, [absent]
-        log.log("mode " + mode);
-      } else {
-        log.log("mode empty");
-      }
-      if (TS.isEmpty(mode)) {
-        mode = "wui";
-      }
-      if (mode == "lui" || mode == "wui" || mode == "cmd") {
-        log.log("making hub");
-        HubPlugin hub = HubPlugin.new();
-        if (mode == "cmd") {
-          hub.runBackground = false;
-        }
-        log.log("adding plugins");
-        List plugins = List.new();
-        plugins += hub;
-        plugins += App:AuthPlugin.new();
-        plugins += App:ConfigPlugin.new();
-        plugins += App:FileManagerPlugin.new();
-        if (mode == "lui") {
-          //AuthenticatedLocalApp.new(plugins).main();
-        }
-        if (mode == "wui") {
-          //AuthenticatedWebApp.new(plugins).main();
-        }        
-        if (mode == "cmd") {
-          cmdMain(args, plugins);
-        }
-      }
-      if (mode == "test") {
-        IUHub:Test.new().main();
-      }
-    }
-
-    cmdMain(List args, plugins) {
-      AuthedApp ui = AuthedApp.new();
-      
-      if (args.length > 1) {
-        String mode = args[1]; //ui, svc, both, [absent]
-        log.log("cmd " + mode);
-      } 
-      if (TS.isEmpty(mode)) {
-        log.log("cmd empty");
-      }
-      if (mode == "help") {
-        log.log("Help");
-        log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
-      }
-      if (TS.notEmpty(mode) && mode == "portForward") {
-        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.start();
-      }
-      if (TS.notEmpty(mode) && mode == "listLogins") {
-        for (String login in ui.accountManager.getLogins()) {
-          log.log("Account login " + login);
-        }
-      }
-      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
-        String user = args[2];
-        String pass = args[3];
-        log.log("Putting Account " + user);
-        Account ac = Account.new();
-        ac.user = user;
-        ac.pass = pass;
-        if (args.length > 4) {
-          ac.permsString = args[4];
-        }
-        ui.accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "getAccount") {
-        user = args[2];
-        log.log("Get Account " + user);
-        ac = ui.accountManager.getAccount(user);
-        log.log("Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPermsString") {
-        user = args[2];
-        String ps = args[3];
-        log.log("Set Perms " + user);
-        ac = ui.accountManager.getAccount(user);
-        ac.permsString = ps;
-        ui.accountManager.putAccount(ac);
-        log.log("Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPass") {
-        user = args[2];
-        pass = args[3];
-        log.log("Set Pass " + user);
-        ac = ui.accountManager.getAccount(user);
-        ac.pass = pass;
-        ui.accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteAccount") {
-        user = args[2];
-        log.log("Deleting Account " + user);
-        ac = ui.accountManager.getAccount(user);
-        if (def(ac)) {
-          ui.accountManager.deleteAccount(ac);
-          log.log("Deleted account " + user);
-        } else {
-          log.log("No such account for deletion " + user);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "updateConfig") {
-        String key = args[2];
-        String value = args[3];
-        log.log("Updating config " + key + " " + value);
-        ui.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "showConfig") {
-        for (any kv in ui.configManager.getMap()) {
-          log.log("Config name " + kv.key + " value " + kv.value);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "createConfig") {
-        key = args[2];
-        value = args[3];
-        log.log("Creating config " + key + " " + value);
-        ui.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteConfig") {
-        key = args[2];
-        log.log("Deleting config " + key);
-        ui.configManager.delete(key);
-      }
-      ui.configManager.close();
-    }
-
-}
-
-
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
@@ -779,6 +613,18 @@ use class IUHub:HubPlugin {
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       res["loginUri"] = self.getLoginUri(request);
+      String dnso = app.configManager.get("deviceNameSetOnce");
+      if (TS.isEmpty(dnso) || dnso != "true") {
+        res["deviceNameSetOnce"] = "false";
+      }
+      String imso = app.configManager.get("imapSetOnce");
+      if (TS.isEmpty(imso) || imso != "true") {
+        res["imapSetOnce"] = "false";
+      }
+      String anso = app.configManager.get("accountSetOnce");
+      if (TS.isEmpty(anso) || anso != "true") {
+        res["accountSetOnce"] = "false";
+      }
       return(res);
     }
     

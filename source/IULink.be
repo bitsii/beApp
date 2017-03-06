@@ -30,7 +30,7 @@ emit(jv) {
 import java.net.*;
 """
 }
-use class IUBridge:BridgeStart {
+use class IULink:LinkStart {
 
    new() self {
       fields {
@@ -60,14 +60,11 @@ use class IUBridge:BridgeStart {
     }
     
     getPlugins(Bool bkg) List {
-      BridgePlugin hub = BridgePlugin.new();
+      HubPlugin hub = HubPlugin.new();
       hub.runBackground = bkg;
-      CamPlugin cam = CamPlugin.new();
-      cam.runBackground = bkg;
       log.log("adding plugins");
       List plugins = List.new();
       plugins += hub;
-      plugins += cam;
       plugins += App:AuthPlugin.new();
       plugins += App:ConfigPlugin.new();
       plugins += App:FileManagerPlugin.new();
@@ -84,25 +81,14 @@ use class IUBridge:BridgeStart {
         log.log("mode empty");
       }
       if (TS.isEmpty(mode)) {
-        mode = "wui";
+        mode = "lui";
       }
-      if (mode == "lwui" || mode == "lui" || mode == "wui" || mode == "cmd") {
+      if (mode == "lui" || mode == "cmd") {
         log.log("making hub");
         if (mode != "cmd") {
-          if (mode == "lui" || mode == "lwui") {
+          if (mode == "lui") {
             AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
             luiapp.plugins = getPlugins(true);
-          }
-          if (mode == "wui" || mode == "lwui") {
-            AuthenticatedWebApp wuiapp = AuthenticatedWebApp.new();
-            wuiapp.plugins = getPlugins(true);
-          }  
-          if (mode == "lwui") {
-            luiapp.cohostWith(wuiapp);
-          }
-          if (def(wuiapp)) {
-            log.log("starting wui");
-            wuiapp.main();
           }
           if (def(luiapp)) {
             log.log("starting lui");
@@ -129,10 +115,6 @@ use class IUBridge:BridgeStart {
       if (mode == "help") {
         log.log("Help");
         log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
-      }
-      if (TS.notEmpty(mode) && mode == "portForward") {
-        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
         for (String login in ui.accountManager.getLogins()) {
@@ -236,15 +218,8 @@ use class IUBridge:BridgeStart {
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
-use class IUBridge:BridgePlugin(HubPlugin) {
+use class IULink:LinkPlugin(HubPlugin) {
 
-   getActionLinks(Account a, Map arg, request) String {
-     return(self.cam.getActionLinks(a, arg, request) + super.getActionLinks(a, arg, request));
-   }
-    
-    camGet() CamPlugin {
-      return(app.plugins[1]);
-    }
      
    
 }

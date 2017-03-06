@@ -1,9 +1,6 @@
 
 thin client jvlui only
-  separate ui for link stuff into link - js and icon activation
-  separate getting list from imap from rest of background upnp (in link)
-    simplify background/abstract away with "how often" to do (for android, etc)
-  no upnp, no wui/webserver, just lui + imap list get
+  separate forward from imap
   xam/ad/ios
     mono webserve
     xamad
