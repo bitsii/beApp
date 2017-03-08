@@ -14,6 +14,7 @@ use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
 use Db:Derby:Database as Derby;
 use Db:KeyValue as KvDb;
+use Time:Interval;
 
 use class App:Alert(Exception) { }
 
@@ -1507,6 +1508,47 @@ class AuthedApp {
     
 }
 
+use class App:Background {
+
+  new() self {
+    fields {
+      IO:Log log =@ IO:Logs.get(self);
+      Interval startDelay = Interval.new(10, 0);
+      Interval repeatDelay = Interval.new(10, 0);
+      System:Invocation toInvoke;
+    }
+  }
+  
+  runMyTasks() {
+    toInvoke.invoke();
+  }
+  
+  main() {
+    any e;
+    Time:Sleep.sleep(startDelay);
+    while (true) {
+      try {
+        runMyTasks();
+      } catch (e) {
+        log.log("Caught exception running tasks " + e);
+      }
+      try {          
+        Time:Sleep.sleep(repeatDelay);
+      } catch (e) {
+        log.log("Caught exception sleeping " + e);
+      }
+    }
+  }
+  
+  start() self {
+    fields {
+      System:Thread myThread;
+    }
+    myThread = System:Thread.new(self);
+    myThread.start();
+  }
+
+}
 
 class CallBackUI {
 

@@ -33,12 +33,6 @@ use class IUHub:ConnectionUpdate {
       any app;
       any oapp;
       IO:Log log =@ IO:Logs.get(self);
-      Int lastPoll = 0;
-      Int lastUpdate = 0;
-      Int lastFwd = 0;
-      Int pollSecs = 1200;//how often to check for ip changes
-      Int uupdateSecs = 600;//how often to update upnp fwd
-      Int forceUpdate = 3600;//imap force update
       Bool disable = false;
       String webPort;
       String certificateThumbprint; 
@@ -49,17 +43,6 @@ use class IUHub:ConnectionUpdate {
   }
   
   clear() {
-    lastPoll = 0;
-    lastUpdate = 0;
-    lastFwd = 0;
-  }
-  
-  updateOnInterval() {
-    Int currSec = Time:Interval.now().seconds;
-    if (currSec - lastPoll > pollSecs) {
-      lastPoll = currSec;
-      doUpdate();
-    }
   }
   
   loadWc() {
@@ -111,15 +94,8 @@ use class IUHub:ConnectionUpdate {
       Bool update = false;
       Bool fwd = false;
       
-      Int currSec = Time:Interval.now().seconds;
-      if (currSec - lastUpdate > forceUpdate) {
-        lastUpdate = currSec;
-        update = true;
-      }
-      if (currSec - lastFwd > uupdateSecs) {
-        lastFwd = currSec;
-        fwd = true;
-      }
+      update = true;
+      fwd = true;
       log.log("getting wc");
       loadWc();
       WebConnect wc = app.plugin.wcol.o;
@@ -211,27 +187,6 @@ use class IUHub:ConnectionUpdate {
       disable = true;
     }
     
-    String pollSecsS = app.configManager.get("upnp.pollSecs");
-    if (TS.notEmpty(pollSecsS)) {
-      pollSecs = Int.new(pollSecsS);
-    } else {
-      app.configManager.put("upnp.pollSecs", pollSecs.toString());
-    }
-    
-    String forceUpdateS = app.configManager.get("imap.forceUpdateSecs");
-    if (TS.notEmpty(forceUpdateS)) {
-      forceUpdate = Int.new(forceUpdateS);
-    } else {
-      app.configManager.put("upnp.forceUpdateSecs", forceUpdate.toString());
-    }
-    
-    String uupdateSecsS = app.configManager.get("upnp.updateSecs");
-    if (TS.notEmpty(uupdateSecsS)) {
-      uupdateSecs = Int.new(uupdateSecsS);
-    } else {
-      app.configManager.put("upnp.updateSecs", uupdateSecs.toString());
-    }
-    
     loadWc();
     loadLinks();
     
@@ -249,7 +204,6 @@ use class IUHub:Background {
       any app;
       any oapp;
       IO:Log log =@ IO:Logs.get(self);
-      ConnectionUpdate uu = ConnectionUpdate.new();
     }
   }
   
@@ -286,7 +240,6 @@ use class IUHub:Background {
   runTasks() {
     //log.log("Running tasks");
     runMyTasks();
-    uu.updateOnInterval();
   }
   
   main() {
@@ -319,8 +272,6 @@ use class IUHub:Background {
     if (def(_sleepTime) && _sleepTime > 0) {
       sleepTime = _sleepTime;
     }
-    uu.app = app;
-    uu.init();
   }
   
   startBackground() self {
@@ -358,6 +309,8 @@ use class IUHub:HubPlugin {
           OLocker wcol = OLocker.new();
           OLocker linksol = OLocker.new();
           Background bg = Background.new();
+          ConnectionUpdate uu = ConnectionUpdate.new();
+          App:Background buu = App:Background.new();
           Bool runBackground = true;
         }
      }
@@ -365,10 +318,8 @@ use class IUHub:HubPlugin {
      cohostWith(IUHub:HubPlugin ohp) {
        log.log("in Hub cohostWith");
        runBackground = false;
-       ohp.bg.oapp = app;
-       ohp.bg.uu.oapp = app;
-       bg.oapp = ohp.app;
-       bg.uu.oapp = ohp.app;
+       ohp.uu.oapp = app;
+       uu.oapp = ohp.app;
      }
      
      start() {
@@ -390,12 +341,17 @@ use class IUHub:HubPlugin {
       bg.app = app;
       if (undef(bg.oapp)) {
         bg.oapp = app;
-        if (undef(bg.uu.oapp)) {
-          bg.uu.oapp = app;
-        }
       }
+      buu.repeatDelay = Time:Interval.new(600, 0);
+      buu.toInvoke = uu.getInvocation("doUpdate", List.new());
+      uu.app = app;
+      if (undef(uu.oapp)) {
+        uu.oapp = app;
+      }
+      uu.init();
       if (runBackground) {
         bg.startBackground();
+        buu.start();
       }
     }
     
@@ -586,7 +542,7 @@ use class IUHub:HubPlugin {
     if (TS.notEmpty(_deviceName)) {
       deviceName = _deviceName;
       app.configManager.put("deviceName", deviceName);
-      bg.uu.clear(); 
+      uu.clear(); 
     }
   }
   
@@ -994,7 +950,7 @@ use class IUHub:HubPlugin {
       app.configManager.put("imap.subFolder", arg["imapFolder"]);
       String lastImSo = app.configManager.get("imapSetOnce");
       app.configManager.put("imapSetOnce", "true");
-      bg.uu.clear();
+      uu.clear();
       if (TS.isEmpty(lastImSo) || lastImSo != "true") {
         return(CallBackUI.reloadResponse());
       }
@@ -1038,7 +994,7 @@ use class IUHub:HubPlugin {
          ac.put(kv.key, kv.value);
        }
      }
-     bg.uu.clear();
+     uu.clear();
      return(null);
    }
    
@@ -1368,7 +1324,7 @@ use class IUHub:HubPlugin {
        app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
        bg.app.plugin.wcol.o = wc;
        bg.oapp.plugin.wcol.o = wc;
-       bg.uu.clear();
+       uu.clear();
         return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
        }
        return(null);
