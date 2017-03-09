@@ -244,6 +244,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    start() {
       super.start();
+      bfw.startDelay = Time:Interval.new(20, 0);
       bfw.repeatDelay = Time:Interval.new(1200, 0);
       bfw.toInvoke = getInvocation("doForward", List.new());
       if (runBackground) {
@@ -259,7 +260,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(app.plugins[1]);
     }
     
-     doForward() {
+    doForward() {
+      try {
+        wcl.lock();
+        doForwardInner();
+      } finally {
+        wcl.unlock();
+      }
+    }
+    
+     doForwardInner() {
       log.log("wc forwarding ports");
       log.log("getting wc");
       loadWc();
@@ -299,6 +309,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       wc.updateExternal();
       wc.forwardPorts(ssh, rforwarded);
+      log.log("updating addresses");
+      app.plugin.updateNetAddresses();
+      app.plugin.updateUrls();
+      log.log("saving");
+      app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
+      log.log("upnp doForward done");
   }
      
    

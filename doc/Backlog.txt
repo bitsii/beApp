@@ -1,6 +1,6 @@
 
 thin client jvlui only
-  locking for wc just to be sure (wrapper around actual update and fwd wlock)
+  just hub, drop cam and bridge
   xam/ad/ios
     mono webserve
     xamad

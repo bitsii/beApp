@@ -25,6 +25,7 @@ use App:AuthenticatedApp as AuthedApp;
 use Text:String;
 use App:CallBackUI;
 
+use System:Thread:Lock;
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
@@ -55,6 +56,7 @@ use class IUHub:HubPlugin {
           App:Background trc = App:Background.new();
           App:Background buu = App:Background.new();
           Bool runBackground = true;
+          Lock wcl = Lock.new();
         }
      }
      
@@ -100,6 +102,15 @@ use class IUHub:HubPlugin {
   }
   
   doUpdate() {
+    try {
+      wcl.lock();
+      doUpdateInner();
+    } finally {
+      wcl.unlock();
+    }
+  }
+  
+  doUpdateInner() {
     any e;
     log.log("In upnp doUpdate");
     log.log("getting wc");
@@ -165,6 +176,11 @@ use class IUHub:HubPlugin {
        ohp.oapp = self.app;
      }
      
+     appSet(_app) {
+      app = _app;
+      oapp = _app;
+     }
+     
      clearTracking() {
       log.log("clearing tracking");
       app.trackingManager.clear();
@@ -188,6 +204,8 @@ use class IUHub:HubPlugin {
      
       trc.repeatDelay = Time:Interval.new(7200, 0);
       trc.toInvoke = getInvocation("clearTracking", List.new());
+      
+      buu.startDelay = Time:Interval.new(10, 0);
       buu.repeatDelay = Time:Interval.new(600, 0);
       buu.toInvoke = getInvocation("doUpdate", List.new());
       initLinks();
