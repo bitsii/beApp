@@ -25,27 +25,40 @@ use App:AuthenticatedApp as AuthedApp;
 use Text:String;
 use App:CallBackUI;
 
-use class IUHub:ConnectionUpdate {
+use System:Thread:ObjectLocker as OLocker;
 
-  new() self {
-  
-    fields {
-      any app;
-      any oapp;
-      IO:Log log =@ IO:Logs.get(self);
-      Bool disable = false;
-      String webPort;
-      String certificateThumbprint; 
-      Ssh ssh;
-      Set rforwarded;
-    }
-  
-  }
-  
-  clear() {
-  }
-  
-  loadWc() {
+use Crypto:Symmetric as Crypt;
+emit(jv) {
+"""
+import java.util.Properties;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.Folder;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.Transport;
+import javax.mail.Message;
+import javax.mail.Flags.Flag;
+"""
+}
+use class IUHub:HubPlugin {
+
+     new() self {
+       fields {
+          IO:Log log =@ IO:Logs.get(self);
+          any app;
+          any oapp;
+          String name = "IUHub";
+          String homePage = "/App/IUHub/IU.html";
+          OLocker wcol = OLocker.new();
+          OLocker linksol = OLocker.new();
+          App:Background trc = App:Background.new();
+          App:Background buu = App:Background.new();
+          Bool runBackground = true;
+        }
+     }
+     
+     loadWc() {
     if (undef(app.plugin.wcol.o)) {
       loadWcInner();
     }
@@ -89,102 +102,52 @@ use class IUHub:ConnectionUpdate {
   doUpdate() {
     any e;
     log.log("In upnp doUpdate");
-    unless (disable) {
-      
-      Bool update = false;
-      Bool fwd = false;
-      
-      update = true;
-      fwd = true;
-      log.log("getting wc");
-      loadWc();
-      WebConnect wc = app.plugin.wcol.o;
-      if (def(wc)) {
-        log.log("wc from wcol");
-      } else {
-        log.log("new wc");
-        wc = WebConnect.new();
-        wc.extraPorts = app.configManager.get("upnp.extraPorts");
-      }
-      log.log("after wc init");
-      wc.internalPort = webPort;
-      if (TS.isEmpty(certificateThumbprint)) {
-        certificateThumbprint = app.certificateThumbprint; 
-      }
-      if (TS.notEmpty(certificateThumbprint)) {
-        wc.certificatePrint = certificateThumbprint;
-        log.log("CERT PRINT IS " + certificateThumbprint);
-      } else {
-        log.log("CERT PRINT EMPTY");
-      }
-      wc.deviceId = app.plugin.deviceId;
-      wc.deviceName = app.plugin.deviceName; 
-      if (TS.isEmpty(wc.externalPort)) {
-        wc.externalPort = app.configManager.get("wui.extPort");
-      }
-      log.log("starting wc update");
-      if (fwd) {
-        log.log("wc forwarding ports");
-        
-        String sshHost = app.configManager.get("il.sshHost");
-        String sshLogin = app.configManager.get("il.sshLogin");
-        String sshPass = app.configManager.get("il.sshPass");
-        try {
-          if (TS.notEmpty(sshHost) && TS.notEmpty(sshLogin) && TS.notEmpty(sshPass)) {
-            wc.hostedAddress = sshHost;
-            if (undef(ssh) || ssh.isClosed) {
-              log.log("ssh connecting " + sshHost + " " + sshLogin);
-              ssh = Ssh.new(sshHost, sshLogin, sshPass);
-              ssh.open();
-              rforwarded = Set.new();
-            } else {
-              ssh.sendKeepAlive();
-            }
-          }
-        } catch (any sshe) {
-          log.log("Error during ssh op " + sshe);
-          try {
-             ssh.close();
-             ssh = null;
-           } catch (sshe) {
-             ssh = null;
-           }
-        }
-        wc.update();
-        wc.forwardPorts(ssh, rforwarded);
-      } else {
-        if (def(ssh) && ssh.isClosed!) {
-          try {
-            ssh.sendKeepAlive();
-          } catch (sshe) {
-           log.log("Error during ssh op " + sshe);
-           try {
-             ssh.close();
-             ssh = null;
-           } catch (sshe) {
-           
-           }
-          }
-        }
-        wc.update();
-      }
-      log.log("setting links");
+    log.log("getting wc");
+    loadWc();
+    WebConnect wc = app.plugin.wcol.o;
+    if (def(wc)) {
+      log.log("wc from wcol");
+    } else {
+      log.log("new wc");
+      wc = WebConnect.new();
       app.plugin.wcol.o = wc;
       oapp.plugin.wcol.o = wc;
-      log.log("updating addresses");
-      app.plugin.updateNetAddresses();
-      app.plugin.updateUrls();
-      log.log("saving");
-      app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
-      log.log("upnp doUpdate done");
+      wc.extraPorts = app.configManager.get("upnp.extraPorts");
     }
+    log.log("after wc init");
+    wc.internalPort = webPort;
+    if (TS.isEmpty(certificateThumbprint)) {
+      certificateThumbprint = app.certificateThumbprint; 
+    }
+    if (TS.notEmpty(certificateThumbprint)) {
+      wc.certificatePrint = certificateThumbprint;
+      log.log("CERT PRINT IS " + certificateThumbprint);
+    } else {
+      log.log("CERT PRINT EMPTY");
+    }
+    wc.deviceId = app.plugin.deviceId;
+    wc.deviceName = app.plugin.deviceName; 
+    if (TS.isEmpty(wc.externalPort)) {
+      wc.externalPort = app.configManager.get("wui.extPort");
+    }
+    log.log("starting wc update");
+    //fwd was here
+    log.log("setting links");
+    wc.updateInternal();
+    app.plugin.wcol.o = wc;
+    oapp.plugin.wcol.o = wc;
+    log.log("updating addresses");
+    app.plugin.updateNetAddresses();
+    app.plugin.updateUrls();
+    log.log("saving");
+    app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
+    log.log("upnp doUpdate done");
   }
   
-  init() {
-    
-    String disables = app.configManager.get("upnp.disable");
-    if (TS.notEmpty(disables) && disables == "true") {
-      disable = true;
+  initLinks() {
+    fields {
+      String webPort;
+      String certificateThumbprint; 
     }
     
     loadWc();
@@ -194,132 +157,17 @@ use class IUHub:ConnectionUpdate {
     certificateThumbprint = app.certificateThumbprint; 
     
   }
-
-}
-
-use class IUHub:Background {
-
-  new() self {
-    fields {
-      any app;
-      any oapp;
-      IO:Log log =@ IO:Logs.get(self);
-    }
-  }
-  
-  runMyTasks() {
-    fields {
-      Int lastTrackClear;
-      Int clearSeconds =@ 7200;
-      Int lastUpdCheck;
-      Int updCheckSeconds =@ 43200;
-    }
-    
-    if (def(lastTrackClear)) {
-      Int ns = Time:Interval.now().seconds;
-      if (ns - lastTrackClear > clearSeconds) {
-        app.trackingManager.clear();
-        lastTrackClear = ns;
-      }
-    } else {
-      lastTrackClear = 0;
-    }
-    
-    if (def(lastUpdCheck)) {
-      ns = Time:Interval.now().seconds;
-      if (ns - lastUpdCheck > updCheckSeconds) {
-        app.plugin.checkAndUpdate();
-        lastUpdCheck = ns;
-      }
-    } else {
-      lastUpdCheck = 0;
-    }
-    
-  }
-  
-  runTasks() {
-    //log.log("Running tasks");
-    runMyTasks();
-  }
-  
-  main() {
-    any e;
-    Time:Sleep.sleepSeconds(10);
-    while (true) {
-      try {
-        runTasks();
-      } catch (e) {
-        log.log("Caught exception running tasks " + e);
-      }
-      try {          
-        Time:Sleep.sleepMilliseconds(sleepTime);
-      } catch (e) {
-        log.log("Caught exception sleeping " + e);
-      }
-    }
-  }
-  
-  init() self {
-    fields {
-      System:Thread myThread;
-      Int sleepTime = 500;
-    }
-    String bkdis = app.configManager.get("bk.disable");
-    if (TS.notEmpty(bkdis) && Bool.new(bkdis)) {
-      return(self);
-    }
-    Int _sleepTime = app.configManager.get("bk.sleepTime");
-    if (def(_sleepTime) && _sleepTime > 0) {
-      sleepTime = _sleepTime;
-    }
-  }
-  
-  startBackground() self {
-    init();
-    myThread = System:Thread.new(self);
-    myThread.start();
-  }
-
-}
-
-use System:Thread:ObjectLocker as OLocker;
-
-use Crypto:Symmetric as Crypt;
-emit(jv) {
-"""
-import java.util.Properties;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.Folder;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.Transport;
-import javax.mail.Message;
-import javax.mail.Flags.Flag;
-"""
-}
-use class IUHub:HubPlugin {
-
-     new() self {
-       fields {
-          IO:Log log =@ IO:Logs.get(self);
-          any app;
-          String name = "IUHub";
-          String homePage = "/App/IUHub/IU.html";
-          OLocker wcol = OLocker.new();
-          OLocker linksol = OLocker.new();
-          Background bg = Background.new();
-          ConnectionUpdate uu = ConnectionUpdate.new();
-          App:Background buu = App:Background.new();
-          Bool runBackground = true;
-        }
-     }
      
      cohostWith(IUHub:HubPlugin ohp) {
        log.log("in Hub cohostWith");
        runBackground = false;
-       ohp.uu.oapp = app;
-       uu.oapp = ohp.app;
+       oapp = ohp.app;
+       ohp.oapp = self.app;
+     }
+     
+     clearTracking() {
+      log.log("clearing tracking");
+      app.trackingManager.clear();
      }
      
      start() {
@@ -338,19 +186,13 @@ use class IUHub:HubPlugin {
         app.configManager.put("embeddedLogin", ac.user);
       }
      
-      bg.app = app;
-      if (undef(bg.oapp)) {
-        bg.oapp = app;
-      }
+      trc.repeatDelay = Time:Interval.new(7200, 0);
+      trc.toInvoke = getInvocation("clearTracking", List.new());
       buu.repeatDelay = Time:Interval.new(600, 0);
-      buu.toInvoke = uu.getInvocation("doUpdate", List.new());
-      uu.app = app;
-      if (undef(uu.oapp)) {
-        uu.oapp = app;
-      }
-      uu.init();
+      buu.toInvoke = getInvocation("doUpdate", List.new());
+      initLinks();
       if (runBackground) {
-        bg.startBackground();
+        trc.start();
         buu.start();
       }
     }
@@ -542,7 +384,7 @@ use class IUHub:HubPlugin {
     if (TS.notEmpty(_deviceName)) {
       deviceName = _deviceName;
       app.configManager.put("deviceName", deviceName);
-      uu.clear(); 
+      //TODO update imap wc 
     }
   }
   
@@ -704,8 +546,8 @@ use class IUHub:HubPlugin {
              log.log("Exception during imap stuff " );
             }
           }
-          bg.app.plugin.linksol.o = links;
-          bg.oapp.plugin.linksol.o = links;
+          app.plugin.linksol.o = links;
+          oapp.plugin.linksol.o = links;
           for (any kv in app.configManager.getMap("link.")) {
             String kid = kv.key.substring(5);
             log.log("checking kid " + kid);
@@ -950,7 +792,7 @@ use class IUHub:HubPlugin {
       app.configManager.put("imap.subFolder", arg["imapFolder"]);
       String lastImSo = app.configManager.get("imapSetOnce");
       app.configManager.put("imapSetOnce", "true");
-      uu.clear();
+      //TODO update imap wc
       if (TS.isEmpty(lastImSo) || lastImSo != "true") {
         return(CallBackUI.reloadResponse());
       }
@@ -994,7 +836,7 @@ use class IUHub:HubPlugin {
          ac.put(kv.key, kv.value);
        }
      }
-     uu.clear();
+     //TODO update imap wc
      return(null);
    }
    
@@ -1309,8 +1151,8 @@ use class IUHub:HubPlugin {
        //now fpname and urlpat tied to port
        wc.deleteService(port);
        app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
-       bg.app.plugin.wcol.o = wc;
-       bg.oapp.plugin.wcol.o = wc;
+       app.plugin.wcol.o = wc;
+       oapp.plugin.wcol.o = wc;
        return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
        }
        return(null);
@@ -1322,27 +1164,12 @@ use class IUHub:HubPlugin {
        //now fpname and urlpat tied to port
        wc.putService(fpName, port, exPort, urlPat);
        app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
-       bg.app.plugin.wcol.o = wc;
-       bg.oapp.plugin.wcol.o = wc;
-       uu.clear();
+       app.plugin.wcol.o = wc;
+       oapp.plugin.wcol.o = wc;
+       //TODO update imap wc
         return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
        }
        return(null);
-   }
-   
-   checkAndUpdate() this {
-     any e;
-     //Web:Client:CertificateManager.validateHosts = true;
-     try {
-      //get sha, if diff update
-      Web:Client client = Web:Client.new();
-      client.url = "";
-      //String received = client.openInput().readString();
-      Web:Client:CertificateManager.validateHosts = false;
-     } catch (e) {
-      Web:Client:CertificateManager.validateHosts = false;
-     }
-     
    }
    
    

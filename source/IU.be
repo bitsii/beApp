@@ -68,7 +68,7 @@ class IU:WebConnect {
     return(externalPorti.toString());
   }
 
-  update() self {
+  updateInternal() self {
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -79,6 +79,26 @@ class IU:WebConnect {
     for (ni in ni.localInterfaces) {
       internalMacAddresses += ni.macAddress;
     }
+    
+      if (TS.notEmpty(internalPort)) {
+        String intPort = ":" + internalPort;
+      } else {
+        intPort = "";
+      }
+      if (TS.notEmpty(internalAddress)) {
+        internalBase = protocol + internalAddress + intPort + "/";
+        internalUrl = internalBase + "App/IUHub/IU.html";
+        internalCamUrl = internalBase + "App/IUHub/IUCam.html";
+        internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
+        internalCamLink = "<a href=\"" + internalCamUrl + "\">Internal Link to " + deviceName + " Cam, use on device's network.</a>";
+        log.log("Internal url " + internalUrl);
+      }
+  }
+  
+  updateExternal() self {
+    Upnp upnp = Upnp.new();
+    upnp.netGw = upnp.gatewayAddress;
+    gateway = upnp.netGw;
     
     if (TS.isEmpty(externalPort)) {
       externalPort = getAPort();
@@ -95,23 +115,10 @@ class IU:WebConnect {
         if (def(e)) { log.log(e.toString()); }
       }
     
-      if (TS.notEmpty(internalPort)) {
-        String intPort = ":" + internalPort;
-      } else {
-        intPort = "";
-      }
       if (TS.notEmpty(externalPort)) {
         String extPort = ":" + externalPort;
       } else {
         extPort = "";
-      }
-      if (TS.notEmpty(internalAddress)) {
-        internalBase = protocol + internalAddress + intPort + "/";
-        internalUrl = internalBase + "App/IUHub/IU.html";
-        internalCamUrl = internalBase + "App/IUHub/IUCam.html";
-        internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
-        internalCamLink = "<a href=\"" + internalCamUrl + "\">Internal Link to " + deviceName + " Cam, use on device's network.</a>";
-        log.log("Internal url " + internalUrl);
       }
       if (TS.notEmpty(externalAddress)) {
         externalBase = protocol + externalAddress + extPort + "/";          

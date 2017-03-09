@@ -189,11 +189,6 @@ use class IULink:LinkStart {
         log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
-      if (TS.notEmpty(mode) && mode == "getIntUrl") {
-        log.log("getIntUrl");
-        ui.plugin.bg.init().uu.doUpdate();
-        log.log("int url is " + ui.plugin.wcol.o.internalUrl);
-      }
       if (TS.notEmpty(mode) && mode == "saveSetupUrl") {
         log.log("saveSetupUrl");
         String olt = System:Random.getString(64);

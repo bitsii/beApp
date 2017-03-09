@@ -1,10 +1,11 @@
 
 thin client jvlui only
-  separate forward from imap
+  locking for wc just to be sure (wrapper around actual update and fwd wlock)
   xam/ad/ios
     mono webserve
     xamad
     xamios
+  retest setup
 
 hostedFirst option for connect to
 

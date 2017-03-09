@@ -207,11 +207,6 @@ use class IUBridge:BridgeStart {
         log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
-      if (TS.notEmpty(mode) && mode == "getIntUrl") {
-        log.log("getIntUrl");
-        ui.plugin.bg.init().uu.doUpdate();
-        log.log("int url is " + ui.plugin.wcol.o.internalUrl);
-      }
       if (TS.notEmpty(mode) && mode == "saveSetupUrl") {
         log.log("saveSetupUrl");
         String olt = System:Random.getString(64);
@@ -229,14 +224,32 @@ use class IUBridge:BridgeStart {
       }
       ui.configManager.close();
     }
-
-
+    
 }
 
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
 use class IUBridge:BridgePlugin(HubPlugin) {
+
+   new() self {
+     fields {
+      Ssh ssh;
+      Set rforwarded;
+      App:Background bfw = App:Background.new();
+     }
+     super.new();
+     
+   }
+   
+   start() {
+      super.start();
+      bfw.repeatDelay = Time:Interval.new(1200, 0);
+      bfw.toInvoke = getInvocation("doForward", List.new());
+      if (runBackground) {
+        bfw.start();
+      }
+   }
 
    getActionLinks(Account a, Map arg, request) String {
      return(self.cam.getActionLinks(a, arg, request) + super.getActionLinks(a, arg, request));
@@ -245,6 +258,48 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     camGet() CamPlugin {
       return(app.plugins[1]);
     }
+    
+     doForward() {
+      log.log("wc forwarding ports");
+      log.log("getting wc");
+      loadWc();
+      WebConnect wc = app.plugin.wcol.o;
+      if (def(wc)) {
+        log.log("wc from wcol");
+      } else {
+        log.log("new wc");
+        wc = WebConnect.new();
+        app.plugin.wcol.o = wc;
+        oapp.plugin.wcol.o = wc;
+        wc.extraPorts = app.configManager.get("upnp.extraPorts");
+      }
+      String sshHost = app.configManager.get("il.sshHost");
+      String sshLogin = app.configManager.get("il.sshLogin");
+      String sshPass = app.configManager.get("il.sshPass");
+      try {
+        if (TS.notEmpty(sshHost) && TS.notEmpty(sshLogin) && TS.notEmpty(sshPass)) {
+          wc.hostedAddress = sshHost;
+          if (undef(ssh) || ssh.isClosed) {
+            log.log("ssh connecting " + sshHost + " " + sshLogin);
+            ssh = Ssh.new(sshHost, sshLogin, sshPass);
+            ssh.open();
+            rforwarded = Set.new();
+          } else {
+            ssh.sendKeepAlive();
+          }
+        }
+      } catch (any sshe) {
+        log.log("Error during ssh op " + sshe);
+        try {
+           ssh.close();
+           ssh = null;
+         } catch (sshe) {
+           ssh = null;
+         }
+      }
+      wc.updateExternal();
+      wc.forwardPorts(ssh, rforwarded);
+  }
      
    
 }
