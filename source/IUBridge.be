@@ -18,6 +18,8 @@ use Time:Sleep;
 
 use App:Alert;
 
+use Net:UPnP as Upnp;
+
 use App:AuthenticatedLocalApp;
 use App:AuthenticatedWebApp;
 use App:AuthenticatedApp as AuthedApp;
@@ -308,7 +310,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
          }
       }
       wc.updateExternal();
-      wc.forwardPorts(ssh, rforwarded);
+      forwardPorts(wc, ssh, rforwarded);
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
       app.plugin.updateUrls();
@@ -316,9 +318,146 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
       log.log("upnp doForward done");
   }
+  
+  
+  forwardPorts(WebConnect wc, Net:Ssh ssh, Set rforwarded) {
+      if (TS.notEmpty(wc.externalAddress)) {
+        log.log("Forwarding");
+        Int fwdSecs = 7200;//fwd upnp for how long
+        Upnp upnp = Upnp.new();
+        upnp.netGw = upnp.gatewayAddress;
+        upnp.forwardPort(fwdSecs, Int.new(wc.externalPort), Int.new(wc.internalPort));
+        if (TS.notEmpty(wc.extraPorts)) {
+          for (String ep in wc.extraPorts.split(",")) {
+            String currPortS = wc.extraPortMap.get(ep);
+            if (TS.isEmpty(currPortS)) {
+              currPortS = wc.getAPort();
+              wc.extraPortMap.put(ep, currPortS);
+            }
+            log.log("Forwarding extraport external " + currPortS + " to " + ep);
+            upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
+          }
+        }
+        if (def(ssh) && def(wc.hostedAddress)) {
+          if (rforwarded.has(wc.externalPort)!) {
+            ssh.forwardPortR(Int.new(wc.externalPort), "127.0.0.1", Int.new(wc.internalPort));
+          }
+          rforwarded += wc.externalPort;
+          if (TS.notEmpty(wc.extraPorts)) {
+            for (ep in wc.extraPorts.split(",")) {
+              currPortS = wc.extraPortMap.get(ep);
+              if (TS.notEmpty(currPortS)) {
+                if (rforwarded.has(currPortS)!) {
+                  ssh.forwardPortR(Int.new(currPortS), "127.0.0.1", Int.new(ep));
+                }
+                rforwarded += currPortS;
+              }
+            }
+          }
+        }
+      }
+    }
      
    
 }
+
+emit(jv) {
+"""
+import com.jcraft.jsch.*;
+"""
+}
+local use Net:Ssh {
+
+  emit(jv) {
+  """
+  JSch bevi_jsch;
+  Session bevi_session;
+  """
+  }
+  
+  new() self {
+    fields {
+    }
+  }
+  
+  new(String _host, String _user, String _pass) this {
+    fields {
+      String host = _host;
+      String user = _user;
+      String pass = _pass; 
+    }
+  }
+  
+  forwardPortR(Int rport, String host, Int lport) this {
+    emit(jv) {
+    """
+    bevi_session.setPortForwardingR(beva_rport.bevi_int, beva_host.bems_toJvString(), beva_lport.bevi_int);
+    """
+    }
+  }
+  
+  isClosedGet() Bool {
+    Bool fval =@ false;
+    emit(jv) {
+    """
+    if (bevi_session != null && bevi_session.isConnected()) {
+      return bevl_fval;
+    }
+    """
+    }
+    return(true);
+  }
+  
+  open() this {
+    emit(jv) {
+    """
+    bevi_jsch = new JSch();
+    bevi_session = bevi_jsch.getSession(bevp_user.bems_toJvString(), bevp_host.bems_toJvString(), 22);
+    bevi_session.setPassword(bevp_pass.bems_toJvString());
+    bevi_session.setConfig("StrictHostKeyChecking", "no");
+    bevi_session.connect();
+    """
+    }
+  }
+  
+  close() this {
+    emit(jv) {
+    """
+    bevi_session.disconnect();
+    bevi_session = null;
+    bevi_jsch = null;
+    """
+    }
+  }
+  
+  sendKeepAlive() this {
+    emit(jv) {
+    """
+    bevi_session.sendKeepAliveMsg();
+    """
+    }
+  }
+
+}
+
+use Net:Ssh:Forward {
+
+  new() self {
+    fields {
+      Int inPort;
+      String host;
+      Int outPort;
+    }
+  }
+  
+  new(Int _inPort, String _host, Int _outPort) {
+    inPort = _inPort;
+    host = _host;
+    outPort = _outPort;
+  }
+  
+}
+
 
 use App:Account;
 use App:AccountManager;

@@ -10,14 +10,14 @@ mkdir -p ../apprun/App/IUHub
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abe-pl/target5/*;extlibs/IUBridge/*"
+    export CLASSPATH="../abe-pl/target5/*;extlibs/IUHub/*"
     ;;
   *)
-    export CLASSPATH="../abe-pl/target5/*:extlibs/IUBridge/*"
+    export CLASSPATH="../abe-pl/target5/*:extlibs/IUHub/*"
     ;;
 esac
 
-java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv -mainClass=IUBridge:BridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHubTest.be source/IUHub.be source/IUCam.be source/IUBridge.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv -mainClass=IUHub:HubStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -52,7 +52,7 @@ cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp source/IU.html ../apprun/App/IUHub
-cp extlibs/IUBridge/* ../apprun/App/IUHub
+cp extlibs/IUHub/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub
 cp LICENSE.txt ../apprun/App/IUHub
 cp LICENSE-MPL.txt ../apprun/App/IUHub

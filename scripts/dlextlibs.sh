@@ -1,7 +1,7 @@
 #!/bin/bash
 
-mkdir -p extlibs/IUHub
-cd extlibs/IUHub
+mkdir -p extlibs/IUBridge
+cd extlibs/IUBridge
 
 curl -L https://www.bouncycastle.org/download/bcprov-jdk15on-155.jar > bcprov-jdk15on-155.jar
 

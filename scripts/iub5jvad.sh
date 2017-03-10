@@ -10,10 +10,10 @@ mkdir -p ../apprun/App/IUHub
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abe-pl/target5/*;extlibs/IUHub/*"
+    export CLASSPATH="../abe-pl/target5/*;extlibs/IUBridge/*"
     ;;
   *)
-    export CLASSPATH="../abe-pl/target5/*:extlibs/IUHub/*"
+    export CLASSPATH="../abe-pl/target5/*:extlibs/IUBridge/*"
     ;;
 esac
 
@@ -25,7 +25,7 @@ rm -rf android/IUHub/app/src/main/java/be
 #mv targetAd/Base/target/jv/be android/IUHub/app/src/main/java/
 #cp ../abe-pl/system/jv/be/*java android/IUHub/app/src/main/java/be
 
-cp extlibs/IUHub/* android/IUHub/app/libs/
+cp extlibs/IUBridge/* android/IUHub/app/libs/
 
 exit 0
 
@@ -61,9 +61,9 @@ cp scripts/iuhcmd.sh ../apprun/App/IUHub
 cp scripts/createAdminAccount.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp source/IU.html ../apprun/App/IUHub
-cp extlibs/IUHub/* ../apprun/App/IUHub
+cp extlibs/IUBridge/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub
-cp extlibs/IUHub/* ../apprun/App/IUHub
+cp extlibs/IUBridge/* ../apprun/App/IUHub
 cp LICENSE.txt ../apprun/App/IUHub
 cp LICENSE-MPL.txt ../apprun/App/IUHub
 

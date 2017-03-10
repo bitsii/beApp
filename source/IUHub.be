@@ -42,6 +42,74 @@ import javax.mail.Message;
 import javax.mail.Flags.Flag;
 """
 }
+
+use class IUHub:HubStart {
+
+   new() self {
+      fields {
+          IO:Log log =@ IO:Logs.get(self);
+        }
+    }
+
+  main() {
+      main(System:Process.new().args);
+    }
+    
+    main(List args) {
+      outerMain(System:Process.new().args);
+      /*try {
+        app.configManager.close();
+      } catch (any e) {
+        log.log("Exception closing db in CmdUI, error is " + e);
+      }*/
+    }
+    
+    outerMain(List args) {
+      try {
+        innerMain(System:Process.new().args);
+      } catch (any e) {
+        log.log("Exception in CmdUI, error is " + e);
+      }
+    }
+    
+    getPlugins(Bool bkg) List {
+      HubPlugin hub = HubPlugin.new();
+      hub.runBackground = bkg;
+      log.log("adding plugins");
+      List plugins = List.new();
+      plugins += hub;
+      plugins += App:AuthPlugin.new();
+      plugins += App:ConfigPlugin.new();
+      plugins += App:FileManagerPlugin.new();
+      return(plugins);
+    }
+    
+    innerMain(List args) {
+      //IO:Logs.turnOnAll();
+      Web:Client:CertificateManager.validateHosts = false;
+      if (args.length > 0) {
+        String mode = args[0]; //lui, wui, both, [absent]
+        log.log("mode " + mode);
+      } else {
+        log.log("mode empty");
+      }
+      if (TS.isEmpty(mode)) {
+        mode = "lui";
+      }
+      if (mode == "lui") {
+        log.log("making hub");
+        if (mode == "lui") {
+          AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
+          luiapp.plugins = getPlugins(true);
+        }
+        if (def(luiapp)) {
+          log.log("starting lui");
+          luiapp.main();
+        }
+      }
+    }    
+}
+
 use class IUHub:HubPlugin {
 
      new() self {

@@ -10,10 +10,10 @@ mkdir -p ../apprun/App/IUHub
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abe-pl/target5/*;extlibs/IUHub/*"
+    export CLASSPATH="../abe-pl/target5/*;extlibs/IUBridge/*"
     ;;
   *)
-    export CLASSPATH="../abe-pl/target5/*:extlibs/IUHub/*"
+    export CLASSPATH="../abe-pl/target5/*:extlibs/IUBridge/*"
     ;;
 esac
 
@@ -52,7 +52,7 @@ cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp source/IU.html ../apprun/App/IUHub
-cp extlibs/IUHub/* ../apprun/App/IUHub
+cp extlibs/IUBridge/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub
 cp LICENSE.txt ../apprun/App/IUHub
 cp LICENSE-MPL.txt ../apprun/App/IUHub

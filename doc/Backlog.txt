@@ -1,11 +1,14 @@
 
 thin client jvlui only
-  just hub, drop cam and bridge
-  xam/ad/ios
-    mono webserve
-    xamad
-    xamios
-  retest setup
+    hide links
+    
+retest setup/update
+
+xam/ad/ios
+  commmand line / ide stuff
+  mono webserve
+  xamad
+  xamios
 
 hostedFirst option for connect to
 
