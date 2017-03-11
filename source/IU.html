@@ -84,10 +84,6 @@ h5.luiForm {
 <img src="system-file-manager.svg" onclick="callUI('localBrowseRequest');return false;" title="Files"/>
 <!--Files-->
 
-<!--Files-->
-<img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/>
-<!--Files-->
-
 <!--Logout-->
 <img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/>
 <!--Logout-->
@@ -95,8 +91,6 @@ h5.luiForm {
 <!-- config stuff link -->
 <img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/>
 
-<p>
-  
 <!--Help-->
 <img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/>
 <p>  
@@ -104,32 +98,26 @@ h5.luiForm {
 <!--Help-->
 
 <p>
+
+<div id="bridgeMenu1" style="display: none;">
+<!--Files-->
+<img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/>
+<!--Files-->
+</div>
+
+<p>
   
 <!-- config stuff -->
 
 <div id="configItemsDiv" style="display: none;">
 
-<!--Service Connections-->
-<img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>
-<!--Service Connections-->
-
-<!--Restart-->
-<img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/>
-<!--Restart-->
-
-<!--Services-->
-<img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/>
-<!--Services-->
-    
-<!--Accounts-->
-<img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/>
-<!--Accounts-->
-
-<p>
-
 <!--Device Name-->
 <img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/>
 <!--Device Name-->
+
+<!--Accounts-->
+<img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/>
+<!--Accounts-->
 
 <!--Imap-->
 <img src="applications-mail.svg" onclick="callUI('showImapRequest');return false;" title="Imap"/>
@@ -138,28 +126,45 @@ h5.luiForm {
 <!--Configuration-->
 <img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="callUI('showConfig');return false;" title="Configuration"/>
 <!--Configuration-->
+
+<p>
     
 <!--Security Extras-->
 <img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');callUI('showSessionsRequest');return false;" title="Security Extras"/>
 <!--Security Extras-->
 
-<p>
-
 <!--Password-->
 <img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/>
 <!--Password-->
 
+<!--Restart-->
+<img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/>
+<!--Restart-->
+
 <!--About-->
 <img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/>
 <!--About-->
-  
+
+<p>
+<div id="bridgeMenu2" style="display: none;">
+    
+<!--Service Connections-->
+<img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>
+<!--Service Connections-->
+
+<!--Services-->
+<img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/>
+<!--Services-->
+    
 <!--IUCam-->
 <img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/>
 <!--IUCam-->
-
+  
 <!--Internet Listen-->
 <img src="preferences-desktop-online-accounts.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/>
 <!--Internet Listen-->
+
+</div>
 
 </div>
 
@@ -209,16 +214,20 @@ h5.luiForm {
 General help - clicking on icons will open/close their functional areas - click Help again to close this area
 <!--Files-->
 <p><img src="system-file-manager.svg" onclick="callUI('localBrowseRequest');return false;" title="Files"/> Work with the device's filesystem (remotely)
-<!--Service Connections-->
-<p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>  Get service connections to device
-<!--Restart-->
-<p><img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/> Restart the Hub application
-<!--Services-->
-<p><img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/> View and create service connections (remote connectivity to the device desktop and other services)
-<!--Accounts-->
-<p><img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/> Create, modify, and delete accounts
+<!--Logout-->
+<p><img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/> Logout
+<!-- config stuff link -->
+<p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/> Open Configuration Panel
+<!--Help-->
+<p><img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/> Help (this...)
+<div id="bridgeHelp1" style="display: none;">
+<!--Files-->
+<p><img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/> Browse cam pictures
+</div>
 <!--Device Name-->
 <p><img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/> Change device name
+<!--Accounts-->
+<p><img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/> Create, modify, and delete accounts
 <!--Imap-->
 <p><img src="applications-mail.svg" onclick="callUI('showImapRequest');return false;" title="Imap"/> Connect device to email account
 <!--Configuration-->
@@ -227,16 +236,20 @@ General help - clicking on icons will open/close their functional areas - click 
 <p><img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');callUI('showSessionsRequest');return false;" title="Security Extras"/> Manage extended security settings and logged in sessions
 <!--Password-->
 <p><img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/> Change Password
-<!--Logout-->
-<p><img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/> Logout
+<!--Restart-->
+<p><img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/> Restart the Hub application
 <!--About-->
 <p><img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/> Information about this software and device
+<div id="bridgeHelp2" style="display: none;">
+<!--Service Connections-->
+<p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>  Get service connections to device
+<!--Services-->
+<p><img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/> View and create service connections (remote connectivity to the device desktop and other services)
 <!--IUCam-->
 <p><img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/> Cam configuration
-<!--Files-->
-<p><img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/> Browse cam pictures
-<!--Help-->
-<p><img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/> Help (this...)
+<!--Internet Listen-->
+<p><img src="preferences-desktop-online-accounts.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/> Configure to listen on a remote internet host (over ssh tunnel)
+</div>
 </div>
 <!--Help-->
   

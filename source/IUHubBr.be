@@ -445,6 +445,12 @@ use class IUHub:Eui {
       //}
       //log.log("updateResponse2 just logged in");
     }
+    if (arg.has("profile") && arg["profile"] == "bridge") {
+      HD.getElementById("bridgeMenu1").display = "block";
+      HD.getElementById("bridgeMenu2").display = "block";
+      HD.getElementById("bridgeHelp1").display = "block";
+      HD.getElementById("bridgeHelp2").display = "block";
+    }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }

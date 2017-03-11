@@ -1,13 +1,11 @@
 
-thin client jvlui only
-    hide links
-    
+take 3rd party jars out of upgrade and install
 retest setup/update
 
-xam/ad/ios
-  commmand line / ide stuff
+jvad
+
+xam/ios
   mono webserve
-  xamad
   xamios
 
 hostedFirst option for connect to

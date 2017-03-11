@@ -257,6 +257,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    getActionLinks(Account a, Map arg, request) String {
      return(self.cam.getActionLinks(a, arg, request) + super.getActionLinks(a, arg, request));
    }
+   
+   loggedIn(Account a, Map res, Map arg, request) {
+     res = super.loggedIn(a, res, arg, request);
+     res["profile"] = "bridge";
+     return(res);
+   }
     
     camGet() CamPlugin {
       return(app.plugins[1]);

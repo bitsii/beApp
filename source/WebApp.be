@@ -144,6 +144,54 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     return(cerPathS);
   }
   
+  assureCertCs(Int port) String {
+    Path certDir = self.paths.appPath.copy();
+    certDir.addStep("Application Data").addStep(".mono").addStep("httplistener");
+    log.log("certDir is " + certDir);
+    IO:File:Path cerPath = certDir.copy().addStep(port.toString() + ".cer");
+    IO:File:Path pvkPath = certDir.copy().addStep(port.toString() + ".pvk");
+    String cerPathS = cerPath.toString();
+    String pvkPathS = pvkPath.toString();
+    log.log("cerPath " + cerPathS);
+    log.log("pvkPath " + pvkPathS);
+    if (cerPath.file.exists && pvkPath.file.exists) {
+      log.log("cer and pvk exist");
+      return(cerPathS);
+    } else {
+      log.log("cer and pvk not exist");
+    }
+    log.log("Start gencert");
+    emit(cs) {
+    """
+    X509CertificateBuilder cb = new X509CertificateBuilder (3);
+    //makecert -r -n "CN=test" -sv test.pvk test.cer
+    DateTime notBefore = DateTime.Now;
+    DateTime notAfter = new DateTime (643445675990000000); // 12/31/2039 23:59:59Z
+    RSA subjectKey = (RSA)RSA.Create ();
+    cb.SerialNumber = Guid.NewGuid ().ToByteArray ();
+    cb.IssuerName = "CN=test"; //pre ff fix
+    //cb.IssuerName = "CN=test, OU=None, O=None, L=None, C=None";
+    cb.NotBefore = notBefore;
+    cb.NotAfter = notAfter;
+    cb.SubjectName = "CN=test"; //pre ff fix
+    //cb.SubjectName = "CN=test, OU=None, O=None, L=None, C=None";
+    cb.SubjectPublicKey = subjectKey;
+    // signature
+    cb.Hash = "SHA1";//TODO SHA256, line up with jv version
+    byte[] rawcert = cb.Sign (subjectKey);
+
+    PrivateKey key = new PrivateKey ();
+    key.RSA = subjectKey;
+    key.Save (bevl_pvkPathS.bems_toCsString());
+    FileStream fs = File.Open (bevl_cerPathS.bems_toCsString(), FileMode.Create, FileAccess.Write);
+    fs.Write (rawcert, 0, rawcert.Length);
+    fs.Close ();
+    """
+    }
+    log.log("End gencert");
+    return(cerPathS);
+  }
+  
     main() {
       List args = System:Process.new().args;
       start();

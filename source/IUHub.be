@@ -490,6 +490,7 @@ use class IUHub:HubPlugin {
   
   loggedIn(Account a, Map res, Map arg, request) {
       res["action"] = "updateResponse";
+      res["profile"] = "hub";
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
@@ -514,7 +515,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.7.2";
+        String version =@ "5.7.3";
       }
       return(version);
     }
