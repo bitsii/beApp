@@ -1,11 +1,14 @@
 
-mono webserve
-
 droid
+  netif issue
+
+mono webserve
 
 xamios
 
 droid internal storage for the db and stuff 
+
+include license for icons
 
 outside db key for en/decrypt values in config, in sec store on mobile
 

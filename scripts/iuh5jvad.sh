@@ -29,11 +29,11 @@ java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/base.txt --de
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-exit 0
+rm -rf android/IUHub/app/src/main/assets/App/IUHub
+mkdir -p android/IUHub/app/src/main/assets/App/IUHub
 
-#hub
-cp ../apprun/App/IUHub/Base/target/js/be/BEL_4_Base.js ../apprun/App/IUHub/IUHub_BEL_4_Base.js
-cp source/IU.html ../apprun/App/IUHub
-cp icons/* ../apprun/App/IUHub
-cp LICENSE.txt ../apprun/App/IUHub
-cp LICENSE-MPL.txt ../apprun/App/IUHub
+cp ../apprun/App/IUHub/Base/target/js/be/BEL_4_Base.js android/IUHub/app/src/main/assets/App/IUHub/IUHub_BEL_4_Base.js
+cp source/IU.html android/IUHub/app/src/main/assets/App/IUHub
+cp icons/* android/IUHub/app/src/main/assets/App/IUHub
+cp LICENSE.txt android/IUHub/app/src/main/assets/App/IUHub
+cp LICENSE-MPL.txt android/IUHub/app/src/main/assets/App/IUHub

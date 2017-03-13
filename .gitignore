@@ -1,5 +1,6 @@
 extlibs/*
 android/IUHub/app/src/main/java/be/*
+android/IUHub/app/src/main/assets/App/IUHub/*
 *.iml
 .gradle
 android/IUHub/local.properties
