@@ -1,31 +1,27 @@
 #!/bin/bash
 
-mkdir -p ../apprun
-mkdir -p ../apprun/App
-mkdir -p ../apprun/Data
-
-rm -rf ../apprun/App/IUHub
-mkdir -p ../apprun/App/IUHub
+rm -rf targetAd
+mkdir -p targetAd
 
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abe-pl/target5/*;extlibs/IUBridge/*"
+    export CLASSPATH="../abe-pl/target5/*;extlibs/IUHubAd/*"
     ;;
   *)
-    export CLASSPATH="../abe-pl/target5/*:extlibs/IUBridge/*"
+    export CLASSPATH="../abe-pl/target5/*:extlibs/IUHubAd/*"
     ;;
 esac
 
-java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath targetAd --emitFlag platDroid --emitLang jv -mainClass=IUBridge:BridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHubTest.be source/IUHub.be source/IUCam.be source/IUBridge.be source/Db.be source/BrowserUI.be source/BrowserJvAd.be source/WebServer.be source/App.be source/WebApp.be
+java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath targetAd/d --buildPath targetAd --emitFlag platDroid --emitLang jv -mainClass=IUHub:HubStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvAd.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 rm -rf android/IUHub/app/src/main/java/be
-#mv targetAd/Base/target/jv/be android/IUHub/app/src/main/java/
-#cp ../abe-pl/system/jv/be/*java android/IUHub/app/src/main/java/be
+mv targetAd/Base/target/jv/be android/IUHub/app/src/main/java/
+cp ../abe-pl/system/jv/be/*java android/IUHub/app/src/main/java/be
 
-cp extlibs/IUBridge/* android/IUHub/app/libs/
+cp extlibs/IUHubAd/* android/IUHub/app/libs/
 
 exit 0
 
@@ -58,12 +54,10 @@ cp scripts/startiuh.sh ../apprun/App/IUHub
 cp scripts/iuhrun.sh ../apprun/App/IUHub
 cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
-cp scripts/createAdminAccount.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp source/IU.html ../apprun/App/IUHub
-cp extlibs/IUBridge/* ../apprun/App/IUHub
+cp extlibs/IUHubAd/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub
-cp extlibs/IUBridge/* ../apprun/App/IUHub
 cp LICENSE.txt ../apprun/App/IUHub
 cp LICENSE-MPL.txt ../apprun/App/IUHub
 
@@ -75,6 +69,5 @@ cp scripts/getcams.sh ../apprun/App/IUHub
 cp scripts/motionrun.sh ../apprun/App/IUHub
 cp scripts/camclean.sh ../apprun/App/IUHub
 cp source/MOCAM.conf ../apprun/App/IUHub
-cp extlibs/IUCam/* ../apprun/App/IUHub
 
 ./scripts/iub5jvrun.sh $*

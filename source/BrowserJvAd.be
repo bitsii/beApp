@@ -19,9 +19,9 @@ import android.net.Uri;
 }
 
 /*
-Example of android app component, just extend the activity below
+//Example of android app component, just extend the activity below
 
-public class MainActivity extends be.$class/UI:JvAd:WebBrowser$.MainActivity {
+public class MainActivity extends be.BEC_3_2_4_10_UIJvAdWebBrowser.MainActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +30,7 @@ public class MainActivity extends be.$class/UI:JvAd:WebBrowser$.MainActivity {
         postCreate();
     }
 }
+
 */
 
 use UI:JvAd:WebBrowser as AdBr;

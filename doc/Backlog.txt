@@ -1,15 +1,13 @@
 
-mono webserve ? xsp
-
-xamios
+mono webserve
 
 droid
 
+xamios
+
 droid internal storage for the db and stuff 
 
-retest setup
-
-outside db key for en/decrypt passwords (or all) in config, in sec store on mobile
+outside db key for en/decrypt values in config, in sec store on mobile
 
 hostedFirst option for connect to
 
@@ -27,9 +25,17 @@ default session time on regular login from config
 
 need retry script for failure to launch during install
 
+retest setup
+
 ====
 
 android ver (full)
+
+auto dl pics
+
+hub urls for going straight to a destination, can be shortcuts
+
+sharing urls for other apps
 
 options for problems in wiki
 make sure contact method works to ping me (?email fwd)
