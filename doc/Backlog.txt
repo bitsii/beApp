@@ -1,6 +1,8 @@
 
+async device login like connect
+
 droid
-  netif issue
+  no detect webcams
 
 mono webserve
 
@@ -13,8 +15,6 @@ include license for icons
 outside db key for en/decrypt values in config, in sec store on mobile
 
 hostedFirst option for connect to
-
-async for the ping (future/callback of some sort + js timer)
 
 cleanup expired sessions and old oncetokens
 expiration for once login (deletem on cleanup)

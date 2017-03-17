@@ -286,6 +286,10 @@ use class IUHub:HubPlugin {
   connectToDeviceRequest(String devId, String devName, request) Map {
     //get one time login token    
     Account a = app.accountManager.getAccountForRequest(request);
+    fields {
+      String lastDevId = devId;
+      String lastDevName = devName;
+    }
     String devSession = app.configManager.get("DeviceSession." + a.user + "!" + devId);
     if (TS.isEmpty(devSession)) {
       return(CallBackUI.getDevCredsResponse(devId, devName));
@@ -297,7 +301,7 @@ use class IUHub:HubPlugin {
   }
   
   onceLoginTokenRequest(Map arg, request) {
-    log.log("in oncelogintokenreq");
+    log.log("!!!!!!!!!!!!!!!!in oncelogintokenreq");
     Account a = app.accountManager.getAccountForRequest(request);
     String olt = System:Random.getString(64);
     app.configManager.put("OnceToken." + olt, a.user);
@@ -306,57 +310,102 @@ use class IUHub:HubPlugin {
     return(res);
   }
   
+  checkOpenBrowserRequest(request) Map {
+    log.log("in chkopenbr!!!!!!!!!!!!");
+    if (internalChk.finished.o && externalChk.finished.o && hostedChk.finished.o) {
+      Bool allDone = true;
+    } else {
+      allDone = false;
+    }
+    checkOpenTries++=;
+    Bool opened = false;
+    if (checkOpenTries < 40) {
+      if (internalChk.finished.o && TS.notEmpty(internalChk.returned.o)) {
+        log.log("open internal");
+        opened = true;
+        UI:ExternalBrowser.openToUrl(internalChk.toRun.args[0] + "?onceToken=" + internalChk.returned.o);
+      } elseIf (externalChk.finished.o && TS.notEmpty(externalChk.returned.o)) {
+        log.log("open external");
+        opened = true;
+        UI:ExternalBrowser.openToUrl(externalChk.toRun.args[0] + "?onceToken=" + externalChk.returned.o);
+      } elseIf (hostedChk.finished.o && TS.notEmpty(hostedChk.returned.o)) {
+        log.log("open hosted");
+        opened = true;
+        UI:ExternalBrowser.openToUrl(hostedChk.toRun.args[0] + "?onceToken=" + hostedChk.returned.o);
+      } elseIf (allDone!) {
+        return(CallBackUI.checkOpenBrowserResponse());
+      }
+    } else {
+      log.log("giving up after too many tries");
+    }
+    log.log("allDone");
+    if (opened!) {
+      return(CallBackUI.getDevCredsResponse(lastDevId, lastDevName));
+    }
+    return(null);//should give message TODO
+  }
+  
+  checkConn(String destUrl, Map argOut) String {
+    String onceToken;
+    log.log("starting checkConn");
+    if (TS.isEmpty(destUrl)) {
+      log.log("destUrl is empty");
+      return(null);
+    } else {
+      log.log("destUrl not empty");
+    }
+    try {
+        log.log("checking conn for " + destUrl);
+        Web:Client client = Web:Client.new();
+        String payload = Json:Marshaller.marshall(argOut);
+        client.outputHeaders.put("referer", destUrl);
+        client.url = destUrl;
+        client.openOutput().write(payload);
+        String res = client.openInput().readString();
+        client.close();
+        if (TS.notEmpty(res)) {
+          Map resMap = Json:Unmarshaller.unmarshall(res);
+          log.log("!!! got res from obfds  " + res);
+          if (resMap.has("OnceToken")) {
+            onceToken = resMap.get("OnceToken");
+            //UI:ExternalBrowser.openToUrl(destUrl + "?onceToken=" + resMap.get("OnceToken"));
+          }
+        }
+      } catch (any e) {
+        log.log("got exception during checkConn");
+        log.log(e);
+      }
+      return(onceToken);
+  }
+  
   openBrowserFromDeviceSession(Map ds) Map {
+    //this only works for hub/app/one user at a time
+    //it's only called that way, so...
+    fields {
+      System:Thread internalChk;
+      System:Thread externalChk;
+      System:Thread hostedChk;
+    }
     Map links = self.linksol.o;
     if (def(links)) {
       WebConnect wco = links.get(ds.get("deviceId"));
-      WebConnect wc = app.plugin.wcol.o;
-      if (def(wc) && def(wco)) {
-        String ia = wc.internalAddress;
-        String iao = wco.internalAddress;
-        String utype = chooseUrlType(wco);
+      if (def(wco)) {
+        Web:Client:CertificateManager.validateHosts = false;
+        Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
         Map argOut = Map.new();
         argOut["action"] = "onceLoginTokenRequest";
         argOut["pageToken"] = ds["pageToken"];
         argOut["serviceSessionKey"] = ds["serviceSessionKey"];
-        Web:Client client = Web:Client.new();
-        String payload = Json:Marshaller.marshall(argOut);
-        //referer
-        //?hosted?
-        if (utype == "internal") {
-          String destUrl = wco.internalUrl;
-        } else {
-          destUrl = wco.externalUrl;
+        
+        internalChk = System:Thread.new(getInvocation("checkConn", Lists.from(wco.internalUrl, argOut.copy()))).start();
+        
+        externalChk = System:Thread.new(getInvocation("checkConn", Lists.from(wco.externalUrl, argOut.copy()))).start();
+         
+        hostedChk = System:Thread.new(getInvocation("checkConn", Lists.from(wco.hostedUrl, argOut.copy()))).start(); 
+        fields {
+          Int checkOpenTries = 0;
         }
-        client.outputHeaders.put("referer", destUrl);
-        client.url = destUrl;
-        try {
-          Web:Client:CertificateManager.validateHosts = false;
-          //Web:Client:CertificateManager.validateCertificates = false;
-          Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
-          client.openOutput().write(payload);
-          String res = client.openInput().readString();
-          client.close();
-          if (TS.notEmpty(res)) {
-            Map resMap = Json:Unmarshaller.unmarshall(res);
-            log.log("!!! got res from obfds  " + res);
-            if (resMap.has("OnceToken")) {
-              worked = true;
-              UI:ExternalBrowser.openToUrl(destUrl + "?onceToken=" + resMap.get("OnceToken"));
-            } else {
-              worked = false;
-            }
-          } else {
-            Bool worked = false;
-          }
-          unless (worked) {
-            return(CallBackUI.getDevCredsResponse(wco.deviceId, wco.deviceName));
-          }
-        } finally {
-          Web:Client:CertificateManager.validateHosts = true;
-          //Web:Client:CertificateManager.validateCertificates = true;
-          Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
-        }
+        return(CallBackUI.checkOpenBrowserResponse());
       }
     }
     return(null);

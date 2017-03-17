@@ -655,6 +655,10 @@ use class IUHub:Eui {
       }
    }
    
+   checkOpenBrowserResponse() {
+     HC.callAppLater(Lists.from("checkOpenBrowserRequest"), 500);
+   }
+   
    restoreConfigRequest() {
       String ci = currentlyCheckedId;
       if (TS.notEmpty(ci)) {

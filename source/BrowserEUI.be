@@ -71,6 +71,10 @@ var callApp = function() {
   hc.bem_callApp_1(alist);
 }
 
+var callAppLaterInside = function(myhc, alist) {
+  myhc.bem_callApp_1(alist);
+}
+
 //callUI does invoke on ui
 var callUI = function() {
   var alist = convertArgs(arguments);
@@ -283,6 +287,14 @@ class HC {
        }
      }       
      return(null);
+   }
+   
+   callAppLater(List args, Int waitHowLong) {
+     emit(js) {
+     """
+     setTimeout(function(){callAppLaterInside(hc, beva_args)}, beva_waitHowLong.bevi_int);
+     """
+     }
    }
 
   call(Map arg) {
