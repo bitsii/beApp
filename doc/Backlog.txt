@@ -1,6 +1,5 @@
 
-combine the deviceLogin into the wait/open loop with checkLogin (?change the getInstance and
-  return the same thing?)
+async for chooseUrl
 
 droid
   no detect webcams
@@ -16,8 +15,6 @@ include license for icons
 outside db key for en/decrypt values in config, in sec store on mobile
 
 hostedFirst option for connect to
-
-scoot down when opening device login, or move section above the links
 
 cleanup expired sessions and old oncetokens
 expiration for once login (deletem on cleanup)

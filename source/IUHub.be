@@ -338,13 +338,7 @@ use class IUHub:HubPlugin {
   }
   
   checkConn(WebConnect wco, Map ds) Pair {
-    String onceToken;
     log.log("starting checkConn");
-    Map argOut = Map.new();
-    argOut["action"] = "onceLoginTokenRequest";
-    argOut["pageToken"] = ds["pageToken"];
-    argOut["serviceSessionKey"] = ds["serviceSessionKey"];
-    
     String destUrl = chooseUrl(wco);
     if (TS.isEmpty(destUrl)) {
       log.log("destUrl is empty");
@@ -352,36 +346,44 @@ use class IUHub:HubPlugin {
     } else {
       log.log("destUrl not empty");
     }
+    return(checkConnInner(wco, ds, destUrl));
+  }
+  
+  checkConnInner(WebConnect wco, Map ds, String destUrl) Pair {
     try {
-        log.log("checking conn for " + destUrl);
-        Web:Client:CertificateManager.validateHosts = false;
-        Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
-        Web:Client client = Web:Client.new();
-        String payload = Json:Marshaller.marshall(argOut);
-        client.outputHeaders.put("referer", destUrl);
-        client.url = destUrl;
-        client.openOutput().write(payload);
-        String res = client.openInput().readString();
-        client.close();
-        if (TS.notEmpty(res)) {
-          Map resMap = Json:Unmarshaller.unmarshall(res);
-          log.log("!!! got res from obfds  " + res);
-          if (resMap.has("OnceToken")) {
-            onceToken = resMap.get("OnceToken");
-            //UI:ExternalBrowser.openToUrl(destUrl + "?onceToken=" + resMap.get("OnceToken"));
-          }
+      log.log("checking conn for " + destUrl);
+      Map argOut = Map.new();
+      argOut["action"] = "onceLoginTokenRequest";
+      argOut["pageToken"] = ds["pageToken"];
+      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+      Web:Client:CertificateManager.validateHosts = false;
+      Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
+      Web:Client client = Web:Client.new();
+      String payload = Json:Marshaller.marshall(argOut);
+      client.outputHeaders.put("referer", destUrl);
+      client.url = destUrl;
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      client.close();
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        log.log("!!! got res from obfds  " + res);
+        if (resMap.has("OnceToken")) {
+          String onceToken = resMap.get("OnceToken");
+          //UI:ExternalBrowser.openToUrl(destUrl + "?onceToken=" + resMap.get("OnceToken"));
         }
-      } catch (any e) {
-        log.log("got exception during checkConn");
-        log.log(e);
-      } finally {
-        Web:Client:CertificateManager.validateHosts = true;
-        Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
       }
-      if (TS.notEmpty(destUrl) && TS.notEmpty(onceToken)) {
-        return(Pair.new(destUrl, onceToken));
-      }
-      return(null);
+    } catch (any e) {
+      log.log("got exception during checkConn");
+      log.log(e);
+    } finally {
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
+    }
+    if (TS.notEmpty(destUrl) && TS.notEmpty(onceToken)) {
+      return(Pair.new(destUrl, onceToken));
+    }
+    return(null);
   }
   
   openBrowserFromDeviceSession(Map ds) Map {
@@ -406,6 +408,49 @@ use class IUHub:HubPlugin {
     return(null);
   }
   
+  checkDevLogin(WebConnect wco, Map arg, Account a) {
+    String destUrl = chooseUrl(wco);
+    if (TS.isEmpty(destUrl)) {
+      return(null);
+    }
+    Map argOut = Map.new();
+    argOut["accountName"] = arg["accountName"];
+    argOut["accountPass"] = arg["accountPass"];
+    argOut["sessionLength"] = arg["sessionLength"];
+    argOut["action"] = "loginRequest";
+    argOut["serviceLogin"] = "yup";
+    Web:Client client = Web:Client.new();
+    String payload = Json:Marshaller.marshall(argOut);
+    client.outputHeaders.put("referer", destUrl);
+    client.url = destUrl;
+    try {
+      Web:Client:CertificateManager.validateHosts = false;
+      //Web:Client:CertificateManager.validateCertificates = false;
+      Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      log.log("GOT SOMETHING BACK!!!");
+      client.close();
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        //store stuff
+        Map ds = Map.new();
+        ds["serviceSessionKey"] = resMap["serviceSessionKey"];
+        ds["pageToken"] = resMap["pageToken"];
+        ds["deviceId"] = arg["deviceId"];
+        String dss = Json:Marshaller.marshall(ds);
+        app.configManager.put("DeviceSession." + a.user + "!" + arg["deviceId"], dss);
+        if (true) { return(checkConnInner(wco, ds, destUrl)) };
+      }
+      log.log("!!! got res from dev loginrequest " + res);
+    } finally {
+      Web:Client:CertificateManager.validateHosts = true;
+      //Web:Client:CertificateManager.validateCertificates = true;
+      Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
+    }
+
+  }
+  
   deviceLoginRequest(Map arg, request) {
     log.log("in devlogin");
     Account a = app.accountManager.getAccountForRequest(request);
@@ -415,48 +460,14 @@ use class IUHub:HubPlugin {
         WebConnect wco = links.get(arg.get("deviceId"));
       }
       if (def(wco)) {
-        String destUrl = chooseUrl(wco);
-        if (TS.isEmpty(destUrl)) {
-          return(CallBackUI.informResponse("Unable to connect"));
-        }
-        Map argOut = Map.new();
-        argOut["accountName"] = arg["accountName"];
-        argOut["accountPass"] = arg["accountPass"];
-        argOut["sessionLength"] = arg["sessionLength"];
-        argOut["action"] = "loginRequest";
-        argOut["serviceLogin"] = "yup";
-        Web:Client client = Web:Client.new();
-        String payload = Json:Marshaller.marshall(argOut);
-        client.outputHeaders.put("referer", destUrl);
-        client.url = destUrl;
-        try {
-          Web:Client:CertificateManager.validateHosts = false;
-          //Web:Client:CertificateManager.validateCertificates = false;
-          Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
-          client.openOutput().write(payload);
-          String res = client.openInput().readString();
-          log.log("GOT SOMETHING BACK!!!");
-          client.close();
-          if (TS.notEmpty(res)) {
-            Map resMap = Json:Unmarshaller.unmarshall(res);
-            //store stuff
-            Map ds = Map.new();
-            ds["serviceSessionKey"] = resMap["serviceSessionKey"];
-            ds["pageToken"] = resMap["pageToken"];
-            ds["deviceId"] = arg["deviceId"];
-            String dss = Json:Marshaller.marshall(ds);
-            app.configManager.put("DeviceSession." + a.user + "!" + arg["deviceId"], dss);
-            if (true) { return(openBrowserFromDeviceSession(ds)) };
-          }
-          log.log("!!! got res from dev loginrequest " + res);
-        } finally {
-          Web:Client:CertificateManager.validateHosts = true;
-          //Web:Client:CertificateManager.validateCertificates = true;
-          Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
-        }
-        //log.log("got res from dev loginRequest");
+        
+        godevChk = System:Thread.new(getInvocation("checkDevLogin", Lists.from(wco, arg, a))).start();
+        checkOpenTries = 0;
+        return(CallBackUI.checkOpenBrowserResponse());
+        
       }
     }
+    return(null); //TODO error
   }
   
   saveAccountRequest(Map arg, request) {
