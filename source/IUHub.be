@@ -320,10 +320,10 @@ use class IUHub:HubPlugin {
     checkOpenTries++=;
     Bool opened = false;
     if (checkOpenTries < 40) {
-      if (godevChk.finished.o && TS.notEmpty(godevChk.returned.o)) {
-        log.log("open internal");
+      if (godevChk.finished.o && def(godevChk.returned.o)) {
+        log.log("open br");
         opened = true;
-        UI:ExternalBrowser.openToUrl(godevChk.toRun.args[0] + "?onceToken=" + godevChk.returned.o);
+        UI:ExternalBrowser.openToUrl(godevChk.returned.o.first + "?onceToken=" + godevChk.returned.o.second);
       } elseIf (allDone!) {
         return(CallBackUI.checkOpenBrowserResponse());
       }
@@ -337,9 +337,15 @@ use class IUHub:HubPlugin {
     return(null);//should give message TODO
   }
   
-  checkConn(String destUrl, Map argOut) String {
+  checkConn(WebConnect wco, Map ds) Pair {
     String onceToken;
     log.log("starting checkConn");
+    Map argOut = Map.new();
+    argOut["action"] = "onceLoginTokenRequest";
+    argOut["pageToken"] = ds["pageToken"];
+    argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+    
+    String destUrl = chooseUrl(wco);
     if (TS.isEmpty(destUrl)) {
       log.log("destUrl is empty");
       return(null);
@@ -348,6 +354,8 @@ use class IUHub:HubPlugin {
     }
     try {
         log.log("checking conn for " + destUrl);
+        Web:Client:CertificateManager.validateHosts = false;
+        Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
         Web:Client client = Web:Client.new();
         String payload = Json:Marshaller.marshall(argOut);
         client.outputHeaders.put("referer", destUrl);
@@ -366,8 +374,14 @@ use class IUHub:HubPlugin {
       } catch (any e) {
         log.log("got exception during checkConn");
         log.log(e);
+      } finally {
+        Web:Client:CertificateManager.validateHosts = true;
+        Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
       }
-      return(onceToken);
+      if (TS.notEmpty(destUrl) && TS.notEmpty(onceToken)) {
+        return(Pair.new(destUrl, onceToken));
+      }
+      return(null);
   }
   
   openBrowserFromDeviceSession(Map ds) Map {
@@ -380,24 +394,8 @@ use class IUHub:HubPlugin {
     if (def(links)) {
       WebConnect wco = links.get(ds.get("deviceId"));
       if (def(wco)) {
-        Web:Client:CertificateManager.validateHosts = false;
-        Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
-        Map argOut = Map.new();
-        argOut["action"] = "onceLoginTokenRequest";
-        argOut["pageToken"] = ds["pageToken"];
-        argOut["serviceSessionKey"] = ds["serviceSessionKey"];
         
-        //internal external hosted
-        String destUrl = chooseUrl(wco);
-        if (TS.isEmpty(destUrl)) {
-          return(CallBackUI.informResponse("Unable to connect"));
-        }
-        
-        if (TS.notEmpty(destUrl)) {
-          godevChk = System:Thread.new(getInvocation("checkConn", Lists.from(destUrl, argOut))).start();
-        } else {
-          log.log("destUrl empty");
-        }
+        godevChk = System:Thread.new(getInvocation("checkConn", Lists.from(wco, ds))).start();
         
         fields {
           Int checkOpenTries = 0;

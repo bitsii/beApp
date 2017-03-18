@@ -1,9 +1,6 @@
 
 async chooseUrl
 
-have a second thread to exhaust the stuff from polling in case it failes
-  make sure http cert stuff is always put back reliably
-
 droid
   no detect webcams
 
@@ -18,6 +15,8 @@ include license for icons
 outside db key for en/decrypt values in config, in sec store on mobile
 
 hostedFirst option for connect to
+
+scoot down when opening device login, or move section above the links
 
 cleanup expired sessions and old oncetokens
 expiration for once login (deletem on cleanup)
