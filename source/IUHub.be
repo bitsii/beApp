@@ -562,7 +562,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.7.3";
+        String version =@ "5.7.5";
       }
       return(version);
     }
@@ -1041,47 +1041,61 @@ use class IUHub:HubPlugin {
      return(internal);
   }
   
-  pingUrl(String destUrl, String print, Int waitFirst) String {
-    if (pingUrlInner(destUrl, print, waitFirst)) {
+  pingUrl(String destUrl, Int waitFirst) String {
+    if (pingUrlInner(destUrl, waitFirst)) {
       return(destUrl);
     }
     return(null);
   }
   
   chooseUrl(WebConnect wco) String {
-    System:Thread cui = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.internalUrl, wco.certificatePrint, 0))).start();
-    System:Thread cue = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.externalUrl, wco.certificatePrint, 0))).start();
-    System:Thread cuh = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.hostedUrl, wco.certificatePrint, 100))).start();
-    
+    System:Thread cui = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.internalUrl, 0)));
+    System:Thread cue = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.externalUrl, 0)));
+    System:Thread cuh = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.hostedUrl, 100)));
     List pingers = Lists.from(cui, cue, cuh);
-    for (Int i = 0;i < 1500;i++=) {
-      Bool allDone = true;
+    try {
+      Web:Client:CertificateManager.validateHosts = false;
+      //Web:Client:CertificateManager.validateCertificates = false;
+      Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
+      
       for (System:Thread pinger in pingers) {
-        if (pinger.finished.o) {
-          if (TS.notEmpty(pinger.returned.o)) {
-            return(pinger.returned.o);
+        pinger.start();
+      }
+      
+      for (Int i = 0;i < 1500;i++=) {
+        Bool allDone = true;
+        for (pinger in pingers) {
+          if (pinger.finished.o) {
+            if (TS.notEmpty(pinger.returned.o)) {
+              return(pinger.returned.o);
+            }
+          } else {
+            allDone = false;
           }
-        } else {
-          allDone = false;
         }
+        if (allDone) {
+          return(null);
+        }
+        Time:Sleep.sleepMilliseconds(20);
       }
-      if (allDone) {
-        return(null);
-      }
-      Time:Sleep.sleepMilliseconds(20);
+    } finally {
+      Web:Client:CertificateManager.validateHosts = true;
+      //Web:Client:CertificateManager.validateCertificates = true;
+      Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
     }
     return(null);
   }
   
-  pingUrlInner(String destUrl, String print, Int waitFirst) Bool {
+  pingUrlInner(String destUrl, Int waitFirst) Bool {
     Bool worked = false;
+    if (TS.isEmpty(destUrl)) {
+      return(false);
+    }
     try {
-      Web:Client:CertificateManager.validateHosts = false;
-      //Web:Client:CertificateManager.validateCertificates = false;
-      Web:Client:CertificateManager.acceptedThumbprints.put(print);
       if (waitFirst > 0) {
         Time:Sleep.sleepMilliseconds(waitFirst);
       }
+      log.log("PINGING " + destUrl);
       Map argOut = Maps.from("action", "pingRequest");
       Web:Client client = Web:Client.new();
       String payload = Json:Marshaller.marshall(argOut);
@@ -1091,16 +1105,22 @@ use class IUHub:HubPlugin {
       String res = client.openInput().readString();
       client.close();
       if (TS.notEmpty(res)) {
+        log.log("!!! PING got res from pingRequest  " + res);
         Map resMap = Json:Unmarshaller.unmarshall(res);
-        log.log("!!! got res from pingRequest  " + res);
         if (TS.notEmpty(resMap.get("action")) && resMap["action"] == "pingResponse") {
           worked = true;
+          log.log("PING REQUEST GOOD " + destUrl);
         }
+      } else {
+        log.log("!!! PING RES EMPTY");
       }
-    } finally {
-      Web:Client:CertificateManager.validateHosts = true;
-      //Web:Client:CertificateManager.validateCertificates = true;
-      Web:Client:CertificateManager.acceptedThumbprints.delete(print);
+    } catch (any e) {
+      log.log("ERROR DURING PING ");
+      if (def(e)) {
+        log.log("PING ERROR IS " + e);
+      } else {
+        log.log("PING ERROR EMPTY");
+      }
     }
     return(worked);
   }
