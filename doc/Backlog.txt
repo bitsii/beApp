@@ -1,5 +1,8 @@
 
-async device login like connect
+async chooseUrl
+
+have a second thread to exhaust the stuff from polling in case it failes
+  make sure http cert stuff is always put back reliably
 
 droid
   no detect webcams

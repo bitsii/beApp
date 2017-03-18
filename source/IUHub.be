@@ -312,7 +312,7 @@ use class IUHub:HubPlugin {
   
   checkOpenBrowserRequest(request) Map {
     log.log("in chkopenbr!!!!!!!!!!!!");
-    if (internalChk.finished.o && externalChk.finished.o && hostedChk.finished.o) {
+    if (godevChk.finished.o) {
       Bool allDone = true;
     } else {
       allDone = false;
@@ -320,18 +320,10 @@ use class IUHub:HubPlugin {
     checkOpenTries++=;
     Bool opened = false;
     if (checkOpenTries < 40) {
-      if (internalChk.finished.o && TS.notEmpty(internalChk.returned.o)) {
+      if (godevChk.finished.o && TS.notEmpty(godevChk.returned.o)) {
         log.log("open internal");
         opened = true;
-        UI:ExternalBrowser.openToUrl(internalChk.toRun.args[0] + "?onceToken=" + internalChk.returned.o);
-      } elseIf (externalChk.finished.o && TS.notEmpty(externalChk.returned.o)) {
-        log.log("open external");
-        opened = true;
-        UI:ExternalBrowser.openToUrl(externalChk.toRun.args[0] + "?onceToken=" + externalChk.returned.o);
-      } elseIf (hostedChk.finished.o && TS.notEmpty(hostedChk.returned.o)) {
-        log.log("open hosted");
-        opened = true;
-        UI:ExternalBrowser.openToUrl(hostedChk.toRun.args[0] + "?onceToken=" + hostedChk.returned.o);
+        UI:ExternalBrowser.openToUrl(godevChk.toRun.args[0] + "?onceToken=" + godevChk.returned.o);
       } elseIf (allDone!) {
         return(CallBackUI.checkOpenBrowserResponse());
       }
@@ -382,9 +374,7 @@ use class IUHub:HubPlugin {
     //this only works for hub/app/one user at a time
     //it's only called that way, so...
     fields {
-      System:Thread internalChk;
-      System:Thread externalChk;
-      System:Thread hostedChk;
+      System:Thread godevChk;
     }
     Map links = self.linksol.o;
     if (def(links)) {
@@ -397,11 +387,18 @@ use class IUHub:HubPlugin {
         argOut["pageToken"] = ds["pageToken"];
         argOut["serviceSessionKey"] = ds["serviceSessionKey"];
         
-        internalChk = System:Thread.new(getInvocation("checkConn", Lists.from(wco.internalUrl, argOut.copy()))).start();
+        //internal external hosted
+        String destUrl = chooseUrl(wco);
+        if (TS.isEmpty(destUrl)) {
+          return(CallBackUI.informResponse("Unable to connect"));
+        }
         
-        externalChk = System:Thread.new(getInvocation("checkConn", Lists.from(wco.externalUrl, argOut.copy()))).start();
-         
-        hostedChk = System:Thread.new(getInvocation("checkConn", Lists.from(wco.hostedUrl, argOut.copy()))).start(); 
+        if (TS.notEmpty(destUrl)) {
+          godevChk = System:Thread.new(getInvocation("checkConn", Lists.from(destUrl, argOut))).start();
+        } else {
+          log.log("destUrl empty");
+        }
+        
         fields {
           Int checkOpenTries = 0;
         }
@@ -423,8 +420,10 @@ use class IUHub:HubPlugin {
       if (def(wc) && def(wco)) {
         String ia = wc.internalAddress;
         String iao = wco.internalAddress;
-        String utype = chooseUrlType(wco);
-        log.log("down in wc wco utype is " + utype);
+        String destUrl = chooseUrl(wco);
+        if (TS.isEmpty(destUrl)) {
+          return(CallBackUI.informResponse("Unable to connect"));
+        }
         Map argOut = Map.new();
         argOut["accountName"] = arg["accountName"];
         argOut["accountPass"] = arg["accountPass"];
@@ -433,15 +432,8 @@ use class IUHub:HubPlugin {
         argOut["serviceLogin"] = "yup";
         Web:Client client = Web:Client.new();
         String payload = Json:Marshaller.marshall(argOut);
-        //referer
-        if (utype == "internal") {
-          client.outputHeaders.put("referer", wco.internalUrl);
-          client.url = wco.internalUrl;
-        } else {
-          //?hosted?
-          client.outputHeaders.put("referer", wco.externalUrl);
-          client.url = wco.externalUrl;
-        }
+        client.outputHeaders.put("referer", destUrl);
+        client.url = destUrl;
         try {
           Web:Client:CertificateManager.validateHosts = false;
           //Web:Client:CertificateManager.validateCertificates = false;
@@ -1043,7 +1035,7 @@ use class IUHub:HubPlugin {
      return(internal);
   }
   
-  chooseUrlType(WebConnect wco) String {
+  chooseUrl(WebConnect wco) String {
     WebConnect wc = app.plugin.wcol.o;
     String ia = wc.internalAddress;
     String iao = wco.internalAddress;
@@ -1077,11 +1069,11 @@ use class IUHub:HubPlugin {
       if (TS.notEmpty(utry)) {
         if (pingUrl(utry, certificatePrint)) {
           log.log("chooseurl ret " + c);
-          return(c);
+          return(utry);
         }
       }
     }
-    return(ut);
+    return(null);
   }
   
   pingUrl(String destUrl, String print) Bool {

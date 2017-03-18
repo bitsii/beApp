@@ -607,8 +607,8 @@ use class IUHub:Eui {
       }
    }
    
-   informResponse(Map arg) {
-    inform(arg["reason"]);
+   informResponse(String info) {
+    inform(info);
    }
    
    inform(String r) {
