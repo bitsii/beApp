@@ -1,6 +1,19 @@
 
+license stuff under dir / viewable from app
+
+time refresh for links/action stuff
+  esp after first login/imap setup, but maybe always
+  hub don't put self into imap or into dev list
+  
+hub no detect webcams
+  no account, just stick with built in
+  ?check jvad and just put them in config?
+
 droid
-  no detect webcams
+  no dev name - get from phone
+  
+enter key support for submit wherever it makes sense
+  device login, device name
 
 mono webserve
 

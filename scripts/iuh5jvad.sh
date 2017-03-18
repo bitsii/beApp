@@ -21,6 +21,8 @@ rm -rf android/IUHub/app/src/main/java/be
 mv targetAd/Base/target/jv/be android/IUHub/app/src/main/java/
 cp ../abe-pl/system/jv/be/*java android/IUHub/app/src/main/java/be
 
+rm -rf android/IUHub/app/libs/
+mkdir -p android/IUHub/app/libs/
 cp extlibs/IUHubAd/* android/IUHub/app/libs/
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
