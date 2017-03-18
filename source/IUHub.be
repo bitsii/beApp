@@ -414,10 +414,7 @@ use class IUHub:HubPlugin {
       if (def(links)) {
         WebConnect wco = links.get(arg.get("deviceId"));
       }
-      WebConnect wc = app.plugin.wcol.o;
-      if (def(wc) && def(wco)) {
-        String ia = wc.internalAddress;
-        String iao = wco.internalAddress;
+      if (def(wco)) {
         String destUrl = chooseUrl(wco);
         if (TS.isEmpty(destUrl)) {
           return(CallBackUI.informResponse("Unable to connect"));

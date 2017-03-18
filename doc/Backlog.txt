@@ -1,5 +1,6 @@
 
-async chooseUrl
+combine the deviceLogin into the wait/open loop with checkLogin (?change the getInstance and
+  return the same thing?)
 
 droid
   no detect webcams
