@@ -656,7 +656,7 @@ use class IUHub:Eui {
    }
    
    checkOpenBrowserResponse() {
-     HC.callAppLater(Lists.from("checkOpenBrowserRequest"), 500);
+     HC.callAppLater(Lists.from("checkOpenBrowserRequest"), 100);
    }
    
    restoreConfigRequest() {

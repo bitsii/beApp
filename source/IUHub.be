@@ -319,7 +319,7 @@ use class IUHub:HubPlugin {
     }
     checkOpenTries++=;
     Bool opened = false;
-    if (checkOpenTries < 40) {
+    if (checkOpenTries < 200) {
       if (godevChk.finished.o && def(godevChk.returned.o)) {
         log.log("open br");
         opened = true;
@@ -1041,58 +1041,52 @@ use class IUHub:HubPlugin {
      return(internal);
   }
   
-  chooseUrl(WebConnect wco) String {
-    WebConnect wc = app.plugin.wcol.o;
-    String ia = wc.internalAddress;
-    String iao = wco.internalAddress;
-    String certificatePrint = wco.certificatePrint;
-    if (def(ia) && def(iao)) {
-      Bool internal = onSameNet(ia, iao);
-    }
-    String ut;
-    if (internal) {
-      ut = "internal";
-    } else {
-      ut = "external";
-    }
-    //Try first choice, if no good try other, if no good try hosted
-    //have a "prefer hosted" for the device id option
-    //do ping request, return what works
-    if (ut == "internal") {
-      List tio = Lists.from("internal", "hosted", "external");
-    } else {
-      tio = Lists.from("external", "hosted", "internal");
-    }
-    for (String c in tio) {
-      log.log("c in tio is " + c);
-      if (c == "internal") {
-        String utry = wco.internalUrl;
-      } elseIf (c == "external") {
-        utry = wco.externalUrl;
-      } else {
-        utry = wco.hostedUrl;
-      }
-      if (TS.notEmpty(utry)) {
-        if (pingUrl(utry, certificatePrint)) {
-          log.log("chooseurl ret " + c);
-          return(utry);
-        }
-      }
+  pingUrl(String destUrl, String print, Int waitFirst) String {
+    if (pingUrlInner(destUrl, print, waitFirst)) {
+      return(destUrl);
     }
     return(null);
   }
   
-  pingUrl(String destUrl, String print) Bool {
+  chooseUrl(WebConnect wco) String {
+    System:Thread cui = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.internalUrl, wco.certificatePrint, 0))).start();
+    System:Thread cue = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.externalUrl, wco.certificatePrint, 0))).start();
+    System:Thread cuh = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.hostedUrl, wco.certificatePrint, 100))).start();
+    
+    List pingers = Lists.from(cui, cue, cuh);
+    for (Int i = 0;i < 1500;i++=) {
+      Bool allDone = true;
+      for (System:Thread pinger in pingers) {
+        if (pinger.finished.o) {
+          if (TS.notEmpty(pinger.returned.o)) {
+            return(pinger.returned.o);
+          }
+        } else {
+          allDone = false;
+        }
+      }
+      if (allDone) {
+        return(null);
+      }
+      Time:Sleep.sleepMilliseconds(20);
+    }
+    return(null);
+  }
+  
+  pingUrlInner(String destUrl, String print, Int waitFirst) Bool {
     Bool worked = false;
-    Map argOut = Maps.from("action", "pingRequest");
-    Web:Client client = Web:Client.new();
-    String payload = Json:Marshaller.marshall(argOut);
-    client.outputHeaders.put("referer", destUrl);
-    client.url = destUrl;
     try {
       Web:Client:CertificateManager.validateHosts = false;
       //Web:Client:CertificateManager.validateCertificates = false;
       Web:Client:CertificateManager.acceptedThumbprints.put(print);
+      if (waitFirst > 0) {
+        Time:Sleep.sleepMilliseconds(waitFirst);
+      }
+      Map argOut = Maps.from("action", "pingRequest");
+      Web:Client client = Web:Client.new();
+      String payload = Json:Marshaller.marshall(argOut);
+      client.outputHeaders.put("referer", destUrl);
+      client.url = destUrl;
       client.openOutput().write(payload);
       String res = client.openInput().readString();
       client.close();

@@ -1,6 +1,4 @@
 
-async for chooseUrl
-
 droid
   no detect webcams
 
