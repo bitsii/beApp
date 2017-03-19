@@ -1,25 +1,15 @@
 
-hub no detect webcams
-  no account, just stick with built in
-  ?check jvad and just put them in config?
+update own wcol as well as net addresses when doing initial bridge save after imap
 
-time refresh for links/action stuff
-  esp after first login/imap setup, but maybe always
-  hub don't put self into imap or into dev list
+also do a call app later after login like in hide imap
 
-droid
-  no dev name - get from phone
-  
-enter key support for submit wherever it makes sense
-  device login, device name
+default folder (recommended) for imap
 
 mono webserve
 
 xamios
 
 droid internal storage for the db and stuff 
-
-include license for icons
 
 outside db key for en/decrypt values in config, in sec store on mobile
 
@@ -43,11 +33,15 @@ retest setup
 
 android ver (full)
 
+droid
+  no dev name - get from phone
+  
 auto dl pics
 
-hub urls for going straight to a destination, can be shortcuts
-
 sharing urls for other apps
+
+enter key support for submit wherever it makes sense
+  device login, device name
 
 options for problems in wiki
 make sure contact method works to ping me (?email fwd)

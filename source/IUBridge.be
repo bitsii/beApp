@@ -255,14 +255,36 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
 
    getActionLinks(Account a, Map arg, request) String {
-     return(self.cam.getActionLinks(a, arg, request) + super.getActionLinks(a, arg, request));
+      String actionLinks = self.cam.getActionLinks(a, arg, request) + super.getActionLinks(a, arg, request);
+      String cdo = app.configManager.get("camsDetectedOnce");
+      if (TS.isEmpty(cdo) || cdo != "true") {
+        actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";
+      }
+      return(actionLinks);
+   }
+   
+   imapSettingsRequest(Map arg, request) {
+     Map res = super.imapSettingsRequest(arg, request);
+     System:Thread.new(app.plugin.getInvocation("updateNetAddresses", List.new())).start();
+     return(res);
    }
    
    loggedIn(Account a, Map res, Map arg, request) {
-     res = super.loggedIn(a, res, arg, request);
-     res["profile"] = "bridge";
-     return(res);
+    res = super.loggedIn(a, res, arg, request);
+    String dnso = app.configManager.get("deviceNameSetOnce");
+    if (TS.isEmpty(dnso) || dnso != "true") {
+      res["deviceNameSetOnce"] = "false";
+    }
+    String anso = app.configManager.get("accountSetOnce");
+    if (TS.isEmpty(anso) || anso != "true") {
+      res["accountSetOnce"] = "false";
+    }
+    return(res);
    }
+   
+   profileGet() String {
+    return("hub");
+  }
     
     camGet() CamPlugin {
       return(app.plugins[1]);

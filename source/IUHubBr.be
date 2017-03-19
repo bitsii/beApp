@@ -257,6 +257,8 @@ use class IUHub:Eui {
    
    hideImapResponse(Map arg) {
      HD.getElementById("imapSettingsDiv").display = "none";
+     HC.callAppLater(Lists.from("refreshLinksRequest"), 10000);
+     hideInform();
    }
    
    showConfig() {
@@ -485,6 +487,7 @@ use class IUHub:Eui {
     if (TS.notEmpty(oinf)) {
       inform(oinf);
     }
+    //HC.callAppLater(Lists.from("refreshLinksRequest"), 60000);
    }
    
    detectCams() {
@@ -657,6 +660,16 @@ use class IUHub:Eui {
    
    checkOpenBrowserResponse() {
      HC.callAppLater(Lists.from("checkOpenBrowserRequest"), 100);
+   }
+   
+   refreshLinksResponse(String actionLinks, String devLinks) {
+     if (TS.notEmpty(actionLinks)) {
+      HD.getElementById("actionLinksDiv").innerHTML = actionLinks;
+    }
+    if (TS.notEmpty(devLinks)) {
+      HD.getElementById("devLinksListDiv").innerHTML = devLinks;
+    }
+    //HC.callAppLater(Lists.from("refreshLinksRequest"), 60000);
    }
    
    restoreConfigRequest() {

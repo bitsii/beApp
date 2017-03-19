@@ -161,10 +161,10 @@ use class IUHub:HubPlugin {
       links.put(wc.deviceId, wc);
       log.log("loaded link " + wc.deviceName);
     }
-    wc = app.plugin.wcol.o;
-    if (def(wc)) {
-      links.put(wc.deviceId, wc);
-    }
+    //wc = app.plugin.wcol.o;
+    //if (def(wc)) {
+    //  links.put(wc.deviceId, wc);
+    //}
     app.plugin.linksol.o = links;
     oapp.plugin.linksol.o = links;
   }
@@ -216,7 +216,7 @@ use class IUHub:HubPlugin {
     app.plugin.wcol.o = wc;
     oapp.plugin.wcol.o = wc;
     log.log("updating addresses");
-    app.plugin.updateNetAddresses();
+    //app.plugin.updateNetAddresses();
     app.plugin.updateUrls();
     log.log("saving");
     app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
@@ -535,9 +535,18 @@ use class IUHub:HubPlugin {
     return(deviceId);
   }
   
+  profileGet() String {
+    return("hub");
+  }
+  
+  refreshLinksRequest(request) Map {
+    Account a = app.accountManager.getAccountForRequest(request);
+    return(CallBackUI.refreshLinksResponse(getActionLinks(a, Map.new(), request), getDevLinks(a, Map.new(), request)));
+  }
+  
   loggedIn(Account a, Map res, Map arg, request) {
       res["action"] = "updateResponse";
-      res["profile"] = "hub";
+      res["profile"] = self.profile;
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
@@ -545,18 +554,12 @@ use class IUHub:HubPlugin {
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       res["loginUri"] = self.getLoginUri(request);
-      String dnso = app.configManager.get("deviceNameSetOnce");
-      if (TS.isEmpty(dnso) || dnso != "true") {
-        res["deviceNameSetOnce"] = "false";
-      }
+      
       String imso = app.configManager.get("imapSetOnce");
       if (TS.isEmpty(imso) || imso != "true") {
         res["imapSetOnce"] = "false";
       }
-      String anso = app.configManager.get("accountSetOnce");
-      if (TS.isEmpty(anso) || anso != "true") {
-        res["accountSetOnce"] = "false";
-      }
+      
       return(res);
     }
     
@@ -926,10 +929,14 @@ use class IUHub:HubPlugin {
       app.configManager.put("imap.subFolder", arg["imapFolder"]);
       String lastImSo = app.configManager.get("imapSetOnce");
       app.configManager.put("imapSetOnce", "true");
-      //TODO update imap wc
-      if (TS.isEmpty(lastImSo) || lastImSo != "true") {
-        return(CallBackUI.reloadResponse());
-      }
+      
+      //if (TS.isEmpty(lastImSo) || lastImSo != "true") {
+      //  return(CallBackUI.reloadResponse());
+      //}
+      
+      //app.plugin.updateUrls();
+      System:Thread.new(app.plugin.getInvocation("updateUrls", List.new())).start();
+      
       Map res = Map.new();
       res["action"] = "hideImapResponse";
       return(res);
@@ -1171,10 +1178,6 @@ use class IUHub:HubPlugin {
         actionLinks += sl.first;
         actionLinks += "</div>";
         actionLinks += "</div>";
-      }
-      String cdo = app.configManager.get("camsDetectedOnce");
-      if (TS.isEmpty(cdo) || cdo != "true") {
-        actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";
       }
      return(actionLinks);
    }
