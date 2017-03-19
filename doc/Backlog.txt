@@ -1,17 +1,19 @@
-
-feedback when imap setup / pass is wrong
-
-"secure config" for passwords and such (is sc in andr, has key in elsewhere)
-
 mono webserve
-
 xamios
 
-droid internal storage for the db and stuff 
+generic redo update and fwd for changes like imap, service, cloud setup
+  call in all those cases
+
+update
+retest setup
+
+feedback when imap setup / pass is wrong
+  have be part of update/links update
+  have links update be a separate call after login update
+  have a refresh option in the links list
+  detect webcams (link at least) does the wrong thing, have it do the update
 
 outside db key for en/decrypt values in config, in sec store on mobile
-
-hostedFirst option for connect to
 
 cleanup expired sessions and old oncetokens
 expiration for once login (deletem on cleanup)
@@ -25,9 +27,14 @@ default session time on regular login from config
 
 need retry script for failure to launch during install
 
-retest setup
-
 ====
+
+automation for install inst on internet listen / hosting
+
+rm old junk from cam
+
+up/download pics automatically
+  ?rsync option?  duplicati?
 
 android ver (full)
 
@@ -53,8 +60,6 @@ add sha256 thumbprint too (for viewing)
 switch to sha256 for verification
 
 backup stuff (pic, etc) to pi from clients
-
-getForwardPortsListRequest is broken    
 
 sending email to update folks on change
   look in inbox, by subject, up to last check time (max date last time - some hours)

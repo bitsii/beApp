@@ -283,7 +283,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
    
    profileGet() String {
-    return("hub");
+    return("bridge");
   }
     
     camGet() CamPlugin {
