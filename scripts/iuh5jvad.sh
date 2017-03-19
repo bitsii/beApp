@@ -37,5 +37,4 @@ mkdir -p android/IUHub/app/src/main/assets/App/IUHub
 cp ../apprun/App/IUHub/Base/target/js/be/BEL_4_Base.js android/IUHub/app/src/main/assets/App/IUHub/IUHub_BEL_4_Base.js
 cp source/IU.html android/IUHub/app/src/main/assets/App/IUHub
 cp icons/* android/IUHub/app/src/main/assets/App/IUHub
-cp LICENSE.txt android/IUHub/app/src/main/assets/App/IUHub
-cp LICENSE-MPL.txt android/IUHub/app/src/main/assets/App/IUHub
+cp licenses/* android/IUHub/app/src/main/assets/App/IUHub

@@ -92,9 +92,9 @@ h5.luiForm {
 <img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/>
 
 <!--Help-->
-<img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/>
+<img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="Help"/>
 <p>  
-<a href="#" onclick="callUI('toggleDisplay', 'helpDiv');return false;">Click here for Help</a>
+<a href="#" onclick="callUI('toggleDisplay', 'helpDiv');callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;">Click here for Help</a>
 <!--Help-->
 
 <p>
@@ -209,6 +209,20 @@ h5.luiForm {
 </div>
 <!--Imap-->
 
+<!--About-->
+<div id="aboutDiv" style="display: none;">
+<div id="aboutDivMsg"></div>
+<p>Licensed under the Mozilla Public License Version 2.0. See <a href="LICENSE-MPL.txt">LICENSE-MPL.txt</a> for full license information.
+<p>3rd party components may be licensed under other terms, see licenses in the software distribution for more details.
+<p>May include the following:
+<p>Bouncy Castle <a href="LICENCE-BOUNCY-CASTLE.txt">LICENCE-BOUNCY-CASTLE.txt</a>
+<p>HSQLDB <a href="LICENSE-HSQLDB.txt">LICENSE-HSQLDB.txt</a>
+<p>JavaMail <a href="LICENSE-JAVAMAIL.txt">LICENSE-JAVAMAIL.txt</a>
+<p>Jetty <a href="LICENSE-JETTY-eplv10-aslv20.html">LICENSE-JETTY-eplv10-aslv20.html</a>
+<p>Jsch <a href="LICENSE-Jsch.txt">LICENSE-Jsch.txt</a>
+</div>
+<!--About-->
+
 <!--Help-->
 <div id="helpDiv" style="display: none;">
 General help - clicking on icons will open/close their functional areas - click Help again to close this area
@@ -321,10 +335,6 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <p><input id="saveListen" type="submit" value="Save" onclick="callUI('toggleDisplay', 'internetListenDiv');callApp('saveInternetListenRequest', document.getElementById('sshHost').value, document.getElementById('sshLogin').value, document.getElementById('sshPass').value);return false;"> <input id="cancelListen" type="submit" value="Cancel" onclick="callUI('toggleDisplay', 'internetListenDiv');return false;"></p>
 </div>
 <!--Internet Listen-->
-
-<!--About-->
-<div id="aboutDiv" style="display: none;"></div>
-<!--About-->
 
 <div id="devCredsDiv" style="display: none;">
 <p>Login to <div id="devCredsNameDiv"></div></p>

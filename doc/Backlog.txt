@@ -1,13 +1,11 @@
 
-license stuff under dir / viewable from app
+hub no detect webcams
+  no account, just stick with built in
+  ?check jvad and just put them in config?
 
 time refresh for links/action stuff
   esp after first login/imap setup, but maybe always
   hub don't put self into imap or into dev list
-  
-hub no detect webcams
-  no account, just stick with built in
-  ?check jvad and just put them in config?
 
 droid
   no dev name - get from phone

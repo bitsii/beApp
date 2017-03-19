@@ -54,8 +54,7 @@ cp scripts/upgrade.bat ../apprun/App/IUHub
 cp source/IU.html ../apprun/App/IUHub
 cp extlibs/IUBridge/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub
-cp LICENSE.txt ../apprun/App/IUHub
-cp LICENSE-MPL.txt ../apprun/App/IUHub
+cp licenses/* ../apprun/App/IUHub
 
 #cam
 cp scripts/uppic.bat ../apprun/App/IUHub

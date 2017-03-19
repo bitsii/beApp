@@ -859,7 +859,7 @@ use class IUHub:HubPlugin {
    checkPublicReadPath(Path pa, request) Bool {
       String pas = pa.toString();
       Path adz = Path.apNew("App/" + self.name).file.absPath;
-      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".svg"))) {
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".svg") || pas.ends(".txt"))) {
         return(true);
       }
       return(false);
@@ -1268,7 +1268,7 @@ use class IUHub:HubPlugin {
    
    aboutRequest(request) Map {
      String about = "<p>IotUrl Hub Version " + self.version + "<p>";
-     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDiv", about)))
+     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    
    getForwardPortsListRequest(request) Map {
