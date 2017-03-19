@@ -71,11 +71,14 @@ public static class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(mWebView.canGoBack()) {
+      //startActivity(new Intent(getApplicationContext(), NextActivity.class));
+      //finish();
+      System.exit(0);
+        /*if(mWebView.canGoBack()) {
             mWebView.goBack();
         } else {
             super.onBackPressed();
-        }
+        }*/
     }
   }
   

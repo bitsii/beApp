@@ -1,10 +1,17 @@
+
+android app disappears on back button
+android appstore
+
 mono webserve
 xamios
+
+auto-update
+
+update for dependencies (script...)
 
 generic redo update and fwd for changes like imap, service, cloud setup
   call in all those cases
 
-update
 retest setup
 
 feedback when imap setup / pass is wrong
