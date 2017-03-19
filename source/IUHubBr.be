@@ -252,6 +252,9 @@ use class IUHub:Eui {
      if (arg.has("imapFolder")) {
       HD.getElementById("imapFolder").value = arg["imapFolder"];
      }
+     if (TS.isEmpty(arg["imapFolder"])) {
+      HD.getElementById("imapFolder").value = "IotUrls";
+     }
      HD.getElementById("imapSettingsDiv").display = "block";
    }
    
@@ -482,12 +485,13 @@ use class IUHub:Eui {
     }
     if (TS.notEmpty(arg["imapSetOnce"]) && arg["imapSetOnce"] == "false") {
       HC.toggleDisplay("imapSettingsDiv");
+      HD.getElementById("imapFolder").value = "IotUrls";
       oinf += "Please connect the device to an email account.  ";
     }
     if (TS.notEmpty(oinf)) {
       inform(oinf);
     }
-    //HC.callAppLater(Lists.from("refreshLinksRequest"), 60000);
+    HC.callAppLater(Lists.from("refreshLinksRequest"), 10000);
    }
    
    detectCams() {
@@ -669,7 +673,6 @@ use class IUHub:Eui {
     if (TS.notEmpty(devLinks)) {
       HD.getElementById("devLinksListDiv").innerHTML = devLinks;
     }
-    //HC.callAppLater(Lists.from("refreshLinksRequest"), 60000);
    }
    
    restoreConfigRequest() {

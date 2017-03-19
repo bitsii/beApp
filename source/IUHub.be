@@ -517,7 +517,11 @@ use class IUHub:HubPlugin {
     if (TS.notEmpty(_deviceName)) {
       deviceName = _deviceName;
       app.configManager.put("deviceName", deviceName);
-      //TODO update imap wc 
+      //TODO update imap wc
+      WebConnect wc = wcol.o;
+      if (def(wc)) {
+        wc.deviceName = deviceName;
+      } 
     }
   }
   
@@ -565,7 +569,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.7.5";
+        String version =@ "5.7.6";
       }
       return(version);
     }

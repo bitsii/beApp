@@ -1,9 +1,7 @@
 
-update own wcol as well as net addresses when doing initial bridge save after imap
+feedback when imap setup / pass is wrong
 
-also do a call app later after login like in hide imap
-
-default folder (recommended) for imap
+"secure config" for passwords and such (is sc in andr, has key in elsewhere)
 
 mono webserve
 
