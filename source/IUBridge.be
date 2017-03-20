@@ -257,6 +257,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
 
    updateActionLinks(String actionLinks, Account a, Map arg, request) String {
+      super.updateActionLinks(actionLinks, a, arg, request);
       String cdo = app.configManager.get("camsDetectedOnce");
       if (TS.isEmpty(cdo) || cdo != "true") {
         actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";

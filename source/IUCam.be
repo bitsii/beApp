@@ -514,7 +514,7 @@ use class IUCam:CamPlugin {
             clabel = Path.apNew(c).steps.last;
             app.configManager.put("cam." + c + ".label", clabel);
           }
-          actionLinks += "<p><a href=\"#\" onclick=\"callUI('updateImage', '" + c + "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"applets-screenshooter.svg\" alt=\"Take Picture\"/>Take Picture with " + clabel + "</a></p>";
+          actionLinks += "<p><a href=\"#\" onclick=\"callUI('updateImage', '" += c += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"applets-screenshooter.svg\" alt=\"Take Picture\"/>Take Picture with " += clabel += "</a></p>";
           if (showMotion) {
             String mcp = app.configManager.get("cam." + c + ".motion");
             if (TS.notEmpty(mcp) && Bool.new(mcp)) {

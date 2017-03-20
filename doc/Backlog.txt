@@ -1,6 +1,8 @@
 
 other cmd options, like play sound file, play sound on loop
-  like CMD but gen purpose, DO.user.!thingtype!title = thing specific do
+  refresh for action links (add in hub) calls the thing that refreshes dev and other
+  the do for mp3cycle android ver
+  hold state, start and stop
 
 try on phone, then android package on bitbucket
 

@@ -51,6 +51,8 @@ cp scripts/iuhrun.sh ../apprun/App/IUHub
 cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
 cp scripts/iuhcmd.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
+cp scripts/mpg123loop.sh ../apprun/App/IUHub
+cp scripts/stopmpg123loop.sh ../apprun/App/IUHub
 cp source/IU.html ../apprun/App/IUHub
 cp extlibs/IUBridge/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub

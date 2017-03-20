@@ -1163,10 +1163,11 @@ use class IUHub:HubPlugin {
    
   updateActionLinks(String actionLinks, Account a, Map arg, request) String {
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
+     actionLinks += "<p><a href=\"#\" onclick=\"callApp('refreshLinksRequest');return false;\">(Refresh)</a></p>";
      for (any kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
-      actionLinks += "<p><a href=\"#\" onclick=\"callUI('runCommand', '" + kv.key + "');return false;\">" + key + "</a></p>";
+      actionLinks += "<p><a href=\"#\" onclick=\"callUI('runCommand', '" += kv.key += "');return false;\">" += key += "</a></p>";
      }
      /*String showCam = app.configManager.get("PLUGIN.cam");
      if (TS.isEmpty(showCam) || showCam == "enabled") {
@@ -1442,7 +1443,21 @@ class IUDoer:DoerPlugin {
      
   updateActionLinks(String actionLinks, Account a, Map arg, request) String {
     //actionLinks += "<p>MOAR LINKS</p>";
+    Map ecm = app.configManager.getMap("DO." + a.user + "!");
+     for (any kv in ecm) {
+      String key = kv.key;
+      key = key.substring(key.find("!") + 1, key.size);
+      String actionType = key.substring(0, key.find("!"));
+      String actionTitle = key.substring(key.find("!") + 1, key.size);
+      actionLinks += "<p><a href=\"#\" onclick=\"callApp('doerToggleRequest', '" + kv.key + "');return false;\">" + actionTitle + "</a></p>";
+     }
     return(actionLinks);
+  }
+  
+  doerToggleRequest(String req, request) {
+    Account a = app.accountManager.getAccountForRequest(request);
+    log.log("in doertoggle req " + req);
+    return(null);
   }
 
 }
