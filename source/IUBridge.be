@@ -66,6 +66,7 @@ use class IUBridge:BridgeStart {
       hub.runBackground = bkg;
       CamPlugin cam = CamPlugin.new();
       cam.runBackground = bkg;
+      IUDoer:DoerPlugin doer = IUDoer:DoerPlugin.new();
       log.log("adding plugins");
       List plugins = List.new();
       plugins += hub;
@@ -73,6 +74,7 @@ use class IUBridge:BridgeStart {
       plugins += App:AuthPlugin.new();
       plugins += App:ConfigPlugin.new();
       plugins += App:FileManagerPlugin.new();
+      plugins += doer;
       return(plugins);
     }
     
@@ -254,8 +256,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
    }
 
-   getActionLinks(Account a, Map arg, request) String {
-      String actionLinks = self.cam.getActionLinks(a, arg, request) + super.getActionLinks(a, arg, request);
+   updateActionLinks(String actionLinks, Account a, Map arg, request) String {
       String cdo = app.configManager.get("camsDetectedOnce");
       if (TS.isEmpty(cdo) || cdo != "true") {
         actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";

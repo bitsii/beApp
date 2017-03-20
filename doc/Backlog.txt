@@ -1,6 +1,8 @@
 
-android app disappears on back button
-android appstore
+other cmd options, like play sound file, play sound on loop
+  like CMD but gen purpose, DO.user.!thingtype!title = thing specific do
+
+try on phone, then android package on bitbucket
 
 mono webserve
 xamios

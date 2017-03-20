@@ -75,12 +75,14 @@ use class IUHub:HubStart {
     getPlugins(Bool bkg) List {
       HubPlugin hub = HubPlugin.new();
       hub.runBackground = bkg;
+      IUDoer:DoerPlugin doer = IUDoer:DoerPlugin.new();
       log.log("adding plugins");
       List plugins = List.new();
       plugins += hub;
       plugins += App:AuthPlugin.new();
       plugins += App:ConfigPlugin.new();
       plugins += App:FileManagerPlugin.new();
+      plugins += doer;
       return(plugins);
     }
     
@@ -1148,9 +1150,18 @@ use class IUHub:HubPlugin {
       }
       return(internal);
     }
-   
+    
   getActionLinks(Account a, Map arg, request) String {
-     String actionLinks = String.new();
+    String actionLinks = String.new();
+    for (any plugin in app.plugins) {
+      if (plugin.can("updateActionLinks", 4)) {
+        plugin.updateActionLinks(actionLinks, a, arg, request);
+      }
+    }
+    return(actionLinks);
+  }
+   
+  updateActionLinks(String actionLinks, Account a, Map arg, request) String {
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
      for (any kv in ecm) {
       String key = kv.key;
@@ -1216,9 +1227,9 @@ use class IUHub:HubPlugin {
       WebConnect wc = kv.value;
       
       if (request.embedded) {
-        devLinks += "<p><a href=\"#\" onclick=\"callApp('connectToDeviceRequest', '" += wc.deviceId += "', '" += wc.deviceName += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Go to  " += wc.deviceName += "</a></p>";
+        devLinks += "<p><a href=\"#\" onclick=\"callApp('connectToDeviceRequest', '" += wc.deviceId += "', '" += wc.deviceName += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"help-about.svg\" alt=\"Device Links\"/>Go to  " += wc.deviceName += "</a></p>";
       } else {
-        devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDevLinks', '" += wc.deviceId += "');callApp('getDevLinksRequest', '" += wc.deviceId += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"web-browser.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
+        devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDevLinks', '" += wc.deviceId += "');callApp('getDevLinksRequest', '" += wc.deviceId += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"help-about.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
       }
       
     }
@@ -1414,5 +1425,25 @@ use class IUHub:AccountTest(Assert) {
     "End AccountTest".print();
   }
   
+}
+
+class IUDoer:DoerPlugin {
+
+  new() self {
+     fields {
+        IO:Log log =@ IO:Logs.get(self);
+        any app;
+        String name = "IUDoer";
+      }
+   }
+     
+  start() {
+  }
+     
+  updateActionLinks(String actionLinks, Account a, Map arg, request) String {
+    //actionLinks += "<p>MOAR LINKS</p>";
+    return(actionLinks);
+  }
+
 }
 

@@ -280,18 +280,7 @@ use class IUCam:CamPlugin {
     }
     return(deviceId);
   }
-  
-  loggedIn(Account a, Map res, Map arg, request) {
-      res["action"] = "updateResponse";
-      res["profile"] = "cam";
-      res["justLoggedIn"] = true;
-      res["permsString"] = a.permsString;
-      res["actionLinks"] = getActionLinks(a, arg, request);
-      res["appVersion"] = self.version;
-      res["deviceName"] = self.deviceName;
-      return(res);
-    }
-    
+      
     versionGet() String {
       fields {
         String version =@ "5.7.7";
@@ -342,11 +331,7 @@ use class IUCam:CamPlugin {
         } else {
           app.configManager.put("cam." + cam + ".motion", "true")
         }
-        Map res = Map.new();
-        res["action"] = "updateResponse";
-        res["actionLinks"] = getActionLinks(a, arg, request);
         bg.mu.doUpdate();
-        return(res);
       }
       return(null);
     }
@@ -452,10 +437,7 @@ use class IUCam:CamPlugin {
       app.configManager.put("camsDetectedOnce", "true");
       Account a = app.accountManager.getAccountForRequest(request);
       updateCams();
-      Map res = Map.new();
-      res["action"] = "updateResponse";
-      res["actionLinks"] = getActionLinks(a, arg, request);
-      return(res);
+      return(app.plugin.refreshLinksRequest(request));
    }
    
    updateCams() {
@@ -521,9 +503,8 @@ use class IUCam:CamPlugin {
     return(false);
    }
    
-   getActionLinks(Account a, Map arg, request) String {
+   updateActionLinks(String actionLinks, Account a, Map arg, request) String {
      Bool showMotion = app.requestFromAdmin(request);
-     String actionLinks = String.new();
      String moLinks = String.new();
      Set ecm = getCams();
      for (String c in ecm) {
