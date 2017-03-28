@@ -12,7 +12,7 @@ use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
 use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
-use Db:Firebird:Database as FbDb;
+use Db:SQLite:Database as SlDb;
 use Db:Derby:Database as Derby;
 use Db:KeyValue as KvDb;
 
@@ -31,6 +31,20 @@ import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+"""
+}
+emit(cs) {
+"""
+// for crypto
+using System.Security.Cryptography;
+// for ssl certgen
+using Mono.Security.Authenticode;
+using Mono.Security.X509;
+using Mono.Security.X509.Extensions;
+using System;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 """
 }
 use class App:AuthenticatedWebApp(AuthedApp) {
@@ -73,6 +87,9 @@ use class App:AuthenticatedWebApp(AuthedApp) {
   assureCert(Int port) String {
     ifEmit(jv) {
       return(assureCertJv(port));
+    }
+    ifEmit(cs) {
+      return(assureCertCs(port));
     }
   }
   

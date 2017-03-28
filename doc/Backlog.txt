@@ -1,13 +1,22 @@
 
+csweb
+  get working xam sqlite (added)
+
+  xam ssl
+  see about improving xam ssl or use bouncy
+  add imap get hub working
+xamios
+
+try on phone, then android package on bitbucket
+
 other cmd options, like play sound file, play sound on loop
   refresh for action links (add in hub) calls the thing that refreshes dev and other
   the do for mp3cycle android ver
   hold state, start and stop
+  
+sitename not deleted after internet listen removed, staying in wc
 
-try on phone, then android package on bitbucket
-
-mono webserve
-xamios
+up/download pics automatically - imap
 
 auto-update
 
@@ -40,12 +49,11 @@ need retry script for failure to launch during install
 
 ====
 
+multi process embedded database for java / android
+
 automation for install inst on internet listen / hosting
 
 rm old junk from cam
-
-up/download pics automatically
-  ?rsync option?  duplicati?
 
 android ver (full)
 

@@ -16,7 +16,10 @@ import java.sql.*;
 }
 emit(cs) {
 """
+using System;
+using System.Data;
 using System.Data.Common;
+using Mono.Data.Sqlite;
 """
 }
 use Db:Relational:Database as DbDb;
@@ -52,14 +55,6 @@ public Connection bevi_trans = null;
   }
   
   open() self {
-    ifEmit(cs) {
-      emit(cs) {
-      """
-        bevi_conn = new FbConnection(bevp_db.bems_toCsString());
-        bevi_conn.Open();
-      """
-      }
-    }
     emit(jv) {
     """
       bevi_conn = DriverManager.getConnection(
@@ -442,13 +437,12 @@ class Db:Derby:Database(DbDb) {
 }
 
 
-use Db:Firebird:Database as FbDb;
-class Db:Firebird:Database(DbDb) {
+use Db:SQLite:Database as SlDb;
+class SlDb(DbDb) {
   
   pathNew(Path _dbp) self {
     super.pathNew(_dbp);
-    String dbAddr = "ServerType=1;User=SYSDBA;" + 
-      "Password=masterkey;Dialect=3;Database=" + dbp.toString("\\");
+    String dbAddr = "Data Source=" + dbp.toString("\\") + ";Version=3;";
     new(dbAddr);
   }
   
@@ -456,7 +450,7 @@ class Db:Firebird:Database(DbDb) {
     if (dbp.file.exists!) {
       emit(cs) {
         """
-        FbConnection.CreateDatabase(bevp_db.bems_toCsString());
+        SqliteConnection.CreateFile(bevp_db.bems_toCsString());
         """
       }
     }
@@ -464,7 +458,7 @@ class Db:Firebird:Database(DbDb) {
   }
   
   copy() self {
-    return(FbDb.pathNew(dbp));
+    return(SlDb.pathNew(dbp));
   }
   
   getStatement(String _stmt) DbSt {
@@ -472,15 +466,15 @@ class Db:Firebird:Database(DbDb) {
     emit(cs) {
     """
     if (bevi_trans == null) {
-      bevl_st.bevi_cmd = new FbCommand(
+      bevl_st.bevi_cmd = new SqliteCommand(
         beva__stmt.bems_toCsString(),
-        (FbConnection)bevi_conn
+        (SqliteConnection)bevi_conn
         );
      } else {
-       bevl_st.bevi_cmd = new FbCommand(
+       bevl_st.bevi_cmd = new SqliteCommand(
         beva__stmt.bems_toCsString(),
-        (FbConnection)bevi_conn,
-        (FbTransaction)bevi_trans
+        (SqliteConnection)bevi_conn,
+        (SqliteTransaction)bevi_trans
         );
      }
      """
@@ -501,7 +495,7 @@ use class Db:Relational:Test(Assert) {
     }
     ifEmit(cs) {
       dbp = Path.new("FBDBT");
-      db = FbDb.pathNew(dbp);
+      db = SlDb.pathNew(dbp);
     }
     db.open();
     

@@ -94,16 +94,16 @@ class UI:WebBrowser {
   exit() {
     emit(cs) {
     """
-    if (System.Windows.Forms.Application.MessageLoop) 
-    {
+    //if (System.Windows.Forms.Application.MessageLoop) 
+    //{
         // WinForms app
-        System.Windows.Forms.Application.Exit();
-    }
-    else
-    {
+    //    System.Windows.Forms.Application.Exit();
+    //}
+    //else
+    //{
         // Console app
         System.Environment.Exit(1);
-    }
+    //}
     """
     }
     ifEmit(jv) {

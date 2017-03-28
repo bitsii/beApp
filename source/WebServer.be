@@ -22,6 +22,16 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.server.*;
 """
 }
+emit(cs) {
+    """
+//for mono ws, prefix Http* with Mono.Net for mono ver, drop (or System.Net) for ms builtin
+//using Mono.Net;
+//for webclient
+using System;
+using System.Net;
+using System.Threading;
+    """
+}
 use class Web:Server {
 
   emit(cs) {
@@ -374,7 +384,7 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      string csname = beva_name.bems_toCsString();
-     for (Cookie cook in bevi_req.Cookies) {
+     foreach (Cookie cook in bevi_req.Cookies) {
        if (cook.Name == csname) {
          return(new $class/Text:String$(cook.Value));
        }
@@ -404,7 +414,7 @@ use class Web:ScriptRequest {
      String val;
      emit(cs) {
      """
-     String[] vals = bevi_req.Headers.GetValues(beva_name.bems_toCsString());
+     string[] vals = bevi_req.Headers.GetValues(beva_name.bems_toCsString());
      if (vals != null && vals.Length > 0) {
         bevl_val = new $class/Text:String$(vals[0]);
      }
@@ -467,7 +477,7 @@ use class Web:ScriptRequest {
        String value;
        emit(cs) {
        """
-       String[] vals = bevi_req.QueryString.GetValues(beva_name.bems_toCsString());
+       string[] vals = bevi_req.QueryString.GetValues(beva_name.bems_toCsString());
        if (vals != null && vals.Length > 0) {
           bevl_value = new $class/Text:String$(vals[0]);
        }

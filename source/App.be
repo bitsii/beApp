@@ -11,7 +11,7 @@ use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
 use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
-use Db:Firebird:Database as FbDb;
+use Db:SQLite:Database as SlDb;
 use Db:Derby:Database as Derby;
 use Db:KeyValue as KvDb;
 use Time:Interval;

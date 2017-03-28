@@ -246,6 +246,15 @@ emit(jv) {
 import java.net.*;
 """
 }
+emit(cs) {
+"""
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Net.NetworkInformation;
+using System.Text;
+"""
+}
 use class Net:Interface {
  
  new(String _description, String _macAddress, String _name, 
@@ -380,7 +389,7 @@ use class Net:Interface {
     emit(cs) {
         """            
         NetworkInterface[] adapters  = NetworkInterface.GetAllNetworkInterfaces();
-        for (NetworkInterface adapter in adapters)
+        foreach (NetworkInterface adapter in adapters)
         {
             string description = adapter.Description;
             string macAddress = adapter.GetPhysicalAddress().ToString();
@@ -403,7 +412,7 @@ use class Net:Interface {
                 }
             }*/
             string address = null;
-            for(UnicastIPAddressInformation unicastIp in unicastIps)
+            foreach (UnicastIPAddressInformation unicastIp in unicastIps)
             {
               if (unicastIp.Address.AddressFamily.ToString().Equals("InterNetwork")) {
                     address = unicastIp.Address.ToString();
