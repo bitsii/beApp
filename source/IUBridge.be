@@ -79,7 +79,7 @@ use class IUBridge:BridgeStart {
     }
     
     innerMain(List args) {
-      //IO:Logs.turnOnAll();
+      IO:Logs.turnOnAll();
       Web:Client:CertificateManager.validateHosts = false;
       if (args.length > 0) {
         String mode = args[0]; //lui, wui, both, [absent]

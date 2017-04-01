@@ -19,7 +19,7 @@ emit(cs) {
 using System;
 using System.Data;
 using System.Data.Common;
-using Mono.Data.Sqlite;
+using FirebirdSql.Data.FirebirdClient;
 """
 }
 use Db:Relational:Database as DbDb;
@@ -181,7 +181,7 @@ public Connection bevi_trans = null;
   
   execute(String stmt, List vals) DbSt {
     DbSt fbstmt = getStatement(stmt, vals);
-    return(fbstmt.execute(vals));
+    return(fbstmt.executeParameterized());
   }
   
   executeQuery(String stmt) DbSt {
@@ -191,7 +191,7 @@ public Connection bevi_trans = null;
   
   executeQuery(String stmt, List vals) DbSt {
     DbSt fbstmt = getStatement(stmt, vals);
-    return(fbstmt.executeQuery(vals));
+    return(fbstmt.executeQueryParameterized());
   }
 
 }
@@ -241,7 +241,7 @@ public ResultSet bevi_res = null;
      }
    }
    
-   execute(List vals) self {
+   executeParameterized() self {
      emit(jv) {
      """
      PreparedStatement bevi_pstmt = (PreparedStatement) bevi_stmt;
@@ -264,7 +264,7 @@ public ResultSet bevi_res = null;
      }
    }
    
-   executeQuery(List vals) self {
+   executeQueryParameterized() self {
      emit(jv) {
      """
      PreparedStatement bevi_pstmt = (PreparedStatement) bevi_stmt;
@@ -436,29 +436,35 @@ class Db:Derby:Database(DbDb) {
 
 }
 
-
-use Db:SQLite:Database as SlDb;
-class SlDb(DbDb) {
+use Db:Firebird:Database as FbDb;
+class FbDb(DbDb) {
   
   pathNew(Path _dbp) self {
     super.pathNew(_dbp);
-    String dbAddr = "Data Source=" + dbp.toString("\\") + ";Version=3;";
+    fields {
+      String dbAddr = "ServerType=1;User=SYSDBA;" + 
+        "Password=masterkey;Dialect=3;Database=" + dbp.toString("\\");
+    }
     new(dbAddr);
   }
   
   open() self {
     if (dbp.file.exists!) {
+      String dbps = dbp.toString();
       emit(cs) {
         """
-        SqliteConnection.CreateFile(bevp_db.bems_toCsString());
+        FbConnection.CreateDatabase(bevp_db.bems_toCsString());
+        bevi_conn = new FbConnection(bevp_dbAddr.bems_toCsString());
+        bevi_conn.Open();
         """
       }
+      ("CREATED SQLITE CONN").print();
     }
     super.open();
   }
   
   copy() self {
-    return(SlDb.pathNew(dbp));
+    return(FbDb.pathNew(dbp));
   }
   
   getStatement(String _stmt) DbSt {
@@ -466,15 +472,15 @@ class SlDb(DbDb) {
     emit(cs) {
     """
     if (bevi_trans == null) {
-      bevl_st.bevi_cmd = new SqliteCommand(
+      bevl_st.bevi_cmd = new FbCommand(
         beva__stmt.bems_toCsString(),
-        (SqliteConnection)bevi_conn
+        (FbConnection)bevi_conn
         );
      } else {
-       bevl_st.bevi_cmd = new SqliteCommand(
+       bevl_st.bevi_cmd = new FbCommand(
         beva__stmt.bems_toCsString(),
-        (SqliteConnection)bevi_conn,
-        (SqliteTransaction)bevi_trans
+        (FbConnection)bevi_conn,
+        (FbTransaction)bevi_trans
         );
      }
      """
@@ -495,7 +501,7 @@ use class Db:Relational:Test(Assert) {
     }
     ifEmit(cs) {
       dbp = Path.new("FBDBT");
-      db = SlDb.pathNew(dbp);
+      db = FbDb.pathNew(dbp);
     }
     db.open();
     

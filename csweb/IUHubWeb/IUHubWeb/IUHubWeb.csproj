@@ -215,8 +215,8 @@
     <Compile Include="be\BECS_Object.cs" />
     <Compile Include="be\BECS_Runtime.cs" />
     <Compile Include="be\BECS_ThrowBack.cs" />
-    <Compile Include="be\BEC_3_2_6_8_DbSQLiteDatabase.cs" />
     <Compile Include="be\BEC_2_5_11_IUHubHubWebStart.cs" />
+    <Compile Include="be\BEC_3_2_8_8_DbFirebirdDatabase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -228,10 +228,14 @@
       <HintPath>..\packages\Mono.Net.HttpListener.1.0.0.0\lib\net45\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
-    <Reference Include="Mono.Data.Sqlite" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
+      <HintPath>..\packages\FirebirdSql.Data.FirebirdClient.5.8.0\lib\net40-client\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

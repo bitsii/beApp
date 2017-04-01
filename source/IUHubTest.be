@@ -13,7 +13,7 @@ use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
 use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
-use Db:SQLite:Database as SlDb;
+use Db:Firebird:Database as FbDb;
 
 use class IUHub:Test(Assert) {
  

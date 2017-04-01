@@ -11,8 +11,7 @@ use UI:WebBrowser as WeBr;
 use Test:Assertions as Assert;
 use Db:Relational:Database as DbDb;
 use Db:Relational:Statement as DbSt;
-use Db:SQLite:Database as SlDb;
-use Db:Derby:Database as Derby;
+use Db:Firebird:Database as FbDb;
 use Db:KeyValue as KvDb;
 use Time:Interval;
 
@@ -1284,9 +1283,16 @@ class AuthedApp {
       CLocker configManager;
     }
     if (undef(configManager)) {
-      Path db = self.paths.dataPath.addStep("CONFDB");
-      //KvDb configManagerKv = KvDb.new(Derby.pathNew(db), "CONFIG");
-      KvDb configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
+      Path db;
+      KvDb configManagerKv;
+      ifEmit(jv) {
+        db = self.paths.dataPath.addStep("CONFDBHS");
+        configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
+      }
+      ifEmit(cs) {
+        db = self.paths.dataPath.addStep("CONFDBFB");
+        configManagerKv = KvDb.new(FbDb.pathNew(db), "CONFIG");
+      }
       configManagerKv.createOpen();
       configManager = CLocker.new(configManagerKv);
     }
@@ -1306,9 +1312,16 @@ class AuthedApp {
       }
     }
     if (undef(sessionDb)) {
-      Path db = self.paths.dataPath.addStep("SESSDB");
-      //KvDb sessionDbKv = KvDb.new(Derby.pathNew(db), "SESSIONS");
-      KvDb sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
+      Path db;
+      KvDb sessionDbKv;
+      ifEmit(jv) {
+       db = self.paths.dataPath.addStep("SESSDBHS");
+       sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
+      }
+      ifEmit(cs) {
+       db = self.paths.dataPath.addStep("SESSDBFB");
+       sessionDbKv = KvDb.new(FbDb.pathNew(db), "SESSIONS");
+      }
       sessionDbKv.createOpen();
       sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv), "GsSess" + sessionId);
     }
@@ -1355,8 +1368,16 @@ class AuthedApp {
       CLocker trackingManager;
     }
     if (undef(trackingManager)) {
-      Path db = self.paths.dataPath.addStep("TMDB");
-      KvDb trackingManagerKv = KvDb.new(HsDb.pathNew(db), "TRACKING");
+      Path db;
+      KvDb trackingManagerKv;
+      ifEmit(jv) {
+        db = self.paths.dataPath.addStep("TMDBHS");
+        trackingManagerKv = KvDb.new(HsDb.pathNew(db), "TRACKING");
+      }
+      ifEmit(cs) {
+        db = self.paths.dataPath.addStep("TMDBFB");
+        trackingManagerKv = KvDb.new(FbDb.pathNew(db), "TRACKING");
+      }
       trackingManagerKv.createOpen();
       trackingManager = CLocker.new(trackingManagerKv);
     }
@@ -1569,5 +1590,6 @@ use System:Command as Com;
 use Time:Sleep;
 use System:Thread:ObjectLocker as OLocker;
 use Db:HSQLDb:Database as HsDb;
+use Db:Firebird:Database as FbDb;
 
 use App:CallBackUI;

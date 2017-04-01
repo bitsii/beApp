@@ -3,6 +3,7 @@
 mkdir -p ../apprun
 mkdir -p ../apprun/App
 mkdir -p ../apprun/Data
+mkdir -p ../apprun/Data/IUHub
 
 rm -rf ../apprun/App/IUHub
 mkdir -p ../apprun/App/IUHub
@@ -56,6 +57,9 @@ cp scripts/motionrun.sh ../apprun/App/IUHub
 cp scripts/camclean.sh ../apprun/App/IUHub
 cp source/MOCAM.conf ../apprun/App/IUHub
 
+#fbdb
+cp extlibs/IUHubCs/fbdb/* ../apprun/App/IUHub
+
 cd ../apprun
 
-mono --debug ./App/IUHub/IUHubWeb.exe $*
+./App/IUHub/IUHubWeb.exe $*

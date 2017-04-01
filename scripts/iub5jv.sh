@@ -3,6 +3,7 @@
 mkdir -p ../apprun
 mkdir -p ../apprun/App
 mkdir -p ../apprun/Data
+mkdir -p ../apprun/Data/IUHub
 
 rm -rf ../apprun/App/IUHub
 mkdir -p ../apprun/App/IUHub

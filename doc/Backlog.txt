@@ -1,11 +1,20 @@
 
 csweb
-  get working xam sqlite (added)
+  get working mono fb
+    get rid of direct call to exec statement
+    repl ? with random tokens for parameterization and make it go
+  mv db logic (name suffix + db type) to some class ?+ kvdb (prefsuffix)
+  
+  have a emitflag for turnonall thats in nonrel builds
 
   xam ssl
   see about improving xam ssl or use bouncy
   add imap get hub working
+    
+  why is stay logged in not working again
+  
 xamios
+  xamsqlite
 
 try on phone, then android package on bitbucket
 
