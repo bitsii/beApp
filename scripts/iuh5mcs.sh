@@ -61,4 +61,5 @@ cp extlibs/IUHubCs/* ../apprun/App/IUHub
 
 cd ../apprun
 
+PATH=$PATH:./App/IUHub
 mono --debug ./App/IUHub/IUHubWeb.exe $*
