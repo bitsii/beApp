@@ -1,22 +1,18 @@
 
 csweb
-  mv db logic (name suffix + db type) to some class ?+ kvdb (prefsuffix)
-  back to sqlite, put directory on path
+  get working - cert issue
+  see about improving xam ssl or use bouncy
+  add imap get hub working
   
   xamarin build/run inside the native area (put web stuff there)
   
   have a emitflag for turnonall thats in nonrel builds
-
-  xam ssl
-  see about improving xam ssl or use bouncy
-  add imap get hub working
-    
+   
   why is stay logged in not working again
-  
-xamios
-  xamsqlite
 
 try on phone, then android package on bitbucket
+
+xamios
 
 other cmd options, like play sound file, play sound on loop
   refresh for action links (add in hub) calls the thing that refreshes dev and other
@@ -267,7 +263,9 @@ filemanager/sync - seafile, pydio, owncloud (needs port forward/intents/app chan
 filemanager, remote access
 
 other app support
-  desktop - static port forward, shared files
+  desktop - static port forward, shared files - proxy
+    connect disconnect on connection (prompt connect by connection/build up on each go)
+      (already may be so)
   android - port forward and intents
   ios - sharing (pita, uipasteboard*? url(back and forth)*? extension?)
     url-url example - https://kotikan.com/blog/item/passing-data-between-ios-apps

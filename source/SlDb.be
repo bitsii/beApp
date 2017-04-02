@@ -21,8 +21,8 @@ class SlDb(DbDb) {
   
   pathNew(IO:File:Path _dbp) self {
     super.pathNew(_dbp);
-    //String dbAddr = "Data Source=" + dbp.toString("\\") + ";Version=3;";
-    String dbAddr = "Data Source=test.db;Version=3;";
+    String dbAddr = "Data Source=" + dbp.toString("\\") + ";Version=3;";
+    //String dbAddr = "Data Source=test.db;Version=3;";
     new(dbAddr);
   }
   
@@ -31,12 +31,16 @@ class SlDb(DbDb) {
       String dbps = dbp.toString();
       emit(cs) {
         """
-        SqliteConnection.CreateFile("test.db");
-        bevi_conn = new SqliteConnection("Data Source=test.db;Version=3;");
-        bevi_conn.Open();
+        SqliteConnection.CreateFile(bevl_dbps.bems_toCsString());
         """
       }
-      ("CREATED SQLITE CONN").print();
+      //("CREATED SQLITE CONN").print();
+    }
+    emit(cs) {
+    """
+    bevi_conn = new SqliteConnection(bevp_db.bems_toCsString());
+    bevi_conn.Open();
+    """
     }
     super.open();
   }
@@ -76,7 +80,7 @@ class SlDb(DbDb) {
       paramNames += pname;
       _stmt = _stmt.swapFirst("?", "@" + pname);
     }
-    ("STMT " + _stmt).print();
+    //("STMT " + _stmt).print();
     DbSt st = super.getStatement(_stmt, vals);
     st.paramNames = paramNames;
     emit(cs) {
