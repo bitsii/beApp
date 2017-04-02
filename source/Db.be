@@ -519,10 +519,16 @@ class KvDb {
   }
   
   create() self {
+    ("creating kvdbdb").print();
+    try {
     db.begin();
     db.execute("CREATE TABLE " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
       + " constraint " + tableName + "_k primary key (KVKEY) )");
     db.commit();
+    } catch (any e) {
+    db.rollback();
+    dbFailed();
+    }
   }
   
   getMap() Map {
