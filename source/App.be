@@ -1285,14 +1285,8 @@ class AuthedApp {
     if (undef(configManager)) {
       Path db;
       KvDb configManagerKv;
-      ifEmit(jv) {
-        db = self.paths.dataPath.addStep("CONFDBHS");
-        configManagerKv = KvDb.new(HsDb.pathNew(db), "CONFIG");
-      }
-      ifEmit(cs) {
-        db = self.paths.dataPath.addStep("CONFDBFB");
-        configManagerKv = KvDb.new(FbDb.pathNew(db), "CONFIG");
-      }
+      db = self.paths.dataPath.addStep("CONFDB");
+      configManagerKv = KvDb.apNew(db, "CONFIG");
       configManagerKv.createOpen();
       configManager = CLocker.new(configManagerKv);
     }
@@ -1314,14 +1308,8 @@ class AuthedApp {
     if (undef(sessionDb)) {
       Path db;
       KvDb sessionDbKv;
-      ifEmit(jv) {
-       db = self.paths.dataPath.addStep("SESSDBHS");
-       sessionDbKv = KvDb.new(HsDb.pathNew(db), "SESSIONS");
-      }
-      ifEmit(cs) {
-       db = self.paths.dataPath.addStep("SESSDBFB");
-       sessionDbKv = KvDb.new(FbDb.pathNew(db), "SESSIONS");
-      }
+      db = self.paths.dataPath.addStep("SESSDB");
+      sessionDbKv = KvDb.apNew(db, "SESSIONS");
       sessionDbKv.createOpen();
       sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv), "GsSess" + sessionId);
     }
@@ -1370,14 +1358,8 @@ class AuthedApp {
     if (undef(trackingManager)) {
       Path db;
       KvDb trackingManagerKv;
-      ifEmit(jv) {
-        db = self.paths.dataPath.addStep("TMDBHS");
-        trackingManagerKv = KvDb.new(HsDb.pathNew(db), "TRACKING");
-      }
-      ifEmit(cs) {
-        db = self.paths.dataPath.addStep("TMDBFB");
-        trackingManagerKv = KvDb.new(FbDb.pathNew(db), "TRACKING");
-      }
+      db = self.paths.dataPath.addStep("TMDB");
+      trackingManagerKv = KvDb.apNew(db, "TRACKING");
       trackingManagerKv.createOpen();
       trackingManager = CLocker.new(trackingManagerKv);
     }

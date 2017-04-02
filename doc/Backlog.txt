@@ -1,9 +1,7 @@
 
 csweb
-  get working mono fb
-    get rid of direct call to exec statement
-    repl ? with random tokens for parameterization and make it go
   mv db logic (name suffix + db type) to some class ?+ kvdb (prefsuffix)
+  back to sqlite, put directory on path
   
   have a emitflag for turnonall thats in nonrel builds
 

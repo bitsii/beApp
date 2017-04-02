@@ -19,7 +19,6 @@ emit(cs) {
 using System;
 using System.Data;
 using System.Data.Common;
-using FirebirdSql.Data.FirebirdClient;
 """
 }
 use Db:Relational:Database as DbDb;
@@ -459,162 +458,6 @@ class Db:Derby:Database(DbDb) {
 
 }
 
-use Db:Firebird:Database as FbDb;
-class FbDb(DbDb) {
-  
-  pathNew(Path _dbp) self {
-    super.pathNew(_dbp);
-    fields {
-      String dbAddr = "ServerType=1;User=SYSDBA;" + 
-        "Password=masterkey;Dialect=3;Database=" + dbp.toString("\\");
-    }
-    new(dbAddr);
-  }
-  
-  open() self {
-    if (dbp.file.exists!) {
-      String dbps = dbp.toString();
-      emit(cs) {
-        """
-        FbConnection.CreateDatabase(bevp_db.bems_toCsString());
-        bevi_conn = new FbConnection(bevp_dbAddr.bems_toCsString());
-        bevi_conn.Open();
-        """
-      }
-      //("CREATED CONN").print();
-    }
-    super.open();
-  }
-  
-  copy() self {
-    return(FbDb.pathNew(dbp));
-  }
-  
-  getStatement(String _stmt) DbSt {
-    DbSt st = super.getStatement(_stmt);
-    emit(cs) {
-    """
-    if (bevi_trans == null) {
-      bevl_st.bevi_cmd = new FbCommand(
-        beva__stmt.bems_toCsString(),
-        (FbConnection)bevi_conn
-        );
-     } else {
-       bevl_st.bevi_cmd = new FbCommand(
-        beva__stmt.bems_toCsString(),
-        (FbConnection)bevi_conn,
-        (FbTransaction)bevi_trans
-        );
-     }
-     """
-     }
-     return(st);
-   }
-   
-   getStatement(String _stmt, List vals) DbSt {
-    List paramNames = List.new();
-    for (any val in vals) {
-      String pname = System:Random.getString(4);
-      while (def(_stmt.find(pname))) {
-        pname = System:Random.getString(4);
-      }
-      paramNames += pname;
-      _stmt = _stmt.swapFirst("?", "@" + pname);
-    }
-    ("STMT " + _stmt).print();
-    DbSt st = super.getStatement(_stmt, vals);
-    st.paramNames = paramNames;
-    emit(cs) {
-    """
-    if (bevi_trans == null) {
-      bevl_st.bevi_cmd = new FbCommand(
-        beva__stmt.bems_toCsString(),
-        (FbConnection)bevi_conn
-        );
-     } else {
-       bevl_st.bevi_cmd = new FbCommand(
-        beva__stmt.bems_toCsString(),
-        (FbConnection)bevi_conn,
-        (FbTransaction)bevi_trans
-        );
-     }
-     """
-     }
-     return(st);
-   }
-   
-   addParam(DbSt st, Int pos, String paramName, String paramValue) this {
-      emit(cs) {
-         """
-         FbCommand fbc = (FbCommand) beva_st.bevi_cmd;
-         fbc.Parameters.AddWithValue(beva_paramName.bems_toCsString(), beva_paramValue.bems_toCsString());
-         """
-         }
-  }
-
-}
-
-use class Db:Relational:Test(Assert) {
-
-  dbTest() {
-    DbDb db;
-    Path dbp;
-    ifEmit(jv) {
-      dbp = Path.new("SLDBT");
-      db = Derby.pathNew(dbp);
-    }
-    ifEmit(cs) {
-      dbp = Path.new("FBDBT");
-      db = FbDb.pathNew(dbp);
-    }
-    db.open();
-    
-    db.begin();
-    db.execute("CREATE TABLE TESTTAB( P VARCHAR(110), K VARCHAR(110), V VARCHAR(500),"
-      + " constraint TESTTAB_k primary key (P,K) )");
-    db.commit();
-    
-    db.begin();
-    db.execute("insert into TESTTAB(P, K) values ('hi', 'bob')");
-    db.commit();
-    
-    db.begin();
-    for (DbSt re in db.executeQuery("select * from TESTTAB")) {
-      assertEqual(re.getString(0), "hi");
-    }
-    db.commit();
-    
-    List vals2 = List.new(2);
-    vals2[0] = "yo";
-    vals2[1] = "adrian";
-    db.begin();
-    db.execute("insert into TESTTAB(P, K) values (?, ?)", vals2);
-    db.commit();
-    
-    List vals1 = List.new(1);
-    vals1[0] = "yo";
-    db.begin();
-    for (re in db.executeQuery("select * from TESTTAB where P=?", vals1)) {
-      assertEqual(re.getString(1), "adrian");
-    }
-    db.commit();
-    
-    db.close();
-  }
- 
-  main() {
-    "Begin Relational Test".print();
-    try {
-      dbTest();
-    } catch (any e) {
-      e.print();
-      throw(e);
-    }
-    "End Relational Test".print();
-  }
-
-}
-
 //TODO
 //kv (interface)
 //rkv (relational)
@@ -632,6 +475,20 @@ class KvDb {
     new();
     db = _db;
     tableName = _tableName;
+  }
+  
+  apNew(Path dbp, String _tableName) self {
+    String dbn = dbp.name;
+    ifEmit(jv) {
+      dbp = dbp.parent.addStep(dbn + "HS");
+      db = createInstance("Db:HSQLDb:Database");
+    }
+    ifEmit(cs) {
+      dbp = dbp.parent.addStep(dbn + "SL.db");
+      db = createInstance("Db:SQLite:Database");
+    }
+    db.pathNew(dbp);
+    new(db, _tableName);
   }
   
   dbFailed() {

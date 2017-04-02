@@ -9,36 +9,43 @@ emit(cs) {
 using System;
 using System.Data;
 using System.Data.Common;
-using Mono.Data.SqliteClient;
+using FirebirdSql.Data.FirebirdClient;
 """
 }
-use Db:SQLite:Database as SlDb;
-class SlDb(DbDb) {
+//not really working atm :-(
+
+use Db:Firebird:Database as FbDb;
+class FbDb(DbDb) {
   
   pathNew(Path _dbp) self {
     super.pathNew(_dbp);
-    //String dbAddr = "Data Source=" + dbp.toString("\\") + ";Version=3;";
-    String dbAddr = "Data Source=test.db;Version=3;";
+    fields {
+      String dbAddr = "ServerType=1;User=SYSDBA;" + 
+        "Password=masterkey;Dialect=3;Database=" + dbp.toString("\\");
+      //String dbAddr = "User=SYSDBA;Password=masterkey;Database=SampleDatabase.fdb;DataSource=localhost;Port=3050;Dialect=3;Charset=NONE;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=1;"
+    }
     new(dbAddr);
   }
   
   open() self {
     if (dbp.file.exists!) {
       String dbps = dbp.toString();
+      ("dbaddr " + dbAddr).print();
+      ("dbps " + dbps).print();
       emit(cs) {
         """
-        SqliteConnection.CreateFile("test.db");
-        bevi_conn = new SqliteConnection("Data Source=test.db;Version=3;");
+        FbConnection.CreateDatabase(bevp_dbAddr.bems_toCsString());
+        bevi_conn = new FbConnection(bevp_dbAddr.bems_toCsString());
         bevi_conn.Open();
         """
       }
-      ("CREATED SQLITE CONN").print();
+      //("CREATED CONN").print();
     }
     super.open();
   }
   
   copy() self {
-    return(SlDb.pathNew(dbp));
+    return(FbDb.pathNew(dbp));
   }
   
   getStatement(String _stmt) DbSt {
@@ -46,15 +53,15 @@ class SlDb(DbDb) {
     emit(cs) {
     """
     if (bevi_trans == null) {
-      bevl_st.bevi_cmd = new SqliteCommand(
+      bevl_st.bevi_cmd = new FbCommand(
         beva__stmt.bems_toCsString(),
-        (SqliteConnection)bevi_conn
+        (FbConnection)bevi_conn
         );
      } else {
-       bevl_st.bevi_cmd = new SqliteCommand(
+       bevl_st.bevi_cmd = new FbCommand(
         beva__stmt.bems_toCsString(),
-        (SqliteConnection)bevi_conn,
-        (SqliteTransaction)bevi_trans
+        (FbConnection)bevi_conn,
+        (FbTransaction)bevi_trans
         );
      }
      """
@@ -78,15 +85,15 @@ class SlDb(DbDb) {
     emit(cs) {
     """
     if (bevi_trans == null) {
-      bevl_st.bevi_cmd = new SqliteCommand(
+      bevl_st.bevi_cmd = new FbCommand(
         beva__stmt.bems_toCsString(),
-        (SqliteConnection)bevi_conn
+        (FbConnection)bevi_conn
         );
      } else {
-       bevl_st.bevi_cmd = new SqliteCommand(
+       bevl_st.bevi_cmd = new FbCommand(
         beva__stmt.bems_toCsString(),
-        (SqliteConnection)bevi_conn,
-        (SqliteTransaction)bevi_trans
+        (FbConnection)bevi_conn,
+        (FbTransaction)bevi_trans
         );
      }
      """
@@ -97,7 +104,7 @@ class SlDb(DbDb) {
    addParam(DbSt st, Int pos, String paramName, String paramValue) this {
       emit(cs) {
          """
-         SqliteCommand fbc = (SqliteCommand) beva_st.bevi_cmd;
+         FbCommand fbc = (FbCommand) beva_st.bevi_cmd;
          fbc.Parameters.AddWithValue(beva_paramName.bems_toCsString(), beva_paramValue.bems_toCsString());
          """
          }
