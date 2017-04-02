@@ -25,7 +25,7 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 cp csweb/IUHubWeb/IUHubWeb/bin/Debug/* ../apprun/App/IUHub/
 
-mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 

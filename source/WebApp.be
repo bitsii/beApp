@@ -73,6 +73,9 @@ use class App:AuthenticatedWebApp(AuthedApp) {
       //vwL.o = vw;
       vw.port = port;
       vw.ssl = true;
+      ifEmit(cs) {
+        vw.ssl = false;
+      }
       vw.sslPath = cerPath;
       vw.app = self;
       vw.gzipOutput = true;
