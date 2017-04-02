@@ -174,6 +174,10 @@ public Connection bevi_trans = null;
     return(st);
   }
   
+  addParam(DbSt st, Int pos, String paramName, String paramValue) this {
+    return(self);
+  }
+  
   execute(String stmt) DbSt {
     DbSt fbstmt = getStatement(stmt);
     return(fbstmt.execute());
@@ -218,6 +222,7 @@ public ResultSet bevi_res = null;
         String stmt = _stmt;
         DbDb db = _db;
         Bool nextWaiting = false;
+        List paramNames;
       }
    }
    
@@ -255,11 +260,20 @@ public ResultSet bevi_res = null;
        bevi_pstmt.setString(bevl_i.bevi_int, bevl_sv.bems_toJvString());
        """
        } 
+       ifEmit(cs) {
+         String pn = paramNames.get(i - 1);
+         db.addParam(self, i, pn, sv);
+       }
        i++=;    
      }
      emit(jv) {
      """
      bevi_pstmt.executeUpdate();
+     """
+     }
+     emit(cs) {
+     """
+     bevi_cmd.ExecuteNonQuery();
      """
      }
    }
@@ -278,11 +292,20 @@ public ResultSet bevi_res = null;
        bevi_pstmt.setString(bevl_i.bevi_int, bevl_sv.bems_toJvString());
        """
        } 
+       ifEmit(cs) {
+         String pn = paramNames.get(i - 1);
+         db.addParam(self, i, pn, sv);
+       }
        i++=;    
      }
      emit(jv) {
      """
      bevi_res = bevi_pstmt.executeQuery();
+     """
+     }
+     emit(cs) {
+     """
+     bevi_reader = bevi_cmd.ExecuteReader();
      """
      }
    }
@@ -458,7 +481,7 @@ class FbDb(DbDb) {
         bevi_conn.Open();
         """
       }
-      ("CREATED SQLITE CONN").print();
+      //("CREATED CONN").print();
     }
     super.open();
   }
@@ -487,6 +510,47 @@ class FbDb(DbDb) {
      }
      return(st);
    }
+   
+   getStatement(String _stmt, List vals) DbSt {
+    List paramNames = List.new();
+    for (any val in vals) {
+      String pname = System:Random.getString(4);
+      while (def(_stmt.find(pname))) {
+        pname = System:Random.getString(4);
+      }
+      paramNames += pname;
+      _stmt = _stmt.swapFirst("?", "@" + pname);
+    }
+    ("STMT " + _stmt).print();
+    DbSt st = super.getStatement(_stmt, vals);
+    st.paramNames = paramNames;
+    emit(cs) {
+    """
+    if (bevi_trans == null) {
+      bevl_st.bevi_cmd = new FbCommand(
+        beva__stmt.bems_toCsString(),
+        (FbConnection)bevi_conn
+        );
+     } else {
+       bevl_st.bevi_cmd = new FbCommand(
+        beva__stmt.bems_toCsString(),
+        (FbConnection)bevi_conn,
+        (FbTransaction)bevi_trans
+        );
+     }
+     """
+     }
+     return(st);
+   }
+   
+   addParam(DbSt st, Int pos, String paramName, String paramValue) this {
+      emit(cs) {
+         """
+         FbCommand fbc = (FbCommand) beva_st.bevi_cmd;
+         fbc.Parameters.AddWithValue(beva_paramName.bems_toCsString(), beva_paramValue.bems_toCsString());
+         """
+         }
+  }
 
 }
 
@@ -599,8 +663,8 @@ class KvDb {
   
   create() self {
     db.begin();
-    db.execute("CREATE TABLE " + tableName + "( NAME VARCHAR(512), VALUE VARCHAR(4096), "
-      + " constraint " + tableName + "_k primary key (NAME) )");
+    db.execute("CREATE TABLE " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
+      + " constraint " + tableName + "_k primary key (KVKEY) )");
     db.commit();
   }
   
@@ -609,7 +673,7 @@ class KvDb {
       Map res = Map.new();
       List qa = List.new(0);
       db.begin();
-      for (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName, qa)) {
+      for (DbSt ares in db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName, qa)) {
         String name = ares.getString(0);
         String value = ares.getString(1);
         res.put(name, value);
@@ -630,7 +694,7 @@ class KvDb {
       List qa = List.new(1);
       qa.put(0, prefix + "%");
       db.begin();
-      for (DbSt ares in db.executeQuery("SELECT NAME, VALUE FROM " + tableName + " WHERE NAME LIKE ?", qa)) {
+      for (DbSt ares in db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName + " WHERE KVKEY LIKE ?", qa)) {
         String name = ares.getString(0);
         String value = ares.getString(1);
         res.put(name, value);
@@ -650,7 +714,7 @@ class KvDb {
       List qa = List.new(1);
       qa[0] = name;
       db.begin();
-      for (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
+      for (DbSt ares in db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa)) {
         String value = ares.getString(0);
       }
       //ares.close();
@@ -675,7 +739,7 @@ class KvDb {
     try {
       List qa = List.new(2).put(0, name).put(1, value);
       db.begin();
-      db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
+      db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa);
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -688,7 +752,7 @@ class KvDb {
     try {
       List qa = List.new(2).put(0, value).put(1, name);
       db.begin();
-      db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
+      db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa);
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -703,15 +767,15 @@ class KvDb {
       qa[0] = name;
       db.begin();
       Bool exists = false;
-      for (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qa)) {
+      for (DbSt ares in db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa)) {
         exists = true;
       }
       if (exists) {
         qa = List.new(2).put(0, value).put(1, name);
-        db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=?", qa);
+        db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa);
       } else {
         qa = List.new(2).put(0, name).put(1, value);
-        db.execute("INSERT INTO " + tableName + " (NAME, VALUE) VALUES (?, ?)", qa);
+        db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa);
       }
       db.commit();
     } catch (any e) {
@@ -726,10 +790,10 @@ class KvDb {
     try {
       db.begin();
       List qa = List.new(3).put(0, value).put(1, name).put(2, oldValue);
-      db.execute("UPDATE " + tableName + " SET VALUE=? WHERE NAME=? AND VALUE=?", qa);
+      db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=? AND KVVALUE=?", qa);
       //db.commit();
       List qc = List.new(1).put(0, name);
-      for (DbSt ares in db.executeQuery("SELECT VALUE FROM " + tableName + " WHERE NAME=?", qc)) {
+      for (DbSt ares in db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qc)) {
         String currValue = ares.getString(0);
         if (currValue == value) {
           result = true;
@@ -749,7 +813,7 @@ class KvDb {
     try {
       List qa = List.new(1).put(0, name);
       db.begin();
-      db.execute("DELETE FROM " + tableName + " WHERE NAME=?", qa);
+      db.execute("DELETE FROM " + tableName + " WHERE KVKEY=?", qa);
       db.commit();
     } catch (any e) {
       db.rollback();

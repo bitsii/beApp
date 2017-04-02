@@ -62,4 +62,4 @@ cp extlibs/IUHubCs/fbdb/* ../apprun/App/IUHub
 
 cd ../apprun
 
-./App/IUHub/IUHubWeb.exe $*
+mono --debug ./App/IUHub/IUHubWeb.exe $*
