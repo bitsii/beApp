@@ -11,7 +11,7 @@ mkdir -p ../apprun/App/IUHub
 rm -rf targetMc
 mkdir -p targetMc
 
-mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath targetMc/d --buildPath targetMc --emitLang cs -mainClass=IUHub:HubWebStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUHubWebStart.be source/Db.be source/BrowserUI.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath targetMc/d --buildPath targetMc --emitLang cs -mainClass=IUHub:HubWebStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUHubWebStart.be source/Db.be source/SlDb.be source/BrowserUI.be source/WebServer.be source/App.be source/WebApp.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -57,8 +57,7 @@ cp scripts/motionrun.sh ../apprun/App/IUHub
 cp scripts/camclean.sh ../apprun/App/IUHub
 cp source/MOCAM.conf ../apprun/App/IUHub
 
-#fbdb
-cp extlibs/IUHubCs/fbdb/* ../apprun/App/IUHub
+cp extlibs/IUHubCs/* ../apprun/App/IUHub
 
 cd ../apprun
 

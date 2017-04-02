@@ -9,13 +9,17 @@ emit(cs) {
 using System;
 using System.Data;
 using System.Data.Common;
-using Mono.Data.SqliteClient;
+using Mono.Data.Sqlite;
 """
 }
+
+use Db:Relational:Database as DbDb;
+use Db:Relational:Statement as DbSt;
+
 use Db:SQLite:Database as SlDb;
 class SlDb(DbDb) {
   
-  pathNew(Path _dbp) self {
+  pathNew(IO:File:Path _dbp) self {
     super.pathNew(_dbp);
     //String dbAddr = "Data Source=" + dbp.toString("\\") + ";Version=3;";
     String dbAddr = "Data Source=test.db;Version=3;";

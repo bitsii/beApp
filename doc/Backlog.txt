@@ -3,6 +3,8 @@ csweb
   mv db logic (name suffix + db type) to some class ?+ kvdb (prefsuffix)
   back to sqlite, put directory on path
   
+  xamarin build/run inside the native area (put web stuff there)
+  
   have a emitflag for turnonall thats in nonrel builds
 
   xam ssl
