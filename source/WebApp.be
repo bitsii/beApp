@@ -176,6 +176,9 @@ use class App:AuthenticatedWebApp(AuthedApp) {
       return(cerPathS);
     } else {
       log.log("cer and pvk not exist");
+      if (certDir.file.exists!) {
+        certDir.file.makeDirs();
+      }
     }
     log.log("Start gencert");
     emit(cs) {

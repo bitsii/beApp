@@ -1,6 +1,7 @@
 
 csweb
   get working - cert issue
+  get working on linux
   see about improving xam ssl or use bouncy
   add imap get hub working
   
