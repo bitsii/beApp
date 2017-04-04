@@ -65,27 +65,28 @@ use class App:AuthenticatedWebApp(AuthedApp) {
       any e;
       String ports = self.webPort;
       Int port = Int.new(ports);
-      String cerPath = assureCert(port);
       //portL.o = port;
       
       Web:Server vw = Web:Server.new(self.sessionManager);
       
       //vwL.o = vw;
       vw.port = port;
-      vw.ssl = true;
-      ifEmit(cs) {
-        vw.ssl = false;
+      vw.ssl = self.doSsl;
+      ("doSsl = " + vw.ssl).print();
+      if (self.doSsl) {
+        vw.sslPath = assureCert(port);
       }
-      vw.sslPath = cerPath;
       vw.app = self;
       vw.gzipOutput = true;
+      ifEmit(cs) {
+        vw.gzipOutput = false;
+      }
       fields {
         System:Thread myThread = System:Thread.new(vw);
       }
       log.log("Starting Web");
       myThread.start();
     }
-    
     
   assureCert(Int port) String {
     ifEmit(jv) {

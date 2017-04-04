@@ -1,11 +1,13 @@
 
+app work properly with or without ssl
+  configable, default on or off based on plat
+
 csweb
-  get working - cert issue
+  get working no ssl (disable assurcert)
+    not setting type/mime I think
+  get to work without ssl overall (optional, based on setting and/or config)
   get working on linux
-  see about improving xam ssl or use bouncy
   add imap get hub working
-  
-  xamarin build/run inside the native area (put web stuff there)
   
   have a emitflag for turnonall thats in nonrel builds
    
@@ -54,6 +56,8 @@ default session time on regular login from config
 need retry script for failure to launch during install
 
 ====
+
+csweb ssl working - see about improving xam ssl or use bouncy
 
 multi process embedded database for java / android
 

@@ -196,6 +196,7 @@ use class IUHub:HubPlugin {
       wc.extraPorts = app.configManager.get("upnp.extraPorts");
     }
     log.log("after wc init");
+    wc.webProto = app.webProto;
     wc.internalPort = webPort;
     if (TS.isEmpty(certificateThumbprint)) {
       certificateThumbprint = app.certificateThumbprint; 
@@ -851,13 +852,14 @@ use class IUHub:HubPlugin {
       app.configManager.put("il.sshLogin", login);
       app.configManager.put("il.sshPass", pass);
       String siteNames = app.configManager.get("siteNames");
+      String proto = app.webProto + "://";
       if (TS.notEmpty(host)) {
         if (undef(siteNames)) { siteNames = ""; }
-        if (siteNames.has("https://" + host)!) {
+        if (siteNames.has(proto + host)!) {
           if (TS.notEmpty(siteNames)) {
             siteNames += ",";
           }
-          siteNames += "https://" += host;
+          siteNames += proto += host;
           app.configManager.put("siteNames", siteNames);
         }
       }

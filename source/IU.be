@@ -51,6 +51,10 @@ class IU:WebConnect {
     }
   }
   
+  webProtoSet(String proto) {
+    protocol = proto + "://";
+  }
+  
   toMap() Map {
     Map res = Maps.fieldsIntoMap(self, Map.new());
     res.delete("log");

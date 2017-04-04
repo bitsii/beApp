@@ -961,6 +961,31 @@ class AuthedApp {
       String certificateThumbprint;
     }
   }
+  
+  webProtoGet() String {
+    if (self.doSsl) {
+      return("https");
+    }
+    return("http");
+  }
+  
+   doSslGet() Bool {
+      fields {
+        Bool doSsl;
+      }
+      if (undef(doSsl)) {
+        String doSsls = self.configManager.get("wui.ssl");
+        if (TS.isEmpty(doSsls)) {
+          doSsls = "true";
+          ifEmit(cs) {
+            doSsls = "false";
+          }
+          self.configManager.put("wui.ssl", doSsls);
+        }
+        doSsl = Logic:Bools.fromString(doSsls);
+      }
+      return(doSsl);
+    }
 
   pluginsSet(_plugins) {
       fields {
@@ -1098,7 +1123,7 @@ class AuthedApp {
         }
       }
     }
-    la = "https://" + la;
+    la = self.webProto + "://" + la;
     if (ref.begins(la)) {
       //log.log("isCrossSite false begins " + la + " " + ref);
       return(false);
@@ -1115,7 +1140,7 @@ class AuthedApp {
     //String extPort = self.configManager.get("wui.extPort");
     
     if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
-      extUrl = "https://" + extAddress + ":" + extPort;
+      extUrl = self.webProto + "://" + extAddress + ":" + extPort;
       //log.log("new extUrl " + extUrl);
     } else {
       //log.log("extAddress or extPort empty");

@@ -65,7 +65,7 @@ public static class MainActivity extends AppCompatActivity {
         mWebView.addJavascriptInterface(new WebAppInterface(), "Android");
         WebSettings webSettings = mWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        //mWebView.loadUrl("https://some.place");
+        //mWebView.loadUrl("");
         mWebView.loadUrl(initialUrl);
     }
 

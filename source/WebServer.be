@@ -543,6 +543,7 @@ use class Web:ScriptRequest {
             if (self.shouldGzipOutput) {
               Bool gzo = true;
             }
+            //("SETTING CONTENT TYPE " + outputContentType).print();
             emit(cs) {
             """
             bevi_res.ContentType = bevp_outputContentType.bems_toCsString();

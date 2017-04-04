@@ -221,7 +221,7 @@ use class IUBridge:BridgeStart {
         String intPort = intPorti.toString();
         ui.configManager.put("wui.port", intPort);
         
-        String iurl = "https://127.0.0.1:" += intPort += "/App/IUHub/IU.html?onceToken=" += olt;
+        String iurl = ui.webProto + "://127.0.0.1:" += intPort += "/App/IUHub/IU.html?onceToken=" += olt;
         //log.log("int url is " + iurl);
         File.apNew(args[2]).writer.open().write(iurl).close();
         File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
