@@ -87,7 +87,9 @@ use class IUHub:HubStart {
     }
     
     innerMain(List args) {
-      IO:Logs.turnOnAll();
+      ifEmit(iuDebug) {
+        IO:Logs.turnOnAll();
+      }
       Web:Client:CertificateManager.validateHosts = false;
       if (args.length > 0) {
         String mode = args[0]; //lui, wui, both, [absent]
@@ -572,7 +574,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.7.7";
+        String version =@ "5.7.8";
       }
       return(version);
     }
@@ -967,6 +969,18 @@ use class IUHub:HubPlugin {
       return(null);
    }
    
+   restoreConfig(String path) {
+     File dirFile = File.apNew(path);
+     any e;
+     IO:Reader inr = dirFile.reader.open();
+     String res = dirFile.contents;
+     Map conf = Json:Unmarshaller.unmarshall(res);
+     any ac = app.configManager;
+     for (any kv in conf) {
+       ac.put(kv.key, kv.value);
+     }
+   }
+   
    restoreConfigRequest(Map arg, request) Map {
      log.log("rs request");
      String path = arg["path"];
@@ -975,15 +989,7 @@ use class IUHub:HubPlugin {
       throw(Alert.new("must be admin"));
      }
      if (TS.notEmpty(path)) {
-       File dirFile = File.apNew(Encode:Hex.new().decode(path));
-       any e;
-       IO:Reader inr = dirFile.reader.open();
-       String res = dirFile.contents;
-       Map conf = Json:Unmarshaller.unmarshall(res);
-       any ac = app.configManager;
-       for (any kv in conf) {
-         ac.put(kv.key, kv.value);
-       }
+       restoreConfig(Encode:Hex.new().decode(path));
      }
      //TODO update imap wc
      return(null);
@@ -996,6 +1002,11 @@ use class IUHub:HubPlugin {
      unless (app.requestFromAdmin(request)) {
       throw(Alert.new("must be admin"));
      }
+     upgrade(path);
+     return(null);
+   }
+     
+   upgrade(String path) {
      if (TS.notEmpty(path)) {
        Path dpath = Path.apNew("App/IUHub.zip");
        File dirFile = File.apNew(Encode:Hex.new().decode(path));

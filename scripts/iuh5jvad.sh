@@ -13,7 +13,7 @@ case "$una" in
     ;;
 esac
 
-java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath targetAd/d --buildPath targetAd --emitFlag platDroid --emitLang jv --outputPlatform linux -mainClass=IUHub:HubStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvAd.be source/App.be
+java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath targetAd/d --buildPath targetAd --emitFlag platDroid --emitFlag iuDebug --emitLang jv --outputPlatform linux -mainClass=IUHub:HubStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvAd.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 

@@ -79,7 +79,9 @@ use class IUBridge:BridgeStart {
     }
     
     innerMain(List args) {
-      IO:Logs.turnOnAll();
+      ifEmit(iuDebug) {
+        IO:Logs.turnOnAll();
+      }
       Web:Client:CertificateManager.validateHosts = false;
       if (args.length > 0) {
         String mode = args[0]; //lui, wui, both, [absent]
@@ -120,7 +122,9 @@ use class IUBridge:BridgeStart {
     }
 
     cmdMain(List args, plugins) {
-      IO:Logs.turnOnAll();
+      ifEmit(iuDebug) {
+        IO:Logs.turnOnAll();
+      }
       AuthedApp ui = AuthedApp.new();
       ui.plugins = getPlugins(false);
       if (args.length > 1) {
@@ -211,6 +215,16 @@ use class IUBridge:BridgeStart {
         log.log("Deleting config " + key);
         ui.configManager.delete(key);
       }
+      if (TS.notEmpty(mode) && mode == "restoreConfig") {
+        String restorePath = args[2];
+        log.log("restoring config " + restorePath);
+        ui.plugin.restoreConfig(restorePath);
+      }
+      if (TS.notEmpty(mode) && mode == "backupConfig") {
+        restorePath = args[2];
+        log.log("backup config " + restorePath);
+        ui.pluginsByClassName.get("App:ConfigPlugin").backupConfig(restorePath);
+      }
       if (TS.notEmpty(mode) && mode == "saveSetupUrl") {
         log.log("saveSetupUrl");
         String olt = System:Random.getString(64);
@@ -241,18 +255,77 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       Ssh ssh;
       Set rforwarded;
       App:Background bfw = App:Background.new();
+      App:Background bup = App:Background.new();
      }
      super.new();
      
    }
    
+   checkUpgrade() {
+    log.log("in checkupgrade");
+    String autoUp = app.configManager.get("hub.autoUpgrade");
+    unless (TS.isEmpty(autoUp) || autoUp == "true") {
+      log.log("autoUpgrade disabled");
+      return(null);
+    }
+    Web:Client client = Web:Client.new();
+    client.url = "https://bitbucket.org/ioturl/ioturl/downloads/latestVersion.json";
+    String res = client.openInput().readString();
+    log.log("in checkupgrade response is " + res);
+    client.close();
+    if (TS.notEmpty(res)) {
+      Map resMap = Json:Unmarshaller.unmarshall(res);
+      String ver = resMap.get("latestVersion");
+      log.log("latestVersion is " + ver);
+      if (ver == app.plugin.version) {
+        log.log("already on latest version");
+      } else {
+        log.log("need to upgrade");
+        String latestUrl = resMap.get("lastestUrl");
+        log.log("latest url is " + latestUrl);
+        Path dld = app.paths.dataPath.addStep("Downloads");
+        if (dld.file.exists!) {
+          dld.file.makeDirs();
+        }
+        dld = dld.addStep("IUBHub.zip");
+        if (dld.file.exists) {
+          dld.file.delete();
+        }
+        client = Web:Client.new();
+        client.url = latestUrl;
+        auto prd = client.openInput();
+        IO:Writer pwr = dld.file.writer.open();
+        prd.copyData(pwr);
+        pwr.close();
+        client.close();
+        Bool doUpgrade = true;
+        ifEmit(iuDebug) {
+          doUpgrade = false;
+        }
+        if (doUpgrade) {
+          log.log("doing upgrade to " + ver);
+          app.plugin.upgrade(dld.toString());
+        } else {
+          log.log("not upgrading, is debug");
+        }
+      }
+    }
+   }
+   
    start() {
       super.start();
+      
       bfw.startDelay = Time:Interval.new(20, 0);
       bfw.repeatDelay = Time:Interval.new(1200, 0);
       bfw.toInvoke = getInvocation("doForward", List.new());
+      
+      bup.startDelay = Time:Interval.new(30, 0);
+      bup.repeatDelay = Time:Interval.new(86400, 0);
+      bup.toInvoke = getInvocation("checkUpgrade", List.new());
+      
       if (runBackground) {
         bfw.start();
+        bup.start();
       }
    }
 

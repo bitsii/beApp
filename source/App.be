@@ -872,15 +872,27 @@ use class App:ConfigPlugin {
     return(null);
    }
    
+   backupConfig() String {
+     Map ecm = app.configManager.getMap();
+     if (ecm.isEmpty) {
+       ecm = Map.new();
+     }
+     return(Json:Marshaller.marshall(ecm));
+   }
+   
+   backupConfig(String path) {
+     Path dirPath = Path.apNew(path);
+     if (dirPath.parent.file.exists!) {
+      dirPath.parent.file.makeDirs();
+     }
+     dirPath.file.contents = backupConfig();
+   }
+   
    backupConfigRequest(request) Map {
      if (app.requestFromAdmin(request)) {
-       Map ecm = app.configManager.getMap();
-       if (ecm.isEmpty) {
-         ecm = Map.new();
-       }
        Map res = Map.new();
        res["action"] = "backupConfigResponse";
-       res["configJson"] = Json:Marshaller.marshall(ecm);
+       res["configJson"] = backupConfig();
        log.log("ret configJson " + res["configJson"]);
        return(res);
      }

@@ -76,7 +76,9 @@ use class IUHub:HubWebStart {
     }
     
     innerMain(List args) {
-      IO:Logs.turnOnAll();
+      ifEmit(iuDebug) {
+        IO:Logs.turnOnAll();
+      }
       Web:Client:CertificateManager.validateHosts = false;
       if (args.length > 0) {
         String mode = args[0]; //lui, wui, both, [absent]

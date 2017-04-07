@@ -5,8 +5,6 @@ There are some advantages to this approach over options for remote monitoring:
 * The Pi is a cost-effective, low power device
 *  All images and data remain on your devices and under your control.  An email account is used to provide links to the device address but all images and other data are accessed directly from the Pi via a mobile (and desktop...) friendly web application running on the Pi.  
 
-For less than the cost of a cloud based camera setup a couple Pi cameras - without sending your pictures to a third party or chancing proprietary equipment with hidden backdoors.
-
 To get started there's some [stuff you'll need] (https://gitlab.com/ioturl/ioturl/wikis/the-stuff-you'll-need)
 
 Once you have it you can [begin your installation] (https://gitlab.com/ioturl/ioturl/wikis/install-page)
