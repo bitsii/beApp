@@ -574,7 +574,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.7.8";
+        String version =@ "5.8.0";
       }
       return(version);
     }
@@ -1002,14 +1002,14 @@ use class IUHub:HubPlugin {
      unless (app.requestFromAdmin(request)) {
       throw(Alert.new("must be admin"));
      }
-     upgrade(path);
+     upgrade(Encode:Hex.new().decode(path));
      return(null);
    }
      
    upgrade(String path) {
      if (TS.notEmpty(path)) {
        Path dpath = Path.apNew("App/IUHub.zip");
-       File dirFile = File.apNew(Encode:Hex.new().decode(path));
+       File dirFile = File.apNew(path);
        any e;
        try {
        app.lock.lock();

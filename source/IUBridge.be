@@ -122,9 +122,7 @@ use class IUBridge:BridgeStart {
     }
 
     cmdMain(List args, plugins) {
-      ifEmit(iuDebug) {
-        IO:Logs.turnOnAll();
-      }
+      IO:Logs.turnOnAll();
       AuthedApp ui = AuthedApp.new();
       ui.plugins = getPlugins(false);
       if (args.length > 1) {
@@ -281,7 +279,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("already on latest version");
       } else {
         log.log("need to upgrade");
-        String latestUrl = resMap.get("lastestUrl");
+        String latestUrl = resMap.get("latestUrl");
         log.log("latest url is " + latestUrl);
         Path dld = app.paths.dataPath.addStep("Downloads");
         if (dld.file.exists!) {

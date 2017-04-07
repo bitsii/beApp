@@ -1,19 +1,15 @@
-auto-upgrade
-  test
-    put in no upgrade conf
-    backup/upgrade/restore
-    upver test autoupgrade
-    
 why is stay logged in not working again?
-
-try on phone
 
 csweb
   get working http xsp
+    try basic servlet thing
+    add in / embed be/iuhub
   get working on linux
   add imap get hub working
   
 xamios
+
+try on phone
 
 playstore - export
 android package on bitbucket
@@ -57,6 +53,8 @@ default session time on regular login from config
 need retry script for failure to launch during install
 
 ====
+
+upgrade check two places
 
 csweb ssl working - see about improving xam ssl or use bouncy
 
