@@ -12,12 +12,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -39,15 +39,209 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="Mono.Data.Sqlite" />
+    <Reference Include="Mono.Data.Tds" />
+    <Reference Include="Mono.Security" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
-    <Content Include="Global.asax" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
-    </Compile>
+    <Compile Include="BECS_WebHandler.cs" />
+    <Compile Include="BEC_2_2_3_IOLog.cs" />
+    <Compile Include="BEC_2_2_4_IOFile.cs" />
+    <Compile Include="BEC_2_2_4_IOLogs.cs" />
+    <Compile Include="BEC_2_2_6_IOReader.cs" />
+    <Compile Include="BEC_2_2_6_IOWriter.cs" />
+    <Compile Include="BEC_2_2_8_DbDirStore.cs" />
+    <Compile Include="BEC_2_2_8_DbKeyValue.cs" />
+    <Compile Include="BEC_2_2_10_IOByteReader.cs" />
+    <Compile Include="BEC_2_2_10_IUWebConnect.cs" />
+    <Compile Include="BEC_2_2_10_UIWebBrowser.cs" />
+    <Compile Include="BEC_2_2_14_DbDirStoreString.cs" />
+    <Compile Include="BEC_2_2_14_UIWebBrowserImpl.cs" />
+    <Compile Include="BEC_2_2_15_UIExternalBrowser.cs" />
+    <Compile Include="BEC_2_2_20_UIBrowserScriptRequest.cs" />
+    <Compile Include="BEC_2_3_3_NetWol.cs" />
+    <Compile Include="BEC_2_3_3_XmlTag.cs" />
+    <Compile Include="BEC_2_3_4_NetUPnP.cs" />
+    <Compile Include="BEC_2_3_5_AppAlert.cs" />
+    <Compile Include="BEC_2_3_5_AppPaths.cs" />
+    <Compile Include="BEC_2_3_6_NetSocket.cs" />
+    <Compile Include="BEC_2_3_6_WebClient.cs" />
+    <Compile Include="BEC_2_3_6_WebServer.cs" />
+    <Compile Include="BEC_2_3_7_AppAccount.cs" />
+    <Compile Include="BEC_2_3_7_NetGateway.cs" />
+    <Compile Include="BEC_2_3_7_XmlComment.cs" />
+    <Compile Include="BEC_2_3_8_XmlTextNode.cs" />
+    <Compile Include="BEC_2_3_9_NetInterface.cs" />
+    <Compile Include="BEC_2_3_10_AppAuthPlugin.cs" />
+    <Compile Include="BEC_2_3_10_AppBackground.cs" />
+    <Compile Include="BEC_2_3_10_AppCallBackUI.cs" />
+    <Compile Include="BEC_2_3_10_XmlEndElement.cs" />
+    <Compile Include="BEC_2_3_10_XmlXTokenizer.cs" />
+    <Compile Include="BEC_2_3_11_AppRunMainOnce.cs" />
+    <Compile Include="BEC_2_3_11_NetPortForward.cs" />
+    <Compile Include="BEC_2_3_11_XmlTagIterator.cs" />
+    <Compile Include="BEC_2_3_12_AppConfigPlugin.cs" />
+    <Compile Include="BEC_2_3_12_XmlStartElement.cs" />
+    <Compile Include="BEC_2_3_13_AppEventHandlers.cs" />
+    <Compile Include="BEC_2_3_13_WebScriptRequest.cs" />
+    <Compile Include="BEC_2_3_14_AppAccountManager.cs" />
+    <Compile Include="BEC_2_3_14_WebSessionManager.cs" />
+    <Compile Include="BEC_2_3_16_AppAuthenticatedApp.cs" />
+    <Compile Include="BEC_2_3_17_AppFileManagerPlugin.cs" />
+    <Compile Include="BEC_2_3_19_AppAuthenticatedWebApp.cs" />
+    <Compile Include="BEC_2_3_20_XmlTagIteratorException.cs" />
+    <Compile Include="BEC_2_3_21_AppAuthenticatedLocalApp.cs" />
+    <Compile Include="BEC_2_3_21_XmlProcessingInstruction.cs" />
+    <Compile Include="BEC_2_4_3_MathInt.cs" />
+    <Compile Include="BEC_2_4_4_MathInts.cs" />
+    <Compile Include="BEC_2_4_4_TextGlob.cs" />
+    <Compile Include="BEC_2_4_5_MathFloat.cs" />
+    <Compile Include="BEC_2_4_5_TimeSleep.cs" />
+    <Compile Include="BEC_2_4_6_JsonParser.cs" />
+    <Compile Include="BEC_2_4_6_TextString.cs" />
+    <Compile Include="BEC_2_4_7_JsonEscapes.cs" />
+    <Compile Include="BEC_2_4_7_TestFailure.cs" />
+    <Compile Include="BEC_2_4_7_TextStrings.cs" />
+    <Compile Include="BEC_2_4_8_JsonParseLog.cs" />
+    <Compile Include="BEC_2_4_8_TimeInterval.cs" />
+    <Compile Include="BEC_2_4_9_TextTokenizer.cs" />
+    <Compile Include="BEC_2_4_10_JsonMarshaller.cs" />
+    <Compile Include="BEC_2_4_10_TestAssertions.cs" />
+    <Compile Include="BEC_2_4_12_JsonUnmarshaller.cs" />
+    <Compile Include="BEC_2_4_12_TextByteIterator.cs" />
+    <Compile Include="BEC_2_4_17_TextMultiByteIterator.cs" />
+    <Compile Include="BEC_2_5_4_EmailImap.cs" />
+    <Compile Include="BEC_2_5_4_LogicBool.cs" />
+    <Compile Include="BEC_2_5_5_LogicBools.cs" />
+    <Compile Include="BEC_2_5_8_IUHubHubStart.cs" />
+    <Compile Include="BEC_2_5_9_IUHubHubPlugin.cs" />
+    <Compile Include="BEC_2_5_10_IUHubConfigTest.cs" />
+    <Compile Include="BEC_2_5_11_IUHubAccountTest.cs" />
+    <Compile Include="BEC_2_5_11_IUHubHubWebStart.cs" />
+    <Compile Include="BEC_2_5_13_IUHubHubPluginTest.cs" />
+    <Compile Include="BEC_2_6_3_EncodeHex.cs" />
+    <Compile Include="BEC_2_6_3_EncodeUrl.cs" />
+    <Compile Include="BEC_2_6_3_SystemEnv.cs" />
+    <Compile Include="BEC_2_6_4_DigestSHA1.cs" />
+    <Compile Include="BEC_2_6_4_EncodeHtml.cs" />
+    <Compile Include="BEC_2_6_4_SystemHost.cs" />
+    <Compile Include="BEC_2_6_4_SystemMain.cs" />
+    <Compile Include="BEC_2_6_5_SystemThing.cs" />
+    <Compile Include="BEC_2_6_5_SystemTypes.cs" />
+    <Compile Include="BEC_2_6_6_DigestSHA256.cs" />
+    <Compile Include="BEC_2_6_6_SystemMethod.cs" />
+    <Compile Include="BEC_2_6_6_SystemObject.cs" />
+    <Compile Include="BEC_2_6_6_SystemRandom.cs" />
+    <Compile Include="BEC_2_6_6_SystemThread.cs" />
+    <Compile Include="BEC_2_6_7_SystemCommand.cs" />
+    <Compile Include="BEC_2_6_7_SystemProcess.cs" />
+    <Compile Include="BEC_2_6_7_SystemStartup.cs" />
+    <Compile Include="BEC_2_6_8_SystemBasePath.cs" />
+    <Compile Include="BEC_2_6_8_SystemPlatform.cs" />
+    <Compile Include="BEC_2_6_8_SystemVariadic.cs" />
+    <Compile Include="BEC_2_6_9_CryptoSymmetric.cs" />
+    <Compile Include="BEC_2_6_9_SystemDoNothing.cs" />
+    <Compile Include="BEC_2_6_9_SystemException.cs" />
+    <Compile Include="BEC_2_6_10_IUDoerDoerPlugin.cs" />
+    <Compile Include="BEC_2_6_10_SystemCallOnNull.cs" />
+    <Compile Include="BEC_2_6_10_SystemInvocation.cs" />
+    <Compile Include="BEC_2_6_10_SystemParameters.cs" />
+    <Compile Include="BEC_2_6_10_SystemSerializer.cs" />
+    <Compile Include="BEC_2_6_10_SystemThinThread.cs" />
+    <Compile Include="BEC_2_6_11_SystemEnvironment.cs" />
+    <Compile Include="BEC_2_6_11_SystemInitializer.cs" />
+    <Compile Include="BEC_2_6_13_SystemIncorrectType.cs" />
+    <Compile Include="BEC_2_6_15_SystemCurrentPlatform.cs" />
+    <Compile Include="BEC_2_6_16_SystemExceptionBuilder.cs" />
+    <Compile Include="BEC_2_6_16_SystemGarbageCollector.cs" />
+    <Compile Include="BEC_2_6_16_SystemMethodNotDefined.cs" />
+    <Compile Include="BEC_2_6_18_SystemStartupIfArguments.cs" />
+    <Compile Include="BEC_2_6_19_SystemInvocationException.cs" />
+    <Compile Include="BEC_2_6_19_SystemObjectFieldIterator.cs" />
+    <Compile Include="BEC_2_6_20_SystemStartupWithArguments.cs" />
+    <Compile Include="BEC_2_6_21_SystemStartupWithParameters.cs" />
+    <Compile Include="BEC_2_6_23_SystemNamedPropertiesIterator.cs" />
+    <Compile Include="BEC_2_7_7_ReplaceRunStep.cs" />
+    <Compile Include="BEC_2_7_8_ReplaceCallStep.cs" />
+    <Compile Include="BEC_2_7_10_ReplaceStringStep.cs" />
+    <Compile Include="BEC_2_8_6_FunctionMapper.cs" />
+    <Compile Include="BEC_2_8_6_TemplateRunner.cs" />
+    <Compile Include="BEC_2_8_7_TemplateReplace.cs" />
+    <Compile Include="BEC_2_9_3_ContainerMap.cs" />
+    <Compile Include="BEC_2_9_3_ContainerSet.cs" />
+    <Compile Include="BEC_2_9_4_ContainerList.cs" />
+    <Compile Include="BEC_2_9_4_ContainerMaps.cs" />
+    <Compile Include="BEC_2_9_4_ContainerPair.cs" />
+    <Compile Include="BEC_2_9_4_ContainerSets.cs" />
+    <Compile Include="BEC_2_9_5_ContainerLists.cs" />
+    <Compile Include="BEC_2_9_5_ContainerQueue.cs" />
+    <Compile Include="BEC_2_9_5_ContainerStack.cs" />
+    <Compile Include="BEC_2_9_5_ExceptionFrame.cs" />
+    <Compile Include="BEC_2_9_6_ContainerSingle.cs" />
+    <Compile Include="BEC_2_9_8_ContainerNodeList.cs" />
+    <Compile Include="BEC_2_9_10_ContainerLinkedList.cs" />
+    <Compile Include="BEC_2_9_11_ContainerIdentityMap.cs" />
+    <Compile Include="BEC_2_9_11_ContainerIdentitySet.cs" />
+    <Compile Include="BEC_2_9_11_ContainerPropertyMap.cs" />
+    <Compile Include="BEC_2_9_12_ContainerBoundedQueue.cs" />
+    <Compile Include="BEC_3_2_4_4_IOFilePath.cs" />
+    <Compile Include="BEC_3_2_4_6_IOFileReader.cs" />
+    <Compile Include="BEC_3_2_4_6_IOFileWriter.cs" />
+    <Compile Include="BEC_3_2_4_12_IOFileNamedReaders.cs" />
+    <Compile Include="BEC_3_2_4_12_IOFileNamedWriters.cs" />
+    <Compile Include="BEC_3_2_4_17_IOFileDirectoryIterator.cs" />
+    <Compile Include="BEC_3_2_5_8_DbDerbyDatabase.cs" />
+    <Compile Include="BEC_3_2_6_8_DbHSQLDbDatabase.cs" />
+    <Compile Include="BEC_3_2_6_8_DbSQLiteDatabase.cs" />
+    <Compile Include="BEC_3_2_10_8_DbRelationalDatabase.cs" />
+    <Compile Include="BEC_3_2_10_9_DbRelationalStatement.cs" />
+    <Compile Include="BEC_3_3_6_6_NetSocketReader.cs" />
+    <Compile Include="BEC_3_3_6_6_NetSocketWriter.cs" />
+    <Compile Include="BEC_3_3_6_8_NetSocketListener.cs" />
+    <Compile Include="BEC_3_3_6_18_WebClientCertificateManager.cs" />
+    <Compile Include="BEC_3_3_11_8_NetPortForwardDataCopy.cs" />
+    <Compile Include="BEC_3_6_4_10_SystemTestExtendable.cs" />
+    <Compile Include="BEC_3_6_4_11_SystemTestInExtending.cs" />
+    <Compile Include="BEC_3_6_6_4_SystemThreadLock.cs" />
+    <Compile Include="BEC_3_6_6_12_SystemThreadObjectLocker.cs" />
+    <Compile Include="BEC_3_6_6_15_SystemThreadContainerLocker.cs" />
+    <Compile Include="BEC_3_6_7_18_SystemStartupMainWithParameters.cs" />
+    <Compile Include="BEC_3_6_10_7_SystemSerializerSession.cs" />
+    <Compile Include="BEC_3_9_3_7_ContainerMapMapNode.cs" />
+    <Compile Include="BEC_3_9_3_7_ContainerSetSetNode.cs" />
+    <Compile Include="BEC_3_9_3_9_ContainerSetRelations.cs" />
+    <Compile Include="BEC_3_9_3_11_ContainerSetKeyIterator.cs" />
+    <Compile Include="BEC_3_9_3_12_ContainerSetNodeIterator.cs" />
+    <Compile Include="BEC_3_9_3_13_ContainerMapValueIterator.cs" />
+    <Compile Include="BEC_3_9_3_16_ContainerMapKeyValueIterator.cs" />
+    <Compile Include="BEC_3_9_3_17_ContainerSetIdentityRelations.cs" />
+    <Compile Include="BEC_3_9_3_21_ContainerMapSerializationIterator.cs" />
+    <Compile Include="BEC_3_9_3_21_ContainerSetSerializationIterator.cs" />
+    <Compile Include="BEC_3_9_4_8_ContainerListIterator.cs" />
+    <Compile Include="BEC_3_9_5_4_ContainerStackNode.cs" />
+    <Compile Include="BEC_3_9_10_4_ContainerLinkedListNode.cs" />
+    <Compile Include="BEC_3_9_10_8_ContainerLinkedListIterator.cs" />
+    <Compile Include="BEC_3_9_10_9_ContainerLinkedListAwareNode.cs" />
+    <Compile Include="BEC_4_2_4_6_5_IOFileReaderStdin.cs" />
+    <Compile Include="BEC_4_2_4_6_6_IOFileWriterStderr.cs" />
+    <Compile Include="BEC_4_2_4_6_6_IOFileWriterStdout.cs" />
+    <Compile Include="BEC_4_2_4_6_7_IOFileReaderCommand.cs" />
+    <Compile Include="BEC_4_2_4_6_8_IOFileWriterNoOutput.cs" />
+    <Compile Include="BECS_Ids.cs" />
+    <Compile Include="BECS_Lib.cs" />
+    <Compile Include="BECS_Object.cs" />
+    <Compile Include="BECS_Runtime.cs" />
+    <Compile Include="BECS_ThrowBack.cs" />
+    <Compile Include="BEL_4_Base.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="csaweb.csproj" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

@@ -12,8 +12,11 @@ android/IUHub/captures
 android/IUHub/app/libs
 targetAd/*
 
-# for csweb
-csweb/IUHubWeb/IUHubWeb/be/*
+# for csaweb
+csaweb/csaweb/*.cs
+csaweb/csaweb/App/*
+csaweb/csaweb/Data/*
+targetMc/*
 
 # for csharp xam solution
 # NuGet Packages

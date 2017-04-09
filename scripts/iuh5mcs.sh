@@ -1,12 +1,12 @@
 #!/bin/bash
 
-mkdir -p ../apprun
-mkdir -p ../apprun/App
-mkdir -p ../apprun/Data
-mkdir -p ../apprun/Data/IUHub
+mkdir -p csaweb/csaweb
+mkdir -p csaweb/csaweb/App
+mkdir -p csaweb/csaweb/Data
+mkdir -p csaweb/csaweb/Data/IUHub
 
-rm -rf ../apprun/App/IUHub
-mkdir -p ../apprun/App/IUHub
+rm -rf csaweb/csaweb/App/IUHub
+mkdir -p csaweb/csaweb/App/IUHub
 
 rm -rf targetMc
 mkdir -p targetMc
@@ -15,51 +15,54 @@ mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be 
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-rm -rf csweb/IUHubWeb/IUHubWeb/be
-mv targetMc/Base/target/cs/be csweb/IUHubWeb/IUHubWeb/be/
-cp ../abe-pl/system/cs/be/*.cs csweb/IUHubWeb/IUHubWeb/be/
+rm csaweb/csaweb/BEC*.cs
+cp targetMc/Base/target/cs/be/*.cs csaweb/csaweb
+cp ../abe-pl/system/cs/be/*.cs csaweb/csaweb
+cp system/cs/*.cs csaweb/csaweb
 
-xbuild csweb/IUHubWeb/IUHubWeb/IUHubWeb.csproj
+xbuild csaweb/csaweb/csaweb.csproj
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-cp csweb/IUHubWeb/IUHubWeb/bin/Debug/* ../apprun/App/IUHub/
+cp csaweb/csaweb/Web.config csaweb/csaweb
+#cp csaweb/csaweb/bin/* csaweb/csaweb/App/IUHub/
 
-mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath csaweb/csaweb/App/IUHub/d --buildPath csaweb/csaweb/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 #hub
-cp ../apprun/App/IUHub/Base/target/js/be/BEL_4_Base.js ../apprun/App/IUHub/IUHub_BEL_4_Base.js
-cp scripts/upgrade.bat ../apprun/App/IUHub
-cp scripts/postupgrade.bat ../apprun/App/IUHub
-cp scripts/upgrade.sh ../apprun/App/IUHub
-cp scripts/upgrade2.sh ../apprun/App/IUHub
-cp scripts/postupgrade.sh ../apprun/App/IUHub
-cp scripts/startiuh.sh ../apprun/App/IUHub
-cp scripts/iuhrun.sh ../apprun/App/IUHub
-cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
-cp scripts/iuhcmd.sh ../apprun/App/IUHub
-cp scripts/upgrade.bat ../apprun/App/IUHub
-cp scripts/mpg123loop.sh ../apprun/App/IUHub
-cp scripts/stopmpg123loop.sh ../apprun/App/IUHub
-cp source/IU.html ../apprun/App/IUHub
-cp extlibs/IUHub/* ../apprun/App/IUHub
-cp icons/* ../apprun/App/IUHub
-cp licenses/* ../apprun/App/IUHub
+cp csaweb/csaweb/App/IUHub/Base/target/js/be/BEL_4_Base.js csaweb/csaweb/App/IUHub/IUHub_BEL_4_Base.js
+cp scripts/upgrade.bat csaweb/csaweb/App/IUHub
+cp scripts/postupgrade.bat csaweb/csaweb/App/IUHub
+cp scripts/upgrade.sh csaweb/csaweb/App/IUHub
+cp scripts/upgrade2.sh csaweb/csaweb/App/IUHub
+cp scripts/postupgrade.sh csaweb/csaweb/App/IUHub
+cp scripts/startiuh.sh csaweb/csaweb/App/IUHub
+cp scripts/iuhrun.sh csaweb/csaweb/App/IUHub
+cp scripts/iuhcmdrs.sh csaweb/csaweb/App/IUHub
+cp scripts/iuhcmd.sh csaweb/csaweb/App/IUHub
+cp scripts/upgrade.bat csaweb/csaweb/App/IUHub
+cp scripts/mpg123loop.sh csaweb/csaweb/App/IUHub
+cp scripts/stopmpg123loop.sh csaweb/csaweb/App/IUHub
+cp source/IU.html csaweb/csaweb/App/IUHub
+cp extlibs/IUHub/* csaweb/csaweb/App/IUHub
+cp icons/* csaweb/csaweb/App/IUHub
+cp licenses/* csaweb/csaweb/App/IUHub
 
 #cam
-cp scripts/uppic.bat ../apprun/App/IUHub
-cp scripts/uppic.sh ../apprun/App/IUHub
-cp scripts/getcams.bat ../apprun/App/IUHub
-cp scripts/getcams.sh ../apprun/App/IUHub
-cp scripts/motionrun.sh ../apprun/App/IUHub
-cp scripts/camclean.sh ../apprun/App/IUHub
-cp source/MOCAM.conf ../apprun/App/IUHub
+cp scripts/uppic.bat csaweb/csaweb/App/IUHub
+cp scripts/uppic.sh csaweb/csaweb/App/IUHub
+cp scripts/getcams.bat csaweb/csaweb/App/IUHub
+cp scripts/getcams.sh csaweb/csaweb/App/IUHub
+cp scripts/motionrun.sh csaweb/csaweb/App/IUHub
+cp scripts/camclean.sh csaweb/csaweb/App/IUHub
+cp source/MOCAM.conf csaweb/csaweb/App/IUHub
 
-cp extlibs/IUHubCs/* ../apprun/App/IUHub
+cp extlibs/IUHubCs/* csaweb/csaweb/App/IUHub
 
-cd ../apprun
+#cd csaweb/csaweb
+#PATH=$PATH:./App/IUHub
 
-PATH=$PATH:./App/IUHub
-mono --debug ./App/IUHub/IUHubWeb.exe $*
+cd csaweb/csaweb
+xsp

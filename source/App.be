@@ -255,6 +255,26 @@ public synchronized static void runMainOnce() {
 """
 }
 
+emit(cs) {
+"""
+public static volatile bool haveRun = false;
+public static volatile Object runMainLock = new Object();
+public static void runMainOnce() {
+  lock(runMainLock) {
+    if (!haveRun) {
+      string[] margs = new string[0];
+      try {
+          be.BEL_4_Base.Main(margs);
+      } catch (System.Exception t) {
+          Console.Write(t.ToString());
+      }
+      haveRun = true;
+    }
+  }
+}
+"""
+}
+
 }
 
 use App:EventHandlers as AppEv;
@@ -303,6 +323,8 @@ class AppEv {
 emit(cs) {
 """
 using System.Security.Cryptography;
+using System.IO;
+using System;
 """
 }
 

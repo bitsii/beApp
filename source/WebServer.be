@@ -24,27 +24,13 @@ import org.eclipse.jetty.server.*;
 }
 emit(cs) {
     """
-//for mono ws, prefix Http* with Mono.Net for mono ver, drop (or System.Net) for ms builtin
-//using Mono.Net;
-//for webclient
 using System;
 using System.Net;
 using System.Threading;
+using System.Web;
     """
 }
 use class Web:Server {
-
-  emit(cs) {
-  """
-  public volatile Mono.Net.HttpListener bevi_listener = new Mono.Net.HttpListener();
-  public void bems_handleWeb(object o)  {
-    Mono.Net.HttpListenerContext context = o as Mono.Net.HttpListenerContext;
-    $class/Web:ScriptRequest$ request = new $class/Web:ScriptRequest$(context);
-    request.bem_new_0();
-    bem_handleWeb_1(request);
-  }
-  """
-  }
   
   emit(jv) {
   """
@@ -66,6 +52,12 @@ use class Web:Server {
        }
     }
     }
+  """
+  }
+  
+  emit(cs) {
+  """
+  public static volatile BEC_2_3_6_WebServer bevs_webServer;
   """
   }
   
@@ -118,12 +110,6 @@ use class Web:Server {
   }
   
   stop() {
-    emit(cs) {
-    """
-    bevi_listener.Prefixes.Remove(bevp_listenerPrefix.bems_toCsString());
-    bevi_listener.Stop();
-    """
-    }
     emit(jv) {
     """
     server.stop();
@@ -132,50 +118,10 @@ use class Web:Server {
   }
 
   start() {
-    emit(cs) {
-    """
-    if (!Mono.Net.HttpListener.IsSupported)
-    {
-        throw new Exception("Mono.Net.HttpListener is not supported.");
-    }
-    """
-    }
     
     any ussl;
     if (ssl) {
       ussl = "notnull";
-    }
-    
-    ifEmit(cs) {
-      if (ssl) {
-        String bt = "https://+:" += port.toString() + "/";
-      } else {
-        bt = "http://+:" += port.toString() + "/";
-      }
-      fields {
-        String listenerPrefix = bt;
-      }
-    }
-    emit(cs) {
-    """
-    bevi_listener.Prefixes.Add(bevl_bt.bems_toCsString());
-    """
-    }
-    
-    emit(cs) {
-    """
-    bevi_listener.Start();
-    //Won't get here if start failed, port in use, etc
-    bem_handleStartWeb_0();
-    while(true) {
-      try {
-        ThreadPool.QueueUserWorkItem(bems_handleWeb, bevi_listener.GetContext());  
-      } catch (Mono.Net.HttpListenerException hle) {
-        //should indicate shutdown
-        break;
-      }
-    }
-    """
     }
     
     emit(jv) {
@@ -214,6 +160,12 @@ use class Web:Server {
     """
     }
     
+    emit(cs) {
+    """
+    
+    """
+    }
+    
     return(null);
   }
 
@@ -225,11 +177,11 @@ use class Web:ScriptRequest {
 
   emit(cs) {
   """
-  public Mono.Net.HttpListenerContext bevi_context;
-  public Mono.Net.HttpListenerRequest bevi_req;
-  public Mono.Net.HttpListenerResponse bevi_res;
+  public HttpListenerContext bevi_context;
+  public HttpListenerRequest bevi_req;
+  public HttpListenerResponse bevi_res;
   
-  public $class/Web:ScriptRequest$(Mono.Net.HttpListenerContext bevi_context) {
+  public $class/Web:ScriptRequest$(HttpListenerContext bevi_context) {
       this.bevi_context = bevi_context;
       this.bevi_req = bevi_context.Request;
       this.bevi_res = bevi_context.Response;

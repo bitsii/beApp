@@ -1,1 +1,0 @@
-﻿<%@ Application Inherits="csaweb.Global" %>
