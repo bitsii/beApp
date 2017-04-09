@@ -25,7 +25,7 @@ import org.eclipse.jetty.server.*;
 emit(cs) {
     """
 using System;
-using System.Net;
+//using System.Net;
 using System.Threading;
 using System.Web;
     """
@@ -58,6 +58,11 @@ use class Web:Server {
   emit(cs) {
   """
   public static volatile BEC_2_3_6_WebServer bevs_webServer;
+  public void bems_handleWeb(HttpContext context)  {
+    $class/Web:ScriptRequest$ request = new $class/Web:ScriptRequest$(context);
+    request.bem_new_0();
+    bem_handleWeb_1(request);
+  }
   """
   }
   
@@ -162,7 +167,7 @@ use class Web:Server {
     
     emit(cs) {
     """
-    
+    BEC_2_3_6_WebServer.bevs_webServer = this;
     """
     }
     
@@ -177,11 +182,11 @@ use class Web:ScriptRequest {
 
   emit(cs) {
   """
-  public HttpListenerContext bevi_context;
-  public HttpListenerRequest bevi_req;
-  public HttpListenerResponse bevi_res;
+  public HttpContext bevi_context;
+  public HttpRequest bevi_req;
+  public HttpResponse bevi_res;
   
-  public $class/Web:ScriptRequest$(HttpListenerContext bevi_context) {
+  public $class/Web:ScriptRequest$(HttpContext bevi_context) {
       this.bevi_context = bevi_context;
       this.bevi_req = bevi_context.Request;
       this.bevi_res = bevi_context.Response;
@@ -269,7 +274,7 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      if (bevi_req != null) {
-       string emaddr = bevi_req.LocalEndPoint.Address.ToString();
+       string emaddr = bevi_req.ServerVariables["LOCAL_ADDR"];
        bevl_res = new $class/Text:String$(emaddr);
      }
      """
@@ -290,7 +295,7 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      if (bevi_req != null) {
-       string emaddr = bevi_req.RemoteEndPoint.Address.ToString();
+       string emaddr = bevi_req.UserHostAddress;
        bevl_res = new $class/Text:String$(emaddr);
      }
      """
@@ -313,7 +318,7 @@ use class Web:ScriptRequest {
    setOutputCookie(String name, String value, String path, Bool httpOnly, Bool longTerm) {
      emit(cs) {
      """
-     Cookie toAdd = new Cookie(beva_name.bems_toCsString(), beva_value.bems_toCsString());
+     HttpCookie toAdd = new HttpCookie(beva_name.bems_toCsString(), beva_value.bems_toCsString());
      bevi_res.Cookies.Add(toAdd);
      """
      }
@@ -336,10 +341,9 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      string csname = beva_name.bems_toCsString();
-     foreach (Cookie cook in bevi_req.Cookies) {
-       if (cook.Name == csname) {
-         return(new $class/Text:String$(cook.Value));
-       }
+     HttpCookie cook = bevi_req.Cookies.Get(csname);
+     if (cook != null) {
+       return new $class/Text:String$(cook.Value);
      }
      """
      }

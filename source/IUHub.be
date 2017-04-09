@@ -270,9 +270,11 @@ use class IUHub:HubPlugin {
         Account ac = Account.new();
         ac.permsString = "admin";
         ac.user = "setup_admin";
-        ac.pass = System:Random.getString(64);
+        String sapass = System:Random.getString(32);
+        ac.pass = sapass;
         app.accountManager.putAccount(ac);
         app.configManager.put("embeddedLogin", ac.user);
+        log.log("setup " + sapass);
       }
      
       trc.repeatDelay = Time:Interval.new(7200, 0);

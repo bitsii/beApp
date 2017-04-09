@@ -15,24 +15,25 @@ namespace csaweb
 		{
       lock (handlerLock) {
         BEC_2_3_11_AppRunMainOnce.runMainOnce();
-      //  if (bevs_webServer == null) {
-      //    bevs_webServer = BEC_2_3_6_WebServer.bevs_webServer;
-      //  }
+        if (bevs_webServer == null) {
+          bevs_webServer = BEC_2_3_6_WebServer.bevs_webServer;
+        }
       }
 		}
 
 		public bool IsReusable
 		{
-			get { return false; }
+			get { return true; }
 		}
 
 		public void ProcessRequest(HttpContext context)
 		{
-      
-			var result = "<h1>Yeah</h1>";
-			var bytes = Encoding.UTF8.GetBytes(result);
-
-			context.Response.Write(result);
+      try {
+        bevs_webServer.bems_handleWeb(context);
+      } catch ( Exception e ) {
+        Console.WriteLine( "Got exception during handleweb" );
+        Console.WriteLine( e ) ;
+      }
 		}
 	}
 }

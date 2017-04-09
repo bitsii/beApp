@@ -82,10 +82,16 @@ use class App:AuthenticatedWebApp(AuthedApp) {
         vw.gzipOutput = false;
       }
       fields {
-        System:Thread myThread = System:Thread.new(vw);
+        System:Thread myThread;
       }
       log.log("Starting Web");
-      myThread.start();
+      ifEmit(jv) {
+        myThread = System:Thread.new(vw);
+        myThread.start();
+      }
+      ifEmit(cs) {
+        vw.main();
+      }
     }
     
   assureCert(Int port) String {
