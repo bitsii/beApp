@@ -62,7 +62,7 @@ class Gw {
     String res = sc.output.readString();
     sc.close();
     
-    //log.log("netstat output " + res);
+    //("!!!!!! netstat output " + res).print();
     
     if (System:CurrentPlatform.name == "mswin") {
       Int fz = res.find("0.0.0.0"); //win
@@ -70,7 +70,11 @@ class Gw {
       fz = 0;
     }
     if (def(fz)) {
-      Int fz2 = res.find("0.0.0.0", fz + 1);
+      if (System:CurrentPlatform.name == "macos") {
+        fz2 = res.find("default", fz + 1);
+      } else {
+        Int fz2 = res.find("0.0.0.0", fz + 1);
+      }
       if (def(fz2)) {
         fz = fz2;
       }
@@ -89,6 +93,7 @@ class Gw {
         }
       }
     }
+    //("gw accum " + accum).print();
     return(accum);
   }
 

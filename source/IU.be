@@ -570,7 +570,11 @@ class Upnp {
       fz = 0;
     }
     if (def(fz)) {
-      Int fz2 = res.find("0.0.0.0", fz + 1);
+      if (System:CurrentPlatform.name == "macos") {
+        fz2 = res.find("default", fz + 1);
+      } else {
+        Int fz2 = res.find("0.0.0.0", fz + 1);
+      }
       if (def(fz2)) {
         fz = fz2;
       }
@@ -589,6 +593,7 @@ class Upnp {
         }
       }
     }
+    //log.log("getgw accum " + accum);
     return(accum);
   }
   
