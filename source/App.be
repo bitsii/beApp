@@ -607,12 +607,18 @@ use class App:AuthPlugin {
     }
     String sessionLength = arg["sessionLength"];
     if (TS.isEmpty(sessionLength) || sessionLength.isInteger()!) {
-      sessionLength = "30";
+      sessionLength = request.getSession("sessionLength");
+      if (TS.isEmpty(sessionLength) || sessionLength.isInteger()!) {
+        sessionLength = "30";
+      }
     }
     if (request.embedded) {
       sessionLength = "-1";
     }
     Int sessionLengthI = Int.new(sessionLength) * 60;
+    if (sessionLengthI < 0) {
+      sessionLengthI = -1;
+    }
     log.log("sessionLength " + sessionLengthI.toString());
     request.putSession("sessionLength", sessionLengthI.toString());
     if (sessionLengthI < 0) {
@@ -1436,6 +1442,7 @@ class AuthedApp {
       log.log("no sessionExp");
       return(false);
     }
+    log.log("sessionExp " + sessionExp);
     Int sei = Int.new(sessionExp);
     if (sei < 0) {
       log.log("session never expires");

@@ -1,19 +1,43 @@
-why is stay logged in not working again?
+
+fix paths for db sl (not force \ on linux)
+if still problem lock on app lock when creating managers (could be concurrency, but think it's path)
 
 csweb
-  get working http xsp
-    try basic servlet thing
-    add in / embed be/iuhub
-  get working on linux
+  xamios
   add imap get hub working
-  
-xamios
+  get working on linux
 
+android package on bitbucket
 try on phone
 
-playstore - export
-android package on bitbucket
+play/appstore - export
 
+retest setup
+
+up/download pics automatically - imap (or just notify)
+
+feedback when imap setup / pass is wrong
+  have be part of update/links update
+  have links update be a separate call after login update
+  have a refresh option in the links list
+  detect webcams (link at least) does the wrong thing, have it do the update
+
+way better pi setup (wifi, headless)
+
+iot dev sec (wifi, bt, ?)
+  dev ssid, bcast, setup (app)
+  set ssid, key, join
+  (instructs ssid key) per-dev
+
+mac, win ver (xamarin forms)
+  have the notion of a proxy that can wake a box, call it (def by devid)
+  cs ws - use the httplistener
+    ?move to bouncy castle for cert gen?
+    ?or just figure out why it's not liked?
+    
+android ver (full) (?pi aosp) or 
+  zw/zig local wifi hub?
+  
 other cmd options, like play sound file, play sound on loop
   refresh for action links (add in hub) calls the thing that refreshes dev and other
   the do for mp3cycle android ver
@@ -21,22 +45,7 @@ other cmd options, like play sound file, play sound on loop
   
 sitename not deleted after internet listen removed, staying in wc
 
-up/download pics automatically - imap
-
-auto-update
-
 update for dependencies (script...)
-
-generic redo update and fwd for changes like imap, service, cloud setup
-  call in all those cases
-
-retest setup
-
-feedback when imap setup / pass is wrong
-  have be part of update/links update
-  have links update be a separate call after login update
-  have a refresh option in the links list
-  detect webcams (link at least) does the wrong thing, have it do the update
 
 outside db key for en/decrypt values in config, in sec store on mobile
 
@@ -63,8 +72,6 @@ multi process embedded database for java / android
 automation for install inst on internet listen / hosting
 
 rm old junk from cam
-
-android ver (full)
 
 droid
   no dev name - get from phone
@@ -101,18 +108,6 @@ For embedded stay logged just need to store and retrieve the session from config
   ?make initial login non-expiring?  Or just really long, like 12-24 hours
 
 zwave etc
-
-iot dev sec (wifi, bt, ?)
-  dev ssid, bcast, setup (app)
-  set ssid, key, join
-  (instructs ssid key) per-dev
-
-mac, win ver (xamarin forms)
-  have the notion of a proxy that can wake a box, call it (def by devid)
-  cs ws - use the httplistener
-    ?move to bouncy castle for cert gen?
-    ?or just figure out why it's not liked?
-
 
 library based dev env
   builds for each thing (at least sep jv and js)
