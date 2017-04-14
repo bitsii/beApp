@@ -61,8 +61,7 @@ cp source/MOCAM.conf csaweb/csaweb/App/IUHub
 
 cp extlibs/IUHubCs/* csaweb/csaweb/App/IUHub
 
-#cd csaweb/csaweb
-#PATH=$PATH:./App/IUHub
-
 cd csaweb/csaweb
+PATH=$PATH:./App/IUHub
+
 xsp

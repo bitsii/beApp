@@ -21,7 +21,7 @@ class SlDb(DbDb) {
   
   pathNew(IO:File:Path _dbp) self {
     super.pathNew(_dbp);
-    String dbAddr = "Data Source=" + dbp.toString("\\") + ";Version=3;";
+    String dbAddr = "Data Source=" + dbp.toString() + ";Version=3;";
     //String dbAddr = "Data Source=test.db;Version=3;";
     new(dbAddr);
   }
