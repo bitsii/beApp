@@ -1,43 +1,42 @@
 
-fix paths for db sl (not force \ on linux)
-if still problem lock on app lock when creating managers (could be concurrency, but think it's path)
-
-csweb
-  xamios
-  add imap get hub working
-  get working on linux
-
 android package on bitbucket
 try on phone
+
+xamios
+
+up/download pics automatically - 
+  event queue (global)
+    sql timestamp, randid, json
+  pic is event
+    path to img
+  motion creates event
+  keep last event for device id
+  background longpoll stay attached
+    get greater than last
+    send events to poll
+    semaphore
+
+test imap with diff providers for cs
 
 play/appstore - export
 
 retest setup
 
-up/download pics automatically - imap (or just notify)
+android ver (full) (?pi aosp) or 
+  zw/zig local wifi hub?
 
 feedback when imap setup / pass is wrong
-  have be part of update/links update
+  have be part of update/links update (put in config)
   have links update be a separate call after login update
   have a refresh option in the links list
   detect webcams (link at least) does the wrong thing, have it do the update
 
-way better pi setup (wifi, headless)
-
-iot dev sec (wifi, bt, ?)
-  dev ssid, bcast, setup (app)
-  set ssid, key, join
-  (instructs ssid key) per-dev
-
 mac, win ver (xamarin forms)
   have the notion of a proxy that can wake a box, call it (def by devid)
-  cs ws - use the httplistener
-    ?move to bouncy castle for cert gen?
-    ?or just figure out why it's not liked?
+  xsp ssl
+  ?move to bouncy castle for cert gen?
+  ?or just figure out why it's not liked?
     
-android ver (full) (?pi aosp) or 
-  zw/zig local wifi hub?
-  
 other cmd options, like play sound file, play sound on loop
   refresh for action links (add in hub) calls the thing that refreshes dev and other
   the do for mp3cycle android ver
@@ -75,8 +74,6 @@ rm old junk from cam
 
 droid
   no dev name - get from phone
-  
-auto dl pics
 
 sharing urls for other apps
 
@@ -152,7 +149,7 @@ upload in progress indicator
   id for upload process
   periodic/timer calls from ui
   
-temporary picture access/sharing on network (email link)
+temporary picture access/sharing (email link)
   
 play sounds from file manager, incl looop n times (wh noise, include by dl?)
 mixer settings for output and vol?
@@ -163,7 +160,7 @@ ______________
   
 force deviceid to certain characteristics (in get)
 
-secure tunnel for vnc (encrypted port fwd)
+encrypted port fwd (secure tunnel for vnc)
 ______________
 
 static forward for things like ssh from local port on client

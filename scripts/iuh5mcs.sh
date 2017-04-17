@@ -61,6 +61,8 @@ cp source/MOCAM.conf csaweb/csaweb/App/IUHub
 
 cp extlibs/IUHubCs/* csaweb/csaweb/App/IUHub
 
+./scripts/pingws.sh &
+
 cd csaweb/csaweb
 PATH=$PATH:./App/IUHub
 

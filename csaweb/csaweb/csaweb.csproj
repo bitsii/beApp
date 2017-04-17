@@ -45,11 +45,26 @@
     <Reference Include="Mono.Data.Sqlite" />
     <Reference Include="Mono.Data.Tds" />
     <Reference Include="Mono.Security" />
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit">
+      <HintPath>..\packages\MimeKit.1.14.0\lib\net45\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="MailKit">
+      <HintPath>..\packages\MailKit.1.14.2\lib\net45\MailKit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
+    <Content Include="Global.asax" />
+    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
     <Compile Include="BECS_WebHandler.cs" />
     <Compile Include="BEC_2_2_3_IOLog.cs" />
     <Compile Include="BEC_2_2_4_IOFile.cs" />

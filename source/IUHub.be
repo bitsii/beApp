@@ -43,6 +43,16 @@ import javax.mail.Flags.Flag;
 """
 }
 
+emit(cs) {
+"""
+using System;
+using MailKit.Net.Imap;
+using MailKit.Search;
+using MailKit;
+using MimeKit;
+"""
+}
+
 use class IUHub:HubStart {
 
    new() self {
@@ -607,6 +617,37 @@ use class IUHub:HubPlugin {
           //List froms = List.new();
           List contents = List.new();
           List devices = List.new();
+          
+          emit(cs) {
+          """
+          var client = new ImapClient();
+          // accept all SSL certificates (TODO comment and try)
+          client.ServerCertificateValidationCallback = (s,c,h,e) => true;
+          client.Connect(bevl_endpoint.bems_toCsString(), 993, true);
+          client.AuthenticationMechanisms.Remove ("XOAUTH2");
+          client.Authenticate (bevl_user.bems_toCsString(), bevl_pass.bems_toCsString());
+          var inbox = client.Inbox;
+          if (bevl_subf != null) {
+            var subfcs = bevl_subf.bems_toCsString();
+            foreach (var folder in inbox.GetSubfolders (false)) {
+              if (folder.Name == subfcs) {
+                inbox = folder;
+              }
+            }
+          }
+          inbox.Open (FolderAccess.ReadOnly);
+          for (int i = 0; i < inbox.Count; i++) {
+            var message = inbox.GetMessage (i);
+            var mc = message.HtmlBody;
+            //Console.WriteLine ("Subject: {0}", message.Subject);
+            bevl_contents.bem_addValue_1(new $class/Text:String$(mc));
+          }
+          //Console.WriteLine ("Total messages: {0}", inbox.Count);
+          //Console.WriteLine ("Recent messages: {0}", inbox.Recent);
+          client.Disconnect (true);
+          """
+          }
+          
           emit(jv) {
           """
           Properties props = new Properties();
