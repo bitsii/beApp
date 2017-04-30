@@ -187,7 +187,8 @@ use class IUHub:HubPlugin {
     try {
       wcl.lock();
       doUpdateInner();
-    } finally {
+      wcl.unlock();
+    } catch(any e) {
       wcl.unlock();
     }
   }
@@ -391,11 +392,9 @@ use class IUHub:HubPlugin {
         }
       }
     } catch (any e) {
+      resetCertMan(wco.certificatePrint);
       log.log("got exception during checkConn");
       log.log(e);
-    } finally {
-      Web:Client:CertificateManager.validateHosts = true;
-      Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
     }
     if (TS.notEmpty(destUrl) && TS.notEmpty(onceToken)) {
       return(Pair.new(destUrl, onceToken));
@@ -457,13 +456,12 @@ use class IUHub:HubPlugin {
         ds["deviceId"] = arg["deviceId"];
         String dss = Json:Marshaller.marshall(ds);
         app.configManager.put("DeviceSession." + a.user + "!" + arg["deviceId"], dss);
-        if (true) { return(checkConnInner(wco, ds, destUrl)) };
+        if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
       }
       log.log("!!! got res from dev loginrequest " + res);
-    } finally {
-      Web:Client:CertificateManager.validateHosts = true;
-      //Web:Client:CertificateManager.validateCertificates = true;
-      Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
+      resetCertMan(wco.certificatePrint);
+    } catch(any e) {
+      resetCertMan(wco.certificatePrint);
     }
 
   }
@@ -1136,6 +1134,7 @@ use class IUHub:HubPlugin {
         for (pinger in pingers) {
           if (pinger.finished.o) {
             if (TS.notEmpty(pinger.returned.o)) {
+              resetCertMan(wco.certificatePrint);
               return(pinger.returned.o);
             }
           } else {
@@ -1143,16 +1142,21 @@ use class IUHub:HubPlugin {
           }
         }
         if (allDone) {
+          resetCertMan(wco.certificatePrint);
           return(null);
         }
         Time:Sleep.sleepMilliseconds(20);
       }
-    } finally {
-      Web:Client:CertificateManager.validateHosts = true;
-      //Web:Client:CertificateManager.validateCertificates = true;
-      Web:Client:CertificateManager.acceptedThumbprints.delete(wco.certificatePrint);
+      resetCertMan(wco.certificatePrint);
+    } catch(any e) {
+      resetCertMan(wco.certificatePrint);
     }
     return(null);
+  }
+  
+  resetCertMan(String certPrint) {
+    Web:Client:CertificateManager.validateHosts = true;
+    Web:Client:CertificateManager.acceptedThumbprints.delete(certPrint);
   }
   
   pingUrlInner(String destUrl, Int waitFirst) Bool {

@@ -367,7 +367,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       try {
         wcl.lock();
         doForwardInner();
-      } finally {
+        wcl.unlock();
+      } catch(any e) {
         wcl.unlock();
       }
     }
