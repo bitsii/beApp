@@ -3,22 +3,28 @@ ios
   c++ - sqlite, https://github.com/eidheim/Simple-Web-Server
   libcurl https://github.com/sinofool/build-libcurl-ios (can do imap too)
 
-headless setup pi
-
-mac, win vers
-  proxy vnc
-  embed miniupnpc (?)
-  cs ssh (or putty/embed ssh?)
-  ssh install package with instructions
-
 android package on bitbucket
 try on phone
 
 play/appstore - export
 
+mac, win client vers
+
 hit url on app on pic save (script)
   have that be able to copy and other (save for auto-dl, later delete)
    (also delete copy)
+
+====
+
+headless setup pi
+
+cmd line to get internal and external ip addresses for devices (for scripting)
+
+proxy vnc
+embed miniupnpc (?)
+cs ssh (or putty/embed ssh?)
+ssh install package with instructions
+  
 next/prior picture links
 daily granularity motion path
 

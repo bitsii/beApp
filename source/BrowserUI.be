@@ -151,7 +151,7 @@ class CM {
         SslPolicyErrors sslPolicyErrors)  {
     
     //Console.WriteLine((new X509Certificate2(cert)).Thumbprint);
-    $class/Web:Client:CertificateManager$ cm = $class/Web:Client:CertificateManager$.bevs_inst;
+    $class/Web:Client:CertificateManager$ cm = $class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst;
     //if thumbprint in accepted set, ret true
     if (cm.bevp_acceptedThumbprints.bem_has_1(
       new $class/Text:String$((new X509Certificate2(cert)).Thumbprint)).bevi_bool) {
@@ -161,7 +161,7 @@ class CM {
     }
     //if validating certs and there's an error, return false
     if (
-      $class/Web:Client:CertificateManager$.bevs_inst.bevp_validateCertificates.bevi_bool
+      $class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst.bevp_validateCertificates.bevi_bool
       && sslPolicyErrors != System.Net.Security.SslPolicyErrors.None) {
       return false;
     }
@@ -183,7 +183,7 @@ class CM {
                bevi_defaultTm.checkClientTrusted(certs, org);
              }
              public void checkServerTrusted(X509Certificate[ ] certs, String org) throws CertificateException { 
-               $class/Web:Client:CertificateManager$ cm = $class/Web:Client:CertificateManager$.bevs_inst;
+               $class/Web:Client:CertificateManager$ cm = $class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst;
                 if (certs != null && certs.length > 0) {
                 try {
                 for (int i = 0;i < certs.length;i++) {
@@ -199,7 +199,7 @@ class CM {
                   throw new CertificateException("Not in accepted thumbprints");
                 }
                 if (
-      $class/Web:Client:CertificateManager$.bevs_inst.bevp_validateCertificates.bevi_bool) {
+      $class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst.bevp_validateCertificates.bevi_bool) {
                 bevi_defaultTm.checkServerTrusted(certs, org);
                 }
              }
@@ -233,7 +233,7 @@ class CM {
   """
   }
 
-  //bevs_inst
+  //bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst
   default() self {
     fields {
       Bool checkHosts = true;
@@ -333,7 +333,7 @@ use class Web:Client {
         URL obj = new URL(bevp_url.bems_toJvString());
 		    bevi_conn = (HttpURLConnection) obj.openConnection();
 		    if (bevl_ssl != null &&
-      !$class/Web:Client:CertificateManager$.bevs_inst.bevp_validateHosts.bevi_bool) {
+      !$class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst.bevp_validateHosts.bevi_bool) {
           HttpsURLConnection c = (HttpsURLConnection) bevi_conn;
            c.setHostnameVerifier(new HostnameVerifier() {
                 public boolean verify(String host, SSLSession sess) {
@@ -402,7 +402,7 @@ use class Web:Client {
             Certificate cert = certs[0];
             if (cert instanceof X509Certificate) {
               bevp_certificateThumbprint = new $class/Text:String$(
-                 $class/Web:Client:CertificateManager$.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
+                 $class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst.bems_getThumbprint(((X509Certificate) cert))
               );
             }
           }
@@ -465,7 +465,7 @@ use class Web:Client {
             Certificate cert = certs[0];
             if (cert instanceof X509Certificate) {
               bevp_certificateThumbprint = new $class/Text:String$(
-                 $class/Web:Client:CertificateManager$.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
+                 $class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst.bems_getThumbprint(((X509Certificate) cert))
               );
             }
           }

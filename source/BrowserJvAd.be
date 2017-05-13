@@ -91,7 +91,7 @@ public static class MainActivity extends AppCompatActivity {
             System.err.println("got a null obj in HandleCall");
           } else {
             $class/Text:String$ objbes = new $class/Text:String$(objstr);
-            $class/UI:JvAd:WebBrowser$ sinst = $class/UI:JvAd:WebBrowser$.bevs_inst;
+            $class/UI:JvAd:WebBrowser$ sinst = $class/UI:JvAd:WebBrowser$.bece_BEC_3_2_4_10_UIJvAdWebBrowser_bevs_inst;
             $class/Text:String$ resbes = sinst.bem_handleWeb_1(objbes);
             if (resbes != null) {
               return resbes.bems_toJvString();

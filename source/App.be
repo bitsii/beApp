@@ -290,7 +290,7 @@ class AppEv {
   static void handleEvent(String event) {
     try {
         
-    bevs_inst.bem_handleEvent_1(
+    bece_BEC_2_3_13_AppEventHandlers_bevs_inst.bem_handleEvent_1(
     new $class/Text:String$(event)
     );
     } catch (Throwable t) {

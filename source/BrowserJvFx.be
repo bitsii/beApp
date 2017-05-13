@@ -35,7 +35,7 @@ class FxBr(WebImp) {
         
           try {
             //handler setup happens here
-            sinst = $class/UI:JvFx:WebBrowser$.bevs_inst;
+            sinst = $class/UI:JvFx:WebBrowser$.bece_BEC_3_2_4_10_UIJvFxWebBrowser_bevs_inst;
             sinst.bem_initWeb_0();
             sinst.stage = stage;
         

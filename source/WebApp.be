@@ -163,7 +163,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
     emit(jv) {
     """
     bevp_certificateThumbprint = new $class/Text:String$(
-                 $class/Web:Client:CertificateManager$.bevs_inst.bems_getThumbprint(((X509Certificate) cert))
+                 $class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst.bems_getThumbprint(((X509Certificate) cert))
               );
     """
     }
