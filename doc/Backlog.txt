@@ -1,7 +1,8 @@
 
+drop background thread for iuh, timer call from js browser
+
 ios
-  c++ - sqlite, https://github.com/eidheim/Simple-Web-Server
-  libcurl https://github.com/sinofool/build-libcurl-ios (can do imap too)
+  nativescript, cordova
 
 android package on bitbucket
 try on phone
