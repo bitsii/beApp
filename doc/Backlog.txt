@@ -1,8 +1,7 @@
 
-drop background thread for iuh, timer call from js browser
-
 ios
-  nativescript, cordova
+c++ - sqlite, https://github.com/eidheim/Simple-Web-Server
+libcurl https://github.com/sinofool/build-libcurl-ios (can do imap too)
 
 android package on bitbucket
 try on phone
@@ -74,6 +73,8 @@ default session time on regular login from config
 need retry script for failure to launch during install
 
 ====
+
+flutter
 
 upgrade check two places
 
