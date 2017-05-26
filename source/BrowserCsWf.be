@@ -19,7 +19,7 @@ public class BeWebBrowser : Form
     static void Main()
     {
         //add to csc /main:be.BeWebBrowser
-        be.BEL_4_Base.Main(new string[] {});
+        be.BEX_E.Main(new string[] {});
     }
     
     public void BeRun() {

@@ -11,7 +11,7 @@ mkdir -p csaweb/csaweb/App/IUHub
 rm -rf targetMc
 mkdir -p targetMc
 
-mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath targetMc/d --buildPath targetMc --emitFlag iuDebug --emitLang cs -mainClass=IUHub:HubWebStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUHubWebStart.be source/Db.be source/SlDb.be source/BrowserUI.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath targetMc/d --buildPath targetMc --emitFlag iuDebug --emitLang cs -mainClass=IUHub:HubWebStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUHubWebStart.be source/Db.be source/SlDb.be source/BrowserUI.be source/WebServer.be source/App.be source/WebApp.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -27,12 +27,12 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 #cp csaweb/csaweb/Web.config csaweb/csaweb
 #cp csaweb/csaweb/bin/* csaweb/csaweb/App/IUHub/
 
-mono --debug ../abe-pl/target5/BEL_4_Base_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath csaweb/csaweb/App/IUHub/d --buildPath csaweb/csaweb/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath csaweb/csaweb/App/IUHub/d --buildPath csaweb/csaweb/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 #hub
-cp csaweb/csaweb/App/IUHub/Base/target/js/be/BEL_4_Base.js csaweb/csaweb/App/IUHub/IUHub_BEL_4_Base.js
+cp csaweb/csaweb/App/IUHub/Base/target/js/be/BEX_E.js csaweb/csaweb/App/IUHub/IUHub_BEX_E.js
 cp scripts/upgrade.bat csaweb/csaweb/App/IUHub
 cp scripts/postupgrade.bat csaweb/csaweb/App/IUHub
 cp scripts/upgrade.sh csaweb/csaweb/App/IUHub

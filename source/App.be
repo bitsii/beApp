@@ -249,7 +249,7 @@ public synchronized static void runMainOnce() {
   if (!haveRun) {
     String[] margs = new String[0];
     try {
-        be.BEL_4_Base.main(margs);
+        be.BEX_E.main(margs);
     } catch (Throwable t) {
         System.err.println("Failed in main with " + t.getMessage());
         throw new Error(t.getMessage(), t);
@@ -269,7 +269,7 @@ public static void runMainOnce() {
     if (!haveRun) {
       string[] margs = new string[0];
       try {
-          be.BEL_4_Base.Main(margs);
+          be.BEX_E.Main(margs);
       } catch (System.Exception t) {
           Console.Write(t.ToString());
       }

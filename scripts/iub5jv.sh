@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitFlag iuDebug --emitLang jv -mainClass=IUBridge:BridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHubTest.be source/IUHub.be source/IUCam.be source/IUBridge.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitFlag iuDebug --emitLang jv -mainClass=IUBridge:BridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHubTest.be source/IUHub.be source/IUCam.be source/IUBridge.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -26,22 +26,22 @@ javac ../abe-pl/system/jv/be/*.java ../apprun/App/IUHub/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-java be.BEL_4_Base ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 cd ../apprun/App/IUHub/Base/target/jv
-jar -cf ../../../BEL_4_Base_lui_jv.jar .
+jar -cf ../../../BEX_E_lui_jv.jar .
 cd ../../../../../../ioturl
 
 cd ../abe-pl/system/jv
-jar -cf ../../../apprun/App/IUHub/BEL_4_Base_lib_jv.jar .
+jar -cf ../../../apprun/App/IUHub/BEX_E_lib_jv.jar .
 cd ../../../ioturl
 
 find ../abe-pl/system -name "*.class" -exec rm {} \;
 
 #hub
-cp ../apprun/App/IUHub/Base/target/js/be/BEL_4_Base.js ../apprun/App/IUHub/IUHub_BEL_4_Base.js
+cp ../apprun/App/IUHub/Base/target/js/be/BEX_E.js ../apprun/App/IUHub/IUHub_BEX_E.js
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp scripts/postupgrade.bat ../apprun/App/IUHub
 cp scripts/upgrade.sh ../apprun/App/IUHub

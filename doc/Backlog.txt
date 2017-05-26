@@ -1,4 +1,6 @@
 
+bex_e fix
+
 ios
 c++ - sqlite, https://github.com/eidheim/Simple-Web-Server
 libcurl https://github.com/sinofool/build-libcurl-ios (can do imap too)
@@ -13,6 +15,8 @@ mac, win client vers
 hit url on app on pic save (script)
   have that be able to copy and other (save for auto-dl, later delete)
    (also delete copy)
+   
+stay in app and proxy ui?
 
 ====
 
