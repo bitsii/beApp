@@ -106,7 +106,7 @@ use class IUCam:MotionUpdate {
         IO:File:Writer cw = confp.file.writer.openAppend();
         cw.write("videodevice " + cp + "\n");
         cw.write("target_dir Shared/WebCam\n");
-        Int intPorti = System:Random.getInt(Int.new(), 6000);
+        Int intPorti = System:Random.getIntMax(6000);
         intPorti += 9001;
         String currPortS = intPorti.toString();
         app.configManager.put("cam." + cp + ".motionPort", currPortS);

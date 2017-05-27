@@ -1292,7 +1292,7 @@ class AuthedApp {
   
   preLoginCheck(request) Bool {
     if (lastLoginBad.o) {
-      Int slptime = System:Random.getInt(Int.new(), 500);
+      Int slptime = System:Random.getIntMax(500);
       Time:Sleep.sleepMilliseconds(slptime);
     }
     return(true);
@@ -1314,7 +1314,7 @@ class AuthedApp {
       if (TS.isEmpty(intPort)) {
         intPort = self.configManager.get("wui.port");
         if (TS.isEmpty(intPort)) {
-          Int intPorti = System:Random.getInt(Int.new(), 6000);
+          Int intPorti = System:Random.getIntMax(6000);
           intPorti += 3000;
           intPort = intPorti.toString();
           self.configManager.put("wui.port", intPort);

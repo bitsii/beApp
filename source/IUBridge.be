@@ -228,7 +228,7 @@ use class IUBridge:BridgeStart {
         String olt = System:Random.getString(64);
         ui.configManager.put("OnceToken." + olt, "setup_admin");
         
-        Int intPorti = System:Random.getInt(Int.new(), 6000);
+        Int intPorti = System:Random.getIntMax(6000);
         intPorti += 3000;
         String intPort = intPorti.toString();
         ui.configManager.put("wui.port", intPort);

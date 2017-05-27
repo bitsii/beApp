@@ -67,7 +67,7 @@ class IU:WebConnect {
   }
   
   getAPort() String {
-    Int externalPorti = System:Random.getInt(Int.new(), 6000);
+    Int externalPorti = System:Random.getIntMax(6000);
     externalPorti += 3000;
     return(externalPorti.toString());
   }
