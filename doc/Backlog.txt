@@ -1,9 +1,11 @@
 
-bex_e fix
-
 ios
 c++ - sqlite, https://github.com/eidheim/Simple-Web-Server
 libcurl https://github.com/sinofool/build-libcurl-ios (can do imap too)
+
+command line through sqlite and basics
+web server based
+imap
 
 android package on bitbucket
 try on phone
