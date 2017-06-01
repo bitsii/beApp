@@ -111,8 +111,8 @@ use class IUCam:MotionUpdate {
         String currPortS = intPorti.toString();
         app.configManager.put("cam." + cp + ".motionPort", currPortS);
         cw.write("webcontrol_port " + currPortS + "\n");
-        cw.write("picture_filename PICDIR_%Y-%m-%d_%H/PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
-        //cw.write("picture_filename PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M\n");
+        //cw.write("picture_filename PICDIR_%Y-%m-%d_%H/PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
+        cw.write("picture_filename PICDIR_%Y-%m-%d/PIC-mo-" + mcn + "-%Y-%m-%d_%H:%M:%S\n");
       }
       //start it in background
       String toRun = app.paths.appPath.copy().addStep("motionrun.sh").toString();
@@ -283,7 +283,7 @@ use class IUCam:CamPlugin {
       
     versionGet() String {
       fields {
-        String version =@ "5.8.0";
+        String version =@ "5.8.1";
       }
       return(version);
     }

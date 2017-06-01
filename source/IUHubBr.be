@@ -428,6 +428,18 @@ use class IUHub:Eui {
    updateImageResponse(Map arg) {
      HD.getElementById("clearPicId").display = "block";
      HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
+     if(arg.has("plink")) {
+      HD.getElementById("plink").innerHTML = arg["plink"];
+      HD.getElementById("plink").display = "block";
+     } else {
+      HD.getElementById("plink").display = "none";
+     }
+     if(arg.has("nlink")) {
+      HD.getElementById("nlink").innerHTML = arg["nlink"];
+      HD.getElementById("nlink").display = "block";
+     } else {
+      HD.getElementById("nlink").display = "none";
+     }
    }
    
    updateResponse(Map arg) {
@@ -507,6 +519,8 @@ use class IUHub:Eui {
    clearImage() {
      HD.getElementById("imgdiv").innerHTML = "";
      HD.getElementById("clearPicId").display = "none";
+     HD.getElementById("nlink").display = "none";
+     HD.getElementById("plink").display = "none";
    }
    
    changePassRequest() {
@@ -810,11 +824,25 @@ use class IUCam:CamUI {
    updateImageResponse(Map arg) {
      HD.getElementById("clearPicId").display = "block";
      HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
+     if(arg.has("plink")) {
+      HD.getElementById("plink").innerHTML = arg["plink"];
+      HD.getElementById("plink").display = "block";
+     } else {
+      HD.getElementById("plink").display = "none";
+     }
+     if(arg.has("nlink")) {
+      HD.getElementById("nlink").innerHTML = arg["nlink"];
+      HD.getElementById("nlink").display = "block";
+     } else {
+      HD.getElementById("nlink").display = "none";
+     }
    }
    
    clearImage() {
      HD.getElementById("imgdiv").innerHTML = "";
      HD.getElementById("clearPicId").display = "none";
+     HD.getElementById("nlink").display = "none";
+     HD.getElementById("plink").display = "none";
    }
    
    detectCams() {

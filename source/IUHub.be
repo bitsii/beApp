@@ -584,7 +584,7 @@ use class IUHub:HubPlugin {
     
     versionGet() String {
       fields {
-        String version =@ "5.8.0";
+        String version =@ "5.8.1";
       }
       return(version);
     }

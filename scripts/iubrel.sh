@@ -2,7 +2,7 @@
 
 rm -rf ../apprun/App/IUHub/Base
 
-uglifyjs ../apprun/App/IUHub/IUHub_BEX_E.js > ../apprun/App/IUHub/IUHub_BEX_E.js.1
+~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/IUHub/IUHub_BEX_E.js > ../apprun/App/IUHub/IUHub_BEX_E.js.1
 rm -f ../apprun/App/IUHub/IUHub_BEX_E.js
 mv ../apprun/App/IUHub/IUHub_BEX_E.js.1 ../apprun/App/IUHub/IUHub_BEX_E.js
 

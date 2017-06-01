@@ -1,3 +1,10 @@
+try on phone
+auto-dl (wakeup occasionally, get changes)
+  keep pic list
+  compare against what have
+  put in dir named for devicename
+
+android package on bitbucket
 
 ios
 c++ - sqlite, https://github.com/eidheim/Simple-Web-Server
@@ -7,9 +14,6 @@ command line through sqlite and basics
 web server based
 imap
 
-android package on bitbucket
-try on phone
-
 play/appstore - export
 
 mac, win client vers
@@ -18,9 +22,9 @@ hit url on app on pic save (script)
   have that be able to copy and other (save for auto-dl, later delete)
    (also delete copy)
    
-stay in app and proxy ui?
-
 ====
+
+stay in app and proxy ui?
 
 headless setup pi
 
@@ -30,15 +34,8 @@ proxy vnc
 embed miniupnpc (?)
 cs ssh (or putty/embed ssh?)
 ssh install package with instructions
-  
-next/prior picture links
-daily granularity motion path
 
 test imap with diff providers for cs
-
-auto-dl (wakeup occasionally, get changes)
-  keep pic list
-  compare against what have
 
 remote install over ssh for hosted
 

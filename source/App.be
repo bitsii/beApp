@@ -807,7 +807,7 @@ use class App:FileManagerPlugin {
           += hex.encode(parent.toString()) += "');return false;\">.. (UP)</a></td></tr>";
         }
         if (dirFile.isDir) {
-          any dit = dirFile.iterator;
+          auto dit = dirFile.iterator;
           dit.open();
           List olist = List.new();
           Map omap = Map.new();
@@ -843,9 +843,56 @@ use class App:FileManagerPlugin {
           }
           dit.close();
         } elseIf (dirFile.path.toString().ends(".jpg")) {
+          //get one before and after for slideshow
+          dit = dirFile.path.parent.file.iterator;
+          dit.open();
+          olist = List.new();
+          omap = Map.new();
+          while (dit.hasNext) {
+            entry = dit.next;
+            p = entry.path;
+            olist += p.steps.last;
+            omap.put(p.steps.last, entry);
+          }
+          dit.close();
+          olist = olist.sort();
+          auto pitcs = dirFile.path.toString();
+          Bool found = false;
+          for (ole in olist) {
+            entry = omap.get(ole);
+            auto ps = entry.path.toString();
+            if (ps == pitcs) {
+              found = true;
+            } else {
+              if (ps.ends(".jpg")) {
+                if (found) {
+                  if (undef(safter)) {
+                    auto safter = entry.path;
+                  }
+                } else {
+                  auto sbefore = entry.path;
+                }
+              }
+            }
+          }
           Map res = Map.new();
           res["action"] = "updateImageResponse";
           res["imghtm"] = "<img src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + "&cbust=" + Time:Interval.now().seconds + System:Random.getString(6) + "\" >";
+          if (def(sbefore)) {
+            log.log("Got before pic " + sbefore);
+            p = sbefore;
+            jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
+            auto plink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">Prior Pic</a>";
+            res["plink"] = plink;
+          
+          }
+          if (def(safter)) {
+            log.log("Got after pic " + safter);
+            p = safter;
+            jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
+            auto nlink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">Next Pic</a>";
+            res["nlink"] = nlink;
+          }
           return(res);
         }
         dirListHtml += "</table>";
