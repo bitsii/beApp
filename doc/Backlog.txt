@@ -1,8 +1,5 @@
+
 try on phone
-auto-dl (wakeup occasionally, get changes)
-  keep pic list
-  compare against what have
-  put in dir named for devicename
 
 android package on bitbucket
 
@@ -15,6 +12,10 @@ ios - c++
 
 play/appstore - export
 
+passes
+
+android bridge
+
 mac, win client vers
 
 use imap to schedule wake/sleep
@@ -25,7 +26,11 @@ hit url on app on pic save (script)
    
 ====
 
-stay in app and proxy ui?
+auto-dl (wakeup occasionally, get changes)
+  keep pic list
+  compare against what have
+  put in dir named for devicename
+  shows up in own pic dir on phone
 
 headless setup pi
 
