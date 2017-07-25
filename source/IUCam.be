@@ -539,6 +539,10 @@ use class IUCam:CamPlugin {
       actionLinks += "<p><label class=\"luiForm\">Days before Deleting Cam Pics</label><input type=\"text\" id=\"camCleanDays\" value=\"" += cps += "\"></input> (-1 to disable) <a id=\"setCamCleanId\" href=\"#\" onclick=\"callApp('setCamCleanRequest', document.getElementById('camCleanDays').value);return false;\" >Save Cam Delete Days</a></p>";
       actionLinks += "</div>";
      }
+     String cdo = app.configManager.get("camsDetectedOnce");
+      if (TS.isEmpty(cdo) || cdo != "true") {
+        actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";
+      }
      return(actionLinks);
    }
    

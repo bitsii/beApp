@@ -1222,6 +1222,7 @@ use class IUHub:HubPlugin {
   }
    
   updateActionLinks(String actionLinks, Account a, Map arg, request) String {
+     //CMD.username!Display = cmd
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
      actionLinks += "<p><a href=\"#\" onclick=\"callApp('refreshLinksRequest');return false;\">(Refresh)</a></p>";
      for (any kv in ecm) {

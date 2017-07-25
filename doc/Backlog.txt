@@ -1,4 +1,15 @@
 
+good wakeup
+jv upnp
+port bridge to msw mac adr
+
+===
+
+android auto-notify on motion pic
+  background imap update
+  get links
+  notify
+
 try on phone
 
 android package on bitbucket

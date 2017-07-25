@@ -24,7 +24,6 @@ use App:AuthenticatedLocalApp;
 use App:AuthenticatedWebApp;
 use App:AuthenticatedApp as AuthedApp;
 use IUHub:HubPlugin;
-use IUCam:CamPlugin;
 
 emit(jv) {
 """
@@ -64,13 +63,10 @@ use class IUBridge:BridgeStart {
     getPlugins(Bool bkg) List {
       BridgePlugin hub = BridgePlugin.new();
       hub.runBackground = bkg;
-      CamPlugin cam = CamPlugin.new();
-      cam.runBackground = bkg;
       IUDoer:DoerPlugin doer = IUDoer:DoerPlugin.new();
       log.log("adding plugins");
       List plugins = List.new();
       plugins += hub;
-      plugins += cam;
       plugins += App:AuthPlugin.new();
       plugins += App:ConfigPlugin.new();
       plugins += App:FileManagerPlugin.new();
@@ -329,10 +325,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
 
    updateActionLinks(String actionLinks, Account a, Map arg, request) String {
       super.updateActionLinks(actionLinks, a, arg, request);
-      String cdo = app.configManager.get("camsDetectedOnce");
-      if (TS.isEmpty(cdo) || cdo != "true") {
-        actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";
-      }
       return(actionLinks);
    }
    
@@ -359,9 +351,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return("bridge");
   }
     
-    camGet() CamPlugin {
-      return(app.plugins[1]);
-    }
     
     doForward() {
       try {
