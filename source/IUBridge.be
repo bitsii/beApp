@@ -250,6 +250,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       Set rforwarded;
       App:Background bfw = App:Background.new();
       App:Background bup = App:Background.new();
+      String profile = "bridge";
      }
      super.new();
      
@@ -348,7 +349,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
    
    profileGet() String {
-    return("bridge");
+    return(profile);
   }
     
     

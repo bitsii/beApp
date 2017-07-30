@@ -1,8 +1,12 @@
 
-good wakeup
-jv upnp
-port bridge to msw mac adr
-
+support background run from web service calls (external sched)
+  background thread on or off from compile flag
+  time limit between attempts (ignore if not long enough between)
+  
+node bridge
+  port to node
+  just get it building, get ui working, it working
+  
 ===
 
 android auto-notify on motion pic

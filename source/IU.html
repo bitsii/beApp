@@ -99,7 +99,7 @@ h5.luiForm {
 
 <p>
 
-<div id="bridgeMenu1" style="display: none;">
+<div id="camBridgeMenu1" style="display: none;">
 <!--Files-->
 <img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/>
 <!--Files-->
@@ -155,14 +155,17 @@ h5.luiForm {
 <!--Services-->
 <img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/>
 <!--Services-->
-    
-<!--IUCam-->
-<img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/>
-<!--IUCam-->
-  
+      
 <!--Internet Listen-->
 <img src="preferences-desktop-online-accounts.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/>
 <!--Internet Listen-->
+
+</div>
+
+<div id="camBridgeMenu3" style="display: none;">
+<!--IUCam-->
+<img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/>
+<!--IUCam-->
 
 </div>
 

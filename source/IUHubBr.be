@@ -101,6 +101,7 @@ use class IUHub:Eui {
         fields {
           String currentlyCheckedId;
           String name = "hub";
+          String profile = "hub";
           IO:Log log =@ IO:Logs.get(self);
           List callbacks = Lists.from(self, CamUI.new()); //plugins
           HC hc = HC.new(callbacks);
@@ -462,11 +463,17 @@ use class IUHub:Eui {
       //}
       //log.log("updateResponse2 just logged in");
     }
-    if (arg.has("profile") && arg["profile"] == "bridge") {
-      HD.getElementById("bridgeMenu1").display = "block";
-      HD.getElementById("bridgeMenu2").display = "block";
-      HD.getElementById("bridgeHelp1").display = "block";
-      HD.getElementById("bridgeHelp2").display = "block";
+    if (arg.has("profile")) {
+      profile = arg["profile"];
+      if (arg["profile"] == "bridge" || arg["profile"] == "cambridge") {
+        if (arg["profile"] == "cambridge") {
+          HD.getElementById("camBridgeMenu1").display = "block";
+          HD.getElementById("camBridgeMenu3").display = "block";
+        }
+        HD.getElementById("bridgeMenu2").display = "block";
+        HD.getElementById("bridgeHelp1").display = "block";
+        HD.getElementById("bridgeHelp2").display = "block";
+      }
     }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];

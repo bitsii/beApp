@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitFlag iuDebug --emitLang jv -mainClass=IUBridge:CamBridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUCam.be source/IUBridge.be source/IUCamBridge.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv --emitFlag iuCamBridge --outputPlatform linux -mainClass=IUBridge:CamBridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUCam.be source/IUBridge.be source/IUCamBridge.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -26,7 +26,7 @@ javac ../abe-pl/system/jv/be/*.java ../apprun/App/IUHub/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false --outputPlatform linux -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -68,4 +68,6 @@ cp scripts/motionrun.sh ../apprun/App/IUHub
 cp scripts/camclean.sh ../apprun/App/IUHub
 cp source/MOCAM.conf ../apprun/App/IUHub
 
-./scripts/iub5jvrun.sh $*
+#./scripts/iub5jvrun.sh $*
+
+./scripts/iubrel.sh
