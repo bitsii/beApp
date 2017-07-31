@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv --emitFlag iuCamBridge --outputPlatform linux -mainClass=IUBridge:CamBridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUCam.be source/IUBridge.be source/IUCamBridge.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv --emitFlag iuCamBridge --emitFlag iuOwnBackground --outputPlatform linux -mainClass=IUBridge:CamBridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUCam.be source/IUBridge.be source/IUCamBridge.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 

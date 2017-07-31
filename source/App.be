@@ -441,7 +441,6 @@ use class App:AuthPlugin {
           any app;
           String name = "Auth";
         }
-        
      }
      
     clearAllSessionsRequest(Map arg, request) Map {
@@ -1051,6 +1050,7 @@ class AuthedApp {
       Lock lock = Lock.new();
       OLocker lastLoginBad = OLocker.new(false);
       String certificateThumbprint;
+      Set nonAuthedRequests = Set.new();
     }
   }
   
@@ -1534,38 +1534,40 @@ class AuthedApp {
               throw(Exception.new("Invalid request"));
             }
             
-            unless (aname == "pageTokenRequest" || aname == "pingRequest") {
-              String accountName = request.getSession("account.name");
-              if (TS.isEmpty(accountName)) {
-                unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {
-                  log.log("ret givelogin");
-                  return(toLogin(request));
-                }
-              } else {
-              
-                unless (aname == "loginRequest" || checkRenewSession(request)) {
-                  unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(self.configManager.get("OnceToken." + arg["onceToken"]))) {
-                    log.log("rejecting expired session request");
+            unless (nonAuthedRequests.has(aname)) {
+              unless (aname == "pageTokenRequest" || aname == "pingRequest") {
+                String accountName = request.getSession("account.name");
+                if (TS.isEmpty(accountName)) {
+                  unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {
+                    log.log("ret givelogin");
                     return(toLogin(request));
                   }
+                } else {
+                
+                  unless (aname == "loginRequest" || checkRenewSession(request)) {
+                    unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(self.configManager.get("OnceToken." + arg["onceToken"]))) {
+                      log.log("rejecting expired session request");
+                      return(toLogin(request));
+                    }
+                  }
+                
+                  //checkLoggedInRequest is ok
+                   
+                  String stok = request.getSession("pageToken");
+                  String atok = arg["pageToken"];
+                  if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
+                    log.log("stok or atok emtpy failing due to pageToken");
+                    return(toLogin(request));
+                  }
+                  if (stok != atok) {
+                    log.log("stok != atok failing due to pageToken");
+                    return(toLogin(request));
+                  }
+                
+                  //log.log("pageToken action " + aname);
+                  //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
+                  //if (def(stok)) { log.log("session pageToken " + stok); }
                 }
-              
-                //checkLoggedInRequest is ok
-                 
-                String stok = request.getSession("pageToken");
-                String atok = arg["pageToken"];
-                if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
-                  log.log("stok or atok emtpy failing due to pageToken");
-                  return(toLogin(request));
-                }
-                if (stok != atok) {
-                  log.log("stok != atok failing due to pageToken");
-                  return(toLogin(request));
-                }
-              
-                //log.log("pageToken action " + aname);
-                //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
-                //if (def(stok)) { log.log("session pageToken " + stok); }
               }
             }
             log.log("here");
@@ -1636,12 +1638,32 @@ use class App:Background {
       IO:Log log =@ IO:Logs.get(self);
       Interval startDelay = Interval.new(10, 0);
       Interval repeatDelay = Interval.new(10, 0);
+      Interval minimumDelay = Interval.new(5, 0);
+      Interval lastRepeat = Interval.new(0, 0);
       System:Invocation toInvoke;
+      any lastError = null;
+      Bool lastWasError = false;
     }
   }
   
   runMyTasks() {
-    toInvoke.invoke();
+    try {
+      Interval now = Interval.now();
+      if (now - lastRepeat >= minimumDelay) {
+        lastWasError = false;
+        lastRepeat = now;
+        toInvoke.invoke();
+      }
+    } catch (any e) {
+      lastWasError = true;
+      lastError = e;
+      try {
+        log.log("exception in runMyTasks");
+        if (def(e)) {
+          log.log("runMyTasks exception was " + e);
+        }
+      } catch (any ee) { }
+    }
   }
   
   main() {

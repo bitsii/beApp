@@ -177,39 +177,9 @@ use class IUCam:Background {
     mu.updateOnInterval();
   }
   
-  main() {
-    any e;
-    while (true) {
-      try {
-        runTasks();
-      } catch (e) {
-        log.log("Caught exception running tasks " + e);
-      }
-      try {          
-        Time:Sleep.sleepMilliseconds(sleepTime);
-      } catch (e) {
-        log.log("Caught exception sleeping " + e);
-      }
-    }
-  }
-  
-  startBackground() {
-    fields {
-      System:Thread myThread;
-      Int sleepTime = 500;
-    }
-    String bkdis = app.configManager.get("bk.disable");
-    if (TS.notEmpty(bkdis) && Bool.new(bkdis)) {
-      return(self);
-    }
-    Int _sleepTime = app.configManager.get("bk.sleepTime");
-    if (def(_sleepTime) && _sleepTime > 0) {
-      sleepTime = _sleepTime;
-    }
+  init() {
     mu.app = app;
     mu.init();
-    myThread = System:Thread.new(self);
-    myThread.start();
   }
 
 }
@@ -230,9 +200,14 @@ use class IUCam:CamPlugin {
           String name = "IUCam";
           String homePage = "/App/IUCam/IUCam.html";
           Background bg = Background.new();
-          Bool runBackground = true;
+          App:Background abg = App:Background.new();
+          Bool runBackground = false;
         }
      }
+     
+     runBackgroundTasks() {
+      abg.runMyTasks();
+    }
      
      cohostWith(IUCam:CamPlugin ohp) {
        log.log("in cam cohostWith");
@@ -241,8 +216,14 @@ use class IUCam:CamPlugin {
      
     start() {
       bg.app = app;
+      abg.startDelay = Time:Interval.new(10, 0);
+      abg.repeatDelay = Time:Interval.new(1000, 0);
+      abg.minimumDelay = Time:Interval.new(500, 0);
+      abg.toInvoke = bg.getInvocation("runTasks", List.new());
+      bg.init();
       if (runBackground) {
-      bg.startBackground();
+        //bg.startBackground();
+        abg.start();
       }
     }
     

@@ -36,6 +36,10 @@ use class IUBridge:BridgeStart {
    new() self {
       fields {
           IO:Log log =@ IO:Logs.get(self);
+          Bool ownBackground = false;
+        }
+        ifEmit(iuOwnBackground) {
+          ownBackground = true;
         }
     }
 
@@ -93,11 +97,11 @@ use class IUBridge:BridgeStart {
         if (mode != "cmd") {
           if (mode == "lui" || mode == "lwui") {
             AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
-            luiapp.plugins = getPlugins(true);
+            luiapp.plugins = getPlugins(ownBackground);
           }
           if (mode == "wui" || mode == "lwui") {
             AuthenticatedWebApp wuiapp = AuthenticatedWebApp.new();
-            wuiapp.plugins = getPlugins(true);
+            wuiapp.plugins = getPlugins(ownBackground);
           }  
           if (mode == "lwui") {
             luiapp.cohostWith(wuiapp);
@@ -256,6 +260,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      
    }
    
+   runBackgroundTasks() {
+      bfw.runMyTasks();
+      bup.runMyTasks();
+   }
+   
    checkUpgrade() {
     log.log("in checkupgrade");
     String autoUp = app.configManager.get("hub.autoUpgrade");
@@ -312,10 +321,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       
       bfw.startDelay = Time:Interval.new(20, 0);
       bfw.repeatDelay = Time:Interval.new(1200, 0);
+      bfw.minimumDelay = Time:Interval.new(600, 0);
       bfw.toInvoke = getInvocation("doForward", List.new());
       
       bup.startDelay = Time:Interval.new(30, 0);
       bup.repeatDelay = Time:Interval.new(86400, 0);
+      bup.minimumDelay = Time:Interval.new(43200, 0);
       bup.toInvoke = getInvocation("checkUpgrade", List.new());
       
       if (runBackground) {

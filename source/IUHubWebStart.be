@@ -37,6 +37,10 @@ use class IUHub:HubWebStart {
    new() self {
       fields {
           IO:Log log =@ IO:Logs.get(self);
+          Bool ownBackground = false;
+        }
+        ifEmit(iuOwnBackground) {
+          ownBackground = true;
         }
     }
 
@@ -93,7 +97,7 @@ use class IUHub:HubWebStart {
         log.log("making hub");
         if (mode == "wui") {
           AuthenticatedWebApp wuiapp = AuthenticatedWebApp.new();
-          wuiapp.plugins = getPlugins(true);
+          wuiapp.plugins = getPlugins(ownBackground);
         }
         if (def(wuiapp)) {
           log.log("starting wui");

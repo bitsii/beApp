@@ -58,6 +58,10 @@ use class IUHub:HubStart {
    new() self {
       fields {
           IO:Log log =@ IO:Logs.get(self);
+          Bool ownBackground = false;
+        }
+        ifEmit(iuOwnBackground) {
+          ownBackground = true;
         }
     }
 
@@ -114,7 +118,7 @@ use class IUHub:HubStart {
         log.log("making hub");
         if (mode == "lui") {
           AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
-          luiapp.plugins = getPlugins(true);
+          luiapp.plugins = getPlugins(ownBackground);
         }
         if (def(luiapp)) {
           log.log("starting lui");
@@ -137,7 +141,7 @@ use class IUHub:HubPlugin {
           OLocker linksol = OLocker.new();
           App:Background trc = App:Background.new();
           App:Background buu = App:Background.new();
-          Bool runBackground = true;
+          Bool runBackground = false;
           Lock wcl = Lock.new();
         }
      }
@@ -263,6 +267,7 @@ use class IUHub:HubPlugin {
      appSet(_app) {
       app = _app;
       oapp = _app;
+      app.nonAuthedRequests.put("runBackgroundTasksRequest");
      }
      
      clearTracking() {
@@ -289,10 +294,12 @@ use class IUHub:HubPlugin {
       }
      
       trc.repeatDelay = Time:Interval.new(7200, 0);
+      trc.minimumDelay = Time:Interval.new(7000, 0);
       trc.toInvoke = getInvocation("clearTracking", List.new());
       
       buu.startDelay = Time:Interval.new(10, 0);
       buu.repeatDelay = Time:Interval.new(600, 0);
+      buu.minimumDelay = Time:Interval.new(300, 0);
       buu.toInvoke = getInvocation("doUpdate", List.new());
       initLinks();
       if (runBackground) {
@@ -464,6 +471,20 @@ use class IUHub:HubPlugin {
       resetCertMan(wco.certificatePrint);
     }
 
+  }
+  
+  runBackgroundTasks() {
+    trc.runMyTasks();
+    buu.runMyTasks();
+  }
+  
+  runBackgroundTasksRequest(request) {
+    log.log("IN RUN BACKGROUND TASKS REQUEST");
+    for (any pl in app.plugins) {
+      if (pl.can("runBackgroundTasks", 0)) {
+        any res = pl.invoke("runBackgroundTasks", List.new());
+      }
+    }
   }
   
   deviceLoginRequest(Map arg, request) {
