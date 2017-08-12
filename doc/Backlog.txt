@@ -1,5 +1,53 @@
 
+cleanup uneeded
+rename
+add note read/edit/save
+add sync tracking
+add imap sync up
+add imap sync down
+
+note passer
+  login (optional) shell with fs and auth (hub start)
+  fs load/save/author (.note)
+  add devid and key/version
+  in/out kvdb
+  in/out imap
+
+note passer (note sync)
+  
+  just do files on file system w file system browser, hierarchy, create dir, etc
+  notes are json (meta info, type, etc) (type can be extension)
+  in imap store (relative) path
+  
+  local store working first, then imap
+  when reading/writing update sync db
+
+sync
+  key (path) "|" (actual seperator) base64 json { key, version, owner (random devid) }
+  start with config kvdb (prefix for sync things, get map)
+    imap encoded to hex and stored html hidden element (also clear text)
+  put hidden element(s) first in html so not contaminated by text
+  html text area?
+    (note that changing it there will not change it anywhere else)
+
+pics update svc when taken (intent or motion)
+  first intent, then motion
+  motion is with configured token
+  log it
+push into sync
+  
+pull if configured for sync
+android notify
+android background
+
 cc mac msw
+
+db pool
+  use db copy()
+  how many to keep
+  return to reuse
+  return failed
+  (above cooperative)
   
 ===
 

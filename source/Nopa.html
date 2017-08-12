@@ -1,0 +1,361 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  
+body {
+    font-family: Roboto, 'Segoe UI', Tahoma, sans-serif;
+    /*font-size: 81.25%;*/
+    font-size: 90%;
+    font-weight: 600;
+    background-color:rgb(200,200,200);
+}
+
+:link { color: #000000; }
+:visited { color: #000000; }
+
+img { 
+margin-left:5px; 
+margin-right:5px; 
+margin-top:5px; 
+margin-bottom:5px; 
+} 
+
+label.luiForm {
+    width: 120px; float: left;margin:0;padding:0;
+}
+
+input.luiFormField {
+    width: 140px;margin:0;padding:0;clear: right;
+}
+
+input.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+p.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+h5.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+#alertDiv {
+    top:0;
+    left:0;
+    width:100%;
+    height:150%;
+    display:none;
+}
+
+</style>
+<script type="text/javascript" src="Nopa_BEX_E.js">
+</script>
+</head>
+<body>
+<div id="informDiv" style="display: none;">
+<div id="informMessageDiv"></div>
+<p><a href="#" onclick="callUI('hideInform');return false;">Clear Message</a></p>
+</div>
+<div id="spinnerdiv">
+  
+</div>
+<div id="logindiv" style="display: none;">
+<p>Login</p>
+<form>
+<p><label class="luiForm">Account Name</label><input type="text" id="accountName"></input></p>
+<p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) callUI('login')"></input></p>
+<a href="#" onclick="callUI('toggleDisplay', 'advancedLoginDiv');return false;"/>Advanced</a>
+<div id="advancedLoginDiv" style="display: none;">
+<input type="hidden" id="sessionName" value=""/>
+<p><label>Session expires after <input type="text" id="sessionLength" value="60"/> minutes of inactivity
+<p>OR
+<p><input type="checkbox" id="sessionNeverExpires"/> never expires.
+</div>
+</form>
+<p><a href="#" onclick="callUI('login');return false;">Login</a></p>
+</div>
+<div id="loginmsgdiv"></div>
+<div id="loggedindiv" style="display: none;">
+
+<!--Files-->
+<img src="system-file-manager.svg" onclick="callUI('localBrowseRequest');return false;" title="Files"/>
+<!--Files-->
+
+<!--Logout-->
+<img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/>
+<!--Logout-->
+  
+<!-- config stuff link -->
+<img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/>
+
+<!--Help-->
+<img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="Help"/>
+<p>  
+<a href="#" onclick="callUI('toggleDisplay', 'helpDiv');callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;">Click here for Help</a>
+<!--Help-->
+
+<p>
+
+<div id="camBridgeMenu1" style="display: none;">
+<!--Files-->
+<img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/>
+<!--Files-->
+</div>
+
+<p>
+  
+<!-- config stuff -->
+
+<div id="configItemsDiv" style="display: none;">
+
+<!--Device Name-->
+<img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/>
+<!--Device Name-->
+
+<!--Accounts-->
+<img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/>
+<!--Accounts-->
+
+<!--Imap-->
+<img src="applications-mail.svg" onclick="callUI('showImapRequest');return false;" title="Imap"/>
+<!--Imap-->
+
+<!--Configuration-->
+<img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="callUI('showConfig');return false;" title="Configuration"/>
+<!--Configuration-->
+
+<p>
+    
+<!--Security Extras-->
+<img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');callUI('showSessionsRequest');return false;" title="Security Extras"/>
+<!--Security Extras-->
+
+<!--Password-->
+<img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/>
+<!--Password-->
+
+<!--Restart-->
+<img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/>
+<!--Restart-->
+
+<!--About-->
+<img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/>
+<!--About-->
+
+<p>
+<div id="bridgeMenu2" style="display: none;">
+    
+<!--Service Connections-->
+<img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>
+<!--Service Connections-->
+
+<!--Services-->
+<img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/>
+<!--Services-->
+      
+<!--Internet Listen-->
+<img src="preferences-desktop-online-accounts.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/>
+<!--Internet Listen-->
+
+<!--Run Background-->
+<img src="folder-recent.svg" onclick="callApp('runBackgroundTasksRequest');return false;" title="Run Background Tasks"/>
+<!--Run Background-->
+
+</div>
+
+<div id="camBridgeMenu3" style="display: none;">
+<!--IUCam-->
+<img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/>
+<!--IUCam-->
+
+</div>
+
+</div>
+
+<p>
+  
+<!--Accounts-->
+<div id="accountAdminDiv" style="display: none;">
+<p><label class="luiForm">Account Name</label><input type="text" id="aadminName"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="aadminPass"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="aadminPass2"</input></p>
+<div style="display: none;">
+<p>Admin Account <input type="checkbox" id="aadminIsAdmin" checked/>&nbsp;Account can use WebCams <input type="checkbox" id="aadminIsWebcam"/></p></div>
+<p><input id="saveAccountSubmit" type="submit" value="Save Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');callUI('saveAccountRequest');return false;"><p><input id="accountDeleteSubmit" type="submit" value="Delete Account" onclick="callUI('toggleDisplay', 'accountAdminDiv');deleteAccount();return false;"><input type="checkbox" id="confirmAccountDelete"/>Confirm account Deletion</p>
+<div id="accountLinksDiv"></div>
+</div>
+<!--Accounts-->
+
+<!--Device Name-->
+<div id="deviceNameDiv" style="display: none;">
+<p><label class="luiForm">Device Name</label><input type="text" id="newDeviceName"</input></p>
+<p><a href="#" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Change Device Name</a> <a href="#" onclick="callUI('toggleDisplay', 'deviceNameDiv');return false;">Cancel</a></p>
+</div>
+<!--Device Name-->
+
+<!--Imap-->
+<div id="imapSettingsDiv" style="display: none;">
+<form>
+<select name=imFillin onchange='imChange(this.form.imFillin);return false;'>
+<option >(Select a mail provider to start)</option>
+<option>GMail</option>
+<option>GMX Mail</option>
+<option>Yahoo Mail</option>
+</select>
+</form>
+<p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
+<p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
+<p><label class="luiForm">Message Folder</label><input type="text" id="imapFolder"</input></p>
+<p>(IotUrls recommended)</p>
+<p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
+<p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
+<div id="imDitty"></div>
+<p><a href="#" onclick="callUI('imapSettingsRequest');return false;">Save Imap Settings</a></p>
+</div>
+<!--Imap-->
+
+<!--About-->
+<div id="aboutDiv" style="display: none;">
+<div id="aboutDivMsg"></div>
+<p>Licensed under the Mozilla Public License Version 2.0. See <a href="LICENSE-MPL.txt">LICENSE-MPL.txt</a> for full license information.
+<p>3rd party components may be licensed under other terms, see licenses in the software distribution for more details.
+<p>May include the following:
+<p>Elementary OS Icons <a href="LICENSE-ICONS.txt">LICENSE-ICONS.txt</a>
+<p>AndroidIcons (opoloo) <a href="LICENSE-ANDROIDICONS.txt">LICENSE-ANDROIDICONS.txt</a>
+<p>Bouncy Castle <a href="LICENSE-BOUNCY-CASTLE.txt">LICENSE-BOUNCY-CASTLE.txt</a>
+<p>HSQLDB <a href="LICENSE-HSQLDB.txt">LICENSE-HSQLDB.txt</a>
+<p>JavaMail <a href="LICENSE-JAVAMAIL.txt">LICENSE-JAVAMAIL.txt</a>
+<p>Jetty <a href="LICENSE-JETTY-eplv10-aslv20.html">LICENSE-JETTY-eplv10-aslv20.html</a>
+<p>Jsch <a href="LICENSE-Jsch.txt">LICENSE-Jsch.txt</a>
+</div>
+<!--About-->
+
+<!--Help-->
+<div id="helpDiv" style="display: none;">
+General help - clicking on icons will open/close their functional areas - click Help again to close this area
+<!--Files-->
+<p><img src="system-file-manager.svg" onclick="callUI('localBrowseRequest');return false;" title="Files"/> Work with the device's filesystem (remotely)
+<!--Logout-->
+<p><img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/> Logout
+<!-- config stuff link -->
+<p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/> Open Configuration Panel
+<!--Help-->
+<p><img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/> Help (this...)
+<div id="bridgeHelp1" style="display: none;">
+<!--Files-->
+<p><img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/> Browse cam pictures
+</div>
+<!--Device Name-->
+<p><img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/> Change device name
+<!--Accounts-->
+<p><img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/> Create, modify, and delete accounts
+<!--Imap-->
+<p><img src="applications-mail.svg" onclick="callUI('showImapRequest');return false;" title="Imap"/> Connect device to email account
+<!--Configuration-->
+<p><img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="callUI('showConfig');return false;" title="Configuration"/> Direct access to configuration (advanced)
+<!--Security Extras-->
+<p><img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');callUI('showSessionsRequest');return false;" title="Security Extras"/> Manage extended security settings and logged in sessions
+<!--Password-->
+<p><img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/> Change Password
+<!--Restart-->
+<p><img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/> Restart the application
+<!--About-->
+<p><img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/> Information about this software and device
+<div id="bridgeHelp2" style="display: none;">
+<!--Service Connections-->
+<p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>  Get service connections to device
+<!--Services-->
+<p><img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/> View and create service connections (remote connectivity to the device desktop and other services)
+<!--IUCam-->
+<p><img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/> Cam configuration
+<!--Internet Listen-->
+<p><img src="preferences-desktop-online-accounts.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/> Configure to listen on a remote internet host (over ssh tunnel)
+</div>
+</div>
+<!--Help-->
+  
+<!--Password-->
+<div id="passwordDiv" style="display: none;">
+<p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
+<p><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');callUI('changePassRequest');return false;">Change Password</a></p>
+</div>
+<!--Password-->
+
+<!--Files-->
+<p><a href="#" id="clearPicId" onclick="callUI('clearImage');return false;" style="display: none;">Clear Picture</a><div id="plink"></div><div id="nlink"></div></p>
+<div id="imgdiv"></div>
+<div id="browseFilesDiv" style="display: none;">
+<p>Upload a File <input type="file" id="files" name="files[]" multiple /></p>
+<p>Confirm file deletion <input type="checkbox" id="confirmDeleteId"/><input id="deleteSubmit" type="submit" value="Delete Selected File" onclick="deleteSelected();return false;"></p>
+<p><label class="luiForm">Copy to Name</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy Selected File" onclick="copySelected();return false;"></p>
+<p><input id="upgradeSubmit" type="submit" value="Upgrade Using Selected File" onclick="upgradeSelected();return false;"></p>
+<p><input id="restoreConfigSubmit" type="submit" value="Restore Configuration using Selected File" onclick="restoreSelected();return false;"></p>
+<div id="localBrowseListDiv"></div>
+</div>
+<script>
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+<!--Files-->
+
+<!--Services-->
+<div id="forwardPortsDiv" style="display: none;">
+<form>
+<select name=fpFillin onchange='fpChange(this.form.fpFillin);return false;'>
+<option >(Select a service to start (or configure manually))</option>
+<option>Secure Shell (ssh)</option>
+<option>Remote Desktop (rdp)</option>
+<option>NoMachine (nx)</option>
+<option>VNC</option>
+<option>Apple Remote Desktop (ard)</option>
+</select>
+</form>
+<p><label class="luiForm">Service Name</label><input type="text" id="fpName"</input></p>
+<p><label class="luiForm">Local Port</label><input type="text" id="fpPort"</input></p>
+<p><label class="luiForm">External Port</label><input type="text" id="fpExPort"</input>(Blank to Autoselect)</p>
+<p><label class="luiForm">Url Pattern</label><input type="text" id="fpPattern"</input></p>
+<div id="fpDitty"></div>
+<p><a href="#" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);callUI('toggleDisplay', 'forwardPortsDiv');return false;">Save Service Setup</a>  <a href="#" onclick="callApp('deleteForwardRequest', document.getElementById('fpPort').value);return false;">Delete Service</a>  <a href="#" onclick="callUI('toggleDisplay', 'forwardPortsDiv');return false;">Cancel</a></p>
+<div id="forwardPortsListDiv"></div>
+</div>
+<!--Services-->
+
+<!--Configuration-->
+<div id="configsDiv"></div>
+<a id="downloadJsonElem" style="display:none"></a>
+<!--Configuration-->
+
+<!--Security Extras-->
+<div id="seDiv" style="display: none;">
+<div id="sessionsListDiv" style="display: none;"></div>
+<p><a id="restartId" href="#" onclick="callUI('clearAllSessions');return false;">Clear all sessions (Logs everyone out)</a></p>
+<p><a id="restartId" href="#" onclick="callUI('clearAllTracking');return false;">Clear all bad ip tracking</a></p>
+</div>
+<!--Security Extras-->
+
+<!--Internet Listen-->
+<div id="internetListenDiv" style="display: none;">
+<p><label class="luiForm">SSH Hostname</label><input type="text" id="sshHost"></input></p>
+<p><label class="luiForm">SSH Login</label><input type="text" id="sshLogin"></input></p>
+<p><label class="luiForm">SSH Password</label><input type="password" id="sshPass"></input></p>
+<p><input id="saveListen" type="submit" value="Save" onclick="callUI('toggleDisplay', 'internetListenDiv');callApp('saveInternetListenRequest', document.getElementById('sshHost').value, document.getElementById('sshLogin').value, document.getElementById('sshPass').value);return false;"> <input id="cancelListen" type="submit" value="Cancel" onclick="callUI('toggleDisplay', 'internetListenDiv');return false;"></p>
+</div>
+<!--Internet Listen-->
+
+<div id="devCredsDiv" style="display: none;">
+<p>Login to <div id="devCredsNameDiv"></div></p>
+<form>
+<p><label class="luiForm">Account Name</label><input type="text" id="dcAccountName"></input></p>
+<p><label class="luiForm">Account Password</label><input type="password" id="dcAccountPass"></input></p>
+</form>
+<p><a href="#" onclick="callUI('deviceLogin');return false;">Login</a></p>
+</div>
+<div id="actionLinksDiv"></div>
+<div id="devLinksListDiv"></div>
+<div id="devLinksDiv"></div>
+</body>
+</html>

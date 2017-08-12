@@ -1629,6 +1629,106 @@ class AuthedApp {
       return(self.plugin.loggedIn(a, res, arg, request));
     }
     
+    cmdMain(List args) {
+      IO:Logs.turnOnAll();
+      auto ui = self;
+      if (args.length > 1) {
+        String mode = args[1]; //ui, svc, both, [absent]
+        log.log("cmd " + mode);
+      } 
+      if (TS.isEmpty(mode)) {
+        log.log("cmd empty");
+      }
+      if (mode == "help") {
+        log.log("Help");
+        log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
+      }
+      if (TS.notEmpty(mode) && mode == "listLogins") {
+        for (String login in ui.accountManager.getLogins()) {
+          log.log("Account login " + login);
+        }
+      }
+      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
+        String user = args[2];
+        String pass = args[3];
+        log.log("Putting Account " + user);
+        Account ac = Account.new();
+        ac.user = user;
+        ac.pass = pass;
+        if (args.length > 4) {
+          ac.permsString = args[4];
+        }
+        ui.accountManager.putAccount(ac);
+      }
+      if (TS.notEmpty(mode) && mode == "getAccount") {
+        user = args[2];
+        log.log("Get Account " + user);
+        ac = ui.accountManager.getAccount(user);
+        log.log("Account " + ac);
+      }
+      if (TS.notEmpty(mode) && mode == "setPermsString") {
+        user = args[2];
+        String ps = args[3];
+        log.log("Set Perms " + user);
+        ac = ui.accountManager.getAccount(user);
+        ac.permsString = ps;
+        ui.accountManager.putAccount(ac);
+        log.log("Account " + ac);
+      }
+      if (TS.notEmpty(mode) && mode == "setPass") {
+        user = args[2];
+        pass = args[3];
+        log.log("Set Pass " + user);
+        ac = ui.accountManager.getAccount(user);
+        ac.pass = pass;
+        ui.accountManager.putAccount(ac);
+      }
+      if (TS.notEmpty(mode) && mode == "deleteAccount") {
+        user = args[2];
+        log.log("Deleting Account " + user);
+        ac = ui.accountManager.getAccount(user);
+        if (def(ac)) {
+          ui.accountManager.deleteAccount(ac);
+          log.log("Deleted account " + user);
+        } else {
+          log.log("No such account for deletion " + user);
+        }
+      }
+      if (TS.notEmpty(mode) && mode == "updateConfig") {
+        String key = args[2];
+        String value = args[3];
+        log.log("Updating config " + key + " " + value);
+        ui.configManager.put(key, value);
+      }
+      if (TS.notEmpty(mode) && mode == "showConfig") {
+        for (any kv in ui.configManager.getMap()) {
+          log.log("Config name " + kv.key + " value " + kv.value);
+        }
+      }
+      if (TS.notEmpty(mode) && mode == "createConfig") {
+        key = args[2];
+        value = args[3];
+        log.log("Creating config " + key + " " + value);
+        ui.configManager.put(key, value);
+      }
+      if (TS.notEmpty(mode) && mode == "deleteConfig") {
+        key = args[2];
+        log.log("Deleting config " + key);
+        ui.configManager.delete(key);
+      }
+      if (TS.notEmpty(mode) && mode == "restoreConfig") {
+        String restorePath = args[2];
+        log.log("restoring config " + restorePath);
+        ui.plugin.restoreConfig(restorePath);
+      }
+      if (TS.notEmpty(mode) && mode == "backupConfig") {
+        restorePath = args[2];
+        log.log("backup config " + restorePath);
+        ui.pluginsByClassName.get("App:ConfigPlugin").backupConfig(restorePath);
+      }
+      ui.configManager.close();
+    }
+    
 }
 
 use class App:Background {
