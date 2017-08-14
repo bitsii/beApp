@@ -817,8 +817,8 @@ use class App:FileManagerPlugin {
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(".") += "');return false;\">APPDIR</a></td></tr>";
         }
-        dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>";
+        /*dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>";*/
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(dirFile.path.toString()) += "');return false;\">.  (REFRESH)</a></td></tr>";
         IO:File:Path parent = dirFile.path.parent;
@@ -851,6 +851,8 @@ use class App:FileManagerPlugin {
             } else {
               if (p.toString().ends(".jpg")) {
                 String jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
+              } elseIf (p.toString().ends(".note")) {
+                jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
               } elseIf (p.toString().ends(".html") || p.toString().ends(".htm")) {
                 jscall = " onclick = \"return false;\"";
               } else {
@@ -864,6 +866,8 @@ use class App:FileManagerPlugin {
             }
           }
           dit.close();
+        } elseIf (dirFile.path.toString().ends(".note")) {
+          
         } elseIf (dirFile.path.toString().ends(".jpg")) {
           //get one before and after for slideshow
           dit = dirFile.path.parent.file.iterator;

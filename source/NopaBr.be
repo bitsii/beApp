@@ -95,6 +95,7 @@ use class Nopa:Eui {
           IO:Log log =@ IO:Logs.get(self);
           List callbacks = Lists.from(self); //plugins
           HC hc = HC.new(callbacks);
+          String notesDir = "";
         }
     }
     
@@ -126,6 +127,15 @@ use class Nopa:Eui {
       hideInform();
       hc.handleCallback(res);
     }
+    
+    browseNotes() {
+     if (HD.getElementById("browseFilesDiv").display == "block") {
+      closeFileBrowser();
+     } else {
+      HD.getElementById("browseFilesDiv").display = "block";
+      localBrowseRequest(Encode:Hex.encode(notesDir));
+     }
+   }
    
    restart() {
       Map arg = Map.new();
@@ -353,6 +363,9 @@ use class Nopa:Eui {
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
       HD.getElementById("spinnerdiv").display = "none";
+      if (TS.notEmpty(arg["notesDir"])) {
+        notesDir = arg["notesDir"];
+      }
       //if (TS.notEmpty(arg["loginUri"])) {
         //String li = arg["loginUri"];
         //HD.getElementById("liLink").href = li;
@@ -487,6 +500,7 @@ use class Nopa:Eui {
       arg["action"] = "createDirectoryRequest";
       arg["inDir"] = HD.getElementById("browsingDirId").value;
       arg["dirName"] = HD.getElementById("createFolderId").value;
+      HD.getElementById("createFolderId").value = "";
       handleCallOut(arg);
    }
    

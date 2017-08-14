@@ -288,7 +288,11 @@ use class Nopa:NopaPlugin {
       } else {
         res["embedded"] = false;
       }
-      
+      res["notesDir"] = app.getHomeDir(request).toString() + "/Notes";
+      File nd = File.apNew(res["notesDir"]);
+      if (nd.exists!) {
+        nd.makeDirs();
+      }
       /*
       String imso = app.configManager.get("imapSetOnce");
       if (TS.isEmpty(imso) || imso != "true") {

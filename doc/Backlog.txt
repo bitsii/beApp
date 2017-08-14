@@ -1,6 +1,4 @@
 
-filemanager starts in home/Notes
-
 add note read/edit/save
 
 add sync tracking
@@ -18,17 +16,10 @@ sync
   html text area?
     (note that changing it there will not change it anywhere else)
 
-jv (lx), ad
-
-msw
-
-ads, publish
-
-cc mac ios
-
-ads, publish
-
-catchup hub
+send over email to others
+  check for invites, show from
+  accept, prompt if replacing
+  send on change
 
 pics update svc when taken (intent or motion)
   first intent, then motion

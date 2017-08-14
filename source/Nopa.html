@@ -81,7 +81,7 @@ h5.luiForm {
 <div id="loggedindiv" style="display: none;">
 
 <!--Files-->
-<img src="system-file-manager.svg" onclick="callUI('localBrowseRequest');return false;" title="Files"/>
+<img src="folder-videos.svg" onclick="callUI('browseNotes');return false;" title="Notes"/>
 <!--Files-->
 
 <!--Logout-->
@@ -135,8 +135,13 @@ h5.luiForm {
 <img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/>
 <!--About-->
 
+<!--Files-->
+<img src="system-file-manager.svg" onclick="callUI('localBrowseRequest');return false;" title="Files"/>
+<!--Files-->
+
 <!--Logout-->
 <div id="logoutConfigDiv" style="display: none;">
+<p>
 <img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/>
 </div>
 <!--Logout-->
