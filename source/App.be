@@ -756,6 +756,27 @@ use class App:FileManagerPlugin {
      return(null);
    }
    
+   createDirectoryRequest(Map arg, request) Map {
+     log.log("createdir request");
+     String inDir = arg["inDir"];
+     String dirName = arg["dirName"];
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+     if (TS.notEmpty(inDir) && TS.notEmpty(dirName)) {
+       Path dirPath = Path.apNew(Encode:Hex.new().decode(inDir));
+       dirPath.addStep(dirName);
+       File dirFile = dirPath.file.absPath.file;
+       if (dirFile.exists! && app.checkWritePath(dirFile.path, arg, request)) {
+         log.log("creating " + dirFile.path);
+         dirFile.makeDirs();
+       }
+     }
+     arg["path"] = arg["inDir"];
+     return(localBrowseRequest(arg, request));
+   }
+   
    localBrowseRequest(Map arg, request) Map {
      log.log("in local browse req");
      String accountName = request.getSession("account.name");
@@ -824,6 +845,8 @@ use class App:FileManagerPlugin {
               dirListHtml += "<tr>";
               dirListHtml += "<td>DIR</td><td><a href=" + TS.quote + "#" + TS.quote + " onclick=\"localBrowseRequest('"
           += hex.encode(p.toString()) += "');return false;\">" += htmle.encode(p.name) += "</a></td>";
+              dirListHtml += "<td><input type=\"checkbox\" id=\"FCB"
+              += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\"></td>";
               dirListHtml += "</tr>";   
             } else {
               if (p.toString().ends(".jpg")) {

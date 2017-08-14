@@ -47,16 +47,6 @@ var copySelected = function() {
   localBrowseRequest(document.getElementById("browsingDirId").value);
 }
 
-var upgradeSelected = function() {
-  callUI('upgradeRequest');
-  localBrowseRequest(document.getElementById("browsingDirId").value);
-}
-
-var restoreSelected = function() {
-  callUI('restoreConfigRequest');
-  callUI('logoutResponse');
-}
-
   function handleFileSelect(evt) {
     var dpath = callUI('browsingDirGet').bems_toJsString();
     var files = evt.target.files; // FileList object
@@ -103,7 +93,7 @@ use class Nopa:Eui {
           String name = "nopa";
           String profile = "nopa";
           IO:Log log =@ IO:Logs.get(self);
-          List callbacks = Lists.from(self, CamUI.new()); //plugins
+          List callbacks = Lists.from(self); //plugins
           HC hc = HC.new(callbacks);
         }
     }
@@ -136,12 +126,6 @@ use class Nopa:Eui {
       hideInform();
       hc.handleCallback(res);
     }
-    
-    tryThing() {
-      Map arg = Map.new();
-      arg["action"] = "tryThingRequest";
-      handleCallOut(arg);
-   }
    
    restart() {
       Map arg = Map.new();
@@ -233,16 +217,6 @@ use class Nopa:Eui {
      }
    }
    
-   toggleDevLinks(String devId) {
-     fields {
-      String lastDevId;
-     }
-     if (TS.notEmpty(lastDevId) && lastDevId == devId) {
-      HC.toggleDisplay("devLinksDiv");
-     }
-     lastDevId = devId;
-   }
-   
    showImapResponse(Map arg) {
      if (arg.has("imapEndpoint")) {
       HD.getElementById("imapEndpoint").value = arg["imapEndpoint"];
@@ -283,49 +257,8 @@ use class Nopa:Eui {
      HD.getElementById("configsDiv").innerHTML = "";
    }
    
-   showDevLinks() {
-      Map arg = Map.new();
-      arg["action"] = "showDevLinksRequest";
-      handleCallOut(arg);
-   }
-   
-   showDevLinksResponse(Map arg) {
-     //HD.getElementById("devsDiv").innerHTML = arg["devs"];
-     HD.getElementById("offerDevLinkDiv").display = "block";
-   }
-   
-   getDevCredsResponse(String devId, String devName) {
-     fields {
-      String devIdForCreds = devId;
-     }
-     HD.getElementById("devCredsNameDiv").innerHTML = devName;
-     HC.toggleDisplay("devCredsDiv");
-   }
-   
-   hideDevLinks() {
-     HD.getElementById("offerDevLinkDiv").display = "none";
-   }
-   
    browsingDirGet() {
      return(Encode:Hex.decode(HD.getElementById("browsingDirId").value));
-   }
-   
-   offerLink() {
-    //HD.getElementById("devsDiv").innerHTML = arg["devs"];
-    //HD.getElementById("offerDevLinkDiv").display = "block";
-    Map arg = Map.new();
-    arg["action"] = "offerLinkRequest";
-    arg["offerEmail"] = HD.getElementById("offerEmail").value;
-    arg["offerPass1"] = HD.getElementById("offerPass1").value;
-    arg["offerPass2"] = HD.getElementById("offerPass2").value;
-    handleCallOut(arg);
-   }
-   
-   runCommand(String key) {
-      Map arg = Map.new();
-      arg["action"] = "runCommandRequest";
-      arg["cmdKey"] = key;
-      handleCallOut(arg);
    }
    
    updateConfig(String theKey, String theId) {
@@ -356,7 +289,6 @@ use class Nopa:Eui {
    
    startup() {
       IO:Logs.turnOnAll();
-      clearImage();
       Map arg = Map.new();
       arg["action"] = "pageTokenRequest";
       HD.getElementById("accountName").value = "";
@@ -386,7 +318,6 @@ use class Nopa:Eui {
    }
    
    login() {
-      clearImage();
       Map arg = Map.new();
       arg["action"] = "loginRequest";
       arg["accountName"] = HD.getElementById("accountName").value;
@@ -405,42 +336,10 @@ use class Nopa:Eui {
       handleCallOut(arg);
    }
    
-   deviceLogin() {
-      Map arg = Map.new();
-      arg["action"] = "deviceLoginRequest";
-      arg["accountName"] = HD.getElementById("dcAccountName").value;
-      arg["accountPass"] = HD.getElementById("dcAccountPass").value;
-      arg["deviceId"] = devIdForCreds;
-      arg["sessionName"] = "";
-      arg["sessionLength"] = "-1";
-      HD.getElementById("dcAccountName").value = "";
-      HD.getElementById("dcAccountPass").value = "";
-      HD.getElementById("devCredsDiv").display = "none";//reopen on fail
-      handleCallOut(arg);
-   }
-   
    logout() {
-      clearImage();
       Map arg = Map.new();
       arg["action"] = "logoutRequest";
       handleCallOut(arg);
-   }
-   
-   updateImageResponse(Map arg) {
-     HD.getElementById("clearPicId").display = "block";
-     HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
-     if(arg.has("plink")) {
-      HD.getElementById("plink").innerHTML = arg["plink"];
-      HD.getElementById("plink").display = "block";
-     } else {
-      HD.getElementById("plink").display = "none";
-     }
-     if(arg.has("nlink")) {
-      HD.getElementById("nlink").innerHTML = arg["nlink"];
-      HD.getElementById("nlink").display = "block";
-     } else {
-      HD.getElementById("nlink").display = "none";
-     }
    }
    
    updateResponse(Map arg) {
@@ -450,7 +349,7 @@ use class Nopa:Eui {
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
       //String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
       String lmsg = "<p align=\"center\" style=\"font-size: 100%;font-weight: 800;\">" + arg["deviceName"] + "</p>";
-      HD.getElementById("loginmsgdiv").innerHTML = lmsg;
+      //HD.getElementById("loginmsgdiv").innerHTML = lmsg;
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
       HD.getElementById("spinnerdiv").display = "none";
@@ -465,26 +364,10 @@ use class Nopa:Eui {
     }
     if (arg.has("profile")) {
       profile = arg["profile"];
-      if (arg["profile"] == "bridge" || arg["profile"] == "cambridge") {
-        if (arg["profile"] == "cambridge") {
-          HD.getElementById("camBridgeMenu1").display = "block";
-          HD.getElementById("camBridgeMenu3").display = "block";
-        }
-        HD.getElementById("bridgeMenu2").display = "block";
-        HD.getElementById("bridgeHelp1").display = "block";
-        HD.getElementById("bridgeHelp2").display = "block";
-      }
     }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
-    if (arg.has("devLinksList")) {
-      HD.getElementById("devLinksListDiv").innerHTML = arg["devLinksList"];
-    } else {
-      HD.getElementById("devLinksListDiv").innerHTML = "";
-    }
-    //HD.getElementById("camLink").href = "IUCam.html";
-    HD.getElementById("devLinksDiv").innerHTML = "";
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
       if (TS.notEmpty(permsString)) {
@@ -507,27 +390,20 @@ use class Nopa:Eui {
       HD.getElementById("imapFolder").value = "IotUrls";
       oinf += "Please connect the device to an email account.  ";
     }
+    if (def(arg["embedded"]) && arg["embedded"]) {
+      HD.getElementById("logoutTopDiv").display = "none";
+      HD.getElementById("logoutConfigDiv").display = "inline-block";
+    } else {
+      HD.getElementById("logoutTopDiv").display = "inline-block";
+      HD.getElementById("logoutConfigDiv").display = "none";
+    }
     if (TS.notEmpty(oinf)) {
       inform(oinf);
     }
-    //HC.callAppLater(Lists.from("refreshLinksRequest"), 10000);
-   }
-   
-   detectCams() {
-      Map arg = Map.new();
-      arg["action"] = "detectCamsRequest";
-      handleCallOut(arg);
    }
    
    logoutResponse(Map arg) {
      HD.reload();
-   }
-   
-   clearImage() {
-     HD.getElementById("imgdiv").innerHTML = "";
-     HD.getElementById("clearPicId").display = "none";
-     HD.getElementById("nlink").display = "none";
-     HD.getElementById("plink").display = "none";
    }
    
    changePassRequest() {
@@ -606,14 +482,12 @@ use class Nopa:Eui {
       handleCallOut(arg);
    }
    
-   backupConfigResponse(Map arg) {
-     String configJson = arg["configJson"];
-     String name = "NopaConfig.json";//TODO add device name
-     emit(js) {
-     """
-     downloadJson(bevl_configJson.bems_toJsString(), bevl_name.bems_toJsString());
-     """
-     }
+   createFolder() {
+      Map arg = Map.new();
+      arg["action"] = "createDirectoryRequest";
+      arg["inDir"] = HD.getElementById("browsingDirId").value;
+      arg["dirName"] = HD.getElementById("createFolderId").value;
+      handleCallOut(arg);
    }
    
    deleteRequest() {
@@ -668,92 +542,9 @@ use class Nopa:Eui {
       }
    }
    
-   upgradeRequest() {
-      String ci = currentlyCheckedId;
-      if (TS.notEmpty(ci)) {
-        HD.getElementById(currentlyCheckedId).checked = false;
-        currentlyCheckedId = null;
-      }
-      if (TS.notEmpty(ci)) {
-          String path = ci.substring(3);
-          Map arg = Map.new();
-          arg["action"] = "upgradeRequest";
-          arg["path"] = path;
-          handleCallOut(arg);
-      }
-   }
-   
-   checkOpenBrowserResponse() {
-     HC.callAppLater(Lists.from("checkOpenBrowserRequest"), 100);
-   }
-   
-   refreshLinksResponse(String actionLinks, String devLinks) {
-     if (TS.notEmpty(actionLinks)) {
-      HD.getElementById("actionLinksDiv").innerHTML = actionLinks;
-    }
-    if (TS.notEmpty(devLinks)) {
-      HD.getElementById("devLinksListDiv").innerHTML = devLinks;
-    }
-   }
-   
-   restoreConfigRequest() {
-      String ci = currentlyCheckedId;
-      if (TS.notEmpty(ci)) {
-        HD.getElementById(currentlyCheckedId).checked = false;
-        currentlyCheckedId = null;
-      }
-      if (TS.notEmpty(ci)) {
-          String path = ci.substring(3);
-          Map arg = Map.new();
-          arg["action"] = "restoreConfigRequest";
-          arg["path"] = path;
-          handleCallOut(arg);
-      }
-   }
-   
    localBrowseResponse(Map arg) {
       HD.getElementById("localBrowseListDiv").innerHTML = arg["dirListHtml"];
       HD.getElementById("localBrowseListDiv").display = "block";
-   }
-   
-   fillForwardPort(String forService) {
-      if (forService.ends("(ssh)")) {
-        HD.getElementById("fpName").value = "Secure Shell";
-        HD.getElementById("fpPort").value = "22";
-        HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "Run command: ssh -p $port$ $ip$";
-        HD.getElementById("fpDitty").innerHTML = "<p>ssh - <a href=\"https://duckduckgo.com/?q=ssh\">About Secure Shell</a>";
-      } elseIf (forService.ends("(rdp)")) {
-        HD.getElementById("fpName").value = "Remote Desktop";
-        HD.getElementById("fpPort").value = "3389";
-        HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
-        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://support.microsoft.com/en-us/help/17463/windows-7-connect-to-another-computer-remote-desktop-connection\">MS Remote Desktop</a>";
-      } elseIf (forService.ends("(nx)")) {
-        HD.getElementById("fpName").value = "NoMachine";
-        HD.getElementById("fpPort").value = "4000";
-        HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
-        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.nomachine.com/\">NoMachine, free cross platform remote desktop</a>";
-      } elseIf (forService.ends("VNC")) {
-        HD.getElementById("fpName").value = "VNC";
-        HD.getElementById("fpPort").value = "5900";
-        HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
-        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://en.wikipedia.org/wiki/Virtual_Network_Computing\">Virtual Network Computing - open source remote desktop (unencrypted)</a>";
-      } elseIf (forService.ends("(ard)")) {
-        HD.getElementById("fpName").value = "Apple Remote Desktop";
-        HD.getElementById("fpPort").value = "5988";
-        HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "Copy/Paste into client:  $ip$:$port$";
-        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.apple.com/remotedesktop/\">Apple Remote Desktop</a>";
-      } else {
-        HD.getElementById("fpName").value = "";
-        HD.getElementById("fpPort").value = "";
-        HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "";
-        HD.getElementById("fpDitty").innerHTML = "";
-      }
    }
    
    fillImap(String forService) {
@@ -772,121 +563,4 @@ use class Nopa:Eui {
       }
    }
   
-}
-
-use class IUCam:CamUI {
-
-  new() self {
-        fields {
-          String name = "cam";
-          HC hc = HC.new();
-        }
-    }
-    
-    main() {
-    
-    }
-    
-    handleCallOut(Map arg) {
-      hc.call(arg);
-    }
-    
-    handleCallback(String res) {
-      hideInform();
-      hc.handleCallback(res);
-    }
-       
-    updateImage(String cam) {
-      Map arg = Map.new();
-      arg["action"] = "updateImageRequest";
-      arg["cam"] = cam;
-      handleCallOut(arg);
-   }
-   
-   toggleMotion(String cam) {
-      Map arg = Map.new();
-      arg["action"] = "toggleMotionRequest";
-      arg["cam"] = cam;
-      handleCallOut(arg);
-   }
-   
-   toggleCamSettings() {
-     if (HD.getElementById("camSettingsDiv").display == "block") {
-       HD.getElementById("camSettingsDiv").display = "none";
-     } else {
-       HD.getElementById("camSettingsDiv").display = "block";
-     }
-   }
-   
-   startup() {
-      IO:Logs.turnOnAll();
-      clearImage();
-      Map arg = Map.new();
-      arg["action"] = "pageTokenRequest";
-      HD.getElementById("accountName").value = "";
-      HD.getElementById("accountPass").value = "";
-      handleCallOut(arg);
-   }
-   
-   updateImageResponse(Map arg) {
-     HD.getElementById("clearPicId").display = "block";
-     HD.getElementById("imgdiv").innerHTML = arg["imghtm"];
-     if(arg.has("plink")) {
-      HD.getElementById("plink").innerHTML = arg["plink"];
-      HD.getElementById("plink").display = "block";
-     } else {
-      HD.getElementById("plink").display = "none";
-     }
-     if(arg.has("nlink")) {
-      HD.getElementById("nlink").innerHTML = arg["nlink"];
-      HD.getElementById("nlink").display = "block";
-     } else {
-      HD.getElementById("nlink").display = "none";
-     }
-   }
-   
-   clearImage() {
-     HD.getElementById("imgdiv").innerHTML = "";
-     HD.getElementById("clearPicId").display = "none";
-     HD.getElementById("nlink").display = "none";
-     HD.getElementById("plink").display = "none";
-   }
-   
-   detectCams() {
-      Map arg = Map.new();
-      arg["action"] = "detectCamsRequest";
-      handleCallOut(arg);
-   }
-   
-   browseWebCam() {
-     if (HD.getElementById("browseFilesDiv").display == "block") {
-      closeFileBrowser();
-     } else {
-      HD.getElementById("browseFilesDiv").display = "block";
-      localBrowseRequest(Encode:Hex.encode("./Shared/WebCam"));
-     }
-   }
-   
-   closeFileBrowser() {
-     HD.getElementById("browseFilesDiv").display = "none";
-   }
-   
-   localBrowseRequest(String path) {
-      Map arg = Map.new();
-      arg["action"] = "localBrowseRequest";
-      arg["path"] = path;
-      handleCallOut(arg);
-   }
-   
-   inform(String r) {
-     if (TS.notEmpty(r)) {
-      HD.getElementById("informMessageDiv").innerHTML = r;
-      HD.getElementById("informDiv").display = "block";
-     }
-   }
-   
-   hideInform() {
-     HD.getElementById("informDiv").display = "none";
-   }
-   
 }
