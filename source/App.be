@@ -777,6 +777,23 @@ use class App:FileManagerPlugin {
      return(localBrowseRequest(arg, request));
    }
    
+   getBaseLink(request) String {
+     return("<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += Encode:Hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>");
+   
+   }
+   
+   jscallForPath(Path p) {
+    if (p.toString().ends(".jpg")) {
+      String jscall = " onclick=\"localBrowseRequest('" += Encode:Hex.encode(p.toString()) += "');return false;\"";
+    } elseIf (p.toString().ends(".html") || p.toString().ends(".htm")) {
+      jscall = " onclick = \"return false;\"";
+    } else {
+      jscall = "";
+    }
+    return(jscall);
+   }
+   
    localBrowseRequest(Map arg, request) Map {
      log.log("in local browse req");
      String accountName = request.getSession("account.name");
@@ -817,8 +834,7 @@ use class App:FileManagerPlugin {
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(".") += "');return false;\">APPDIR</a></td></tr>";
         }
-        /*dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>";*/
+        dirListHtml += getBaseLink(request); 
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(dirFile.path.toString()) += "');return false;\">.  (REFRESH)</a></td></tr>";
         IO:File:Path parent = dirFile.path.parent;
@@ -849,15 +865,7 @@ use class App:FileManagerPlugin {
               += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\"></td>";
               dirListHtml += "</tr>";   
             } else {
-              if (p.toString().ends(".jpg")) {
-                String jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-              } elseIf (p.toString().ends(".note")) {
-                jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-              } elseIf (p.toString().ends(".html") || p.toString().ends(".htm")) {
-                jscall = " onclick = \"return false;\"";
-              } else {
-                jscall = "";
-              }
+              String jscall = jscallForPath(p);
               dirListHtml += "<tr>";
               dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
               dirListHtml += "<td><input type=\"checkbox\" id=\"FCB"

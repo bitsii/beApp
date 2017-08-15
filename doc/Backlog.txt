@@ -1,9 +1,13 @@
 
-add note read/edit/save
+add note read/save
 
 add sync tracking
 add imap sync up
 add imap sync down
+
+limit note, copy, and dir names to "fs safe" chars
+limit note names from having dir splitters in them (or handle by putting
+  down in dir/fixing up name)
 
 get embedded ver doing
 use keyrings everywhere
@@ -20,6 +24,8 @@ send over email to others
   check for invites, show from
   accept, prompt if replacing
   send on change
+
+pretty up
 
 pics update svc when taken (intent or motion)
   first intent, then motion

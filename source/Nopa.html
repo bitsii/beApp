@@ -248,8 +248,12 @@ General help - clicking on icons will open/close their functional areas - click 
 <div id="imgdiv"></div>
 <div id="browseFilesDiv" style="display: none;">
 <p><input id="deleteSubmit" type="submit" value="Delete Selected" onclick="deleteSelected();return false;">&nbsp;Confirm deletion <input type="checkbox" id="confirmDeleteId"/></p>
-<p><label class="luiForm">Copy To Path</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy" onclick="copySelected();return false;"></p>
-<p><label class="luiForm">Create Folder</label><input type="text" id="createFolderId"></input><input id="createFolderSubmit" type="submit" value="Create" onclick="callUI('createFolder');return false;"></p>
+<p>Copy Selected File</p>
+<p><label class="luiForm">Path for Copy</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy" onclick="copySelected();return false;"></p>
+<p>Create New Folder</p>
+<p><label class="luiForm">Name for Folder</label><input type="text" id="createFolderId"></input><input id="createFolderSubmit" type="submit" value="Create" onclick="callUI('createFolder');return false;"></p>
+<p>Create New Note</p>
+<p><label class="luiForm">Name for Note</label><input type="text" id="noteNameId"></input><input id="createNoteSubmit" type="submit" value="Create" onclick="callUI('createNote');return false;"></p>
 <div id="localBrowseListDiv"></div>
 </div>
 <script>

@@ -94,7 +94,7 @@ use class Nopa:WebStart {
       plugins += nopa;
       plugins += App:AuthPlugin.new();
       plugins += App:ConfigPlugin.new();
-      plugins += App:FileManagerPlugin.new();
+      plugins += Nopa:NoteFilePlugin.new();
       return(plugins);
     }
     
@@ -205,7 +205,7 @@ use class Nopa:NopaPlugin {
       }
     }
   }
-  
+    
   saveAccountRequest(Map arg, request) {
     log.log("in nopa saveAccountRequest");
     unless (app.requestFromAdmin(request)) {
@@ -431,6 +431,64 @@ use class Nopa:NopaPlugin {
    aboutRequest(request) Map {
      String about = "<p>Note Passer, Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
+   }
+   
+}
+
+use class Nopa:NoteFilePlugin(App:FileManagerPlugin) {
+
+  createNoteRequest(Map arg, request) Map {
+     log.log("createnote request");
+     String inDir = arg["inDir"];
+     String noteName = arg["noteName"] + ".note";
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+     if (TS.notEmpty(inDir) && TS.notEmpty(noteName)) {
+       Path dirPath = Path.apNew(Encode:Hex.new().decode(inDir));
+       dirPath.addStep(noteName);
+       File dirFile = dirPath.file.absPath.file;
+       if (dirFile.exists! && app.checkWritePath(dirFile.path, arg, request)) {
+         log.log("creating " + dirFile.path);
+         dirFile.makeFile();
+       }
+     }
+     arg["path"] = arg["inDir"];
+     return(localBrowseRequest(arg, request));
+   }
+   
+   openNoteRequest(Map arg, request) Map {
+     log.log("openNote request");
+     String inDir = arg["inDir"];
+     String noteName = arg["noteName"] + ".note";
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+     if (TS.notEmpty(inDir) && TS.notEmpty(noteName)) {
+       Path dirPath = Path.apNew(Encode:Hex.new().decode(inDir));
+       dirPath.addStep(noteName);
+       File dirFile = dirPath.file.absPath.file;
+       if (dirFile.exists && app.checkReadPath(dirFile.path, arg, request)) {
+         log.log("opening " + dirFile.path);
+       }
+     }
+     arg["path"] = arg["inDir"];
+     return(null);
+   }
+   
+   getBaseLink(request) String {
+     return("");
+   }
+   
+   jscallForPath(Path p) {
+    if (p.toString().ends(".note")) {
+      String jscall = " onclick=\"callUI('openNote','" += Encode:Hex.encode(p.toString()) += "');return false;\"";
+    } else {
+      jscall = super.jscallForPath(p);
+    }
+    return(jscall);
    }
    
 }

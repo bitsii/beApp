@@ -504,6 +504,23 @@ use class Nopa:Eui {
       handleCallOut(arg);
    }
    
+   createNote() {
+      Map arg = Map.new();
+      arg["action"] = "createNoteRequest";
+      arg["inDir"] = HD.getElementById("browsingDirId").value;
+      arg["noteName"] = HD.getElementById("noteNameId").value;
+      HD.getElementById("noteNameId").value = "";
+      handleCallOut(arg);
+   }
+   
+   openNote(String name) {
+      Map arg = Map.new();
+      arg["action"] = "openNoteRequest";
+      arg["inDir"] = HD.getElementById("browsingDirId").value;
+      arg["noteName"] = name;
+      handleCallOut(arg);
+   }
+   
    deleteRequest() {
       Bool isChecked = HD.getElementById("confirmDeleteId").checked;
       HD.getElementById("confirmDeleteId").checked = false;
