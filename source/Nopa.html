@@ -81,7 +81,7 @@ h5.luiForm {
 <div id="loggedindiv" style="display: none;">
 
 <!--Files-->
-<img src="folder-videos.svg" onclick="callUI('browseNotes');return false;" title="Notes"/>
+<img src="folder-documents.svg" onclick="callUI('browseNotes');return false;" title="Notes"/>
 <!--Files-->
 
 <!--Logout-->
@@ -248,18 +248,24 @@ General help - clicking on icons will open/close their functional areas - click 
 <div id="imgdiv"></div>
 <div id="browseFilesDiv" style="display: none;">
 <p><input id="deleteSubmit" type="submit" value="Delete Selected" onclick="deleteSelected();return false;">&nbsp;Confirm deletion <input type="checkbox" id="confirmDeleteId"/></p>
-<p>Copy Selected File</p>
-<p><label class="luiForm">Path for Copy</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy" onclick="copySelected();return false;"></p>
-<p>Create New Folder</p>
-<p><label class="luiForm">Name for Folder</label><input type="text" id="createFolderId"></input><input id="createFolderSubmit" type="submit" value="Create" onclick="callUI('createFolder');return false;"></p>
-<p>Create New Note</p>
-<p><label class="luiForm">Name for Note</label><input type="text" id="noteNameId"></input><input id="createNoteSubmit" type="submit" value="Create" onclick="callUI('createNote');return false;"></p>
+<p><label class="luiForm">Copy Selected</label><input type="text" id="copyNameId" value="Destination/Path"></input><input id="copySubmit" type="submit" value="Copy" onclick="copySelected();return false;"></p>
+<p><label class="luiForm">Create Folder</label><input type="text" id="createFolderId" value="New Folder Name"></input><input id="createFolderSubmit" type="submit" value="Create" onclick="callUI('createFolder');return false;"></p>
+<p><label class="luiForm">Create Note</label><input type="text" id="noteNameId" value="Subject of New Note"></input><input id="createNoteSubmit" type="submit" value="Create" onclick="callUI('createNote');return false;"></p>
 <div id="localBrowseListDiv"></div>
 </div>
 <script>
 //document.getElementById('files').addEventListener('change', handleFileSelect, false);
 </script>
 <!--Files-->
+
+<!--Note-->
+<div id="noteEditDiv" style="display: none;">
+<p><label class="luiForm">Note Subject</label><input type="text" id="noteEditSubjectId"></input></p>
+<textarea id="noteEditContentId" rows="16" cols="40">
+</textarea> 
+<p><input id="saveNoteSubmit" type="submit" value="Save" onclick="callUI('saveNote');return false;">&nbsp;<input id="cancelNoteSubmit" type="submit" value="Cancel" onclick="callUI('cancelNote');return false;"></p>
+</div>
+<!--Note-->
 
 <!--Configuration-->
 <div id="configsDiv"></div>

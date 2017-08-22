@@ -454,14 +454,16 @@ use class Nopa:NoteFilePlugin(App:FileManagerPlugin) {
          dirFile.makeFile();
        }
      }
-     arg["path"] = arg["inDir"];
-     return(localBrowseRequest(arg, request));
+     arg["path"] = Encode:Hex.encode(dirPath.toString());
+     return(openNoteRequest(arg, request));
+     //arg["path"] = arg["inDir"];
+     //return(localBrowseRequest(arg, request));
    }
    
-   openNoteRequest(Map arg, request) Map {
-     log.log("openNote request");
+   saveNoteRequest(Map arg, request) Map {
+     log.log("save request");
      String inDir = arg["inDir"];
-     String noteName = arg["noteName"] + ".note";
+     String noteName = arg["note"]["subject"] + ".note";
      String accountName = request.getSession("account.name");
      if (TS.isEmpty(accountName)) {
       throw(Alert.new("must be authenticated"));
@@ -470,12 +472,47 @@ use class Nopa:NoteFilePlugin(App:FileManagerPlugin) {
        Path dirPath = Path.apNew(Encode:Hex.new().decode(inDir));
        dirPath.addStep(noteName);
        File dirFile = dirPath.file.absPath.file;
-       if (dirFile.exists && app.checkReadPath(dirFile.path, arg, request)) {
-         log.log("opening " + dirFile.path);
+       if (app.checkWritePath(dirFile.path, arg, request) && def(arg["note"]) && arg["note"].notEmpty) {
+         log.log("saving " + dirFile.path);
+         dirFile.writer.open().write(Json:Marshaller.marshall(arg["note"])).close();
        }
      }
      arg["path"] = arg["inDir"];
-     return(null);
+     return(localBrowseRequest(arg, request));
+   }
+   
+   openNoteRequest(Map arg, request) Map {
+     log.log("openNote request");
+     String path = arg["path"];
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+     if (TS.notEmpty(path)) {
+       Path dirPath = Path.apNew(Encode:Hex.new().decode(path));
+       log.log("open note " + dirPath.toString());
+       File dirFile = dirPath.file.absPath.file;
+       if (dirFile.exists && app.checkReadPath(dirFile.path, arg, request)) {
+         log.log("opening " + dirFile.path);
+         String notejs = dirFile.reader.open().readStringClose();
+         if (TS.notEmpty(notejs)) {
+          Map note = Json:Unmarshaller.unmarshall(notejs);
+         }
+       }
+     }
+     if (undef(note) || note.isEmpty) {
+      note = Map.new();
+      String nop = dirPath.toString();
+      nop = nop.split("/").last;
+      nop = nop.substring(0, nop.size - 5);
+      log.log("nop is " + nop);
+      note["subject"] = nop;
+      note["content"] = "";
+     }
+     Map res = Map.new();
+     res["action"] = "openNoteResponse";
+     res["note"] = note;
+     return(res);
    }
    
    getBaseLink(request) String {

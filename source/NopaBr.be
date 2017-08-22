@@ -132,7 +132,6 @@ use class Nopa:Eui {
      if (HD.getElementById("browseFilesDiv").display == "block") {
       closeFileBrowser();
      } else {
-      HD.getElementById("browseFilesDiv").display = "block";
       localBrowseRequest(Encode:Hex.encode(notesDir));
      }
    }
@@ -413,6 +412,9 @@ use class Nopa:Eui {
     if (TS.notEmpty(oinf)) {
       inform(oinf);
     }
+    HD.getElementById("copyNameId").value = "Destination/Path";
+    HD.getElementById("createFolderId").value = "New Folder Name";
+    HD.getElementById("noteNameId").value = "Subject of New Note";
    }
    
    logoutResponse(Map arg) {
@@ -479,9 +481,12 @@ use class Nopa:Eui {
      if (HD.getElementById("browseFilesDiv").display == "block") {
       closeFileBrowser();
      } else {
-      HD.getElementById("browseFilesDiv").display = "block";
       localBrowseRequest("");
      }
+   }
+   
+   openFileBrowser() {
+     HD.getElementById("browseFilesDiv").display = "block";
    }
    
    closeFileBrowser() {
@@ -500,7 +505,7 @@ use class Nopa:Eui {
       arg["action"] = "createDirectoryRequest";
       arg["inDir"] = HD.getElementById("browsingDirId").value;
       arg["dirName"] = HD.getElementById("createFolderId").value;
-      HD.getElementById("createFolderId").value = "";
+      HD.getElementById("createFolderId").value = "New Folder Name";
       handleCallOut(arg);
    }
    
@@ -509,16 +514,41 @@ use class Nopa:Eui {
       arg["action"] = "createNoteRequest";
       arg["inDir"] = HD.getElementById("browsingDirId").value;
       arg["noteName"] = HD.getElementById("noteNameId").value;
-      HD.getElementById("noteNameId").value = "";
+      HD.getElementById("noteNameId").value = "Subject of New Note";
       handleCallOut(arg);
    }
    
-   openNote(String name) {
+   openNote(String path) {
       Map arg = Map.new();
       arg["action"] = "openNoteRequest";
-      arg["inDir"] = HD.getElementById("browsingDirId").value;
-      arg["noteName"] = name;
+      arg["path"] = path;
       handleCallOut(arg);
+   }
+   
+   saveNote() {
+      //log.log("in savenote");
+      Map arg = Map.new();
+      arg["action"] = "saveNoteRequest";
+      arg["inDir"] = HD.getElementById("browsingDirId").value;
+      Map note = Map.new();
+      arg["note"] = note;
+      note["subject"] = HD.getElementById("noteEditSubjectId").value;
+      note["content"] = HD.getElementById("noteEditContentId").value;
+      handleCallOut(arg);
+   }
+   
+   cancelNote() {
+    HD.getElementById("noteEditSubjectId").value = "";
+    HD.getElementById("noteEditContentId").value = "";
+    HD.getElementById("noteEditDiv").display = "none";
+    localBrowseRequest(HD.getElementById("browsingDirId").value);
+   }
+   
+   openNoteResponse(Map arg) {
+     closeFileBrowser();
+     HD.getElementById("noteEditDiv").display = "block";
+     HD.getElementById("noteEditSubjectId").value = arg["note"]["subject"];
+     HD.getElementById("noteEditContentId").value = arg["note"]["content"];
    }
    
    deleteRequest() {
@@ -557,7 +587,7 @@ use class Nopa:Eui {
    
    copyRequest() {
       String toName = HD.getElementById("copyNameId").value;
-      HD.getElementById("copyNameId").value = "";
+      HD.getElementById("copyNameId").value = "Destination/Path";
       String ci = currentlyCheckedId;
       if (TS.notEmpty(ci)) {
         HD.getElementById(currentlyCheckedId).checked = false;
@@ -574,8 +604,11 @@ use class Nopa:Eui {
    }
    
    localBrowseResponse(Map arg) {
+      //log.log("in lbr");
+      HD.getElementById("browseFilesDiv").display = "block";
       HD.getElementById("localBrowseListDiv").innerHTML = arg["dirListHtml"];
       HD.getElementById("localBrowseListDiv").display = "block";
+      HD.getElementById("noteEditDiv").display = "none";
    }
    
    fillImap(String forService) {
