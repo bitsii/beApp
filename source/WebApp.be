@@ -239,7 +239,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
      }
      String accountName = request.getSession("account.name");
      String rmtd = request.inputMethod;
-     //log.log("rmtd is " + rmtd);
+     log.log("rmtd is " + rmtd);
      if (TS.isEmpty(rmtd) || rmtd != "PUT") {
         Map arg = request.scriptArg;
      }

@@ -109,6 +109,14 @@ class HD {
     return(HE.new(id));
   }
   
+  getEle(String id) {
+    return(HE.new(id));
+  }
+  
+  setDis(String id, String dis) {
+    HE.new(id).display = dis;
+  }
+  
   reload() {
     emit(js) {
     """
@@ -408,10 +416,18 @@ class HC {
      }
    }
    
+   setValResponse(Map idvals) {
+    setElementsValuesResponse(idvals);
+   }
+   
    setElementsDisplaysResponse(Map idvals) {
      for (any kv in idvals) {
       HD.getElementById(kv.key).display = kv.value;
      }
+   }
+   
+   setDisResponse(Map idvals) {
+    setElementsDisplaysResponse(idvals);
    }
    
    setElementsInnerHTMLResponse(Map idvals) {

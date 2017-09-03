@@ -1,40 +1,6 @@
 
-msw
-
-
-cc, ios/osx, ad
-
-javascript timer for sync (and on demand)
-  
-add sync tracking
-add imap sync up
-add imap sync down
-
-sync
-  ssepoch rand key (path) "|" (actual seperator) base64 json { key, version, owner (random devid) }
-  start with config kvdb (prefix for sync things, get map)
-    imap encoded to hex and stored html hidden element (also clear text)
-  put hidden element(s) first in html so not contaminated by text
-  html text area?
-    (note that changing it there will not change it anywhere else)
-
-
-pretty up
-
-use keyrings everywhere
-
-get out
-
-send over email to others
-  check for invites, show from
-  accept, prompt if replacing
-  send on change
-  get messages newer than x in inbox
-
-limit note, copy, and dir names to "fs safe" chars
-limit note names from having dir splitters in them (or handle by putting
-  down in dir/fixing up name)
-
+cc, mswcc, ios/osx, ad
+  qt? wxw?
 
 pics update svc when taken (intent or motion)
   first intent, then motion
