@@ -1,0 +1,9 @@
+
+Hub is just client and links
+Bridge is client, upnp, ssh, cam
+
+rasbian wifi setup cmd line
+  https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md
+
+pi wifi hotspot  
+http://itsacleanmachine.blogspot.com/2013/02/wifi-access-point-with-raspberry-pi.html

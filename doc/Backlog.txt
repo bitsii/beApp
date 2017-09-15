@@ -1,4 +1,12 @@
 
+bridge able to read password from file, cmd to put in file
+bridge able to read ssid, pw from file and turn on access point if no internet access configured or working
+  switches back to configured from time to time if working
+  can also read ssid/pw for one to connect to from files
+  
+cam separate
+could use wireless connector url to bring up connection (no app needed)
+
 cc, mswcc, ios/osx, ad
   qt? wxw?
 
