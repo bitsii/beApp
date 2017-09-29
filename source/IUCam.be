@@ -522,7 +522,7 @@ use class IUCam:CamPlugin {
      }
      String cdo = app.configManager.get("camsDetectedOnce");
       if (TS.isEmpty(cdo) || cdo != "true") {
-        actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";
+        //actionLinks += "<p><a id=\"detectCamsId\" href=\"#\" onclick=\"callUI('detectCams');return false;\" >Detect WebCams</a></p>";
       }
      return(actionLinks);
    }

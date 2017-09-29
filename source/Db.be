@@ -480,11 +480,12 @@ class KvDb {
   apNew(Path dbp, String _tableName) self {
     String dbn = dbp.name;
     ifEmit(jv) {
-      dbp = dbp.parent.addStep(dbn + "HS");
-      db = createInstance("Db:HSQLDb:Database");
+      dbp = dbp.parent.addStep(dbn + "SLJ.db");
+      //db = createInstance("Db:HSQLDb:Database");
+      db = createInstance("Db:SQLite:Database");
     }
     ifEmit(cs) {
-      dbp = dbp.parent.addStep(dbn + "SL.db");
+      dbp = dbp.parent.addStep(dbn + "SLC.db");
       db = createInstance("Db:SQLite:Database");
     }
     db.pathNew(dbp);

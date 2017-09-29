@@ -7,6 +7,8 @@ bridge able to read ssid, pw from file and turn on access point if no internet a
 cam separate
 could use wireless connector url to bring up connection (no app needed)
 
+just do an auto detect cams if not done before
+
 cc, mswcc, ios/osx, ad
   qt? wxw?
 

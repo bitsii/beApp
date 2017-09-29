@@ -350,11 +350,17 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     res = super.loggedIn(a, res, arg, request);
     String dnso = app.configManager.get("deviceNameSetOnce");
     if (TS.isEmpty(dnso) || dnso != "true") {
-      res["deviceNameSetOnce"] = "false";
+      //res["deviceNameSetOnce"] = "false";
     }
     String anso = app.configManager.get("accountSetOnce");
     if (TS.isEmpty(anso) || anso != "true") {
-      res["accountSetOnce"] = "false";
+      //res["accountSetOnce"] = "false";
+    }
+    String dc = app.configManager.get("doCam");
+    if (TS.isEmpty(dc) || dc != "true") {
+      res["doCam"] = "false";
+    } else {
+      res["doCam"] = "true";
     }
     return(res);
    }

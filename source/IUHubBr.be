@@ -467,8 +467,10 @@ use class IUHub:Eui {
       profile = arg["profile"];
       if (arg["profile"] == "bridge" || arg["profile"] == "cambridge") {
         if (arg["profile"] == "cambridge") {
-          HD.getElementById("camBridgeMenu1").display = "block";
-          HD.getElementById("camBridgeMenu3").display = "block";
+          if (TS.notEmpty(arg["doCam"]) && arg["doCam"] == "true") {
+            HD.getElementById("camBridgeMenu1").display = "block";
+            HD.getElementById("camBridgeMenu3").display = "block";
+          }
         }
         HD.getElementById("bridgeMenu2").display = "block";
         HD.getElementById("bridgeHelp1").display = "block";

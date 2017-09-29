@@ -597,7 +597,7 @@ use class IUHub:HubPlugin {
       
       String imso = app.configManager.get("imapSetOnce");
       if (TS.isEmpty(imso) || imso != "true") {
-        res["imapSetOnce"] = "false";
+        //res["imapSetOnce"] = "false";
       }
       
       return(res);

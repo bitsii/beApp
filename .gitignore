@@ -53,3 +53,8 @@ bld/
 [Ll]og/
 
 # end csharp xam
+# cordova
+cordova/
+# nwjs
+nwjs/
+
