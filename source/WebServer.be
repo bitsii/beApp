@@ -481,6 +481,8 @@ use class Web:ScriptRequest {
             Bool outputOpened = false;
             Json:Marshaller mar = Json:Marshaller.new();
             Json:Unmarshaller unmar = Json:Unmarshaller.new();
+            Map context = Map.new();
+            Bool continueHandling = true;
         }
     }
     

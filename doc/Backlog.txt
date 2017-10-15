@@ -1,16 +1,58 @@
 
-bridge able to read password from file, cmd to put in file
-bridge able to read ssid, pw from file and turn on access point if no internet access configured or working
-  switches back to configured from time to time if working
-  can also read ssid/pw for one to connect to from files
+get bridgehub working again
+  sqlite, test on pi
+  update installer, etc
+
+move auth fully into plugin
+  better plugin interface
+    remove arg/script stuff from request, put in plugin and context
+      scriptArg and scriptReturn
+    move filemanager and auth logic all into plugins
+      override handleweb with a super
+    remove all arg stuff from apps
+    move args logic out of request into scriptcallplugin, change request to generic name
+    
+    have a serve from files (for public reads)
+    plugins
+      public serve
+      authen
+      file manager
+      hub
+      ...
+
+webapp becomes remote webapp (ssl builtin, move hub ssl into here)
+localwebapp
+authed app becomes just webapp
+
+update gui
+plugins with own html, share styles, etc via convention
+
+dynamic/codable/sandbox plugin for own code
+  is in plugin path, work on request (whiteboard)
+
+plugins have startup, shutdown, handlers
+  ?background more embedded in app / timer?
+
+setup profiles for auth web, no auth web, browser apps, etc
   
-cam separate
+====
+
+more tests
+
+port to js, mac, win, android
+  ssh/putty win, ssh mac/linux, jsch android
+  miniupnpc everywhere
+  no bridge ios, just hub
+
+libraries
+
+tease out some hub plugin stuff (updates, etc)
+
+plugin building and packaging
+
 could use wireless connector url to bring up connection (no app needed)
 
 just do an auto detect cams if not done before
-
-cc, mswcc, ios/osx, ad
-  qt? wxw?
 
 pics update svc when taken (intent or motion)
   first intent, then motion
@@ -40,30 +82,7 @@ try on phone
 
 android package on bitbucket
 
-ios - c++
-  c++ - sqlite, https://github.com/eidheim/Simple-Web-Server
-  libcurl https://github.com/sinofool/build-libcurl-ios (can do imap too)
-  command line through sqlite and basics
-  web server based
-  imap
-
 play/appstore - export
-
-passes
-
-android bridge
-
-mac, win client vers
-
-use imap to schedule wake/sleep
-
-hit url on app on pic save (script)
-  have that be able to copy and other (save for auto-dl, later delete)
-   (also delete copy)
-
-generalized app save state / return to state (and clear state) for close/resume
-   
-====
 
 auto-dl (wakeup occasionally, get changes)
   keep pic list
@@ -73,50 +92,15 @@ auto-dl (wakeup occasionally, get changes)
 
 headless setup pi
 
-cmd line to get internal and external ip addresses for devices (for scripting)
-
-proxy vnc
-embed miniupnpc (?)
-cs ssh (or putty/embed ssh?)
-ssh install package with instructions
-
-test imap with diff providers for cs
-
 remote install over ssh for hosted
 
-retest setup
-
-auto install to host
-
-feedback when imap setup / pass is wrong
-  have be part of update/links update (put in config)
-  have links update be a separate call after login update
-  have a refresh option in the links list
-  detect webcams (link at least) does the wrong thing, have it do the update
-    
-other cmd options, like play sound file, play sound on loop
-  refresh for action links (add in hub) calls the thing that refreshes dev and other
-  the do for mp3cycle android ver
-  hold state, start and stop
-  
-sitename not deleted after internet listen removed, staying in wc
-
-update for dependencies (script...)
-
-android ver (full) (?pi aosp) or 
-  zw/zig local wifi hub?
+mini plugins for white noise, etc
 
 outside db key for en/decrypt values in config, in sec store on mobile
 
 cleanup expired sessions and old oncetokens
 expiration for once login (deletem on cleanup)
 old session cleanup (do on bad ip cleanup)
-
-bring back createadmin
-
-can change expiration during session
-
-default session time on regular login from config
 
 need retry script for failure to launch during install
 
@@ -126,47 +110,19 @@ flutter
 
 upgrade check two places
 
-csweb ssl working - see about improving xam ssl or use bouncy
-
-multi process embedded database for java / android
-
-automation for install inst on internet listen / hosting
-
-rm old junk from cam
-
 droid
   no dev name - get from phone
 
 sharing urls for other apps
 
-enter key support for submit wherever it makes sense
-  device login, device name
-
 options for problems in wiki
 make sure contact method works to ping me (?email fwd)
-
-optional encrypte/decrypt pass for payloads in imap
 
 should do reference counting for certificate print in/out
 
 add sha256 thumbprint too (for viewing)
 
 switch to sha256 for verification
-
-backup stuff (pic, etc) to pi from clients
-
-sending email to update folks on change
-  look in inbox, by subject, up to last check time (max date last time - some hours)
-  encrypting payload with key for verification, provide during servicelogin, paired with
-  deviceid
-
-For embedded stay logged just need to store and retrieve the session from config not
-  all the other stuff - see checkin 2017-02-05, leave the 30 min default
-  can just always use the embedded thing instead of looking for cookie for embedded req
-  test that expiration works
-  ?make initial login non-expiring?  Or just really long, like 12-24 hours
-
-zwave etc
 
 library based dev env
   builds for each thing (at least sep jv and js)
@@ -176,36 +132,14 @@ library based dev env
   dynamic dev for plugins (own, added) and ui components to go with (app like cam with
     all the basics)
 
-script to stop everything and start lwui
-
-remote access stuff
-
-pics autosend/get auto-download pics to app with retention time
-
 ping location
 
 on host ssh setup instructs and script (sshd_config change)
-  
-iot (lights, etc)
-homeauto - light
-  java wrapper openzw? node + openzw?
-homeauto - locks
 
 haproxy for privilaged -> localhost
 
 siteNames ui
 real certs (let's encrypt and the other one, pay ones)
-  
-check for updates - two places (sf and github?)
-  size? sha?
-auto update (turn off able, on by default)
-______________
-
-simple event stuff, alert/notify
-
-support dyn dns options (duck, ?)
-
-=====
 
 upload in progress indicator
   id for upload process
@@ -213,121 +147,18 @@ upload in progress indicator
   
 temporary picture access/sharing (email link)
   
-play sounds from file manager, incl looop n times (wh noise, include by dl?)
-mixer settings for output and vol?
-record sound snapshot (also after pic from motion)
-  
-launch ec2 from imap info for no-ssh version (on demand)
-______________
-  
-force deviceid to certain characteristics (in get)
-
-encrypted port fwd (secure tunnel for vnc)
-______________
-
 static forward for things like ssh from local port on client
-______________
 
 cam periodic pic
 
-persist the last update time, have an update now (refresh) option
-
 instead of omitting unshowable configs put stars and only a delete link
-extra security with thumbprint
-______________
-  
-direct hosting option with imap and webmail
-______________
 
 all in browser dev sandbox
-______________
-
-reverse file order
-
-db pooling kvdb (no clocker) option
-  
-scheduling 
-
-picture navigation (prior/next)
-______________
 
 check and kill motion if api unresponsive
 
 sound 
 
-hc default inst?
-  
-video
-
-basic link working wincs, monoweb, xamarin
-  use mono sqlite instead of firebird
-  monoweb with just build module, link, hub
-
-robots
-
-good event development/scripting abilities!!! across devs (home auto, etc)
-
-record sound
-play uploaded sound
 alarm
 
 also have a rasberry pi connected wakeup option
-
-password sync/ vault
-contact sync
-bookmark sync
-text backup
-location tracking/find phone
-move cert stuff out of app (to webserver?, or sharable place...)
-
-have a sync adapter/ios background thing that updates on occasion
-also working in c# windows imap  
-xamarin studio uwp - xamarin forms
-ios
-
-imap coordinator as-is for links/entry (hub)
-also sends emails (see offerLinkRequest) - list of email addresses which are updated (comma sep)
-  put in code (sha with time, nonce, shared secret) also check who email is from and retain that
-  on first use call with code and get a token (only allowed once) so later compromise not a problem
-  check ssl sig
-  used from then on
-  hub sends on change, time preiod, demand
-  link scans on occasion or demand
-______________
-
-______________
-
-duckdns (for fixed port)
-totally online option for hub - dreamhost
-  host own imap
-  no-upnp option ssh tunnel
-______________
-
-
-sharing urls with other apps
-  first urls javafx, android, cs (win, ios)
-    empty ui (hi, back/forth) all (add extra compile config info for csc)
-    db for config all
-    imap all
-    links all (then open in native browser all)
-    dump no longer really implemented contentGet in browsers
-
-  expose way to let apps get the info (they may choose to), with docs & way to 
-  add to app
-
-______________
-
-filemanager/sync - seafile, pydio, owncloud (needs port forward/intents/app changes)
-filemanager, remote access
-
-other app support
-  desktop - static port forward, shared files - proxy
-    connect disconnect on connection (prompt connect by connection/build up on each go)
-      (already may be so)
-  android - port forward and intents
-  ios - sharing (pita, uipasteboard*? url(back and forth)*? extension?)
-    url-url example - https://kotikan.com/blog/item/passing-data-between-ios-apps
-    receive call url
-    paste into pasteboard, or just callback
-    callback
-    (only do this if last one in pasteboard no workie, or age, or empty)

@@ -519,6 +519,8 @@ use class UI:BrowserScriptRequest {
             Json:Unmarshaller unmar = Json:Unmarshaller.new();
             String inputAddress;
             Bool embedded = true;
+            Map context = Map.new();
+            Bool continueHandling = true;
         }
     }
     

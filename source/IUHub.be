@@ -128,11 +128,10 @@ use class IUHub:HubStart {
     }    
 }
 
-use class IUHub:HubPlugin {
+use class IUHub:HubPlugin(App:ScriptCallPlugin) {
 
      new() self {
        fields {
-          IO:Log log =@ IO:Logs.get(self);
           any app;
           any oapp;
           String name = "IUHub";
@@ -144,6 +143,8 @@ use class IUHub:HubPlugin {
           Bool runBackground = false;
           Lock wcl = Lock.new();
         }
+        super.new();
+        log =@ IO:Logs.get(self);
      }
      
      loadWc() {
@@ -1511,14 +1512,15 @@ use class IUHub:AccountTest(Assert) {
   
 }
 
-class IUDoer:DoerPlugin {
+class IUDoer:DoerPlugin(App:ScriptCallPlugin) {
 
   new() self {
      fields {
-        IO:Log log =@ IO:Logs.get(self);
         any app;
         String name = "IUDoer";
       }
+      super.new();
+      log =@ IO:Logs.get(self);
    }
      
   start() {

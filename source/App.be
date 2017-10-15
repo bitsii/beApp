@@ -433,14 +433,15 @@ class Crypt {
   }
 }
 
-use class App:AuthPlugin {
+use class App:AuthPlugin(App:ScriptCallPlugin) {
 
      new() self {
        fields {
-          IO:Log log =@ IO:Logs.get(self);
+          log =@ IO:Logs.get(self);
           any app;
           String name = "Auth";
         }
+        super.new();
      }
      
     clearAllSessionsRequest(Map arg, request) Map {
@@ -698,15 +699,15 @@ use class App:AuthPlugin {
    
 }
 
-use class App:FileManagerPlugin {
+use class App:FileManagerPlugin(App:ScriptCallPlugin) {
 
      new() self {
        fields {
-          IO:Log log =@ IO:Logs.get(self);
           any app;
-          String name = "FileManager";
+          String name = "Files";
         }
-        
+        super.new();
+        log =@ IO:Logs.get(self);
      }
      
      deleteRequest(Map arg, request) Map {
@@ -938,15 +939,15 @@ use class App:FileManagerPlugin {
    
 }
 
-use class App:ConfigPlugin {
+use class App:ConfigPlugin(App:ScriptCallPlugin) {
 
      new() self {
        fields {
-          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "Conf";
         }
-        
+        super.new();
+        log =@ IO:Logs.get(self);
      }
      
      changeDeviceNameRequest(String deviceName, request) {
@@ -1069,9 +1070,7 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
    }
 
    handleWeb(request) {
-     
-     Map arg = request.scriptArg;
-     return(super.handleWeb(request, arg));
+     return(super.handleWeb(request));
    }
 
 }
@@ -1117,13 +1116,19 @@ class AuthedApp {
   pluginsSet(_plugins) {
       fields {
         List plugins = _plugins;
-        any plugin = plugins.first;
+        if (undef(plugin)) {
+          any plugin = plugins.first;
+        }
         Map pluginsByClassName = Map.new();
+        Map pluginsByName = Map.new();
       }
       
       for (any pl in plugins) {
         pl.app = self;
         pluginsByClassName.put(pl.className, pl);
+        if (pl.can("nameGet", 0)) {
+          pluginsByName.put(pl.name, pl);
+        }
         //("PUT PLUGIN " + pl.className).print();
       }
       
@@ -1552,7 +1557,9 @@ class AuthedApp {
     return(null);
   }
   
-  handleWeb(request, Map arg) {
+  handleWeb(request) {
+    App:ScriptCallPlugin.new().prepArgs(request);
+    Map arg = request.context["arg"];
     if (request.embedded! && TS.notEmpty(arg["serviceSessionKey"])) {
       request.serviceSessionKey = arg["serviceSessionKey"];
     }
@@ -1618,25 +1625,17 @@ class AuthedApp {
               //log.log("call type b");
             }
             for (any pl in plugins) {
-              if (pl.can(aname, args.length)) {
-                any res = pl.invoke(aname, args);
+              request.continueHandling = false;
+              pl.handleWeb(request);
+              unless (request.continueHandling) {
                 break;
               }
             }
-            request.scriptReturn = res;
         } catch (any e) {
-           arg = Map.new();
            log.log("Caught exception during handleWeb B");
            if (def(e)) {
             log.log("Exception was " + e);
            }
-            arg["action"] = "failResponse";
-            if (e.sameClass(Alert.new()@)) {
-              arg["reason"] = e.description;
-            } else {
-              arg["reason"] = "Sorry, unable to handle request";
-            }
-            request.scriptReturn = arg;
         }
     }
     
@@ -1839,6 +1838,73 @@ class CallBackUI {
       return(retc);
    }
 
+}
+
+class App:ScriptCallPlugin {
+
+   new() self {
+    fields {
+      any plugin = self;
+      IO:Log log =@ IO:Logs.get(self);
+    }
+   }
+   
+   new(_plugin) self {
+     plugin = _plugin;
+     log =@ IO:Logs.get(self);
+   } 
+   
+   prepArgs(request) {
+     Map arg = request.context["arg"];
+     List args = request.context["args"];
+     if (undef(arg) || undef(args)) {
+       arg = request.scriptArg;
+       if (def(arg)) {
+         if (arg.has("args")) {
+            //is "standard call"
+            args = arg["args"];
+            args += request;
+            //log.log("call type a " + aname + args.length);
+          } else {
+            //deprecate this
+            args = List.new(2);
+            args[0] = arg;
+            args[1] = request;
+            //log.log("call type b");
+          }
+        }
+        request.context["arg"] = arg;
+        request.context["args"] = args;
+     }
+   } 
+   
+   handleWeb(request) {
+     try {
+       prepArgs(request);
+       Map arg = request.context["arg"];
+       List args = request.context["args"];
+       if (def(arg) && def(args)) {
+         String aname = arg.get("action");
+          if (plugin.can(aname, args.length)) {
+            any res = plugin.invoke(aname, args);
+            request.scriptReturn = res;
+          } else {
+            request.continueHandling = true;
+          }
+        }
+      } catch (any e) {
+        log.log("Caught exception handling request");
+        if (log.will()) { if (undef(e)) { log.log("undefined exception") } else { log.log(e.toString()); } }
+        arg = Map.new();
+        arg["action"] = "failResponse";
+        if (e.sameClass(Alert.new()@)) {
+          arg["reason"] = e.description;
+        } else {
+          arg["reason"] = "Sorry, unable to handle request";
+        }
+        request.scriptReturn = arg;
+      }
+    }
 }
 
 use System:Thread:Lock;

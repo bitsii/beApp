@@ -191,11 +191,10 @@ use App:AuthenticatedApp as AuthedApp;
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
-use class IUCam:CamPlugin {
+use class IUCam:CamPlugin(App:ScriptCallPlugin) {
 
      new() self {
        fields {
-          IO:Log log =@ IO:Logs.get(self);
           any app;
           String name = "IUCam";
           String homePage = "/App/IUCam/IUCam.html";
@@ -203,6 +202,8 @@ use class IUCam:CamPlugin {
           App:Background abg = App:Background.new();
           Bool runBackground = false;
         }
+        super.new();
+        log =@ IO:Logs.get(self);
      }
      
      runBackgroundTasks() {

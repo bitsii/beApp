@@ -454,6 +454,9 @@ use class IUHub:Eui {
       HD.getElementById("logindiv").display = "none";
       HD.getElementById("loggedindiv").display = "block";
       HD.getElementById("spinnerdiv").display = "none";
+      HD.getElementById("configItemsDiv").display = "block";
+      
+      
       //if (TS.notEmpty(arg["loginUri"])) {
         //String li = arg["loginUri"];
         //HD.getElementById("liLink").href = li;

@@ -241,7 +241,8 @@ use class App:AuthenticatedWebApp(AuthedApp) {
      String rmtd = request.inputMethod;
      log.log("rmtd is " + rmtd);
      if (TS.isEmpty(rmtd) || rmtd != "PUT") {
-        Map arg = request.scriptArg;
+        App:ScriptCallPlugin.new().prepArgs(request);
+        Map arg = request.context["arg"];
      }
      if (TS.isEmpty(accountName)) {
        String ln = request.getParameter("accountName");
@@ -312,7 +313,7 @@ use class App:AuthenticatedWebApp(AuthedApp) {
        }
       return(null);
      }
-     return(super.handleWeb(request, arg));
+     return(super.handleWeb(request));
    }
 
 }

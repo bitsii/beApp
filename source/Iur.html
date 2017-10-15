@@ -1,0 +1,179 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  
+body {
+    font-family: Roboto, 'Segoe UI', Tahoma, sans-serif;
+    /*font-size: 81.25%;*/
+    font-size: 90%;
+    font-weight: 600;
+    background-color:rgb(200,200,200);
+}
+
+:link { color: #000000; }
+:visited { color: #000000; }
+
+img { 
+margin-left:5px; 
+margin-right:5px; 
+margin-top:5px; 
+margin-bottom:5px; 
+} 
+
+label.luiForm {
+    width: 120px; float: left;margin:0;padding:0;
+}
+
+input.luiFormField {
+    width: 140px;margin:0;padding:0;clear: right;
+}
+
+input.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+p.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+h5.luiForm {
+    width: 260px;margin:0;padding:0;
+}
+
+#alertDiv {
+    top:0;
+    left:0;
+    width:100%;
+    height:150%;
+    display:none;
+}
+
+</style>
+<script type="text/javascript" src="Iur_BEX_E.js">
+</script>
+</head>
+<body>
+<div id="informDiv" style="display: none;">
+<div id="informMessageDiv"></div>
+<p><a href="#" onclick="callUI('hideInform');return false;">Clear Message</a></p>
+</div>
+<div id="spinnerdiv">
+  
+</div>
+<div id="logindiv" style="display: none;">
+<p>Login</p>
+<form>
+<p><label class="luiForm">Account Name</label><input type="text" id="accountName"></input></p>
+<p><label class="luiForm">Account Password</label><input type="password" id="accountPass" onkeydown = "if (event.keyCode == 13) callUI('login')"></input></p>
+<!--
+<a href="#" onclick="callUI('toggleDisplay', 'advancedLoginDiv');return false;"/>Advanced</a>
+-->
+<div id="advancedLoginDiv" style="display: none;">
+<input type="hidden" id="sessionName" value=""/>
+<p><label>Session expires after <input type="text" id="sessionLength" value="60"/> minutes of inactivity
+<p>OR
+<p><input type="checkbox" id="sessionNeverExpires"/> never expires.
+</div>
+</form>
+<p><a href="#" onclick="callUI('login');return false;">Login</a></p>
+</div>
+<div id="loginmsgdiv"></div>
+<div id="loggedindiv" style="display: none;">
+
+<!--Upload-->
+<p>Upload a File <input type="file" id="files" name="files[]" multiple /></p>
+<script>
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+<!--Upload-->
+
+<!--Password-->
+<img src="folder-documents.svg" onclick="callUI('toggleDisplay', 'addFlyerDiv');return false;" title="Add Flyer"/>
+<!--Password-->
+
+<!--Password-->
+<img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/>
+<!--Password-->
+  
+<!-- config stuff link -->
+<!--
+<img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/>
+-->
+
+<!--Help-->
+<img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="Help"/>
+<!--Help-->
+
+<!--Logout-->
+<img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/>
+<!--Logout-->
+
+<!--Help Link-->
+<p>  
+<a href="#" onclick="callUI('toggleDisplay', 'helpDiv');callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;">Click here for Help</a>
+<!--Help Link-->
+
+<p>
+  
+<!--About-->
+<div id="aboutDiv" style="display: none;">
+<div id="aboutDivMsg">
+</div>
+<p>All rights reserved.
+<p>3rd party components may be licensed under other terms.
+<p>May include the following:
+<p>Elementary OS Icons <a href="LICENSE-ICONS.txt">LICENSE-ICONS.txt</a>
+<p>AndroidIcons (opoloo) <a href="LICENSE-ANDROIDICONS.txt">LICENSE-ANDROIDICONS.txt</a>
+<p>Bouncy Castle <a href="LICENSE-BOUNCY-CASTLE.txt">LICENSE-BOUNCY-CASTLE.txt</a>
+<p>HSQLDB <a href="LICENSE-HSQLDB.txt">LICENSE-HSQLDB.txt</a>
+<p>JavaMail <a href="LICENSE-JAVAMAIL.txt">LICENSE-JAVAMAIL.txt</a>
+<p>Jetty <a href="LICENSE-JETTY-eplv10-aslv20.html">LICENSE-JETTY-eplv10-aslv20.html</a>
+
+</div>
+<!--About-->
+
+<!--Help-->
+<div id="helpDiv" style="display: none;">
+General help - clicking on icons will open/close their functional areas - click Help again to close this area
+<!--Password-->
+<p><img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/> Change Password
+<!-- config stuff link -->
+<!--
+<p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/> Open Configuration Panel
+-->
+<!--Help-->
+<p><img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="Help"/> Help (this...)
+<!--Logout-->
+<p><img src="system-log-out.svg" onclick="callUI('logout');return false;" title="Logout"/> Logout
+</div>
+
+<!-- config stuff -->
+
+<div id="configItemsDiv" style="display: none;">
+
+</div>
+
+<p>
+
+<!--Password-->
+<div id="passwordDiv" style="display: none;">
+<p><label class="luiForm">Old Password</label><input type="password" id="changePassOld"</input></p>
+<p><label class="luiForm">New Password</label><input type="password" id="changePassNew"</input></p>
+<p><label class="luiForm">Repeat New</label><input type="password" id="changePassNew2"</input></p>
+<p><a href="#" onclick="callUI('toggleDisplay', 'passwordDiv');callUI('changePassRequest');return false;">Change Password</a></p>
+</div>
+<!--Password-->
+
+<!--Add Flyer-->
+<div id="addFlyerDiv" style="display: none;">
+<p>Link to a flyer already published as a web page</p>
+<p><label class="luiForm">Web Address</label><input type="text" id="flyerUrl"</input></p>
+<p><a href="#" onclick="callUI('toggleDisplay', 'addFlyerDiv');callApp('addFlyerRequest', document.getElementById('flyerUrl').value);return false;">Add Flyer at Address</a></p>
+</div>
+<!--Add Flyer-->
+
+<div id="flyersDiv" style="display: none;"></div>
+</body>
+</html>
