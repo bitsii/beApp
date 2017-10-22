@@ -115,6 +115,7 @@ use class Web:Server {
   }
   
   stop() {
+    app.stop();
     emit(jv) {
     """
     server.stop();

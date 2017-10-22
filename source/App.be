@@ -105,29 +105,27 @@ use class App:AccountManager {
   new() self {
     fields {
       any kvDb;
-      String prefix;
       Json:Marshaller mar = Json:Marshaller.new();
       Json:Unmarshaller unmar = Json:Unmarshaller.new();
     }
   }
   
-  new(_kvDb, _prefix) {
+  new(_kvDb) {
     new();
     kvDb = _kvDb;
-    prefix = _prefix;
   }
   
   getLogins() List {
     List logins = List.new();
-    for (any kv in kvDb.getMap(prefix)) {
-      logins.addValue(kv.key.substring(prefix.size));
+    for (any kv in kvDb.getMap()) {
+      logins.addValue(kv.key);
     }
     return(logins);
   }
 
   getAccount(String user) {
     if (TS.notEmpty(user)) {
-		String aj = kvDb.get(prefix + user);
+		String aj = kvDb.get(user);
 		if (TS.notEmpty(aj)) {
 		  Account a = Account.mapNew(unmar.unmarshall(aj));
 		}
@@ -136,14 +134,14 @@ use class App:AccountManager {
   }
   
   deleteAccount(Account a) {
-    kvDb.delete(prefix + a.user);
+    kvDb.delete(a.user);
   }
   
   putAccount(Account a) {
-    kvDb.put(prefix + a.user, mar.marshall(a.toMap()));
+    kvDb.put(a.user, mar.marshall(a.toMap()));
   }
   
-  getAccountForRequest(request) Account {
+  getRequestAccount(request) Account {
     String an = request.getSession("account.name");
     Account a = getAccount(an);
     return(a);
@@ -234,6 +232,13 @@ use class App:Account {
       permsString += perm;
     }
     return(permsString);
+  }
+  
+  isAdminGet() Bool {
+    if (self.perms.has("admin")) {
+      return(true);
+    }
+    return(false);
   }
   
 }
@@ -433,29 +438,111 @@ class Crypt {
   }
 }
 
-use class App:AuthPlugin(App:ScriptCallPlugin) {
+use class App:AuthPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
           log =@ IO:Logs.get(self);
           any app;
           String name = "Auth";
+          Set nonAuthedRequests = Set.new();
+          OLocker lastLoginBad = OLocker.new(false);
         }
         super.new();
      }
      
+     cohostWith(App:AuthPlugin ohp) {
+       ohp.accountManager = self.accountManager;
+     }
+     
+     accountManagerGet() AccountManager {
+      fields {
+        AccountManager accountManager;
+      }
+      if (undef(accountManager)) {
+        accountManager = AccountManager.new(app.getKvDb("ACCOUNTS"));
+      }
+      return(accountManager);
+    }
+    
+    getSessionsForAccount(Account a) String {
+        //a.user
+        String res = String.new();
+        String accountName = a.user;
+        Map all = app.sessionManager.sessions.getMap();
+        for (any kv in all) {
+          if (kv.key.ends("account.name") && kv.value == accountName) {
+            //log.log("Found session " + kv.key);
+            any kp = kv.key.split(".");
+            String sessLabel = String.new();
+            String name = app.sessionManager.sessions.get(kp.first + ".session.name");
+            if (def(name)) {
+              log.log("sess name " + name);
+              sessLabel += "Session named " += name;
+            }
+            String ip = app.sessionManager.sessions.get(kp.first + ".ip");
+            if (def(ip)) {
+              log.log("sess ip " + ip);
+              if (TS.notEmpty(sessLabel)) {
+                sessLabel += " from ";
+              } else {
+                sessLabel += "Session from "
+              }
+              sessLabel += "IP Address " + ip;
+            }
+            if (TS.notEmpty(sessLabel)) {
+              res += "<p>" += sessLabel += " <a href=\"#\" onclick=\"endSession('"
+              += kp.first += "');return false;\">End Session (Log it out)</a></p>";
+            }
+          }
+        }
+        return(res);
+      }
+      
+     
     clearAllSessionsRequest(Map arg, request) Map {
-     if (app.requestFromAdmin(request)) {
-        log.log("Clearing all sessions request by login " + app.accountManager.getAccountForRequest(request).user);
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        log.log("Clearing all sessions request by login " + request.context.get("account").user);
         app.sessionManager.sessions.clear();
      }
      return(null);
    }
    
+   badRequest(request) {
+  
+  }
+  
+  requestFromAdmin(request) Bool {
+    Account a = self.accountManager.getRequestAccount(request);
+    if (def(a) && a.perms.has("admin")) {
+      return(true);
+    }
+    badRequest(request);
+    return(false);
+  }
+  
+  preLoginCheck(request) Bool {
+    if (lastLoginBad.o) {
+      Int slptime = System:Random.getIntMax(500);
+      Time:Sleep.sleepMilliseconds(slptime);
+    }
+    return(true);
+  }
+  
+  goodLogin(request) {
+    lastLoginBad.o = false;
+  }
+  
+  badLogin(request) {
+    badRequest(request);
+    lastLoginBad.o = true;
+  }
+  
+   
    clearAllTrackingRequest(Map arg, request) Map {
-     if (app.requestFromAdmin(request)) {
-        log.log("Clearing all tracking requested by login "  + app.accountManager.getAccountForRequest(request).user);
-        app.trackingManager.clear();
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        log.log("Clearing all tracking requested by login "  + request.context.get("account").user);
+        self.trackingManager.clear();
      }
      return(null);
    }
@@ -468,20 +555,20 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
    }
    
    changePassRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
+      Account a = self.accountManager.getRequestAccount(request);
       unless (TS.notEmpty(arg["newPass"]) && a.checkPass(arg["oldPass"])) {
         log.log("incorrect old pass");
         throw(Alert.new("Old password incorrect"));
       }
       a.pass = arg["newPass"];
-      app.accountManager.putAccount(a);
+      self.accountManager.putAccount(a);
    }
    
    loadAccountRequest(String accountName, request) {
-      unless (app.requestFromAdmin(request)) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         throw(Alert.new("Must be administrator"));
       }
-      Account a = app.accountManager.getAccount(accountName);
+      Account a = self.accountManager.getAccount(accountName);
       if (def(a)) {
         Map res = Map.new();
         res["action"] = "loadAccountResponse";
@@ -495,11 +582,11 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
    }
    
    showAccountAdminRequest(Map arg, request) {
-      unless (app.requestFromAdmin(request)) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         throw(Alert.new("Must be administrator"));
       }
       String accountLinks = String.new();
-      List logins = app.accountManager.getLogins();
+      List logins = self.accountManager.getLogins();
       for (String login in logins) {
         accountLinks += "<p><a href=\"#\" onclick=\"callApp('loadAccountRequest', '" += login += "');return false;\">Modify Account " += login += "</a></p>";
       }
@@ -510,30 +597,30 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
    }
    
    deleteAccountRequest(Map arg, request) {
-      unless (app.requestFromAdmin(request)) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         throw(Alert.new("Must be administrator"));
       }
-      Account a = app.accountManager.getAccount(arg["accountName"]);
+      Account a = self.accountManager.getAccount(arg["accountName"]);
       if (def(a)) {
-        if (a.user == app.accountManager.getAccountForRequest(request).user) {
+        if (a.user == self.accountManager.getRequestAccount(request).user) {
           throw(Alert.new("Cannot delete own account"));
         }
       }
-      app.accountManager.deleteAccount(a);
+      self.accountManager.deleteAccount(a);
       return(showAccountAdminRequest(arg, request));
   }
       
    saveAccountRequest(Map arg, request) {
-      unless (app.requestFromAdmin(request)) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         throw(Alert.new("Must be administrator"));
       }
-      Account a = app.accountManager.getAccount(arg["accountName"]);
+      Account a = self.accountManager.getAccount(arg["accountName"]);
       if (undef(a)) {
         log.log(arg["accountName"] + " not found, creating new");
         a = Account.new();
         a.user = arg["accountName"];
       } else {
-        if (a.user == app.accountManager.getAccountForRequest(request).user) {
+        if (a.user == self.accountManager.getRequestAccount(request).user) {
           throw(Alert.new("Cannot change own account"));
         }
         log.log(arg["accountName"] + " found, use existing");
@@ -547,15 +634,15 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
       } else {
         a.perms.delete("admin");
       }
-      app.accountManager.putAccount(a);
+      self.accountManager.putAccount(a);
       return(null);
    }
    
    showSessionsRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
+      Account a = self.accountManager.getRequestAccount(request);
       Map res = Map.new();
       res["action"] = "showSessionsResponse";
-      res["sessionsList"] = app.getSessionsForAccount(a);
+      res["sessionsList"] = getSessionsForAccount(a);
       return(res);
    }
    
@@ -575,7 +662,7 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
       app.configManager.delete("OnceToken." + arg["onceToken"]);
     }
     if (TS.notEmpty(accountName)) {
-      Account a = app.accountManager.getAccount(accountName);
+      Account a = self.accountManager.getAccount(accountName);
       if (def(a)) {
         log.log("Found logged in account " + accountName);
         Map sarg = Map.new();
@@ -584,7 +671,7 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
         Map res = Map.new();
         res["action"] = "loggedInResponse";
         res["name"] = accountName;
-        res = app.loggedIn(a, res, arg, request);
+        res = loggedIn(a, res, arg, request);
         res.delete("loginUri");
         return(res);
       } else {
@@ -656,8 +743,8 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
   }
 
   loginRequest(Map arg, request) {
-    Account a = app.accountManager.getAccount(arg["accountName"]);
-    if (def(a) && app.preLoginCheck(request)) {
+    Account a = self.accountManager.getAccount(arg["accountName"]);
+    if (def(a) && preLoginCheck(request)) {
       log.log("Found account " + arg["accountName"]);
       if (a.checkPass(arg["accountPass"])) {
         log.log("Login ok");
@@ -673,8 +760,8 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
         setupSession(arg, request);
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
-        app.goodLogin(request);
-        return(app.loggedIn(a, res, arg, request));
+        goodLogin(request);
+        return(loggedIn(a, res, arg, request));
       } else {
         log.log("Login notok");
         app.badLogin(request);
@@ -684,6 +771,13 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
       app.badLogin(request);
     }
     return(logoutRequest(arg, request));
+  }
+  
+ loggedIn(Account a, Map res, Map arg, request) Map {
+    if (app.plugin.can("loggedIn", 4)) {
+      res = app.plugin.loggedIn(a, res, arg, request)
+    }
+    return(res);
   }
   
   logoutRequest(Map arg, request) {
@@ -696,10 +790,287 @@ use class App:AuthPlugin(App:ScriptCallPlugin) {
     res["action"] = "logoutResponse";
     return(res);
   }
+  
+  trackingManagerGet() KvDb {
+    return(app.getKvDb("TRACKING"));
+  }
+  
+  check(request) Bool {
+  
+    Int maxBad =@ 300;
+    Int clearSecs =@ 40;
+    Int updateSecs =@ 20;
+  
+  /*
+    Int maxBad =@ 5;
+    Int clearSecs =@ 10;
+    Int updateSecs =@ 5;
+  */
+  
+    /*
+    log.log("checking origins");
+    String org = request.getInputHeader("origin");
+    String ref = request.getInputHeader("referer");
+    String uri = request.uri;
+    String la = request.localAddress;
+    String ra = request.remoteAddress;
+    if (true) {
+      if (def(org)) {
+        log.log("orgin " + org);
+      }
+      if (def(ref)) {
+        log.log("referer " + ref);
+      }
+      if (def(uri) && def(la) && def(ra)) {
+        log.log("uri, la, ra " + uri + " " + la + " " + ra);
+      }
+    }
+    */
+    
+    if (request.embedded) {
+      return(true);
+    }
+    
+    String accountName = request.getSession("account.name");
+    if (TS.notEmpty(accountName)) {
+        return(true);
+    }
+    
+    String ip = request.remoteAddress;
+    String sip = request.getSession("ip");
+    
+    Int ns = Time:Interval.now().seconds;
+    
+    if (TS.notEmpty(ip)) {
+      String ct = self.trackingManager.get("IP." + ip);
+      if (TS.notEmpty(ct)) {
+        String ltm = self.trackingManager.get("LB." + ip);
+        if (TS.notEmpty(ltm)) {
+          Int ltmi = Int.new(ltm);
+          if (ns - ltmi > clearSecs) {
+            log.log("clear bad " + ip);
+            badcount = 0;
+          } else {
+            badcount = Int.new(ct);
+          }
+        } else {
+          Int badcount = Int.new(ct);
+        }
+      } else {
+        badcount = 0;
+      }
+    }
+    if (badcount > maxBad) {
+      log.log("toomany bad " + ip);
+      if (def(ltmi) && ns - ltmi > updateSecs) {
+        log.log("lp update");
+        self.trackingManager.put("LB." + ip, ns.toString());
+      } else {
+        log.log("no update");
+      }
+      return(false);
+    }
+    if (TS.isEmpty(accountName)) {
+      log.log("upping bad");
+      badcount++=;
+      self.trackingManager.put("IP." + ip, badcount.toString());
+      self.trackingManager.put("LB." + ip, ns.toString());
+    } else {
+      self.trackingManager.delete("IP." + ip);
+      self.trackingManager.delete("LB." + ip);
+      //self.trackingManager.clear();
+    }
+    return(true);
+  }
+  
+  toLogin(request) this {
+    request.scriptReturn = CallBackUI.toLoginResponse();
+  }
+  
+  isCrossSite(request) Bool {
+    fields {
+      String extUrl;
+    }
+    if (request.embedded) { return(false); }
+    String ref = request.getInputHeader("referer");
+    String la = request.localAddress;
+    if (TS.isEmpty(ref) || TS.isEmpty(la)) {
+      //log.log("isCrossSite true empty");
+      return(true);
+    }
+    //log.log("referer is " + ref);
+    String snlist = app.configManager.get("siteNames");
+    if (TS.notEmpty(snlist)) {
+      for (String sn in snlist.split(",")) {
+        if (ref.begins(sn)) {
+          //log.log("ixs false sitelist");
+          return(false);
+        }
+      }
+    }
+    la = app.webProto + "://" + la;
+    if (ref.begins(la)) {
+      //log.log("isCrossSite false begins " + la + " " + ref);
+      return(false);
+    }
+    if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
+      //log.log("isCrossSite false extUrl begins " + extUrl + " " + ref);
+      return(false);
+    }
+    
+    String extAddress = self.plugin.wcol.o.externalAddress;
+    String extPort = self.plugin.wcol.o.externalPort;
+    
+    //String extAddress = self.configManager.get("upnp.extAddress");
+    //String extPort = self.configManager.get("wui.extPort");
+    
+    if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
+      extUrl = app.webProto + "://" + extAddress + ":" + extPort;
+      //log.log("new extUrl " + extUrl);
+    } else {
+      //log.log("extAddress or extPort empty");
+      if (TS.isEmpty(extAddress)) { log.log("extAddress empty"); }
+      if (TS.isEmpty(extPort)) { log.log("extPort empty"); }
+    }
+    if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
+      //log.log("isCrossSite false new extUrl begins " + extUrl + " " + ref);
+      return(false);
+    }
+    //log.log("isCrossSite true not begins " + la + " " + ref);
+    return(true);
+  }
+  
+  checkRenewSession(request) Bool {
+    String sessionExp = request.getSession("sessionExp");
+    if (TS.isEmpty(sessionExp)) {
+      log.log("no sessionExp");
+      return(false);
+    }
+    log.log("sessionExp " + sessionExp);
+    Int sei = Int.new(sessionExp);
+    if (sei < 0) {
+      log.log("session never expires");
+      return(true); //never expires
+    }
+    Int ns = Time:Interval.now().seconds;
+    if (ns > sei) {
+      log.log("session expired");
+      return(false);
+    }
+    Int nu = Int.new(request.getSession("sessionUpdate"));
+    if (ns > nu) {
+      log.log("refreshing sessionUpdate");
+      nu = ns + 60;
+      request.putSession("sessionUpdate", nu.toString());
+      Int ne = Int.new(request.getSession("sessionLength")) + ns;
+      request.putSession("sessionExp", ne.toString());
+    }
+    log.log("checkRenewSession returning true");
+    return(true);
+  }
+  
+  handleWeb(request) this {
+    prepArgs(request);
+    Map arg = request.context["arg"];
+    if (request.embedded! && TS.notEmpty(arg["serviceSessionKey"])) {
+      request.serviceSessionKey = arg["serviceSessionKey"];
+    }
+    unless (check(request)) {
+      toLogin(request);
+      return(self);
+     }
+     
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+       String ln = request.getParameter("accountName");
+       String lp = request.getParameter("accountPass");
+       if (TS.notEmpty(ln) && TS.notEmpty(lp)) {
+          log.log("doing svc login");
+          Account a = self.accountManager.getAccount(ln);
+          if (def(a) && preLoginCheck(request)) {
+            log.log("Found account " + ln);
+            if (a.checkPass(lp)) {
+              log.log("svc login ok");
+              request.putSession("account.name", ln);
+              request.putSession("ip", request.remoteAddress);
+              goodLogin(request);
+              accountName = ln;
+            } else {
+              badLogin(request);
+            }
+          } else {
+            badLogin(request);
+          }
+        }
+      }
+     
+        try {
+            if (isCrossSite(request)) {
+              log.log("rejecting cross site request");
+              toLogin(request);
+              return(self);
+            }
+            String aname = arg.get("action");
+            if (undef(aname)) {
+              throw(Exception.new("Invalid request"));
+            }
+            
+            unless (nonAuthedRequests.has(aname)) {
+              unless (aname == "pageTokenRequest" || aname == "pingRequest") {
+                accountName = request.getSession("account.name");
+                if (TS.isEmpty(accountName)) {
+                  unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {
+                    log.log("ret givelogin");
+                    toLogin(request);
+                    return(self);
+                  }
+                } else {
+                
+                  unless (aname == "loginRequest" || checkRenewSession(request)) {
+                    unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(app.configManager.get("OnceToken." + arg["onceToken"]))) {
+                      log.log("rejecting expired session request");
+                      toLogin(request);
+                      return(self);
+                    }
+                  }
+                
+                  //checkLoggedInRequest is ok
+                   
+                  String stok = request.getSession("pageToken");
+                  String atok = arg["pageToken"];
+                  if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
+                    log.log("stok or atok emtpy failing due to pageToken");
+                    toLogin(request);
+                    return(self);
+                  }
+                  if (stok != atok) {
+                    log.log("stok != atok failing due to pageToken");
+                    toLogin(request);
+                    return(self);
+                  }
+                
+                  //log.log("pageToken action " + aname);
+                  //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
+                  //if (def(stok)) { log.log("session pageToken " + stok); }
+                }
+              }
+            }
+            log.log("here");
+            request.context.put("account", self.accountManager.getRequestAccount(request));
+            super.handleWeb(request);
+            return(self);
+        } catch (any e) {
+           log.log("Caught exception during handleWeb B");
+           if (def(e)) {
+            log.log("Exception was " + e);
+           }
+        }
+    }
+  
    
 }
 
-use class App:FileManagerPlugin(App:ScriptCallPlugin) {
+use class App:FileManagerPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
@@ -708,6 +1079,121 @@ use class App:FileManagerPlugin(App:ScriptCallPlugin) {
         }
         super.new();
         log =@ IO:Logs.get(self);
+     }
+     
+     checkWritePath(Path p, Map arg, request) Bool {
+    Account a = app.pluginsByName.get("Auth").accountManager.getRequestAccount(request);
+    if (def(a) && a.perms.has("admin")) {
+      return(true);
+    }
+    String accountName = request.getSession("account.name");
+    any e;
+    Bool isOk = false;
+    if (undef(accountName)) { accountName = ""; }
+    try {
+      Path pa = p.file.absPath;
+      if (TS.notEmpty(accountName)) {
+        Path h = Path.apNew("Home/" + accountName).file.absPath;
+      }
+      String pas = pa.toString();
+      if (def(h) && pas.begins(h.toString())) {
+        isOk = true;
+      }
+    } catch (e) {
+      log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
+    }
+    //log.log("checkPath isOk " + isOk);
+    return(isOk);
+   }
+   
+   checkReadPath(Path p, Map arg, request) Bool {
+    log.log("in chkrdp fm");
+    Path pa = p.file.absPath;
+    String pas = pa.toString();
+    if (app.plugin.checkPublicReadPath(pa, request)) {
+      log.log("chkrdp fm true public");
+      return(true);
+    }
+    Account a = app.pluginsByName.get("Auth").accountManager.getRequestAccount(request);
+    if (def(a) && a.perms.has("admin")) {
+      return(true);
+    }
+    String accountName = request.getSession("account.name");
+    any e;
+    Bool isOk = false;
+    if (undef(accountName)) { accountName = ""; }
+    try {
+      if (TS.notEmpty(accountName)) {
+        Path h = Path.apNew("Home/" + accountName).file.absPath;
+      }
+      if (def(h) && pas.begins(h.toString())) {
+        isOk = true;
+      }
+    } catch (e) {
+      log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
+    }
+    //log.log("checkPath isOk " + isOk);
+    return(isOk);
+   }
+  
+     handleWeb(request) this {
+       String rmtd = request.inputMethod;
+       log.log("rmtd is " + rmtd);
+       if (TS.isEmpty(rmtd) || rmtd != "PUT") {
+          App:AjaxPlugin.new().prepArgs(request);
+          Map arg = request.context["arg"];
+       }
+       if (undef(arg)) {
+         log.log("in fm arg undef");
+         String uri = request.uri;
+         log.log("uri " + uri);
+         if (TS.isEmpty(uri) || uri == "/") {
+          log.log("empty uri going to base page");
+          request.outputContent = "<html><head><script>location=\"" + self.plugin.homePage + "\"</script></html>";
+          return(self);
+         }
+         File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
+         if (TS.notEmpty(rmtd) && rmtd == "PUT") {
+           if (checkWritePath(imgfile.path, null, request)) {
+             log.log("put for " + imgfile.path);
+             if (imgfile.path.parent.file.exists!) {
+              imgfile.path.parent.file.makeDirs();
+             }
+             if (imgfile.exists) { imgfile.delete(); }
+              outw = imgfile.writer.open();
+              inr = request.openInput();
+              inr.copyData(outw);
+              request.closeInputReader();
+              outw.close();
+              request.outputContent = "UPLOAD COMPLETE";
+           }
+         } elseIf (checkReadPath(imgfile.path, arg, request)) {
+           log.log("imgfile " + imgfile.path);
+           if (imgfile.exists) {
+            String mtype;
+            if (uri.ends(".html")) {
+              mtype = "text/html";
+            } elseIf (uri.ends(".jpg")) {
+              mtype = "image/jpeg";
+            } elseIf (uri.ends(".svg")) {
+              mtype = "image/svg+xml";
+            } elseIf (uri.ends(".js")) {
+              mtype = "text/javascript";
+            } else {
+              mtype = "application/octet-stream";
+            }
+            request.outputContentType = mtype;
+            IO:Writer outw = request.openOutput();
+            IO:Reader inr = imgfile.reader.open();
+            inr.copyData(outw);
+            request.closeOutputWriter();
+            inr.close();
+           }
+         }
+        return(self);
+       }
+       super.handleWeb(request);
+       return(self);
      }
      
      deleteRequest(Map arg, request) Map {
@@ -778,9 +1264,16 @@ use class App:FileManagerPlugin(App:ScriptCallPlugin) {
      return(localBrowseRequest(arg, request));
    }
    
+   getHomeDir(request) Path {
+      String accountName = request.getSession("account.name");
+      Path homeDir = Path.apNew("Home/" + accountName);
+      return(homeDir);
+    }
+    
+   
    getBaseLink(request) String {
      return("<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += Encode:Hex.encode(app.getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>");
+          += Encode:Hex.encode(getHomeDir(request).toString()) += "');return false;\">HOME</a></td></tr>");
    
    }
    
@@ -806,13 +1299,13 @@ use class App:FileManagerPlugin(App:ScriptCallPlugin) {
       Encode:Html htmle = Encode:Html.new();
       Map ret = Map.new();
       String path = arg["path"];
-      Account a = app.accountManager.getAccountForRequest(request);
+      Account a = app.pluginsByName.get("Auth").accountManager.getRequestAccount(request);
       Bool adminLinks = false;
       if (a.perms.has("admin")) {
         adminLinks = true;
       }
       if (TS.isEmpty(path)) {
-        dirFile = app.getHomeDir(request).file;
+        dirFile = getHomeDir(request).file;
         if (dirFile.exists!) {
           dirFile.makeDirs();
         }
@@ -821,7 +1314,7 @@ use class App:FileManagerPlugin(App:ScriptCallPlugin) {
       }
       String dirListHtml = String.new();
       dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
-      if (dirFile.exists && app.checkReadPath(dirFile.path, arg, request)) {
+      if (dirFile.exists && checkReadPath(dirFile.path, arg, request)) {
         dirListHtml += "<p>Listing for " += htmle.encode(dirFile.path.toString()) += "</p>";
         dirListHtml += "<table>";
         if (adminLinks) {
@@ -939,7 +1432,7 @@ use class App:FileManagerPlugin(App:ScriptCallPlugin) {
    
 }
 
-use class App:ConfigPlugin(App:ScriptCallPlugin) {
+use class App:ConfigPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
@@ -952,7 +1445,7 @@ use class App:ConfigPlugin(App:ScriptCallPlugin) {
      
      changeDeviceNameRequest(String deviceName, request) {
      log.log("changing name");
-      if (app.requestFromAdmin(request) && TS.notEmpty(name)) {
+      if ((def(request.context.get("account")) && request.context.get("account").isAdmin) && TS.notEmpty(name)) {
         app.plugin.deviceName = deviceName;
       }
       app.configManager.put("deviceNameSetOnce", "true");
@@ -962,7 +1455,7 @@ use class App:ConfigPlugin(App:ScriptCallPlugin) {
    
    showConfigRequest(Map arg, request) Map {
      Set noshow =@ Sets.from("imap.pass", "auth.sessionId", "imap.user");
-     if (app.requestFromAdmin(request)) {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        String conf = String.new();
        Map ecm = app.configManager.getMap();
        if (ecm.isEmpty!) {
@@ -1004,7 +1497,7 @@ use class App:ConfigPlugin(App:ScriptCallPlugin) {
    }
    
    backupConfigRequest(request) Map {
-     if (app.requestFromAdmin(request)) {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        Map res = Map.new();
        res["action"] = "backupConfigResponse";
        res["configJson"] = backupConfig();
@@ -1015,7 +1508,7 @@ use class App:ConfigPlugin(App:ScriptCallPlugin) {
    }
    
    updateConfigRequest(Map arg, request) Map {
-     if (app.requestFromAdmin(request)) {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       log.log("update for " + arg["configKey"] + " value " + arg["configValue"]);
       app.configManager.put(arg["configKey"], arg["configValue"]);
       return(showConfigRequest(arg, request));
@@ -1024,7 +1517,7 @@ use class App:ConfigPlugin(App:ScriptCallPlugin) {
    }
    
    deleteConfigRequest(Map arg, request) Map {
-     if (app.requestFromAdmin(request)) {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       log.log("delete for " + arg["configKey"]);
       app.configManager.delete(arg["configKey"]);
       return(showConfigRequest(arg, request));
@@ -1069,10 +1562,6 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
 
    }
 
-   handleWeb(request) {
-     return(super.handleWeb(request));
-   }
-
 }
 
 use App:AuthenticatedApp as AuthedApp;
@@ -1082,9 +1571,9 @@ class AuthedApp {
     fields {
       IO:Log log =@ IO:Logs.get(self);
       Lock lock = Lock.new();
-      OLocker lastLoginBad = OLocker.new(false);
       String certificateThumbprint;
-      Set nonAuthedRequests = Set.new();
+      Map kvDbs = Map.new();
+      Lock dblock = Lock.new();
     }
   }
   
@@ -1142,256 +1631,16 @@ class AuthedApp {
     }
   }
   
-  badRequest(request) {
-  
-  }
-  
-  checkRequest(request) Bool {
-  
-    Int maxBad =@ 300;
-    Int clearSecs =@ 40;
-    Int updateSecs =@ 20;
-  
-  /*
-    Int maxBad =@ 5;
-    Int clearSecs =@ 10;
-    Int updateSecs =@ 5;
-  */
-  
-    /*
-    log.log("checking origins");
-    String org = request.getInputHeader("origin");
-    String ref = request.getInputHeader("referer");
-    String uri = request.uri;
-    String la = request.localAddress;
-    String ra = request.remoteAddress;
-    if (true) {
-      if (def(org)) {
-        log.log("orgin " + org);
-      }
-      if (def(ref)) {
-        log.log("referer " + ref);
-      }
-      if (def(uri) && def(la) && def(ra)) {
-        log.log("uri, la, ra " + uri + " " + la + " " + ra);
+  stop() {
+    for (any pl in plugins) {
+      if (pl.can("stop", 0)) {
+        pl.stop();
       }
     }
-    */
-    
-    if (request.embedded) {
-      return(true);
+    if (def(appDb)) {
+      appDb.close();
+      kvDbs = Map.new();
     }
-    
-    String accountName = request.getSession("account.name");
-    if (TS.notEmpty(accountName)) {
-        return(true);
-    }
-    
-    String ip = request.remoteAddress;
-    String sip = request.getSession("ip");
-    
-    Int ns = Time:Interval.now().seconds;
-    
-    if (TS.notEmpty(ip)) {
-      String ct = self.trackingManager.get("IP." + ip);
-      if (TS.notEmpty(ct)) {
-        String ltm = self.trackingManager.get("LB." + ip);
-        if (TS.notEmpty(ltm)) {
-          Int ltmi = Int.new(ltm);
-          if (ns - ltmi > clearSecs) {
-            log.log("clear bad " + ip);
-            badcount = 0;
-          } else {
-            badcount = Int.new(ct);
-          }
-        } else {
-          Int badcount = Int.new(ct);
-        }
-      } else {
-        badcount = 0;
-      }
-    }
-    if (badcount > maxBad) {
-      log.log("toomany bad " + ip);
-      if (def(ltmi) && ns - ltmi > updateSecs) {
-        log.log("lp update");
-        self.trackingManager.put("LB." + ip, ns.toString());
-      } else {
-        log.log("no update");
-      }
-      return(false);
-    }
-    if (TS.isEmpty(accountName)) {
-      log.log("upping bad");
-      badcount++=;
-      self.trackingManager.put("IP." + ip, badcount.toString());
-      self.trackingManager.put("LB." + ip, ns.toString());
-    } else {
-      self.trackingManager.delete("IP." + ip);
-      self.trackingManager.delete("LB." + ip);
-      //self.trackingManager.clear();
-    }
-    return(true);
-  }
-  
-  isCrossSite(request) Bool {
-    fields {
-      String extUrl;
-    }
-    if (request.embedded) { return(false); }
-    String ref = request.getInputHeader("referer");
-    String la = request.localAddress;
-    if (TS.isEmpty(ref) || TS.isEmpty(la)) {
-      //log.log("isCrossSite true empty");
-      return(true);
-    }
-    //log.log("referer is " + ref);
-    String snlist = self.configManager.get("siteNames");
-    if (TS.notEmpty(snlist)) {
-      for (String sn in snlist.split(",")) {
-        if (ref.begins(sn)) {
-          //log.log("ixs false sitelist");
-          return(false);
-        }
-      }
-    }
-    la = self.webProto + "://" + la;
-    if (ref.begins(la)) {
-      //log.log("isCrossSite false begins " + la + " " + ref);
-      return(false);
-    }
-    if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
-      //log.log("isCrossSite false extUrl begins " + extUrl + " " + ref);
-      return(false);
-    }
-    
-    String extAddress = self.plugin.wcol.o.externalAddress;
-    String extPort = self.plugin.wcol.o.externalPort;
-    
-    //String extAddress = self.configManager.get("upnp.extAddress");
-    //String extPort = self.configManager.get("wui.extPort");
-    
-    if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
-      extUrl = self.webProto + "://" + extAddress + ":" + extPort;
-      //log.log("new extUrl " + extUrl);
-    } else {
-      //log.log("extAddress or extPort empty");
-      if (TS.isEmpty(extAddress)) { log.log("extAddress empty"); }
-      if (TS.isEmpty(extPort)) { log.log("extPort empty"); }
-    }
-    if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
-      //log.log("isCrossSite false new extUrl begins " + extUrl + " " + ref);
-      return(false);
-    }
-    //log.log("isCrossSite true not begins " + la + " " + ref);
-    return(true);
-  }
-  
-  checkWritePath(Path p, Map arg, request) Bool {
-    if (isCrossSite(request)) {
-      return(false);
-    }
-    Account a = self.accountManager.getAccountForRequest(request);
-    if (def(arg)) {
-      String pageToken = arg["pageToken"];
-    }
-    if (TS.isEmpty(pageToken)) {
-      pageToken = request.getParameter("pageToken");
-    }
-    String stoken = request.getSession("pageToken");
-    if (TS.isEmpty(pageToken) || undef(a) || undef(stoken) || pageToken != stoken) {
-      log.log("checkWritePath false due to page token fail");
-      return(false);
-    }
-    if (def(a) && a.perms.has("admin")) {
-      return(true);
-    }
-    String accountName = request.getSession("account.name");
-    any e;
-    Bool isOk = false;
-    if (undef(accountName)) { accountName = ""; }
-    try {
-      Path pa = p.file.absPath;
-      if (TS.notEmpty(accountName)) {
-        Path h = Path.apNew("Home/" + accountName).file.absPath;
-      }
-      String pas = pa.toString();
-      if (def(h) && pas.begins(h.toString())) {
-        isOk = true;
-      }
-    } catch (e) {
-      log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
-    }
-    //log.log("checkPath isOk " + isOk);
-    return(isOk);
-   }
-   
-   checkReadPath(Path p, Map arg, request) Bool {
-    Path pa = p.file.absPath;
-    String pas = pa.toString();
-    if (self.plugin.checkPublicReadPath(pa, request)) {
-        return(true);
-    }
-    if (isCrossSite(request)) {
-      return(false);
-    }
-    Account a = self.accountManager.getAccountForRequest(request);
-    if (def(arg)) {
-      String pageToken = arg["pageToken"];
-    }
-    if (TS.isEmpty(pageToken)) {
-      pageToken = request.getParameter("pageToken");
-    }
-    String stoken = request.getSession("pageToken");
-    if (TS.isEmpty(pageToken) || undef(a) || undef(stoken) || pageToken != stoken) {
-      log.log("checkReadPath false due to page token fail");
-      return(false);
-    }
-    if (def(a) && a.perms.has("admin")) {
-      return(true);
-    }
-    String accountName = request.getSession("account.name");
-    any e;
-    Bool isOk = false;
-    if (undef(accountName)) { accountName = ""; }
-    try {
-      if (TS.notEmpty(accountName)) {
-        Path h = Path.apNew("Home/" + accountName).file.absPath;
-      }
-      if (def(h) && pas.begins(h.toString())) {
-        isOk = true;
-      }
-    } catch (e) {
-      log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
-    }
-    //log.log("checkPath isOk " + isOk);
-    return(isOk);
-   }
-  
-  requestFromAdmin(request) Bool {
-    Account a = self.accountManager.getAccountForRequest(request);
-    if (def(a) && a.perms.has("admin")) {
-      return(true);
-    }
-    badRequest(request);
-    return(false);
-  }
-  
-  preLoginCheck(request) Bool {
-    if (lastLoginBad.o) {
-      Int slptime = System:Random.getIntMax(500);
-      Time:Sleep.sleepMilliseconds(slptime);
-    }
-    return(true);
-  }
-  
-  goodLogin(request) {
-    lastLoginBad.o = false;
-  }
-  
-  badLogin(request) {
-    badRequest(request);
-    lastLoginBad.o = true;
   }
   
   webPortGet() String {
@@ -1421,13 +1670,16 @@ class AuthedApp {
   }
   
   cohostWith(AuthedApp other) {
-    other.configManager = self.configManager;
-    other.sessionDb = self.sessionManager;
-    other.trackingManager = self.trackingManager;
-    other.am = self.accountManager;
+    other.lock = self.lock;
+    other.dblock = self.dblock;
+    other.kvDbs = self.kvDbs;
+    other.appDb = self.appDb;
+    
+    other.sessionManager = self.sessionManager;
+    
     for (any pl in plugins) {
       if (pl.can("cohostWith", 1)) {
-        any opl = other.pluginsByClassName.get(pl.className);
+        any opl = other.pluginsByName.get(pl.name);
         if (def(opl)) {
           pl.cohostWith(opl);
         }
@@ -1435,24 +1687,46 @@ class AuthedApp {
     }
   }
   
-  configManagerGet() CLocker {
+  configManagerGet() KvDb {
+    return(self.getKvDb("CONFIG"));
+  }
+  
+  appDbGet() DbDb {
     fields {
-      CLocker configManager;
+      DbDb appDb;
     }
-    if (undef(configManager)) {
-      Path db;
-      KvDb configManagerKv;
-      db = self.paths.dataPath.addStep("CONFDB");
-      configManagerKv = KvDb.apNew(db, "CONFIG");
-      configManagerKv.createOpen();
-      configManager = CLocker.new(configManagerKv);
+    unless (def(appDb)) {
+      Path appDbPath = self.paths.dataPath.addStep("APPDB");
+      appDb = createInstance("Db:SQLite:Database");
+      appDb.pathNew(appDbPath);
+      appDb.open();
     }
-    return(configManager);
+    return(appDb);
+  }
+  
+  getKvDb(String name) KvDb {
+    try {
+      lock.lock();
+      KvDb kdb = kvDbs.get(name);
+      if (undef(kdb)) {
+        kdb = KvDb.new(self.appDb, name);
+        kdb.lock = dblock;
+        //kdb.open();
+        kdb.create();
+        kvDbs.put(name, kdb);
+      }
+      lock.unlock();
+    } catch (any e) {
+      lock.unlock();
+      log.log("exception during getKvDb");
+      if (def(e)) { log.log("ex " + e); }
+    }
+    return(kdb);
   }
   
   sessionManagerGet() Web:SessionManager {
     fields {
-      Web:SessionManager sessionDb;
+      Web:SessionManager sessionManager;
       String sessionId;
     }
     if (undef(sessionId)) {
@@ -1462,207 +1736,13 @@ class AuthedApp {
         self.configManager.put("auth.sessionId", sessionId);
       }
     }
-    if (undef(sessionDb)) {
-      Path db;
-      KvDb sessionDbKv;
-      db = self.paths.dataPath.addStep("SESSDB");
-      sessionDbKv = KvDb.apNew(db, "SESSIONS");
-      sessionDbKv.createOpen();
-      sessionDb = Web:SessionManager.new(CLocker.new(sessionDbKv), "GsSess" + sessionId);
+    if (undef(sessionManager)) {
+      sessionManager = Web:SessionManager.new(self.getKvDb("SESSIONS"), "GsSess" + sessionId);
     }
     ("got sessionmanager").print();
-    return(sessionDb);
+    return(sessionManager);
   }
   
-  getSessionsForAccount(Account a) String {
-    //a.user
-    String res = String.new();
-    String accountName = a.user;
-    Map all = self.sessionManager.sessions.getMap();
-    for (any kv in all) {
-      if (kv.key.ends("account.name") && kv.value == accountName) {
-        //log.log("Found session " + kv.key);
-        any kp = kv.key.split(".");
-        String sessLabel = String.new();
-        String name = self.sessionManager.sessions.get(kp.first + ".session.name");
-        if (def(name)) {
-          log.log("sess name " + name);
-          sessLabel += "Session named " += name;
-        }
-        String ip = self.sessionManager.sessions.get(kp.first + ".ip");
-        if (def(ip)) {
-          log.log("sess ip " + ip);
-          if (TS.notEmpty(sessLabel)) {
-            sessLabel += " from ";
-          } else {
-            sessLabel += "Session from "
-          }
-          sessLabel += "IP Address " + ip;
-        }
-        if (TS.notEmpty(sessLabel)) {
-          res += "<p>" += sessLabel += " <a href=\"#\" onclick=\"endSession('"
-          += kp.first += "');return false;\">End Session (Log it out)</a></p>";
-        }
-      }
-    }
-    return(res);
-  }
-  
-  trackingManagerGet() CLocker {
-    fields {
-      CLocker trackingManager;
-    }
-    if (undef(trackingManager)) {
-      Path db;
-      KvDb trackingManagerKv;
-      db = self.paths.dataPath.addStep("TMDB");
-      trackingManagerKv = KvDb.apNew(db, "TRACKING");
-      trackingManagerKv.createOpen();
-      trackingManager = CLocker.new(trackingManagerKv);
-    }
-    return(trackingManager);
-  }
-  
-  checkRenewSession(request) Bool {
-    String sessionExp = request.getSession("sessionExp");
-    if (TS.isEmpty(sessionExp)) {
-      log.log("no sessionExp");
-      return(false);
-    }
-    log.log("sessionExp " + sessionExp);
-    Int sei = Int.new(sessionExp);
-    if (sei < 0) {
-      log.log("session never expires");
-      return(true); //never expires
-    }
-    Int ns = Time:Interval.now().seconds;
-    if (ns > sei) {
-      log.log("session expired");
-      return(false);
-    }
-    Int nu = Int.new(request.getSession("sessionUpdate"));
-    if (ns > nu) {
-      log.log("refreshing sessionUpdate");
-      nu = ns + 60;
-      request.putSession("sessionUpdate", nu.toString());
-      Int ne = Int.new(request.getSession("sessionLength")) + ns;
-      request.putSession("sessionExp", ne.toString());
-    }
-    log.log("checkRenewSession returning true");
-    return(true);
-  }
-  
-  toLogin(request) Map {
-    request.scriptReturn = CallBackUI.toLoginResponse();
-    return(null);
-  }
-  
-  handleWeb(request) {
-    App:ScriptCallPlugin.new().prepArgs(request);
-    Map arg = request.context["arg"];
-    if (request.embedded! && TS.notEmpty(arg["serviceSessionKey"])) {
-      request.serviceSessionKey = arg["serviceSessionKey"];
-    }
-    unless (checkRequest(request)) {
-      return(toLogin(request));
-     }
-        try {
-            if (isCrossSite(request)) {
-              log.log("rejecting cross site request");
-              return(toLogin(request));
-            }
-            String aname = arg.get("action");
-            if (undef(aname) || aname.ends("Request")!) {
-              throw(Exception.new("Invalid request"));
-            }
-            
-            unless (nonAuthedRequests.has(aname)) {
-              unless (aname == "pageTokenRequest" || aname == "pingRequest") {
-                String accountName = request.getSession("account.name");
-                if (TS.isEmpty(accountName)) {
-                  unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {
-                    log.log("ret givelogin");
-                    return(toLogin(request));
-                  }
-                } else {
-                
-                  unless (aname == "loginRequest" || checkRenewSession(request)) {
-                    unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(self.configManager.get("OnceToken." + arg["onceToken"]))) {
-                      log.log("rejecting expired session request");
-                      return(toLogin(request));
-                    }
-                  }
-                
-                  //checkLoggedInRequest is ok
-                   
-                  String stok = request.getSession("pageToken");
-                  String atok = arg["pageToken"];
-                  if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
-                    log.log("stok or atok emtpy failing due to pageToken");
-                    return(toLogin(request));
-                  }
-                  if (stok != atok) {
-                    log.log("stok != atok failing due to pageToken");
-                    return(toLogin(request));
-                  }
-                
-                  //log.log("pageToken action " + aname);
-                  //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
-                  //if (def(stok)) { log.log("session pageToken " + stok); }
-                }
-              }
-            }
-            log.log("here");
-            if (arg.has("args")) {
-              //is "standard call"
-              args = arg["args"];
-              args += request;
-              //log.log("call type a " + aname + args.length);
-            } else {
-              List args = List.new(2);
-              args[0] = arg;
-              args[1] = request;
-              //log.log("call type b");
-            }
-            for (any pl in plugins) {
-              request.continueHandling = false;
-              pl.handleWeb(request);
-              unless (request.continueHandling) {
-                break;
-              }
-            }
-        } catch (any e) {
-           log.log("Caught exception during handleWeb B");
-           if (def(e)) {
-            log.log("Exception was " + e);
-           }
-        }
-    }
-    
-    getHomeDir(request) Path {
-      String accountName = request.getSession("account.name");
-      Path homeDir = Path.apNew("Home/" + accountName);
-      return(homeDir);
-    }
-    
-    accountManagerGet() AccountManager {
-      fields {
-        AccountManager am;
-      }
-      if (undef(am)) {
-        am = AccountManager.new(self.configManager, "ACCOUNTS.");
-      }
-      return(am);
-    }
-    
-    loggedIn(Account a, Map res, Map arg, request) {
-      //String pageToken = System:Random.getString(32);
-      //request.putSession("pageToken", pageToken);
-      //res["pageToken"] = pageToken;
-      //log.log("loggedIn request uri " + request.uri);
-      return(self.plugin.loggedIn(a, res, arg, request));
-    }
-    
     cmdMain(List args) {
       IO:Logs.turnOnAll();
       auto ui = self;
@@ -1678,7 +1758,7 @@ class AuthedApp {
         log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
-        for (String login in ui.accountManager.getLogins()) {
+        for (String login in ui.pluginsByName.get("Auth").accountManager.getLogins()) {
           log.log("Account login " + login);
         }
       }
@@ -1692,37 +1772,37 @@ class AuthedApp {
         if (args.length > 4) {
           ac.permsString = args[4];
         }
-        ui.accountManager.putAccount(ac);
+        ui.pluginsByName.get("Auth").accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
         log.log("Get Account " + user);
-        ac = ui.accountManager.getAccount(user);
+        ac = ui.pluginsByName.get("Auth").accountManager.getAccount(user);
         log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPermsString") {
         user = args[2];
         String ps = args[3];
         log.log("Set Perms " + user);
-        ac = ui.accountManager.getAccount(user);
+        ac = ui.pluginsByName.get("Auth").accountManager.getAccount(user);
         ac.permsString = ps;
-        ui.accountManager.putAccount(ac);
+        ui.pluginsByName.get("Auth").accountManager.putAccount(ac);
         log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
         user = args[2];
         pass = args[3];
         log.log("Set Pass " + user);
-        ac = ui.accountManager.getAccount(user);
+        ac = ui.pluginsByName.get("Auth").accountManager.getAccount(user);
         ac.pass = pass;
-        ui.accountManager.putAccount(ac);
+        ui.pluginsByName.get("Auth").accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
         log.log("Deleting Account " + user);
-        ac = ui.accountManager.getAccount(user);
+        ac = ui.pluginsByName.get("Auth").accountManager.getAccount(user);
         if (def(ac)) {
-          ui.accountManager.deleteAccount(ac);
+          ui.pluginsByName.get("Auth").accountManager.deleteAccount(ac);
           log.log("Deleted account " + user);
         } else {
           log.log("No such account for deletion " + user);
@@ -1761,6 +1841,16 @@ class AuthedApp {
         ui.pluginsByClassName.get("App:ConfigPlugin").backupConfig(restorePath);
       }
       ui.configManager.close();
+    }
+    
+    handleWeb(request) this {
+     for (any pl in plugins) {
+       request.continueHandling = false;
+       pl.handleWeb(request);
+       unless (request.continueHandling) {
+        break;
+       }
+     }
     }
     
 }
@@ -1840,7 +1930,7 @@ class CallBackUI {
 
 }
 
-class App:ScriptCallPlugin {
+class App:AjaxPlugin {
 
    new() self {
     fields {
@@ -1878,14 +1968,14 @@ class App:ScriptCallPlugin {
      }
    } 
    
-   handleWeb(request) {
+   handleWeb(request) this {
      try {
        prepArgs(request);
        Map arg = request.context["arg"];
        List args = request.context["args"];
        if (def(arg) && def(args)) {
          String aname = arg.get("action");
-          if (plugin.can(aname, args.length)) {
+          if (plugin.can(aname, args.length) && aname.ends("Request")) {
             any res = plugin.invoke(aname, args);
             request.scriptReturn = res;
           } else {

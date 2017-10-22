@@ -1,28 +1,34 @@
 
-get bridgehub working again
-  sqlite, test on pi
-  update installer, etc
-
 move auth fully into plugin
-  better plugin interface
-    remove arg/script stuff from request, put in plugin and context
-      scriptArg and scriptReturn
-    move filemanager and auth logic all into plugins
-      override handleweb with a super
-    remove all arg stuff from apps
+  have a serve from files (for public reads), get rid of public check from filemanager and
+    the plugin public files thing (?maybe, or keep that and use from new plugin)
+    pingrequest is in the wrong place, move to public one
+  move filemanager after auth, get rid of request from admin/account gets
+    look for all getting auth plugin again
+    think auth won't let anything get there that's a read/write, check
+  plugins handleCmd
     move args logic out of request into scriptcallplugin, change request to generic name
-    
-    have a serve from files (for public reads)
-    plugins
-      public serve
-      authen
-      file manager
-      hub
-      ...
-
+    remove arg/script stuff from request, script return
+  cross site checks to separate plugin?
+  session / session length to separate plugin ? (checkrenew) (tracking manager)?
+    have a background for it, clear tracking manager there
+  do another pass on config names and plugin use to be sure it's all good now
+  
 webapp becomes remote webapp (ssl builtin, move hub ssl into here)
 localwebapp
 authed app becomes just webapp
+
+get bridgehub working again
+  sqlite, test on pi
+  update installer, etc
+  
+make sure things work without hub
+    put a couple small ones together to be sure they work
+  plugins can be no auth / ahead of auth
+  
+integration tests
+
+====
 
 update gui
 plugins with own html, share styles, etc via convention
@@ -35,8 +41,6 @@ plugins have startup, shutdown, handlers
 
 setup profiles for auth web, no auth web, browser apps, etc
   
-====
-
 more tests
 
 port to js, mac, win, android

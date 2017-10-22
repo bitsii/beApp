@@ -19,13 +19,13 @@ getPlugins(Bool bkg) List {
       IUDoer:DoerPlugin doer = IUDoer:DoerPlugin.new();
       log.log("adding plugins");
       List plugins = List.new();
+      plugins += App:FileManagerPlugin.new();
+      plugins += App:AuthPlugin.new();
       plugins += hub;
       if (doCam) {
         plugins += cam;
       }
-      plugins += App:AuthPlugin.new();
       plugins += App:ConfigPlugin.new();
-      plugins += App:FileManagerPlugin.new();
       plugins += doer;
       return(plugins);
     }

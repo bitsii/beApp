@@ -232,88 +232,9 @@ use class App:AuthenticatedWebApp(AuthedApp) {
 
    }
    
-   handleWeb(request) {
+   handleWeb(request) this {
      //log.log("in hw");
-     unless (checkRequest(request)) {
-      return(null);
-     }
-     String accountName = request.getSession("account.name");
-     String rmtd = request.inputMethod;
-     log.log("rmtd is " + rmtd);
-     if (TS.isEmpty(rmtd) || rmtd != "PUT") {
-        App:ScriptCallPlugin.new().prepArgs(request);
-        Map arg = request.context["arg"];
-     }
-     if (TS.isEmpty(accountName)) {
-       String ln = request.getParameter("accountName");
-       String lp = request.getParameter("accountPass");
-       if (TS.notEmpty(ln) && TS.notEmpty(lp)) {
-          log.log("doing svc login");
-          Account a = self.accountManager.getAccount(ln);
-          if (def(a) && preLoginCheck(request)) {
-            log.log("Found account " + ln);
-            if (a.checkPass(lp)) {
-              log.log("svc login ok");
-              request.putSession("account.name", ln);
-              request.putSession("ip", request.remoteAddress);
-              goodLogin(request);
-              accountName = ln;
-            } else {
-              badLogin(request);
-            }
-          } else {
-            badLogin(request);
-          }
-        }
-     }
-     if (undef(arg)) {
-       String uri = request.uri;
-       log.log("uri " + uri);
-       if (TS.isEmpty(uri) || uri == "/") {
-        log.log("empty uri going to base page");
-        request.outputContent = "<html><head><script>location=\"" + self.plugin.homePage + "\"</script></html>";
-       }
-       File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
-       if (TS.notEmpty(rmtd) && rmtd == "PUT") {
-         if (checkWritePath(imgfile.path, null, request)) {
-           log.log("put for " + imgfile.path);
-           if (imgfile.path.parent.file.exists!) {
-            imgfile.path.parent.file.makeDirs();
-           }
-           if (imgfile.exists) { imgfile.delete(); }
-            outw = imgfile.writer.open();
-            inr = request.openInput();
-            inr.copyData(outw);
-            request.closeInputReader();
-            outw.close();
-            request.outputContent = "UPLOAD COMPLETE";
-         }
-       } elseIf (checkReadPath(imgfile.path, arg, request)) {
-         log.log("imgfile " + imgfile.path);
-         if (imgfile.exists) {
-          String mtype;
-          if (uri.ends(".html")) {
-            mtype = "text/html";
-          } elseIf (uri.ends(".jpg")) {
-            mtype = "image/jpeg";
-          } elseIf (uri.ends(".svg")) {
-            mtype = "image/svg+xml";
-          } elseIf (uri.ends(".js")) {
-            mtype = "text/javascript";
-          } else {
-            mtype = "application/octet-stream";
-          }
-          request.outputContentType = mtype;
-          IO:Writer outw = request.openOutput();
-          IO:Reader inr = imgfile.reader.open();
-          inr.copyData(outw);
-          request.closeOutputWriter();
-          inr.close();
-         }
-       }
-      return(null);
-     }
-     return(super.handleWeb(request));
+     super.handleWeb(request);
    }
 
 }

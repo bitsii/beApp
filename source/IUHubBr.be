@@ -783,7 +783,7 @@ use class IUCam:CamUI {
 
   new() self {
         fields {
-          String name = "cam";
+          String name = "Cam";
           HC hc = HC.new();
         }
     }

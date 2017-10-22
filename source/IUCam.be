@@ -163,7 +163,7 @@ use class IUCam:Background {
     if (def(lastTrackClear)) {
       Int ns = Time:Interval.now().seconds;
       if (ns - lastTrackClear > clearSeconds) {
-        app.trackingManager.clear();
+        app.pluginsByName.get("Auth").trackingManager.clear();
         lastTrackClear = ns;
       }
     } else {
@@ -191,7 +191,7 @@ use App:AuthenticatedApp as AuthedApp;
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
-use class IUCam:CamPlugin(App:ScriptCallPlugin) {
+use class IUCam:CamPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
@@ -304,8 +304,8 @@ use class IUCam:CamPlugin(App:ScriptCallPlugin) {
    }
    
     toggleMotionRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
-      if (app.requestFromAdmin(request)) {
+      Account a = request.context.get("account");
+      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         String cam = arg["cam"];
         String mcp = app.configManager.get("cam." + cam + ".motion");
         if (TS.notEmpty(mcp) && Bool.new(mcp)) {
@@ -319,10 +319,9 @@ use class IUCam:CamPlugin(App:ScriptCallPlugin) {
     }
     
      updateImageRequest(Map arg, request) {
-      //Path pp = app.getHomeDir(request).addStep("WebCam");
       Path pp = Path.apNew("Shared/WebCam");
       String cam = arg["cam"];
-      Account a = app.accountManager.getAccountForRequest(request);
+      Account a = request.context.get("account");
       String an = a.user;
       unless (camOkForAccount(cam, a)) {
         throw(Exception.new("Account " + an + " not authorized for cam " + cam));
@@ -412,12 +411,12 @@ use class IUCam:CamPlugin(App:ScriptCallPlugin) {
    }
    
    detectCamsRequest(Map arg, request) {
-      unless (app.requestFromAdmin(request)) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         log.log("Account not admin, not detecting cams");
         return(null);
       }
       app.configManager.put("camsDetectedOnce", "true");
-      Account a = app.accountManager.getAccountForRequest(request);
+      Account a = request.context.get("account");
       updateCams();
       return(app.plugin.refreshLinksRequest(request));
    }
@@ -486,7 +485,11 @@ use class IUCam:CamPlugin(App:ScriptCallPlugin) {
    }
    
    updateActionLinks(String actionLinks, Account a, Map arg, request) String {
-     Bool showMotion = app.requestFromAdmin(request);
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+       showMotion = true;
+     } else {
+      Bool showMotion = false;
+     }
      String moLinks = String.new();
      Set ecm = getCams();
      for (String c in ecm) {
@@ -529,14 +532,14 @@ use class IUCam:CamPlugin(App:ScriptCallPlugin) {
    }
    
    renameCamRequest(String toName, String c, request) Map {
-     if (app.requestFromAdmin(request)) {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         app.configManager.put("cam." + c + ".label", toName);
       }
       return(CallBackUI.reloadResponse());
    }
    
    setCamCleanRequest(String days, request) {
-      if (app.requestFromAdmin(request)) {
+      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         Int.new(days);//make sure its int
         app.configManager.put("cam.cleanDays", days);
       }

@@ -128,7 +128,7 @@ use class IUHub:HubStart {
     }    
 }
 
-use class IUHub:HubPlugin(App:ScriptCallPlugin) {
+use class IUHub:HubPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
@@ -268,12 +268,12 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
      appSet(_app) {
       app = _app;
       oapp = _app;
-      app.nonAuthedRequests.put("runBackgroundTasksRequest");
+      //app.nonAuthedRequests.put("runBackgroundTasksRequest");
      }
      
      clearTracking() {
       log.log("clearing tracking");
-      app.trackingManager.clear();
+      app.pluginsByName.get("Auth").trackingManager.clear();
      }
      
      start() {
@@ -281,7 +281,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
         IO:Logs.turnOnAll();
       }
       log.log("in hubplugin start");
-      List acs = app.accountManager.getLogins();
+      List acs = app.pluginsByName.get("Auth").accountManager.getLogins();
       if (undef(acs) || acs.size < 1) {
         log.log("creating setup account");
         Account ac = Account.new();
@@ -289,7 +289,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
         ac.user = "setup_admin";
         String sapass = System:Random.getString(32);
         ac.pass = sapass;
-        app.accountManager.putAccount(ac);
+        app.pluginsByName.get("Auth").accountManager.putAccount(ac);
         app.configManager.put("embeddedLogin", ac.user);
         log.log("setup " + sapass);
       }
@@ -311,7 +311,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
     
   connectToDeviceRequest(String devId, String devName, request) Map {
     //get one time login token    
-    Account a = app.accountManager.getAccountForRequest(request);
+    Account a = request.context.get("account");
     fields {
       String lastDevId = devId;
       String lastDevName = devName;
@@ -328,7 +328,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
   
   onceLoginTokenRequest(Map arg, request) {
     log.log("!!!!!!!!!!!!!!!!in oncelogintokenreq");
-    Account a = app.accountManager.getAccountForRequest(request);
+    Account a = request.context.get("account");
     String olt = System:Random.getString(64);
     app.configManager.put("OnceToken." + olt, a.user);
     Map res = Map.new();
@@ -490,7 +490,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
   
   deviceLoginRequest(Map arg, request) {
     log.log("in devlogin");
-    Account a = app.accountManager.getAccountForRequest(request);
+    Account a = request.context.get("account");
     if (def(a)) {
       Map links = self.linksol.o;
       if (def(links)) {
@@ -509,7 +509,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
   
   saveAccountRequest(Map arg, request) {
     log.log("in hub saveAccountRequest");
-    unless (app.requestFromAdmin(request)) {
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
     any authPlug = app.pluginsByClassName.get("App:AuthPlugin");
@@ -518,15 +518,15 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
       String anso = app.configManager.get("accountSetOnce");
       if (TS.isEmpty(anso) || anso != "true") {
         if (arg["accountName"] != "setup_admin") {
-          Account a = app.accountManager.getAccountForRequest(request);
+          Account a = request.context.get("account");
           if (a.user == "setup_admin") {
-            Account b = app.accountManager.getAccount(arg["accountName"]);
+            Account b = app.pluginsByName.get("Auth").accountManager.getAccount(arg["accountName"]);
             if (def(b) && b.perms.has("admin")) {
               log.log("first account, swapping and setting");
               request.putSession("account.name", b.user);
               app.configManager.put("embeddedLogin", b.user);
               app.configManager.put("accountSetOnce", "true");
-              app.accountManager.deleteAccount(a);
+              app.pluginsByName.get("Auth").accountManager.deleteAccount(a);
               return(CallBackUI.reloadResponse());
             }
           }
@@ -581,11 +581,11 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
   }
   
   refreshLinksRequest(request) Map {
-    Account a = app.accountManager.getAccountForRequest(request);
+    Account a = request.context.get("account");
     return(CallBackUI.refreshLinksResponse(getActionLinks(a, Map.new(), request), getDevLinks(a, Map.new(), request)));
   }
   
-  loggedIn(Account a, Map res, Map arg, request) {
+  loggedIn(Account a, Map res, Map arg, request) Map {
       res["action"] = "updateResponse";
       res["profile"] = self.profile;
       res["justLoggedIn"] = true;
@@ -898,8 +898,8 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
   }
   
    restartRequest(Map arg, request) Map {
-     if (app.requestFromAdmin(request)) {
-        log.log("Restarting as requested, will have exit code 3 by login " + app.accountManager.getAccountForRequest(request).user);
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        log.log("Restarting as requested, will have exit code 3 by login " + request.context.get("account").user);
         System:Process.exit(3);
      }
      return(null);
@@ -911,7 +911,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    }
    
    saveInternetListenRequest(String host, String login, String pass, request) Map {
-    if (app.requestFromAdmin(request)) {
+    if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       //need to remove old if present
       app.configManager.put("il.sshHost", host);
       app.configManager.put("il.sshLogin", login);
@@ -970,7 +970,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    }
    
    showImapRequest(Map arg, request) {
-      unless (app.requestFromAdmin(request)) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         throw(Alert.new("Must be administrator"));
       }
       Map res = Map.new();
@@ -993,7 +993,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    }
    
    imapSettingsRequest(Map arg, request) {
-      unless (app.requestFromAdmin(request)) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         throw(Alert.new("Must be administrator"));
       }
       app.configManager.put("imap.user", arg["imapAccount"]);
@@ -1016,7 +1016,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    }
    
    runCommandRequest(Map arg, request) {
-      Account a = app.accountManager.getAccountForRequest(request);
+      Account a = request.context.get("account");
       String cmdKey = arg["cmdKey"];
       String user = cmdKey.substring(4, cmdKey.find("!"));
       log.log("cmd user " + user + " acct user " + a.user);
@@ -1047,8 +1047,8 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    restoreConfigRequest(Map arg, request) Map {
      log.log("rs request");
      String path = arg["path"];
-     Account a = app.accountManager.getAccountForRequest(request);
-     unless (app.requestFromAdmin(request)) {
+     Account a = request.context.get("account");
+     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("must be admin"));
      }
      if (TS.notEmpty(path)) {
@@ -1061,8 +1061,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    upgradeRequest(Map arg, request) Map {
      log.log("upgrade request");
      String path = arg["path"];
-     Account a = app.accountManager.getAccountForRequest(request);
-     unless (app.requestFromAdmin(request)) {
+     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("must be admin"));
      }
      upgrade(Encode:Hex.new().decode(path));
@@ -1125,7 +1124,11 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
     if (request.embedded) {
        internal = true;
      } else {
-       internal = onSameNet(request.remoteAddress, wc.internalAddress);
+       if (def(wc)) {
+        internal = onSameNet(request.remoteAddress, wc.internalAddress);
+       } else {
+        internal = false;
+       }
      }
      return(internal);
   }
@@ -1377,8 +1380,10 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    getForwardPortsListRequest(request) Map {
      String fpl = String.new();
      WebConnect wc = wcol.o;
-     for (any kv in wc.getServices()) {
-      fpl += "<p><a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a></p>";
+       if (def(wc)) {
+       for (any kv in wc.getServices()) {
+        fpl += "<p><a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a></p>";
+       }
      }
      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", fpl)), CallBackUI.setElementsValuesResponse(Maps.from("fpName", "", "fpPort", "", "fpExPort", "", "fpPattern", "")))));
      
@@ -1397,7 +1402,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    }
    
    deleteForwardRequest(String port, request) Map {
-     if (app.requestFromAdmin(request)) {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        WebConnect wc = app.plugin.wcol.o;
        //now fpname and urlpat tied to port
        wc.deleteService(port);
@@ -1410,7 +1415,7 @@ use class IUHub:HubPlugin(App:ScriptCallPlugin) {
    }
    
    updateForwardRequest(String fpName, String port, String exPort, String urlPat, request) Map {
-     if (app.requestFromAdmin(request)) {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        WebConnect wc = app.plugin.wcol.o;
        //now fpname and urlpat tied to port
        wc.putService(fpName, port, exPort, urlPat);
@@ -1441,31 +1446,6 @@ use App:AccountManager;
    
 use Db:KeyValue as KvDb;
 
-use class IUHub:ConfigTest(Assert) {
-  
-  testConfig() {
-    AuthedApp ui = AuthedApp.new();
-    KvDb cm = ui.configManager.container;
-    cm.delete("test.blarg");
-    assertNull(cm.get("test.blarg"));
-    cm.insert("test.blarg", "test");
-    assertEqual(cm.get("test.blarg"), "test");
-    cm.update("test.blarg", "foo");
-    assertEqual(cm.get("test.blarg"), "foo");
-    assertFalse(cm.testAndPut("test.blarg", "test", "la"));
-    assertNotEqual(cm.get("test.blarg"), "la");
-    assertTrue(cm.testAndPut("test.blarg", "foo", "la"));
-    assertEqual(cm.get("test.blarg"), "la");
-  }
-  
-  main() {
-    "Begin ConfigTest".print();
-    testConfig();
-    "End ConfigTest".print();
-  }
-  
-}
-
 use class IUHub:HubPluginTest(Assert) {
     
   main() {
@@ -1475,44 +1455,7 @@ use class IUHub:HubPluginTest(Assert) {
   
 }
 
-
-use class IUHub:AccountTest(Assert) {
-  
-  testAccounts() {
-    AuthedApp ui = AuthedApp.new();
-    Account atest = Account.new();
-    atest.user = "test";
-    atest.pass = "pass";
-    AccountManager am = ui.accountManager;
-    am.deleteAccount(atest);
-    Account a = am.getAccount(atest.user);
-    assertNull(a);
-    am.putAccount(atest);
-    a = am.getAccount(atest.user);
-    assertNotNull(a);
-    assertFalse(a.perms.has("admin"));
-    assertTrue(a.checkPass("pass"));
-    assertFalse(a.checkPass("notpass"));
-    a.pass = "yo";
-    assertTrue(a.checkPass("yo"));
-    a.perms.put("admin");
-    am.putAccount(a);
-    a = am.getAccount(a.user);
-    assertEqual(a.user, "test");
-    assertTrue(a.checkPass("yo"));
-    //assertTrue(a.perms.has("admin"));
-    am.deleteAccount(atest);
-  }
-  
-  main() {
-    "Begin AccountTest".print();
-    testAccounts();
-    "End AccountTest".print();
-  }
-  
-}
-
-class IUDoer:DoerPlugin(App:ScriptCallPlugin) {
+class IUDoer:DoerPlugin(App:AjaxPlugin) {
 
   new() self {
      fields {
@@ -1537,12 +1480,6 @@ class IUDoer:DoerPlugin(App:ScriptCallPlugin) {
       actionLinks += "<p><a href=\"#\" onclick=\"callApp('doerToggleRequest', '" + kv.key + "');return false;\">" + actionTitle + "</a></p>";
      }
     return(actionLinks);
-  }
-  
-  doerToggleRequest(String req, request) {
-    Account a = app.accountManager.getAccountForRequest(request);
-    log.log("in doertoggle req " + req);
-    return(null);
   }
 
 }

@@ -98,10 +98,12 @@ use class IUBridge:BridgeStart {
           if (mode == "lui" || mode == "lwui") {
             AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
             luiapp.plugins = getPlugins(ownBackground);
+            luiapp.plugin = luiapp.pluginsByName["IUHub"];
           }
           if (mode == "wui" || mode == "lwui") {
             AuthenticatedWebApp wuiapp = AuthenticatedWebApp.new();
             wuiapp.plugins = getPlugins(ownBackground);
+            wuiapp.plugin = wuiapp.pluginsByName["IUHub"];
           }  
           if (mode == "lwui") {
             luiapp.cohostWith(wuiapp);
@@ -125,6 +127,7 @@ use class IUBridge:BridgeStart {
       IO:Logs.turnOnAll();
       AuthedApp ui = AuthedApp.new();
       ui.plugins = getPlugins(false);
+      ui.plugin = ui.pluginsByName["IUHub"];
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
         log.log("cmd " + mode);
@@ -141,7 +144,7 @@ use class IUBridge:BridgeStart {
         pf.start();
       }
       if (TS.notEmpty(mode) && mode == "listLogins") {
-        for (String login in ui.accountManager.getLogins()) {
+        for (String login in ui.pluginsByName.get("Auth").getLogins()) {
           log.log("Account login " + login);
         }
       }
@@ -155,37 +158,37 @@ use class IUBridge:BridgeStart {
         if (args.length > 4) {
           ac.permsString = args[4];
         }
-        ui.accountManager.putAccount(ac);
+        ui.pluginsByName.get("Auth").accountManager.putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "getAccount") {
         user = args[2];
         log.log("Get Account " + user);
-        ac = ui.accountManager.getAccount(user);
+        ac = ui.pluginsByName.get("Auth").getAccount(user);
         log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPermsString") {
         user = args[2];
         String ps = args[3];
         log.log("Set Perms " + user);
-        ac = ui.accountManager.getAccount(user);
+        ac = ui.pluginsByName.get("Auth").getAccount(user);
         ac.permsString = ps;
-        ui.accountManager.putAccount(ac);
+        ui.pluginsByName.get("Auth").putAccount(ac);
         log.log("Account " + ac);
       }
       if (TS.notEmpty(mode) && mode == "setPass") {
         user = args[2];
         pass = args[3];
         log.log("Set Pass " + user);
-        ac = ui.accountManager.getAccount(user);
+        ac = ui.pluginsByName.get("Auth").getAccount(user);
         ac.pass = pass;
-        ui.accountManager.putAccount(ac);
+        ui.pluginsByName.get("Auth").putAccount(ac);
       }
       if (TS.notEmpty(mode) && mode == "deleteAccount") {
         user = args[2];
         log.log("Deleting Account " + user);
-        ac = ui.accountManager.getAccount(user);
+        ac = ui.pluginsByName.get("Auth").getAccount(user);
         if (def(ac)) {
-          ui.accountManager.deleteAccount(ac);
+          ui.pluginsByName.get("Auth").accountManager.deleteAccount(ac);
           log.log("Deleted account " + user);
         } else {
           log.log("No such account for deletion " + user);
@@ -238,7 +241,7 @@ use class IUBridge:BridgeStart {
         File.apNew(args[2]).writer.open().write(iurl).close();
         File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
       }
-      ui.configManager.close();
+      ui.stop();
     }
     
 }
@@ -346,7 +349,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      return(res);
    }
    
-   loggedIn(Account a, Map res, Map arg, request) {
+   loggedIn(Account a, Map res, Map arg, request) Map {
     res = super.loggedIn(a, res, arg, request);
     String dnso = app.configManager.get("deviceNameSetOnce");
     if (TS.isEmpty(dnso) || dnso != "true") {

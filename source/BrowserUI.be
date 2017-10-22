@@ -521,6 +521,8 @@ use class UI:BrowserScriptRequest {
             Bool embedded = true;
             Map context = Map.new();
             Bool continueHandling = true;
+            String inputMethod = "EMBEDDED";
+            Map parameters = Map.new();
         }
     }
     
@@ -563,6 +565,14 @@ use class UI:BrowserScriptRequest {
    
    remoteAddressGet() String {
     return("");
+   }
+   
+   getParameter(String name) String {
+     return(parameters.get(name));
+   }
+   
+   putParameter(String name, String value) this {
+     parameters.put(name, value);
    }
     
 }

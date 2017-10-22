@@ -458,11 +458,34 @@ class Db:Derby:Database(DbDb) {
 
 }
 
-//TODO
-//kv (interface)
-//rkv (relational)
+use System:Thread:ContainerLocker as CLocker;
 use Db:KeyValue as KvDb;
-class KvDb {
+class KvDb(CLocker) {
+  apNew(Path dbp, String _tableName) self {
+    SqKvDb sdb = SqKvDb.apNew(dbp, _tableName);
+    super.new(sdb);
+  }
+  
+  new(DbDb _db, String _tableName) self {
+    SqKvDb sdb = SqKvDb.new(_db, _tableName);
+    super.new(sdb);
+  }
+  
+  createOpen() self {
+    container.createOpen();
+  }
+  
+  create() self {
+    container.create();
+  }
+  
+  open() self {
+    container.open();
+  }
+}
+
+use Db:SqlKeyValue as SqKvDb;
+class SqKvDb {
 
   new() self {
     fields {
@@ -520,10 +543,10 @@ class KvDb {
   }
   
   create() self {
-    ("creating kvdbdb").print();
+    //("creating kvdbdb").print();
     try {
     db.begin();
-    db.execute("CREATE TABLE " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
+    db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
       + " constraint " + tableName + "_k primary key (KVKEY) )");
     db.commit();
     } catch (any e) {
