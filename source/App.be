@@ -972,7 +972,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   handleWeb(request) this {
     prepArgs(request);
     Map arg = request.context["arg"];
-    if (request.embedded! && TS.notEmpty(arg["serviceSessionKey"])) {
+    if (request.embedded! && def(arg) && TS.notEmpty(arg["serviceSessionKey"])) {
       request.serviceSessionKey = arg["serviceSessionKey"];
     }
     unless (check(request)) {
@@ -1010,55 +1010,61 @@ use class App:AuthPlugin(App:AjaxPlugin) {
               toLogin(request);
               return(self);
             }
-            String aname = arg.get("action");
-            if (undef(aname)) {
-              throw(Exception.new("Invalid request"));
-            }
-            
-            unless (nonAuthedRequests.has(aname)) {
-              unless (aname == "pageTokenRequest" || aname == "pingRequest") {
-                accountName = request.getSession("account.name");
-                if (TS.isEmpty(accountName)) {
-                  unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {
-                    log.log("ret givelogin");
-                    toLogin(request);
-                    return(self);
-                  }
-                } else {
-                
-                  unless (aname == "loginRequest" || checkRenewSession(request)) {
-                    unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(app.configManager.get("OnceToken." + arg["onceToken"]))) {
-                      log.log("rejecting expired session request");
+            if (def(arg) && def(arg.get("action"))) {
+              String aname = arg.get("action");
+               unless (nonAuthedRequests.has(aname)) {
+                unless (aname == "pageTokenRequest" || aname == "pingRequest") {
+                  accountName = request.getSession("account.name");
+                  if (TS.isEmpty(accountName)) {
+                    unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {
+                      log.log("ret givelogin");
                       toLogin(request);
                       return(self);
                     }
+                  } else {
+                  
+                    unless (aname == "loginRequest" || checkRenewSession(request)) {
+                      unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(app.configManager.get("OnceToken." + arg["onceToken"]))) {
+                        log.log("rejecting expired session request");
+                        toLogin(request);
+                        return(self);
+                      }
+                    }
+                  
+                    //checkLoggedInRequest is ok
+                     
+                    String stok = request.getSession("pageToken");
+                    String atok = arg["pageToken"];
+                    if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
+                      log.log("stok or atok emtpy failing due to pageToken");
+                      toLogin(request);
+                      return(self);
+                    }
+                    if (stok != atok) {
+                      log.log("stok != atok failing due to pageToken");
+                      toLogin(request);
+                      return(self);
+                    }
+                  
+                    //log.log("pageToken action " + aname);
+                    //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
+                    //if (def(stok)) { log.log("session pageToken " + stok); }
                   }
-                
-                  //checkLoggedInRequest is ok
-                   
-                  String stok = request.getSession("pageToken");
-                  String atok = arg["pageToken"];
-                  if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
-                    log.log("stok or atok emtpy failing due to pageToken");
-                    toLogin(request);
-                    return(self);
-                  }
-                  if (stok != atok) {
-                    log.log("stok != atok failing due to pageToken");
-                    toLogin(request);
-                    return(self);
-                  }
-                
-                  //log.log("pageToken action " + aname);
-                  //if (def(arg["pageToken"])) { log.log("pageToken " + //arg["pageToken"]); } else { log.log("no pageToken"); }
-                  //if (def(stok)) { log.log("session pageToken " + stok); }
                 }
               }
-            }
-            log.log("here");
+              log.log("here");
+              request.context.put("account", self.accountManager.getRequestAccount(request));
+              super.handleWeb(request);
+          } else {
+            request.continueHandling = true;
+          }
+          if (undef(request.getSession("account.name"))) {
+            request.continueHandling = false;
+          } elseIf (undef(request.context.get("account"))) {
             request.context.put("account", self.accountManager.getRequestAccount(request));
-            super.handleWeb(request);
-            return(self);
+          }
+          log.log("auth done continueHandling is " + request.continueHandling);
+          return(self);
         } catch (any e) {
            log.log("Caught exception during handleWeb B");
            if (def(e)) {
@@ -1068,6 +1074,62 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     }
   
    
+}
+
+use class App:PublicReadPlugin {
+
+     new() self {
+       fields {
+          any app;
+          String name = "Public";
+          IO:Log log =@ IO:Logs.get(self);
+        }
+     }
+     
+       
+     handleWeb(request) this {
+       String rmtd = request.inputMethod;
+       log.log("public read rmtd is " + rmtd);
+       if (TS.isEmpty(rmtd) || rmtd == "GET") {
+         log.log("in rmtd method is get");
+         String uri = request.uri;
+         log.log("uri " + uri);
+         if (TS.isEmpty(uri) || uri == "/") {
+          log.log("empty uri going to base page");
+          request.outputContent = "<html><head><script>location=\"" + app.plugin.homePage + "\"</script></html>";
+          return(self);
+         }
+         File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
+         Path pa = imgfile.absPath;
+         if (app.plugin.checkPublicReadPath(pa, request)) {
+            log.log("chkrdp fm true public");
+           log.log("imgfile " + imgfile.path);
+           if (imgfile.exists) {
+            String mtype;
+            if (uri.ends(".html")) {
+              mtype = "text/html";
+            } elseIf (uri.ends(".jpg")) {
+              mtype = "image/jpeg";
+            } elseIf (uri.ends(".svg")) {
+              mtype = "image/svg+xml";
+            } elseIf (uri.ends(".js")) {
+              mtype = "text/javascript";
+            } else {
+              mtype = "application/octet-stream";
+            }
+            request.outputContentType = mtype;
+            IO:Writer outw = request.openOutput();
+            IO:Reader inr = imgfile.reader.open();
+            inr.copyData(outw);
+            request.closeOutputWriter();
+            inr.close();
+            return(self);
+           }
+         }
+       }
+       request.continueHandling = true;
+       return(self);
+     }
 }
 
 use class App:FileManagerPlugin(App:AjaxPlugin) {
@@ -1138,7 +1200,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
   
      handleWeb(request) this {
        String rmtd = request.inputMethod;
-       log.log("rmtd is " + rmtd);
+       log.log("in filemanager handleweb rmtd is " + rmtd);
        if (TS.isEmpty(rmtd) || rmtd != "PUT") {
           App:AjaxPlugin.new().prepArgs(request);
           Map arg = request.context["arg"];
@@ -1948,23 +2010,26 @@ class App:AjaxPlugin {
      Map arg = request.context["arg"];
      List args = request.context["args"];
      if (undef(arg) || undef(args)) {
-       arg = request.scriptArg;
-       if (def(arg)) {
-         if (arg.has("args")) {
-            //is "standard call"
-            args = arg["args"];
-            args += request;
-            //log.log("call type a " + aname + args.length);
-          } else {
-            //deprecate this
-            args = List.new(2);
-            args[0] = arg;
-            args[1] = request;
-            //log.log("call type b");
+       String rmtd = request.inputMethod;
+       if (TS.isEmpty(rmtd) || rmtd != "PUT") {
+         arg = request.scriptArg;
+         if (def(arg)) {
+           if (arg.has("args")) {
+              //is "standard call"
+              args = arg["args"];
+              args += request;
+              //log.log("call type a " + aname + args.length);
+            } else {
+              //deprecate this
+              args = List.new(2);
+              args[0] = arg;
+              args[1] = request;
+              //log.log("call type b");
+            }
           }
+          request.context["arg"] = arg;
+          request.context["args"] = args;
         }
-        request.context["arg"] = arg;
-        request.context["args"] = args;
      }
    } 
    
