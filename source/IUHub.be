@@ -268,7 +268,6 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
      appSet(_app) {
       app = _app;
       oapp = _app;
-      //app.nonAuthedRequests.put("runBackgroundTasksRequest");
      }
      
      clearTracking() {
@@ -281,6 +280,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         IO:Logs.turnOnAll();
       }
       log.log("in hubplugin start");
+      app.pluginsByName.get("Auth").nonAuthedRequests.put("pingRequest");
       List acs = app.pluginsByName.get("Auth").accountManager.getLogins();
       if (undef(acs) || acs.size < 1) {
         log.log("creating setup account");
@@ -308,6 +308,14 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         buu.start();
       }
     }
+    
+  pingRequest(Map arg, request) {
+    log.log("in pingrequest");
+    Map res = Map.new();
+    res["msg"] = "Here";
+    res["action"] = "pingResponse";
+    return(res);
+  }
     
   connectToDeviceRequest(String devId, String devName, request) Map {
     //get one time login token    

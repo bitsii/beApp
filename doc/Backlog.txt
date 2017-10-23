@@ -1,9 +1,5 @@
 
 move auth fully into plugin
-  move filemanager after auth, get rid of request from admin/account gets
-    look for all getting auth plugin again
-    think auth won't let anything get there that's a read/write, check
-  have a ping request plugin or put in hub
   plugins handleCmd
     move args logic out of request into scriptcallplugin, change request to generic name
     remove arg/script stuff from request, script return

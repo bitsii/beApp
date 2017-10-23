@@ -719,14 +719,6 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     }
   }
   
-  pingRequest(Map arg, request) {
-    log.log("in pingrequest");
-    Map res = Map.new();
-    res["msg"] = "Here";
-    res["action"] = "pingResponse";
-    return(res);
-  }
-  
   pageTokenRequest(Map arg, request) {
     log.log("in pagetokenrequest");
     if (app.plugin.okForPageToken(request)) {
@@ -1013,7 +1005,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
             if (def(arg) && def(arg.get("action"))) {
               String aname = arg.get("action");
                unless (nonAuthedRequests.has(aname)) {
-                unless (aname == "pageTokenRequest" || aname == "pingRequest") {
+                unless (aname == "pageTokenRequest") {
                   accountName = request.getSession("account.name");
                   if (TS.isEmpty(accountName)) {
                     unless (aname == "loginRequest" || aname == "checkLoggedInRequest") {
@@ -1143,40 +1135,36 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
         log =@ IO:Logs.get(self);
      }
      
-     checkWritePath(Path p, Map arg, request) Bool {
-    Account a = app.pluginsByName.get("Auth").accountManager.getRequestAccount(request);
-    if (def(a) && a.perms.has("admin")) {
-      return(true);
-    }
-    String accountName = request.getSession("account.name");
-    any e;
-    Bool isOk = false;
-    if (undef(accountName)) { accountName = ""; }
-    try {
-      Path pa = p.file.absPath;
-      if (TS.notEmpty(accountName)) {
-        Path h = Path.apNew("Home/" + accountName).file.absPath;
+    checkWritePath(Path p, Map arg, request) Bool {
+      Account a = request.context.get("account");
+      if (def(a) && a.perms.has("admin")) {
+        return(true);
       }
-      String pas = pa.toString();
-      if (def(h) && pas.begins(h.toString())) {
-        isOk = true;
+      String accountName = request.getSession("account.name");
+      any e;
+      Bool isOk = false;
+      if (undef(accountName)) { accountName = ""; }
+      try {
+        Path pa = p.file.absPath;
+        if (TS.notEmpty(accountName)) {
+          Path h = Path.apNew("Home/" + accountName).file.absPath;
+        }
+        String pas = pa.toString();
+        if (def(h) && pas.begins(h.toString())) {
+          isOk = true;
+        }
+      } catch (e) {
+        log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
       }
-    } catch (e) {
-      log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
-    }
-    //log.log("checkPath isOk " + isOk);
-    return(isOk);
+      //log.log("checkPath isOk " + isOk);
+      return(isOk);
    }
    
    checkReadPath(Path p, Map arg, request) Bool {
     log.log("in chkrdp fm");
     Path pa = p.file.absPath;
     String pas = pa.toString();
-    if (app.plugin.checkPublicReadPath(pa, request)) {
-      log.log("chkrdp fm true public");
-      return(true);
-    }
-    Account a = app.pluginsByName.get("Auth").accountManager.getRequestAccount(request);
+    Account a = request.context.get("account");
     if (def(a) && a.perms.has("admin")) {
       return(true);
     }
@@ -1210,8 +1198,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
          String uri = request.uri;
          log.log("uri " + uri);
          if (TS.isEmpty(uri) || uri == "/") {
-          log.log("empty uri going to base page");
-          request.outputContent = "<html><head><script>location=\"" + self.plugin.homePage + "\"</script></html>";
+          log.log("empty uri in filemanager");
           return(self);
          }
          File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
@@ -1267,7 +1254,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
      }
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
-       if (dirFile.exists && app.checkWritePath(dirFile.path, arg, request)) {
+       if (dirFile.exists && checkWritePath(dirFile.path, arg, request)) {
          log.log("deleting " + dirFile.path);
          dirFile.delete();
        }
@@ -1284,11 +1271,11 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
      }
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
-       if (TS.notEmpty(arg["toName"]) && dirFile.exists && app.checkWritePath(dirFile.path, arg, request)) {
+       if (TS.notEmpty(arg["toName"]) && dirFile.exists && checkWritePath(dirFile.path, arg, request)) {
          any dpath = Path.apNew(arg["toName"]);
          dpath = dirFile.path.parent.copy() + dpath;
          log.log("precheck write " + dpath);
-         if (app.checkWritePath(dpath, arg, request)) {
+         if (checkWritePath(dpath, arg, request)) {
            log.log("copying " + dirFile.path + " to " + dpath);
            if (dpath.parent.file.exists!) {
              dpath.parent.file.makeDirs();
@@ -1317,7 +1304,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
        Path dirPath = Path.apNew(Encode:Hex.new().decode(inDir));
        dirPath.addStep(dirName);
        File dirFile = dirPath.file.absPath.file;
-       if (dirFile.exists! && app.checkWritePath(dirFile.path, arg, request)) {
+       if (dirFile.exists! && checkWritePath(dirFile.path, arg, request)) {
          log.log("creating " + dirFile.path);
          dirFile.makeDirs();
        }
@@ -1361,7 +1348,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       Encode:Html htmle = Encode:Html.new();
       Map ret = Map.new();
       String path = arg["path"];
-      Account a = app.pluginsByName.get("Auth").accountManager.getRequestAccount(request);
+      Account a = request.context.get("account");
       Bool adminLinks = false;
       if (a.perms.has("admin")) {
         adminLinks = true;
