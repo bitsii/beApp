@@ -15,8 +15,10 @@ use System:Thread:Lock;
 use System:Thread:ContainerLocker as CLocker;
 use System:Command as Com;
 use Time:Sleep;
+use System:Parameters;
 
 use App:Alert;
+use App:AppStart;
 
 use Net:UPnP as Upnp;
 
@@ -36,97 +38,12 @@ use class IUBridge:BridgeStart {
    new() self {
       fields {
           IO:Log log =@ IO:Logs.get(self);
-          Bool ownBackground = false;
-        }
-        ifEmit(iuOwnBackground) {
-          ownBackground = true;
         }
     }
-
-  main() {
-      main(System:Process.new().args);
-    }
     
-    main(List args) {
-      outerMain(System:Process.new().args);
-      /*try {
-        app.configManager.close();
-      } catch (any e) {
-        log.log("Exception closing db in CmdUI, error is " + e);
-      }*/
-    }
-    
-    outerMain(List args) {
-      try {
-        innerMain(System:Process.new().args);
-      } catch (any e) {
-        log.log("Exception in CmdUI, error is " + e);
-      }
-    }
-    
-    getPlugins(Bool bkg) List {
-      BridgePlugin hub = BridgePlugin.new();
-      hub.runBackground = bkg;
-      IUDoer:DoerPlugin doer = IUDoer:DoerPlugin.new();
-      log.log("adding plugins");
-      List plugins = List.new();
-      plugins += hub;
-      plugins += App:AuthPlugin.new();
-      plugins += App:ConfigPlugin.new();
-      plugins += App:FileManagerPlugin.new();
-      plugins += doer;
-      return(plugins);
-    }
-    
-    innerMain(List args) {
-      ifEmit(iuDebug) {
-        IO:Logs.turnOnAll();
-      }
-      Web:Client:CertificateManager.validateHosts = false;
-      if (args.length > 0) {
-        String mode = args[0]; //lui, wui, both, [absent]
-        log.log("mode " + mode);
-      } else {
-        log.log("mode empty");
-      }
-      if (TS.isEmpty(mode)) {
-        mode = "wui";
-      }
-      if (mode == "lwui" || mode == "lui" || mode == "wui" || mode == "cmd") {
-        log.log("making hub");
-        if (mode != "cmd") {
-          if (mode == "lui" || mode == "lwui") {
-            AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
-            luiapp.plugins = getPlugins(ownBackground);
-            luiapp.plugin = luiapp.pluginsByName["IUHub"];
-          }
-          if (mode == "wui" || mode == "lwui") {
-            AuthenticatedWebApp wuiapp = AuthenticatedWebApp.new();
-            wuiapp.plugins = getPlugins(ownBackground);
-            wuiapp.plugin = wuiapp.pluginsByName["IUHub"];
-          }  
-          if (mode == "lwui") {
-            luiapp.cohostWith(wuiapp);
-          }
-          if (def(wuiapp)) {
-            log.log("starting wui");
-            wuiapp.main();
-          }
-          if (def(luiapp)) {
-            log.log("starting lui");
-            luiapp.main();
-          }
-        }   
-        if (mode == "cmd") {
-          cmdMain(args, getPlugins(false));
-        }
-      }
-    }
-
     cmdMain(List args, plugins) {
       IO:Logs.turnOnAll();
       AuthedApp ui = AuthedApp.new();
-      ui.plugins = getPlugins(false);
       ui.plugin = ui.pluginsByName["IUHub"];
       if (args.length > 1) {
         String mode = args[1]; //ui, svc, both, [absent]
@@ -229,12 +146,12 @@ use class IUBridge:BridgeStart {
       if (TS.notEmpty(mode) && mode == "saveSetupUrl") {
         log.log("saveSetupUrl");
         String olt = System:Random.getString(64);
-        ui.configManager.put("OnceToken." + olt, "setup_admin");
+        ui.configManager.put("auth.onceToken." + olt, "setup_admin");
         
         Int intPorti = System:Random.getIntMax(6000);
         intPorti += 3000;
         String intPort = intPorti.toString();
-        ui.configManager.put("wui.port", intPort);
+        ui.configManager.put("web.port", intPort);
         
         String iurl = ui.webProto + "://127.0.0.1:" += intPort += "/App/IUHub/IU.html?onceToken=" += olt;
         //log.log("int url is " + iurl);
@@ -427,7 +344,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.plugin.updateNetAddresses();
       app.plugin.updateUrls();
       log.log("saving");
-      app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
+      app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
       log.log("upnp doForward done");
   }
   

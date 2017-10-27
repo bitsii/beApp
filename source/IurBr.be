@@ -59,10 +59,6 @@ use class Iur:Eui {
       hc.call(arg);
     }
     
-    main() {
-    
-    }
-    
     handleCallback(String res) {
       hideInform();
       hc.handleCallback(res);

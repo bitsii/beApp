@@ -1,13 +1,15 @@
 
 move auth fully into plugin
+  get rid of other mains and *Start classes
   plugins handleCmd
-    move args logic out of request into scriptcallplugin, change request to generic name
-    remove arg/script stuff from request, script return
+    finish appstart, plugins to cam/bridge, cmd to plugins (handleCmd in app)
   cross site checks to separate plugin?
   session / session length to separate plugin ? (checkrenew) (tracking manager)?
     have a background for it, clear tracking manager there
   do another pass on config names and plugin use to be sure it's all good now
   get rid of duplicate auth, file stuff in hub
+  move devicename stuff to hub
+  finish hub configManager cleanup
   
 webapp becomes remote webapp (ssl builtin, move hub ssl into here)
 localwebapp
@@ -22,6 +24,8 @@ make sure things work without hub
   plugins can be no auth / ahead of auth
   
 integration tests
+
+have a webappstart, pull webapp part out, or do with reflection
 
 ====
 

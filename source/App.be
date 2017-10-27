@@ -14,6 +14,8 @@ use Db:Relational:Statement as DbSt;
 use Db:Firebird:Database as FbDb;
 use Db:KeyValue as KvDb;
 use Time:Interval;
+use System:Parameters;
+use App:AuthenticatedWebApp;
 
 use class App:Alert(Exception) { }
 
@@ -650,16 +652,16 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     String accountName = request.getSession("account.name");
     if (TS.isEmpty(accountName) && request.embedded) {
       log.log("checking embeddedLogin");
-      String eml = app.configManager.get("embeddedLogin");
+      String eml = app.configManager.get("auth.embeddedLogin");
       if (TS.notEmpty(eml)) {
         log.log("checking embeddedLogin eml notempty");
         accountName = eml;
       }
     } elseIf (TS.isEmpty(accountName) && arg.has("onceToken")) {
-      accountName = app.configManager.get("OnceToken." + arg["onceToken"]);
+      accountName = app.configManager.get("auth.onceToken." + arg["onceToken"]);
     }
     if (arg.has("onceToken")) {
-      app.configManager.delete("OnceToken." + arg["onceToken"]);
+      app.configManager.delete("auth.onceToken." + arg["onceToken"]);
     }
     if (TS.notEmpty(accountName)) {
       Account a = self.accountManager.getAccount(accountName);
@@ -686,7 +688,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     request.putSession("account.name", arg["accountName"]);
     if (request.embedded) {
       log.log("putting embeddedLogin");
-      app.configManager.put("embeddedLogin", arg["accountName"]);
+      app.configManager.put("auth.embeddedLogin", arg["accountName"]);
     }
     request.putSession("ip", request.remoteAddress);
     if (TS.notEmpty(arg["sessionName"])) {
@@ -776,7 +778,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     //request.deleteSession();
     request.putSession("account.name", "");
     if (request.embedded) {
-      app.configManager.delete("embeddedLogin");
+      app.configManager.delete("auth.embeddedLogin");
     }
     Map res = Map.new();
     res["action"] = "logoutResponse";
@@ -891,7 +893,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       return(true);
     }
     //log.log("referer is " + ref);
-    String snlist = app.configManager.get("siteNames");
+    String snlist = app.configManager.get("auth.siteNames");
     if (TS.notEmpty(snlist)) {
       for (String sn in snlist.split(",")) {
         if (ref.begins(sn)) {
@@ -914,7 +916,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     String extPort = self.plugin.wcol.o.externalPort;
     
     //String extAddress = self.configManager.get("upnp.extAddress");
-    //String extPort = self.configManager.get("wui.extPort");
+    //String extPort = self.configManager.get("hub.extPort");
     
     if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
       extUrl = app.webProto + "://" + extAddress + ":" + extPort;
@@ -1016,7 +1018,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
                   } else {
                   
                     unless (aname == "loginRequest" || checkRenewSession(request)) {
-                      unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(app.configManager.get("OnceToken." + arg["onceToken"]))) {
+                      unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(app.configManager.get("auth.onceToken." + arg["onceToken"]))) {
                         log.log("rejecting expired session request");
                         toLogin(request);
                         return(self);
@@ -1613,6 +1615,94 @@ use class App:AuthenticatedLocalApp(AuthedApp) {
 
 }
 
+class App:AppStart {
+
+  new(Parameters _params) self {
+    fields {
+      IO:Log log =@ IO:Logs.get(self);
+      Parameters params = _params;
+    }
+  }
+  
+    main() {
+      try {
+        Parameters params = Parameters.new(System:Process.new().args);
+        start(params);
+      } catch (any e) {
+        log.log("Exception in innerMain, error is " + e);
+      }
+    }
+  
+    start(Parameters params) {
+      self.new(params);
+      start();
+    }
+    
+  setupPlugins(AuthedApp app) {
+    auto pluginClasses = params.get("plugin");
+    List plugins = List.new();
+    for (String pluginClass in pluginClasses) {
+      any plugin = createInstance(pluginClass);
+      plugins += plugin;
+    }
+    app.plugins = plugins;
+  }
+  
+  setupPlugin(AuthedApp app) {
+    String pln = params.getFirst("appPlugin");
+    if (def(pln)) {
+      app.plugin = app.pluginsByName[pln];
+    } else {
+      String plc = params.getFirst("appPluginClass");
+      if (undef(plc)) {
+        throw(Exception.new("No app plugin defined"));
+      }
+      app.plugin = app.pluginsByClassName[plc];
+    }
+  }
+  
+  start() this {
+    log.log("starting app");
+    auto appTypes = Sets.from(params.get("appType").toList());
+    if (appTypes.has("cmd")) {
+      AuthedApp cuiapp = AuthedApp.new();
+      cuiapp.params = params;
+      setupPlugins(cuiapp);
+      setupPlugin(cuiapp);
+      cuiapp.main();
+    } else {
+      if (appTypes.has("browser")) {
+        AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
+        luiapp.params = params;
+        setupPlugins(luiapp);
+        setupPlugin(luiapp);
+        unless (appTypes.has("server")) {
+          log.log("starting browser app");
+          luiapp.main();
+        }
+      }
+      if (appTypes.has("server")) {
+        AuthenticatedWebApp wuiapp = AuthenticatedWebApp.new();
+        wuiapp.params = params;
+        setupPlugins(wuiapp);
+        setupPlugin(wuiapp);
+        if (appTypes.has("browser")) {
+          log.log("cohosting apps");
+          wuiapp.cohostWith(luiapp);
+          log.log("starting server app");
+          wuiapp.main();
+          log.log("starting browser app");
+          luiapp.main();
+        } else {
+          log.log("starting server app");
+          wuiapp.main();
+        }
+      }
+    }
+  }
+}
+
+
 use App:AuthenticatedApp as AuthedApp;
 class AuthedApp {
 
@@ -1623,6 +1713,7 @@ class AuthedApp {
       String certificateThumbprint;
       Map kvDbs = Map.new();
       Lock dblock = Lock.new();
+      Parameters params;
     }
   }
   
@@ -1638,13 +1729,13 @@ class AuthedApp {
         Bool doSsl;
       }
       if (undef(doSsl)) {
-        String doSsls = self.configManager.get("wui.ssl");
+        String doSsls = self.configManager.get("web.ssl");
         if (TS.isEmpty(doSsls)) {
           doSsls = "true";
           ifEmit(cs) {
             doSsls = "false";
           }
-          self.configManager.put("wui.ssl", doSsls);
+          self.configManager.put("web.ssl", doSsls);
         }
         doSsl = Logic:Bools.fromString(doSsls);
       }
@@ -1697,12 +1788,12 @@ class AuthedApp {
         String intPort;
       }
       if (TS.isEmpty(intPort)) {
-        intPort = self.configManager.get("wui.port");
+        intPort = self.configManager.get("web.port");
         if (TS.isEmpty(intPort)) {
           Int intPorti = System:Random.getIntMax(6000);
           intPorti += 3000;
           intPort = intPorti.toString();
-          self.configManager.put("wui.port", intPort);
+          self.configManager.put("web.port", intPort);
         }
       }
       return(intPort);
@@ -1791,106 +1882,6 @@ class AuthedApp {
     ("got sessionmanager").print();
     return(sessionManager);
   }
-  
-    cmdMain(List args) {
-      IO:Logs.turnOnAll();
-      auto ui = self;
-      if (args.length > 1) {
-        String mode = args[1]; //ui, svc, both, [absent]
-        log.log("cmd " + mode);
-      } 
-      if (TS.isEmpty(mode)) {
-        log.log("cmd empty");
-      }
-      if (mode == "help") {
-        log.log("Help");
-        log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
-      }
-      if (TS.notEmpty(mode) && mode == "listLogins") {
-        for (String login in ui.pluginsByName.get("Auth").accountManager.getLogins()) {
-          log.log("Account login " + login);
-        }
-      }
-      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
-        String user = args[2];
-        String pass = args[3];
-        log.log("Putting Account " + user);
-        Account ac = Account.new();
-        ac.user = user;
-        ac.pass = pass;
-        if (args.length > 4) {
-          ac.permsString = args[4];
-        }
-        ui.pluginsByName.get("Auth").accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "getAccount") {
-        user = args[2];
-        log.log("Get Account " + user);
-        ac = ui.pluginsByName.get("Auth").accountManager.getAccount(user);
-        log.log("Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPermsString") {
-        user = args[2];
-        String ps = args[3];
-        log.log("Set Perms " + user);
-        ac = ui.pluginsByName.get("Auth").accountManager.getAccount(user);
-        ac.permsString = ps;
-        ui.pluginsByName.get("Auth").accountManager.putAccount(ac);
-        log.log("Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPass") {
-        user = args[2];
-        pass = args[3];
-        log.log("Set Pass " + user);
-        ac = ui.pluginsByName.get("Auth").accountManager.getAccount(user);
-        ac.pass = pass;
-        ui.pluginsByName.get("Auth").accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteAccount") {
-        user = args[2];
-        log.log("Deleting Account " + user);
-        ac = ui.pluginsByName.get("Auth").accountManager.getAccount(user);
-        if (def(ac)) {
-          ui.pluginsByName.get("Auth").accountManager.deleteAccount(ac);
-          log.log("Deleted account " + user);
-        } else {
-          log.log("No such account for deletion " + user);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "updateConfig") {
-        String key = args[2];
-        String value = args[3];
-        log.log("Updating config " + key + " " + value);
-        ui.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "showConfig") {
-        for (any kv in ui.configManager.getMap()) {
-          log.log("Config name " + kv.key + " value " + kv.value);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "createConfig") {
-        key = args[2];
-        value = args[3];
-        log.log("Creating config " + key + " " + value);
-        ui.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteConfig") {
-        key = args[2];
-        log.log("Deleting config " + key);
-        ui.configManager.delete(key);
-      }
-      if (TS.notEmpty(mode) && mode == "restoreConfig") {
-        String restorePath = args[2];
-        log.log("restoring config " + restorePath);
-        ui.plugin.restoreConfig(restorePath);
-      }
-      if (TS.notEmpty(mode) && mode == "backupConfig") {
-        restorePath = args[2];
-        log.log("backup config " + restorePath);
-        ui.pluginsByClassName.get("App:ConfigPlugin").backupConfig(restorePath);
-      }
-      ui.configManager.close();
-    }
     
     handleWeb(request) this {
      for (any pl in plugins) {
@@ -1900,6 +1891,20 @@ class AuthedApp {
         break;
        }
      }
+    }
+    
+    handleCmd() this {
+     for (any pl in plugins) {
+       if (pl.can("handleCmd", 1)) {
+        if (pl.handleCmd(params)) {
+          break;
+        }
+      }
+     }
+    }
+    
+    main() this {
+      handleCmd();
     }
     
 }

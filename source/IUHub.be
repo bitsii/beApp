@@ -64,68 +64,7 @@ use class IUHub:HubStart {
           ownBackground = true;
         }
     }
-
-  main() {
-      main(System:Process.new().args);
-    }
     
-    main(List args) {
-      outerMain(System:Process.new().args);
-      /*try {
-        app.configManager.close();
-      } catch (any e) {
-        log.log("Exception closing db in CmdUI, error is " + e);
-      }*/
-    }
-    
-    outerMain(List args) {
-      try {
-        innerMain(System:Process.new().args);
-      } catch (any e) {
-        log.log("Exception in CmdUI, error is " + e);
-      }
-    }
-    
-    getPlugins(Bool bkg) List {
-      HubPlugin hub = HubPlugin.new();
-      hub.runBackground = bkg;
-      IUDoer:DoerPlugin doer = IUDoer:DoerPlugin.new();
-      log.log("adding plugins");
-      List plugins = List.new();
-      plugins += hub;
-      plugins += App:AuthPlugin.new();
-      plugins += App:ConfigPlugin.new();
-      plugins += App:FileManagerPlugin.new();
-      plugins += doer;
-      return(plugins);
-    }
-    
-    innerMain(List args) {
-      ifEmit(iuDebug) {
-        IO:Logs.turnOnAll();
-      }
-      Web:Client:CertificateManager.validateHosts = false;
-      if (args.length > 0) {
-        String mode = args[0]; //lui, wui, both, [absent]
-        log.log("mode " + mode);
-      } else {
-        log.log("mode empty");
-      }
-      if (TS.isEmpty(mode)) {
-        mode = "lui";
-      }
-      if (mode == "lui") {
-        log.log("making hub");
-        if (mode == "lui") {
-          AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
-          luiapp.plugins = getPlugins(ownBackground);
-        }
-        if (def(luiapp)) {
-          log.log("starting lui");
-          luiapp.main();
-        }
-      }
-    }    
 }
 
 use class IUHub:HubPlugin(App:AjaxPlugin) {
@@ -145,6 +84,10 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         }
         super.new();
         log =@ IO:Logs.get(self);
+        ifEmit(iuDebug) {
+          IO:Logs.turnOnAll();
+        }
+        Web:Client:CertificateManager.validateHosts = false;
      }
      
      loadWc() {
@@ -154,7 +97,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
   }
   
   loadWcInner() {
-    String wcs = app.configManager.get("wui.webConnect");
+    String wcs = app.configManager.get("hub.webConnect");
     if (TS.notEmpty(wcs)) {
       log.log("deserializing wcs");
       WebConnect wc = WebConnect.new();
@@ -228,7 +171,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     wc.deviceId = app.plugin.deviceId;
     wc.deviceName = app.plugin.deviceName; 
     if (TS.isEmpty(wc.externalPort)) {
-      wc.externalPort = app.configManager.get("wui.extPort");
+      wc.externalPort = app.configManager.get("hub.extPort");
     }
     log.log("starting wc update");
     //fwd was here
@@ -240,7 +183,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     //app.plugin.updateNetAddresses();
     app.plugin.updateUrls();
     log.log("saving");
-    app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
+    app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
     log.log("upnp doUpdate done");
   }
   
@@ -290,7 +233,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         String sapass = System:Random.getString(32);
         ac.pass = sapass;
         app.pluginsByName.get("Auth").accountManager.putAccount(ac);
-        app.configManager.put("embeddedLogin", ac.user);
+        app.configManager.put("auth.embeddedLogin", ac.user);
         log.log("setup " + sapass);
       }
      
@@ -338,9 +281,9 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     log.log("!!!!!!!!!!!!!!!!in oncelogintokenreq");
     Account a = request.context.get("account");
     String olt = System:Random.getString(64);
-    app.configManager.put("OnceToken." + olt, a.user);
+    app.configManager.put("auth.onceToken." + olt, a.user);
     Map res = Map.new();
-    res["OnceToken"] = olt;
+    res["onceToken"] = olt;
     return(res);
   }
   
@@ -402,9 +345,9 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       if (TS.notEmpty(res)) {
         Map resMap = Json:Unmarshaller.unmarshall(res);
         log.log("!!! got res from obfds  " + res);
-        if (resMap.has("OnceToken")) {
-          String onceToken = resMap.get("OnceToken");
-          //UI:ExternalBrowser.openToUrl(destUrl + "?onceToken=" + resMap.get("OnceToken"));
+        if (resMap.has("onceToken")) {
+          String onceToken = resMap.get("onceToken");
+          //UI:ExternalBrowser.openToUrl(destUrl + "?onceToken=" + resMap.get("onceToken"));
         }
       }
     } catch (any e) {
@@ -532,7 +475,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
             if (def(b) && b.perms.has("admin")) {
               log.log("first account, swapping and setting");
               request.putSession("account.name", b.user);
-              app.configManager.put("embeddedLogin", b.user);
+              app.configManager.put("auth.embeddedLogin", b.user);
               app.configManager.put("accountSetOnce", "true");
               app.pluginsByName.get("Auth").accountManager.deleteAccount(a);
               return(CallBackUI.reloadResponse());
@@ -924,7 +867,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       app.configManager.put("il.sshHost", host);
       app.configManager.put("il.sshLogin", login);
       app.configManager.put("il.sshPass", pass);
-      String siteNames = app.configManager.get("siteNames");
+      String siteNames = app.configManager.get("auth.siteNames");
       String proto = app.webProto + "://";
       if (TS.notEmpty(host)) {
         if (undef(siteNames)) { siteNames = ""; }
@@ -933,7 +876,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
             siteNames += ",";
           }
           siteNames += proto += host;
-          app.configManager.put("siteNames", siteNames);
+          app.configManager.put("auth.siteNames", siteNames);
         }
       }
     }
@@ -1414,7 +1357,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
        WebConnect wc = app.plugin.wcol.o;
        //now fpname and urlpat tied to port
        wc.deleteService(port);
-       app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
+       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
        return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
@@ -1427,7 +1370,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
        WebConnect wc = app.plugin.wcol.o;
        //now fpname and urlpat tied to port
        wc.putService(fpName, port, exPort, urlPat);
-       app.configManager.put("wui.webConnect", Json:Marshaller.marshall(wc.toMap()));
+       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
        //TODO update imap wc
@@ -1453,15 +1396,6 @@ use App:Account;
 use App:AccountManager;
    
 use Db:KeyValue as KvDb;
-
-use class IUHub:HubPluginTest(Assert) {
-    
-  main() {
-    "Begin HubPluginTest".print();
-    "End HubPluginTest".print();
-  }
-  
-}
 
 class IUDoer:DoerPlugin(App:AjaxPlugin) {
 
