@@ -22,9 +22,9 @@ use App:AppStart;
 
 use Net:UPnP as Upnp;
 
-use App:AuthenticatedLocalApp;
-use App:AuthenticatedWebApp;
-use App:AuthenticatedApp as AuthedApp;
+use App:LocalWebApp;
+use App:RemoteWebApp;
+use App:WebApp;
 use IUHub:HubPlugin;
 
 emit(jv) {
@@ -39,126 +39,6 @@ use class IUBridge:BridgeStart {
       fields {
           IO:Log log =@ IO:Logs.get(self);
         }
-    }
-    
-    cmdMain(List args, plugins) {
-      IO:Logs.turnOnAll();
-      AuthedApp ui = AuthedApp.new();
-      ui.plugin = ui.pluginsByName["IUHub"];
-      if (args.length > 1) {
-        String mode = args[1]; //ui, svc, both, [absent]
-        log.log("cmd " + mode);
-      } 
-      if (TS.isEmpty(mode)) {
-        log.log("cmd empty");
-      }
-      if (mode == "help") {
-        log.log("Help");
-        log.log("listLogins, putAccount, getAccount, setPermsString, setPass, deleteAccount, updateConfig, showConfig, createConfig, deleteConfig");
-      }
-      if (TS.notEmpty(mode) && mode == "portForward") {
-        Net:PortForward pf = Net:PortForward.new(args[2], Int.new(args[3]), args[4], Int.new(args[5]));
-        pf.start();
-      }
-      if (TS.notEmpty(mode) && mode == "listLogins") {
-        for (String login in ui.pluginsByName.get("Auth").getLogins()) {
-          log.log("Account login " + login);
-        }
-      }
-      if (TS.notEmpty(mode) && (mode == "putAccount" || mode == "createAccount")) {
-        String user = args[2];
-        String pass = args[3];
-        log.log("Putting Account " + user);
-        Account ac = Account.new();
-        ac.user = user;
-        ac.pass = pass;
-        if (args.length > 4) {
-          ac.permsString = args[4];
-        }
-        ui.pluginsByName.get("Auth").accountManager.putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "getAccount") {
-        user = args[2];
-        log.log("Get Account " + user);
-        ac = ui.pluginsByName.get("Auth").getAccount(user);
-        log.log("Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPermsString") {
-        user = args[2];
-        String ps = args[3];
-        log.log("Set Perms " + user);
-        ac = ui.pluginsByName.get("Auth").getAccount(user);
-        ac.permsString = ps;
-        ui.pluginsByName.get("Auth").putAccount(ac);
-        log.log("Account " + ac);
-      }
-      if (TS.notEmpty(mode) && mode == "setPass") {
-        user = args[2];
-        pass = args[3];
-        log.log("Set Pass " + user);
-        ac = ui.pluginsByName.get("Auth").getAccount(user);
-        ac.pass = pass;
-        ui.pluginsByName.get("Auth").putAccount(ac);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteAccount") {
-        user = args[2];
-        log.log("Deleting Account " + user);
-        ac = ui.pluginsByName.get("Auth").getAccount(user);
-        if (def(ac)) {
-          ui.pluginsByName.get("Auth").accountManager.deleteAccount(ac);
-          log.log("Deleted account " + user);
-        } else {
-          log.log("No such account for deletion " + user);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "updateConfig") {
-        String key = args[2];
-        String value = args[3];
-        log.log("Updating config " + key + " " + value);
-        ui.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "showConfig") {
-        for (any kv in ui.configManager.getMap()) {
-          log.log("Config name " + kv.key + " value " + kv.value);
-        }
-      }
-      if (TS.notEmpty(mode) && mode == "createConfig") {
-        key = args[2];
-        value = args[3];
-        log.log("Creating config " + key + " " + value);
-        ui.configManager.put(key, value);
-      }
-      if (TS.notEmpty(mode) && mode == "deleteConfig") {
-        key = args[2];
-        log.log("Deleting config " + key);
-        ui.configManager.delete(key);
-      }
-      if (TS.notEmpty(mode) && mode == "restoreConfig") {
-        String restorePath = args[2];
-        log.log("restoring config " + restorePath);
-        ui.plugin.restoreConfig(restorePath);
-      }
-      if (TS.notEmpty(mode) && mode == "backupConfig") {
-        restorePath = args[2];
-        log.log("backup config " + restorePath);
-        ui.pluginsByClassName.get("App:ConfigPlugin").backupConfig(restorePath);
-      }
-      if (TS.notEmpty(mode) && mode == "saveSetupUrl") {
-        log.log("saveSetupUrl");
-        String olt = System:Random.getString(64);
-        ui.configManager.put("auth.onceToken." + olt, "setup_admin");
-        
-        Int intPorti = System:Random.getIntMax(6000);
-        intPorti += 3000;
-        String intPort = intPorti.toString();
-        ui.configManager.put("web.port", intPort);
-        
-        String iurl = ui.webProto + "://127.0.0.1:" += intPort += "/App/IUHub/IU.html?onceToken=" += olt;
-        //log.log("int url is " + iurl);
-        File.apNew(args[2]).writer.open().write(iurl).close();
-        File.apNew(args[3]).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
-      }
-      ui.stop();
     }
     
 }

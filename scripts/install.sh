@@ -48,7 +48,7 @@ echo "su $USER -c \"$HOME/apprun/App/IUHub/startiuh.sh\"" >> tmp/stadd
 echo "exit 0" >> tmp/stadd
 sudo -- sh -c 'cat tmp/stadd > /etc/rc.local'
 
-./apprun/App/IUHub/iuhcmd.sh cmd saveSetupUrl shu.txt opu.sh
+./apprun/App/IUHub/iuhcmd.sh --appType cmd --hubCmd saveSetupUrl --urlDoc shu.txt --urlScript opu.sh
 
 ./apprun/App/IUHub/startiuh.sh
 

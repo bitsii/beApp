@@ -15,7 +15,7 @@ use Db:Firebird:Database as FbDb;
 use Db:KeyValue as KvDb;
 use Time:Interval;
 use System:Parameters;
-use App:AuthenticatedWebApp;
+use App:RemoteWebApp;
 
 use class App:Alert(Exception) { }
 
@@ -465,6 +465,61 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         accountManager = AccountManager.new(app.getKvDb("ACCOUNTS"));
       }
       return(accountManager);
+    }
+    
+    handleCmd(Parameters params) Bool {
+      String mode = params.getFirst("authCmd");
+      if (TS.isEmpty(mode)) {
+        return(false);
+      }
+      if (mode == "showLogins") {
+        for (String login in self.accountManager.getLogins()) {
+          log.log("Account login " + login);
+        }
+      }
+      if (mode == "putAccount") {
+        String user = params.getFirst("user");
+        String pass = params.getFirst("pass");
+        String perms = params.getFirst("perms");
+        log.log("Putting Account " + user);
+        Account ac = Account.new();
+        ac.user = user;
+        ac.pass = pass;
+        if (def(perms)) {
+          ac.permsString = perms;
+        }
+        self.accountManager.putAccount(ac);
+      }
+      if (mode == "setPerms") {
+        user = params.getFirst("user");
+        perms = params.getFirst("perms");
+        log.log("Set Perms " + user);
+        ac = self.accountManager.getAccount(user);
+        ac.permsString = perms;
+        self.accountManager.putAccount(ac);
+        log.log("Account " + ac);
+      }
+      if (mode == "setPass") {
+        user = params.getFirst("user");
+        pass = params.getFirst("pass");
+        perms = params.getFirst("perms");
+        log.log("Set Pass " + user);
+        ac = self.accountManager.getAccount(user);
+        ac.pass = pass;
+        self.accountManager.putAccount(ac);
+      }
+      if (mode == "deleteAccount") {
+        user = params.getFirst("user");
+        log.log("Deleting Account " + user);
+        ac = self.accountManager.getAccount(user);
+        if (def(ac)) {
+          self.accountManager.deleteAccount(ac);
+          log.log("Deleted account " + user);
+        } else {
+          log.log("No such account for deletion " + user);
+        }
+      }
+      return(true);
     }
     
     getSessionsForAccount(Account a) String {
@@ -1494,6 +1549,30 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
         log =@ IO:Logs.get(self);
      }
      
+     handleCmd(Parameters params) Bool {
+      String mode = params.getFirst("confCmd");
+      if (TS.isEmpty(mode)) {
+        return(false);
+      }
+      if (mode == "showConfig") {
+        for (any kv in app.configManager.getMap()) {
+          log.log("Config name " + kv.key + " value " + kv.value);
+        }
+      }
+      if (mode == "putConfig") {
+        String key = params.getFirst("key");
+        String value = params.getFirst("value");
+        log.log("Creating config " + key + " " + value);
+        app.configManager.put(key, value);
+      }
+      if (mode == "deleteConfig") {
+        key = params.getFirst("key");
+        log.log("Deleting config " + key);
+        app.configManager.delete(key);
+      }
+      return(true);
+    }
+    
      changeDeviceNameRequest(String deviceName, request) {
      log.log("changing name");
       if ((def(request.context.get("account")) && request.context.get("account").isAdmin) && TS.notEmpty(name)) {
@@ -1578,7 +1657,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
     
 }
 
-use class App:AuthenticatedLocalApp(AuthedApp) {
+use class App:LocalWebApp(WebApp) {
 
   new() self {
         fields {
@@ -1638,7 +1717,7 @@ class App:AppStart {
       start();
     }
     
-  setupPlugins(AuthedApp app) {
+  setupPlugins(WebApp app) {
     auto pluginClasses = params.get("plugin");
     List plugins = List.new();
     for (String pluginClass in pluginClasses) {
@@ -1648,7 +1727,7 @@ class App:AppStart {
     app.plugins = plugins;
   }
   
-  setupPlugin(AuthedApp app) {
+  setupPlugin(WebApp app) {
     String pln = params.getFirst("appPlugin");
     if (def(pln)) {
       app.plugin = app.pluginsByName[pln];
@@ -1665,14 +1744,15 @@ class App:AppStart {
     log.log("starting app");
     auto appTypes = Sets.from(params.get("appType").toList());
     if (appTypes.has("cmd")) {
-      AuthedApp cuiapp = AuthedApp.new();
+      WebApp cuiapp = WebApp.new();
       cuiapp.params = params;
       setupPlugins(cuiapp);
       setupPlugin(cuiapp);
       cuiapp.main();
+      cuiapp.stop();
     } else {
       if (appTypes.has("browser")) {
-        AuthenticatedLocalApp luiapp = AuthenticatedLocalApp.new();
+        LocalWebApp luiapp = LocalWebApp.new();
         luiapp.params = params;
         setupPlugins(luiapp);
         setupPlugin(luiapp);
@@ -1682,7 +1762,7 @@ class App:AppStart {
         }
       }
       if (appTypes.has("server")) {
-        AuthenticatedWebApp wuiapp = AuthenticatedWebApp.new();
+        RemoteWebApp wuiapp = RemoteWebApp.new();
         wuiapp.params = params;
         setupPlugins(wuiapp);
         setupPlugin(wuiapp);
@@ -1703,8 +1783,8 @@ class App:AppStart {
 }
 
 
-use App:AuthenticatedApp as AuthedApp;
-class AuthedApp {
+use App:WebApp;
+class WebApp {
 
   new() self {
     fields {
@@ -1809,7 +1889,7 @@ class AuthedApp {
     return(paths);
   }
   
-  cohostWith(AuthedApp other) {
+  cohostWith(WebApp other) {
     other.lock = self.lock;
     other.dblock = self.dblock;
     other.kvDbs = self.kvDbs;

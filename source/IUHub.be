@@ -19,9 +19,9 @@ use Container:Pair;
 
 use App:Alert;
 
-use App:AuthenticatedLocalApp;
-use App:AuthenticatedWebApp;
-use App:AuthenticatedApp as AuthedApp;
+use App:LocalWebApp;
+use App:RemoteWebApp;
+use App:WebApp;
 use Text:String;
 use App:CallBackUI;
 
@@ -67,6 +67,8 @@ use class IUHub:HubStart {
     
 }
 
+use System:Parameters;
+
 use class IUHub:HubPlugin(App:AjaxPlugin) {
 
      new() self {
@@ -89,6 +91,29 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         }
         Web:Client:CertificateManager.validateHosts = false;
      }
+     
+     handleCmd(Parameters params) Bool {
+      String mode = params.getFirst("hubCmd");
+      if (TS.isEmpty(mode)) {
+        return(false);
+      }
+      if (mode == "saveSetupUrl") {
+        log.log("saveSetupUrl");
+        String olt = System:Random.getString(64);
+        app.configManager.put("auth.onceToken." + olt, "setup_admin");
+        
+        Int intPorti = System:Random.getIntMax(6000);
+        intPorti += 3000;
+        String intPort = intPorti.toString();
+        app.configManager.put("web.port", intPort);
+        
+        String iurl = app.webProto + "://127.0.0.1:" += intPort += "/App/IUHub/IU.html?onceToken=" += olt;
+        //log.log("int url is " + iurl);
+        File.apNew(params.getFirst("urlDoc")).writer.open().write(iurl).close();
+        File.apNew(params.getFirst("urlScript")).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
+      }
+      return(true);
+    }
      
      loadWc() {
     if (undef(app.plugin.wcol.o)) {

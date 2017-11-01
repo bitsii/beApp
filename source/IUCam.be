@@ -184,9 +184,9 @@ use class IUCam:Background {
 
 }
 
-use App:AuthenticatedLocalApp;
-use App:AuthenticatedWebApp;
-use App:AuthenticatedApp as AuthedApp;
+use App:LocalWebApp;
+use App:RemoteWebApp;
+use App:WebApp;
 
 use System:Thread:ObjectLocker as OLocker;
 

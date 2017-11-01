@@ -1,34 +1,34 @@
 
-move auth fully into plugin
-  get rid of other mains and *Start classes
-  plugins handleCmd
-    finish appstart, plugins to cam/bridge, cmd to plugins (handleCmd in app)
-  cross site checks to separate plugin?
-  session / session length to separate plugin ? (checkrenew) (tracking manager)?
-    have a background for it, clear tracking manager there
-  do another pass on config names and plugin use to be sure it's all good now
+get bridgehub working again
+  sqlite, test on pi
+  update installer, etc
+  drop autoupdate for now
+  
+====
+
+sep out pagetoken to diff plugin
+
+jscore ios for logic
+  sqlite, web client
+
+make sure things work without hub
+    put a couple small ones together to be sure they work
+  plugins can be no auth / ahead of auth
   get rid of duplicate auth, file stuff in hub
   move devicename stuff to hub
   finish hub configManager cleanup
   
-webapp becomes remote webapp (ssl builtin, move hub ssl into here)
-localwebapp
-authed app becomes just webapp
-
-get bridgehub working again
-  sqlite, test on pi
-  update installer, etc
-  
-make sure things work without hub
-    put a couple small ones together to be sure they work
-  plugins can be no auth / ahead of auth
+session / session length to separate plugin ? (checkrenew) (tracking manager)?
+    have a background for it, clear tracking manager there
   
 integration tests
 
 have a webappstart, pull webapp part out, or do with reflection
 
-====
+get rid of *Start classes
 
+cross site checks to separate plugin?
+  
 update gui
 plugins with own html, share styles, etc via convention
 

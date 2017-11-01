@@ -16,7 +16,7 @@ use Db:Firebird:Database as FbDb;
 use Db:Derby:Database as Derby;
 use Db:KeyValue as KvDb;
 
-use App:AuthenticatedApp as AuthedApp;
+use App:WebApp;
 use App:Account;
 
 emit(jv) {
@@ -47,7 +47,7 @@ using System.Net;
 using System.Net.Sockets;
 """
 }
-use class App:AuthenticatedWebApp(AuthedApp) {
+use class App:RemoteWebApp(WebApp) {
 
   emit(jv) {
   """
