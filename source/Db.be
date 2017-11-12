@@ -482,6 +482,10 @@ class KvDb(CLocker) {
   open() self {
     container.open();
   }
+  
+  drop() self {
+    container.drop();
+  }
 }
 
 use Db:SqlKeyValue as SqKvDb;
@@ -548,6 +552,17 @@ class SqKvDb {
     db.begin();
     db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
       + " constraint " + tableName + "_k primary key (KVKEY) )");
+    db.commit();
+    } catch (any e) {
+    db.rollback();
+    dbFailed();
+    }
+  }
+  
+  drop() self {
+    try {
+    db.begin();
+    db.execute("DROP TABLE " + tableName);
     db.commit();
     } catch (any e) {
     db.rollback();

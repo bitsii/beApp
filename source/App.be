@@ -1163,6 +1163,8 @@ use class App:PublicReadPlugin {
               mtype = "image/svg+xml";
             } elseIf (uri.ends(".js")) {
               mtype = "text/javascript";
+            } elseIf (uri.ends(".css")) {
+              mtype = "text/css";
             } else {
               mtype = "application/octet-stream";
             }
@@ -1285,6 +1287,8 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
               mtype = "image/svg+xml";
             } elseIf (uri.ends(".js")) {
               mtype = "text/javascript";
+            } elseIf (uri.ends(".css")) {
+              mtype = "text/css";
             } else {
               mtype = "application/octet-stream";
             }
