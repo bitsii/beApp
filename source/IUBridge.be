@@ -53,7 +53,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       Ssh ssh;
       Set rforwarded;
       App:Background bfw = App:Background.new();
-      App:Background bup = App:Background.new();
+      //App:Background bup = App:Background.new();
       String profile = "bridge";
      }
      super.new();
@@ -62,7 +62,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    runBackgroundTasks() {
       bfw.runMyTasks();
-      bup.runMyTasks();
+      //bup.runMyTasks();
    }
    
    checkUpgrade() {
@@ -124,14 +124,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       bfw.minimumDelay = Time:Interval.new(600, 0);
       bfw.toInvoke = getInvocation("doForward", List.new());
       
-      bup.startDelay = Time:Interval.new(30, 0);
-      bup.repeatDelay = Time:Interval.new(86400, 0);
-      bup.minimumDelay = Time:Interval.new(43200, 0);
-      bup.toInvoke = getInvocation("checkUpgrade", List.new());
+      //bup.startDelay = Time:Interval.new(30, 0);
+      //bup.repeatDelay = Time:Interval.new(86400, 0);
+      //bup.minimumDelay = Time:Interval.new(43200, 0);
+      //bup.toInvoke = getInvocation("checkUpgrade", List.new());
       
       if (runBackground) {
         bfw.start();
-        bup.start();
+        //bup.start();
       }
    }
 

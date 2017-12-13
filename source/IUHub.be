@@ -112,6 +112,19 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         File.apNew(params.getFirst("urlDoc")).writer.open().write(iurl).close();
         File.apNew(params.getFirst("urlScript")).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
       }
+      if (mode == "saveLocalUrl") {
+        log.log("saveLocalUrl");
+        
+        intPorti = System:Random.getIntMax(6000);
+        intPorti += 3000;
+        intPort = intPorti.toString();
+        app.configManager.put("web.port", intPort);
+        
+        String defadd = Net:Gateway.defaultAddress;
+        
+        iurl = app.webProto + "://" + defadd + ":" += intPort;
+        File.apNew(params.getFirst("urlFile")).writer.open().write(iurl).close();
+      }
       return(true);
     }
      
@@ -250,7 +263,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       log.log("in hubplugin start");
       app.pluginsByName.get("Auth").nonAuthedRequests.put("pingRequest");
       List acs = app.pluginsByName.get("Auth").accountManager.getLogins();
-      if (undef(acs) || acs.size < 1) {
+      if (undef(acs) || acs.size < 1 && false) {
         log.log("creating setup account");
         Account ac = Account.new();
         ac.permsString = "admin";

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Secret Holder">
+    <title>Secret Holder</title>
+    
+    <link rel="stylesheet" href="css/layouts/pure-min.css">
+    
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="css/layouts/grids-responsive-min.css">
+    <!--<![endif]-->
+    
+    
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="css/layouts/blog-old-ie.css">
+        <![endif]-->
+        <!--[if gt IE 8]><!-->
+            <link rel="stylesheet" href="css/layouts/blog.css">
+        <!--<![endif]-->
+<script type="text/javascript" src="SLIHold_BEX_E.js">
+</script>
+</head>
+<body>
+
+
+
+
+
+
+
+<div id="layout" class="pure-g">
+    <div class="sidebar pure-u-1 pure-u-md-1-4">
+        <div id="menu">
+        <div class="pure-menu">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">+ New Entry +</a></li>
+            </ul>
+        </div>
+        </div>
+    </div>
+
+<div class="content pure-u-1 pure-u-md-3-4">
+<form class="pure-form pure-form-aligned">
+    <fieldset>
+        <!--<div class="pure-control-group">
+            <label for="spacer"></label>
+            <input id="name" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline"></span>
+        </div>-->
+        
+        <div class="pure-control-group">
+            <label for="name">Label</label>
+            <input id="sfLabel" type="text" placeholder="Label">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="name">Username</label>
+            <input id="sfUsername" type="text" placeholder="Username">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="password">Password</label>
+            <input id="sfPassword" type="password" placeholder="Password">
+        </div>
+
+        <div class="pure-controls">
+            <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveSecretRequest', document.getElementById('sfLabel').value, document.getElementById('sfUsername').value, document.getElementById('sfPassword').value);return false;">Save</button>
+        </div>
+        
+        <!--<div class="pure-controls">
+            <button type="submit" class="pure-button pure-button-primary">Cancel</button>
+        </div>-->
+    </fieldset>
+</form>
+</div>
+            
+            <div class="footer">
+                <div class="pure-menu pure-menu-horizontal">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</body>
+</html>

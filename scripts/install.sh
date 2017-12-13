@@ -48,17 +48,31 @@ echo "su $USER -c \"$HOME/apprun/App/IUHub/startiuh.sh\"" >> tmp/stadd
 echo "exit 0" >> tmp/stadd
 sudo -- sh -c 'cat tmp/stadd > /etc/rc.local'
 
-./apprun/App/IUHub/iuhcmd.sh --appType cmd --hubCmd saveSetupUrl --urlDoc shu.txt --urlScript opu.sh
+./apprun/App/IUHub/iuhcmd.sh --appType cmd --hubCmd saveLocalUrl --urlFile localUrl.txt
+
+#create account
+
+echo "Now create an account, you'll need this to login and use the application."
+echo -n "Username: "
+read inusername
+echo ""
+echo -n "Password: "
+read inpassword
+
+./apprun/App/IUHub/iuhcmd.sh --appType cmd --authCmd putAccount --user $inusername --pass $inpassword --perms admin
+
+echo ""
 
 ./apprun/App/IUHub/startiuh.sh
 
-echo -n "Once the server starts this installer will open a browser to the ui to complete the setup."
-echo
 echo "Waiting for the server to start for the first time, this can take awhile.  Please wait until the below message indicates the server is ready."
 echo "Note, the certificate is self signed and you will need to accept it permanently once on each device you use to connect to this server."
 sleep 40
 echo "Server should now be ready"
-echo "Now opening a browser on this box to the setup page"
+echo "Navigate to the following url from any browser on the wifi network and login with the account you created"
+echo "to complete setup"
 
-chmod +x ./apprun/opu.sh
-./apprun/opu.sh
+cat ../apprun/localUrl.txt
+
+echo ""
+
