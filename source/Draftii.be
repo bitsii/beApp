@@ -32,14 +32,14 @@ use Crypto:Symmetric as Crypt;
 
 use System:Parameters;
 
-use class SLIHold:SLIHoldPlugin(App:AjaxPlugin) {
+use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
           any app;
           any oapp;
-          String name = "SLIHold";
-          String homePage = "/App/SLIHold/SLIHold.html";
+          String name = "Draftii";
+          String homePage = "/App/Draftii/Draftii.html";
         }
         super.new();
         log =@ IO:Logs.get(self);
@@ -48,7 +48,7 @@ use class SLIHold:SLIHoldPlugin(App:AjaxPlugin) {
         }
      }
                
-     cohostWith(SLIHold:SLIHoldPlugin ohp) {
+     cohostWith(Draftii:DraftiiPlugin ohp) {
        log.log("in Hub cohostWith");
        oapp = ohp.app;
        ohp.oapp = self.app;
@@ -83,7 +83,7 @@ use class SLIHold:SLIHoldPlugin(App:AjaxPlugin) {
    }
    
    getLoginUri(request) String {
-     String loginBookmark = "/App/IUHub/SLIHold.html";
+     String loginBookmark = "/App/IUHub/Draftii.html";
      return(loginBookmark);
    }
    
@@ -94,7 +94,7 @@ use class SLIHold:SLIHoldPlugin(App:AjaxPlugin) {
          log.log("method is get");
          String uri = request.uri;
          log.log("san uri " + uri);
-         if (uri.begins("/App/SLIHold/Something/")) {
+         if (uri.begins("/App/Draftii/Something/")) {
            log.log("got something");
            //doSomething(uri, request);
          }
@@ -103,19 +103,18 @@ use class SLIHold:SLIHoldPlugin(App:AjaxPlugin) {
        }
   }
   
-   secretManagerGet() KvDb {
-    //app.getKvDb("LINKS").drop();
-    return(app.getKvDb("SECRETS"));
+   draftManagerGet() KvDb {
+    //app.getKvDb("SECRETS").drop();
+    return(app.getKvDb("DRAFTS"));
   }
   
-  saveSecretRequest(String label, String user, String pass, request) Map {
-     log.log("saveSecretRequest called");
+  saveDraftRequest(String subject, String body, request) Map {
+     log.log("saveDraftRequest called");
      
-     Map sec = Maps.from("label", label, "user", user, "pass", pass);
+     Map dr = Maps.from("subject", subject, "body", body);
      
-     KvDb sm = self.secretManager;
+     KvDb dm = self.draftManager;
      
-     //don't do here, do in js
      //String emailC = Crypt.encryptPassToHex(veriKey, veriKey.substring(8), email);
       //return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("sendLinkMessageDiv", "Verification request sent, please check your email.")), CallBackUI.setElementsDisplaysResponse(Maps.from("sendLinkMessageDiv", "block")))));
       

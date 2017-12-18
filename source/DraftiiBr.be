@@ -18,14 +18,14 @@ emit(js) {
 
 //ui startup
 var startup = function() {
-  uiStartup(new be_$class/SLIHold:Wui$());
+  uiStartup(new be_$class/Draftii:Wui$());
 }
 
 window.onload = startup;
 """
 }
 
-use class SLIHold:Wui {
+use class Draftii:Wui {
 
   new() self {
         fields {
