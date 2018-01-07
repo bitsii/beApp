@@ -9,7 +9,7 @@ curl -L https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/jav
 
 curl -L https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.3.4/hsqldb-2.3.4.jar > hsqldb-2.3.4.jar
 
-curl -L https://java.net/projects/javamail/downloads/download/javax.mail.jar > javax.mail.jar
+curl -L https://github.com/javaee/javamail/releases/download/JAVAMAIL-1_5_6/javax.mail.jar > javax.mail.jar
 
 curl -L https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.4.0.M1/jetty-all-9.4.0.M1-uber.jar > jetty-all-9.4.0.M1-uber.jar
 

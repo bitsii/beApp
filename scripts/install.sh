@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
+  then echo "Please run as root, try running the command 'sudo $0'"
   exit
 fi
 
@@ -28,6 +28,7 @@ cd $INSDIR
 echo "Updating software lists"
 apt -qq --assume-yes update
 echo "Installing required additional system software"
+apt -qq --assume-yes install oracle-java8-jdk
 apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
 apt -qq --assume-yes install mpg123
 
@@ -38,7 +39,7 @@ wget https://www.bouncycastle.org/download/bcprov-jdk15on-155.jar
 wget https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar
 wget https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.3.4/hsqldb-2.3.4.jar
 wget https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.19.3/sqlite-jdbc-3.19.3.jar
-wget https://java.net/projects/javamail/downloads/download/javax.mail.jar
+wget https://github.com/javaee/javamail/releases/download/JAVAMAIL-1_5_6/javax.mail.jar
 wget https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.4.0.M1/jetty-all-9.4.0.M1-uber.jar
 wget https://repo1.maven.org/maven2/com/jcraft/jsch/0.1.54/jsch-0.1.54.jar
 
@@ -71,6 +72,22 @@ su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --hubCmd saveLocalUrl
 #create account
 
 su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --authCmd putAccount --user $INUSR --pass $INPASS --perms admin"
+
+echo ""
+
+su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.endpoint --value $INIMAPSRV"
+
+echo ""
+
+su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.user --value $INIMAPACCT"
+
+echo ""
+
+su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.pass --value $INIMAPPASS"
+
+echo ""
+
+su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.subFolder --value IotUrls"
 
 echo ""
 

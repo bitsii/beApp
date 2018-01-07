@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
+  then echo "Please run as root, try running the command 'sudo $0'"
   exit
 fi
 
@@ -27,6 +27,29 @@ fi
 
 echo "export INUSR=\"$inusername\"" > $INSDIR/insprops.sh
 echo "export INPASS=\"$inpassword\"" >> $INSDIR/insprops.sh
+
+echo "Please provide imap information for sharing connection information."
+echo -n "Imap server: "
+read inimapsrv
+echo ""
+echo -n "Imap account: "
+read inimapacct
+echo ""
+echo -n "Imap Password: "
+read -s inimappassword
+echo ""
+echo -n "Repeat Imap Password: "
+read -s inimappassword2
+echo ""
+
+if [ "$inimappassword" != "$inimappassword2" ]; then
+echo "Passwords don't match"
+exit 1
+fi
+
+echo "export INIMAPSRV=\"$inimapsrv\"" >> $INSDIR/insprops.sh
+echo "export INIMAPACCT=\"$inimapacct\"" >> $INSDIR/insprops.sh
+echo "export INIMAPPASS=\"$inimappassword\"" >> $INSDIR/insprops.sh
 
 chown $INSUSER $INSDIR/insprops.sh
 
