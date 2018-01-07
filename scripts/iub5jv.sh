@@ -46,6 +46,8 @@ find ../abe-pl/system -name "*.class" -exec rm {} \;
 cp ../apprun/App/IUHub/Base/target/js/be/BEX_E.js ../apprun/App/IUHub/IUHub_BEX_E.js
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp scripts/postupgrade.bat ../apprun/App/IUHub
+cp scripts/install.sh ../apprun/App/IUHub
+cp scripts/interactiveInstall.sh ../apprun/App/IUHub
 cp scripts/upgrade.sh ../apprun/App/IUHub
 cp scripts/upgrade2.sh ../apprun/App/IUHub
 cp scripts/postupgrade.sh ../apprun/App/IUHub

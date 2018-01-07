@@ -2,9 +2,9 @@
 
 rm -rf ../apprun/App/IUHub/Base
 
-~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/IUHub/IUHub_BEX_E.js > ../apprun/App/IUHub/IUHub_BEX_E.js.1
-rm -f ../apprun/App/IUHub/IUHub_BEX_E.js
-mv ../apprun/App/IUHub/IUHub_BEX_E.js.1 ../apprun/App/IUHub/IUHub_BEX_E.js
+#~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/IUHub/IUHub_BEX_E.js > ../apprun/App/IUHub/IUHub_BEX_E.js.1
+#rm -f ../apprun/App/IUHub/IUHub_BEX_E.js
+#mv ../apprun/App/IUHub/IUHub_BEX_E.js.1 ../apprun/App/IUHub/IUHub_BEX_E.js
 
 cd ../apprun/App/IUHub
 
@@ -18,7 +18,11 @@ mv BEX_E_lui_jv.ja BEX_E_lui_jv.jar
 
 rm ../../../IUBHub.zip
 
-zip ../IUBHub.zip ./*
+cd ..
+
+zip -r IUBHub.zip IUHub
+
+cd IUHub
 
 mv -f ../IUBHub.zip ../../..
 

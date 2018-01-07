@@ -3,6 +3,7 @@ get bridgehub working again
   sqlite, test on pi
   update installer, etc
   drop autoupdate for now
+  need to set pi and root passwords during setup/install for security
   
 ====
 

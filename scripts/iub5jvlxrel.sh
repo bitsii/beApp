@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv --emitFlag iuCamBridge --emitFlag iuOwnBackground --outputPlatform linux -mainClass=IUBridge:CamBridgeStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUCam.be source/IUBridge.be source/IUCamBridge.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv --emitFlag iuDebug --emitFlag iuCamBridge --outputPlatform linux -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUCam.be source/IUBridge.be source/IUCamBridge.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -26,7 +26,7 @@ javac ../abe-pl/system/jv/be/*.java ../apprun/App/IUHub/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false --outputPlatform linux -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -44,6 +44,8 @@ find ../abe-pl/system -name "*.class" -exec rm {} \;
 cp ../apprun/App/IUHub/Base/target/js/be/BEX_E.js ../apprun/App/IUHub/IUHub_BEX_E.js
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp scripts/postupgrade.bat ../apprun/App/IUHub
+cp scripts/install.sh ../apprun/App/IUHub
+cp scripts/interactiveInstall.sh ../apprun/App/IUHub
 cp scripts/upgrade.sh ../apprun/App/IUHub
 cp scripts/upgrade2.sh ../apprun/App/IUHub
 cp scripts/postupgrade.sh ../apprun/App/IUHub

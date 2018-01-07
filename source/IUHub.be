@@ -81,14 +81,14 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
           OLocker linksol = OLocker.new();
           App:Background trc = App:Background.new();
           App:Background buu = App:Background.new();
-          Bool runBackground = false;
+          Bool runBackground = true;
           Lock wcl = Lock.new();
         }
         super.new();
         log =@ IO:Logs.get(self);
-        ifEmit(iuDebug) {
+        //ifEmit(iuDebug) {
           IO:Logs.turnOnAll();
-        }
+        //}
         Web:Client:CertificateManager.validateHosts = false;
      }
      
