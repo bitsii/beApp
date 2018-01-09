@@ -116,6 +116,33 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
    }
    
+   handleCmd(Parameters params) Bool {
+      String mode = params.getFirst("bridgeCmd");
+      if (TS.isEmpty(mode)) {
+        return(super.handleCmd(params));
+      }
+      if (mode == "sftpFile") {
+        log.log("sftpFile");
+        String sfps = params.getFirst("sourceFile");
+        String sshHost = app.configManager.get("il.sshHost");
+        String sshLogin = app.configManager.get("il.sshLogin");
+        String sshPass = app.configManager.get("il.sshPass");
+        String dfps = self.deviceName;//TODO add a file path "make name safe" method
+        if (TS.isEmpty(sfps) || TS.isEmpty(sshHost) || TS.isEmpty(sshLogin) || TS.isEmpty(sshPass)) {
+          log.log("sourceFile, ssh host, login, or pass empty, not copying file");
+          return(true);
+        }
+        Path sfp = Path.apNew(sfps).makeNonAbsolute();
+        Path dfp = Path.apNew(dfps + "/" + sfps);
+        log.log("copying " + sfp + " to " + dfp);
+        Ssh ssh = Ssh.new(sshHost, sshLogin, sshPass);
+        ssh.open();
+        ssh.sftpPut(sfp, dfp);
+        ssh.close();
+      }
+      return(true);
+    }
+   
    start() {
       super.start();
       
@@ -345,6 +372,49 @@ local use Net:Ssh {
     bevi_session.sendKeepAliveMsg();
     """
     }
+  }
+  
+  sftpPut(Path src, Path dst) {
+  Path dstPar = dst.parent;
+  //("dstPar is " + dstPar).print();
+  emit(jv) {
+  """
+  Channel channel = bevi_session.openChannel("sftp");
+  channel.connect();
+  ChannelSftp sftpChannel = (ChannelSftp) channel;
+  """
+  }
+  //recursive check with stat and mkdir
+  String parSoFar = String.new();
+  for (String parst in dstPar.steps) {
+    if (TS.notEmpty(parSoFar)) {
+      parSoFar += "/";
+    }
+    parSoFar += parst;
+    //("parSoFar " + parSoFar).print();
+    emit(jv) {
+    """
+    SftpATTRS sa = null;
+    try {
+    sa = sftpChannel.stat(bevl_parSoFar.bem_toString_0().bems_toJvString());
+    } catch (Exception e) { /*don't care, is no such file except*/ }
+    if (sa == null || !sa.isDir()) {
+      sftpChannel.mkdir(bevl_parSoFar.bem_toString_0().bems_toJvString());
+    }
+    """
+    }
+  }
+  emit(jv) {
+  """
+  SftpATTRS sa = null;
+  try {
+  sa = sftpChannel.stat(beva_dst.bem_toString_0().bems_toJvString());
+  sftpChannel.rm(beva_dst.bem_toString_0().bems_toJvString());
+  } catch (Exception e) { /*don't care, is no such file except*/ }
+  sftpChannel.put(beva_src.bem_toString_0().bems_toJvString(), beva_dst.bem_toString_0().bems_toJvString());
+  sftpChannel.exit();
+  """
+  }
   }
 
 }
