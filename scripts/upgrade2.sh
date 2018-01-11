@@ -11,7 +11,9 @@ unzip -t ../IUHub.zip
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-unzip -o ../IUHub.zip
+cd ..
+unzip -o IUHub.zip
+cd IUHub
 chmod +x *.sh
 
 cd ../..

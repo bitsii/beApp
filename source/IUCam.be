@@ -200,7 +200,7 @@ use class IUCam:CamPlugin(App:AjaxPlugin) {
           String homePage = "/App/IUCam/IUCam.html";
           Background bg = Background.new();
           App:Background abg = App:Background.new();
-          Bool runBackground = false;
+          Bool runBackground = true;
         }
         super.new();
         log =@ IO:Logs.get(self);

@@ -127,7 +127,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         String sshHost = app.configManager.get("il.sshHost");
         String sshLogin = app.configManager.get("il.sshLogin");
         String sshPass = app.configManager.get("il.sshPass");
-        String dfps = self.deviceName;//TODO add a file path "make name safe" method
+        String dfps = "WebCam/sftpFiles-" + app.plugin.deviceId;
         if (TS.isEmpty(sfps) || TS.isEmpty(sshHost) || TS.isEmpty(sshLogin) || TS.isEmpty(sshPass)) {
           log.log("sourceFile, ssh host, login, or pass empty, not copying file");
           return(true);
@@ -185,7 +185,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     String dc = app.configManager.get("doCam");
     if (TS.isEmpty(dc) || dc != "true") {
-      res["doCam"] = "false";
+      res["doCam"] = "true";
     } else {
       res["doCam"] = "true";
     }

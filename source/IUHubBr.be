@@ -466,20 +466,20 @@ use class IUHub:Eui {
       //}
       //log.log("updateResponse2 just logged in");
     }
-    if (arg.has("profile")) {
+    //if (arg.has("profile")) {
       profile = arg["profile"];
-      if (arg["profile"] == "bridge" || arg["profile"] == "cambridge") {
-        if (arg["profile"] == "cambridge") {
-          if (TS.notEmpty(arg["doCam"]) && arg["doCam"] == "true") {
+      //if (arg["profile"] == "bridge" || arg["profile"] == "cambridge") {
+        //if (arg["profile"] == "cambridge") {
+          //if (TS.notEmpty(arg["doCam"]) && arg["doCam"] == "true") {
             HD.getElementById("camBridgeMenu1").display = "block";
             HD.getElementById("camBridgeMenu3").display = "block";
-          }
-        }
+          //}
+        //}
         HD.getElementById("bridgeMenu2").display = "block";
         HD.getElementById("bridgeHelp1").display = "block";
         HD.getElementById("bridgeHelp2").display = "block";
-      }
-    }
+      //}
+    //}
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
@@ -515,7 +515,7 @@ use class IUHub:Eui {
     if (TS.notEmpty(oinf)) {
       inform(oinf);
     }
-    HC.callAppLater(Lists.from("refreshLinksRequest"), 10000);
+    //HC.callAppLater(Lists.from("refreshLinksRequest"), 10000);
    }
    
    detectCams() {

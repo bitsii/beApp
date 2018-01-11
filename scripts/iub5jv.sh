@@ -66,6 +66,7 @@ cp licenses/* ../apprun/App/IUHub
 #cam
 cp scripts/uppic.bat ../apprun/App/IUHub
 cp scripts/uppic.sh ../apprun/App/IUHub
+cp scripts/picUpload.sh ../apprun/App/IUHub
 cp scripts/getcams.bat ../apprun/App/IUHub
 cp scripts/getcams.sh ../apprun/App/IUHub
 cp scripts/motionrun.sh ../apprun/App/IUHub
