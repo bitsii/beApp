@@ -17,6 +17,7 @@ csaweb/csaweb/*.cs
 csaweb/csaweb/App/*
 csaweb/csaweb/Data/*
 targetMc/*
+targetKh/*
 
 # for csharp xam solution
 # NuGet Packages
