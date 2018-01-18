@@ -59,7 +59,7 @@ echo "Setting IUHub to start at boot"
 echo "#!/bin/sh -e" > tmp/stadd
 if [ -e "/etc/rc.local" ]
 then
-cat /etc/rc.local | grep -v "exit " | grep -v "startiuh.sh" | grep -v "#!/" >> /tmp/stadd
+cat /etc/rc.local | grep -v "exit " | grep -v "startiuh.sh" | grep -v "#\!/bin" >> tmp/stadd
 fi
 echo "su $INSUSER -c \"$INSDIR/apprun/App/IUHub/startiuh.sh\"" >> tmp/stadd
 echo "exit 0" >> tmp/stadd
