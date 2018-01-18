@@ -9,3 +9,6 @@ mcs -debug:pdbonly -warn:0 -out:targetKh/BEX_E_mcs.exe ../abe-pl/system/cs/be/*.
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 #run
+#--wpaSup test/wpa_supplicant.conf --ssid yo --psk there
+mono --debug targetKh/BEX_E_mcs.exe $*
+

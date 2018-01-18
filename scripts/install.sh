@@ -35,13 +35,13 @@ apt -qq --assume-yes install mpg123
 cd apprun/App/IUHub
 
 echo "Getting required additional application software"
-wget https://www.bouncycastle.org/download/bcprov-jdk15on-155.jar
-wget https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar
-wget https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.3.4/hsqldb-2.3.4.jar
-wget https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.19.3/sqlite-jdbc-3.19.3.jar
-wget https://github.com/javaee/javamail/releases/download/JAVAMAIL-1_5_6/javax.mail.jar
-wget https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.4.0.M1/jetty-all-9.4.0.M1-uber.jar
-wget https://repo1.maven.org/maven2/com/jcraft/jsch/0.1.54/jsch-0.1.54.jar
+wget --tries=10 --retry-connrefused https://www.bouncycastle.org/download/bcprov-jdk15on-155.jar
+wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar
+wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.3.4/hsqldb-2.3.4.jar
+wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.19.3/sqlite-jdbc-3.19.3.jar
+wget --tries=10 --retry-connrefused https://github.com/javaee/javamail/releases/download/JAVAMAIL-1_5_6/javax.mail.jar
+wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.4.0.M1/jetty-all-9.4.0.M1-uber.jar
+wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/com/jcraft/jsch/0.1.54/jsch-0.1.54.jar
 
 chmod +x *.sh
 
@@ -57,8 +57,10 @@ cat tmp/scadd >> /etc/sysctl.conf
 
 echo "Setting IUHub to start at boot"
 echo "#!/bin/sh -e" > tmp/stadd
-echo "#" >> tmp/stadd
-echo "# rc.local" >> tmp/stadd
+if [ -e "/etc/rc.local" ]
+then
+cat /etc/rc.local | grep -v "exit " | grep -v "startiuh.sh" | grep -v "#!/" >> /tmp/stadd
+fi
 echo "su $INSUSER -c \"$INSDIR/apprun/App/IUHub/startiuh.sh\"" >> tmp/stadd
 echo "exit 0" >> tmp/stadd
 cat tmp/stadd > /etc/rc.local
@@ -84,6 +86,10 @@ su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig -
 echo ""
 
 su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.pass --value $INIMAPPASS"
+
+echo ""
+
+su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key deviceName --value $INDNAME"
 
 echo ""
 

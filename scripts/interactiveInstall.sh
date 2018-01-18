@@ -28,6 +28,12 @@ fi
 echo "export INUSR=\"$inusername\"" > $INSDIR/insprops.sh
 echo "export INPASS=\"$inpassword\"" >> $INSDIR/insprops.sh
 
+echo "Please provide a short, friendly name for the device."
+echo -n "DeviceName: "
+read indname
+echo ""
+echo "export INDNAME=\"$indname\"" >> $INSDIR/insprops.sh
+
 echo "Please provide imap information for sharing connection information."
 echo -n "Imap server: "
 read inimapsrv
