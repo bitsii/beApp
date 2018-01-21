@@ -34,6 +34,13 @@ read indname
 echo ""
 echo "export INDNAME=\"$indname\"" >> $INSDIR/insprops.sh
 
+echo "Do you want to try to enable network access over UPnP port forwarding from your home router?"
+echo -n "Do UPnP Forward, enter true or false (default/empty is true): "
+read doupnpfwd
+echo ""
+if [ -z "$doupnpfwd" ]; then doupnpfwd = "true"; fi
+echo "export DOUPNPFWD=\"$doupnpfwd\"" >> $INSDIR/insprops.sh
+
 echo "Please provide imap information for sharing connection information."
 echo -n "Imap server: "
 read inimapsrv

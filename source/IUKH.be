@@ -38,24 +38,40 @@ class Konnectii:Host {
       while (count < 1 || orgParams.isTrue("runForever")) {
         count++=;
         Parameters params = getParmsCopy();
-        doWifi(params);
+        String moreConf;
+        moreConf = params.getFirst("hostConfig");
+        if (def(moreConf)) {
+          File mcf = File.apNew(moreConf);
+          if (mcf.exists) {
+            params.addFile(mcf);
+          }
+        }
+        doHost(params);
         doBridge(params);
+        if (def(moreConf) && params.isTrue("rmHostConfig")) {
+          File wsf = File.apNew(params.getFirst("hostConfig"));
+          wsf.delete();
+        }
         Time:Sleep.sleepSeconds(10);
       }
     }
     
-  doWifi(Parameters params) this {
-    //log.log("starting doWifi");
+  doHost(Parameters params) this {
+    //log.log("starting doHost");
     //params for source and dest files
-    String moreConf;
-    moreConf = params.getFirst("hostConfig");
-    if (def(moreConf)) {
-      File mcf = File.apNew(moreConf);
-      if (mcf.exists) {
-        params.addFile(mcf);
-      }
-    }
     Bool doPostSleep = false;
+    if (def(params.getFirst("pipass"))) {
+      String ppchs = "ppch" + System:Random.getString(4) + ".sh";
+      File ppch = File.apNew(ppchs);
+      String ppchstr = String.new();
+      ppchstr += "echo \"pi:" += params.getFirst("pipass") += "\" | chpasswd\n";
+      ppch.writer.open().writeStringClose(ppchstr);
+      System:Command.new("chmod +x " + ppchs).run();
+      Time:Sleep.sleepSeconds(10);
+      System:Command.new("bash -c ./" + ppchs).run();
+      Time:Sleep.sleepSeconds(10);
+      ppch.delete();
+    }
     // etc/wpa_supplicant/wpa_supplicant.conf
     if (def(params.getFirst("wpaSup"))) {
       if (def(params.getFirst("ssid")) && def(params.getFirst("psk"))) {
@@ -68,7 +84,7 @@ class Konnectii:Host {
          ws += "network={\nssid=\"" += params.getFirst("ssid") += "\"\n";
          ws += "psk=\"" += params.getFirst("psk") += "\"\n}\n";
          //ws.print();
-         File.apNew(params.getFirst("wpaSup")).writer.open().writeClose(ws);
+         File.apNew(params.getFirst("wpaSup")).writer.open().writeStringClose(ws);
          if (params.isTrue("wpaRestart")) {
           System:Command.new("wpa_cli -i wlan0 reconfigure").run();
           if (def(params.getFirst("wpaPostRestartPause"))) {
@@ -77,9 +93,16 @@ class Konnectii:Host {
          }
       }
     }
-    if (def(moreConf) && params.isTrue("rmHostConfig")) {
-      File wsf = File.apNew(params.getFirst("hostConfig"));
-      wsf.delete();
+    if (params.isTrue("enableSsh")) {
+      System:Command.new("systemctl enable ssh");
+      System:Command.new("systemctl start ssh");
+    }
+    if (params.isTrue("disableSsh")) {
+      System:Command.new("systemctl disable ssh");
+      System:Command.new("systemctl stop ssh");
+    }
+    if (def(params.getFirst("postHostScript"))) {
+      System:Command.new(params.getFirst("postHostScript")).run();
     }
   }
   
@@ -87,21 +110,12 @@ class Konnectii:Host {
   
   doBridge(Parameters params) this {
     //log.log("starting doBridge");
-    //params for source and dest files
-    String moreConf;
-    moreConf = params.getFirst("bridgeConfig");
-    if (def(moreConf)) {
-      File mcf = File.apNew(moreConf);
-      if (mcf.exists) {
-        params.addFile(mcf);
-      }
-    }
     
     //def(params.getFirst("bridgePropFile")).print();
     //def(params.get("bridgeProp")).print();
-    //params.isTrue("bpHasProps").print();
+    //params.isTrue("bp_doSetup").print();
     
-    if (def(params.getFirst("bridgePropFile")) && def(params.get("bridgeProp")) && params.isTrue("bpHasProps")) {
+    if (def(params.getFirst("bridgePropFile")) && def(params.get("bridgeProp")) && params.isTrue("bp_doSetup")) {
       log.log("Will now setup bridge");
       File bpf = File.apNew(params.getFirst("bridgePropFile"));
       auto bpl = params.get("bridgeProp");
@@ -119,10 +133,9 @@ class Konnectii:Host {
       if (def(params.getFirst("bridgeInstallScript"))) {
         System:Command.new(params.getFirst("bridgeInstallScript")).run();
       }
-    }
-    if (def(moreConf) && params.isTrue("rmBridgeConfig")) {
-      File wsf = File.apNew(params.getFirst("bridgeConfig"));
-      wsf.delete();
+      if (def(params.getFirst("postBridgeScript"))) {
+        System:Command.new(params.getFirst("postBridgeScript")).run();
+      }
     }
   }
   

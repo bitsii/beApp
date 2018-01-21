@@ -19,8 +19,9 @@ cp scripts/iukrun.sh ../apprun/App/IUKH
 cp scripts/iukcmd.sh ../apprun/App/IUKH
 cp scripts/setupIukh.sh ../apprun/App/IUKH
 cp scripts/iukhost.conf ../apprun/App/IUKH
-cp scripts/iukbridge.conf ../apprun/App/IUKH
 cp scripts/dlbinstall.sh ../apprun/App/IUKH
+cp LICENSE.txt ../apprun/App/IUKH
+cp LICENSE-MPL.txt ../apprun/App/IUKH
 
 cd ../apprun/App
 

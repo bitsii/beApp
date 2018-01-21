@@ -257,12 +257,19 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   
   
   forwardPorts(WebConnect wc, Net:Ssh ssh, Set rforwarded) {
+      String doUpnpForwardS = app.configManager.get("doUpnpForward");
+      if (TS.isEmpty(doUpnpForwardS)) {
+        doUpnpForwardS = "true";
+      }
+      Bool doUpnpForward = Bool.new(doUpnpForwardS);
       if (TS.notEmpty(wc.externalAddress)) {
         log.log("Forwarding");
         Int fwdSecs = 7200;//fwd upnp for how long
         Upnp upnp = Upnp.new();
         upnp.netGw = upnp.gatewayAddress;
-        upnp.forwardPort(fwdSecs, Int.new(wc.externalPort), Int.new(wc.internalPort));
+        if (doUpnpForward) {
+          upnp.forwardPort(fwdSecs, Int.new(wc.externalPort), Int.new(wc.internalPort));
+        }
         if (TS.notEmpty(wc.extraPorts)) {
           for (String ep in wc.extraPorts.split(",")) {
             String currPortS = wc.extraPortMap.get(ep);
@@ -271,7 +278,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
               wc.extraPortMap.put(ep, currPortS);
             }
             log.log("Forwarding extraport external " + currPortS + " to " + ep);
-            upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
+            if (doUpnpForward) {
+              upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
+            }
           }
         }
         if (def(ssh) && def(wc.hostedAddress)) {

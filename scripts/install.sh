@@ -97,6 +97,10 @@ su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig -
 
 echo ""
 
+su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value $DOUPNPFWD"
+
+echo ""
+
 su $INSUSER -c "./apprun/App/IUHub/startiuh.sh"
 
 echo "service is starting now, it may take a few moments to come up"
