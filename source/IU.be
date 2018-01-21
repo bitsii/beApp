@@ -100,6 +100,10 @@ class IU:WebConnect {
   }
   
   updateExternal() self {
+    updateExternal(true);
+  }
+  
+  updateExternal(Bool doUpnp) self {
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -109,7 +113,9 @@ class IU:WebConnect {
     }
     
     try {
-        String ea = upnp.externalIP;
+        if (doUpnp) {
+          String ea = upnp.externalIP;
+        }
         if (TS.notEmpty(ea)) {
           externalAddress = ea;
         }

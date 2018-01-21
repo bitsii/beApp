@@ -208,6 +208,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     
      doForwardInner() {
+      String doUpnpForwardS = app.configManager.get("doUpnpForward");
+      if (TS.isEmpty(doUpnpForwardS)) {
+        doUpnpForwardS = "true";
+      }
+      Bool doUpnpForward = Bool.new(doUpnpForwardS);
+     
       log.log("wc forwarding ports");
       log.log("getting wc");
       loadWc();
@@ -245,7 +251,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
            ssh = null;
          }
       }
-      wc.updateExternal();
+      wc.updateExternal(doUpnpForward);
       forwardPorts(wc, ssh, rforwarded);
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
@@ -262,41 +268,39 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         doUpnpForwardS = "true";
       }
       Bool doUpnpForward = Bool.new(doUpnpForwardS);
-      if (TS.notEmpty(wc.externalAddress)) {
-        log.log("Forwarding");
-        Int fwdSecs = 7200;//fwd upnp for how long
-        Upnp upnp = Upnp.new();
-        upnp.netGw = upnp.gatewayAddress;
-        if (doUpnpForward) {
-          upnp.forwardPort(fwdSecs, Int.new(wc.externalPort), Int.new(wc.internalPort));
+      log.log("Forwarding");
+      Int fwdSecs = 7200;//fwd upnp for how long
+      Upnp upnp = Upnp.new();
+      upnp.netGw = upnp.gatewayAddress;
+      if (doUpnpForward) {
+        upnp.forwardPort(fwdSecs, Int.new(wc.externalPort), Int.new(wc.internalPort));
+      }
+      if (TS.notEmpty(wc.extraPorts)) {
+        for (String ep in wc.extraPorts.split(",")) {
+          String currPortS = wc.extraPortMap.get(ep);
+          if (TS.isEmpty(currPortS)) {
+            currPortS = wc.getAPort();
+            wc.extraPortMap.put(ep, currPortS);
+          }
+          log.log("Forwarding extraport external " + currPortS + " to " + ep);
+          if (doUpnpForward) {
+            upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
+          }
         }
+      }
+      if (def(ssh) && def(wc.hostedAddress)) {
+        if (rforwarded.has(wc.externalPort)!) {
+          ssh.forwardPortR(Int.new(wc.externalPort), "127.0.0.1", Int.new(wc.internalPort));
+        }
+        rforwarded += wc.externalPort;
         if (TS.notEmpty(wc.extraPorts)) {
-          for (String ep in wc.extraPorts.split(",")) {
-            String currPortS = wc.extraPortMap.get(ep);
-            if (TS.isEmpty(currPortS)) {
-              currPortS = wc.getAPort();
-              wc.extraPortMap.put(ep, currPortS);
-            }
-            log.log("Forwarding extraport external " + currPortS + " to " + ep);
-            if (doUpnpForward) {
-              upnp.forwardPort(fwdSecs, Int.new(currPortS), Int.new(ep));
-            }
-          }
-        }
-        if (def(ssh) && def(wc.hostedAddress)) {
-          if (rforwarded.has(wc.externalPort)!) {
-            ssh.forwardPortR(Int.new(wc.externalPort), "127.0.0.1", Int.new(wc.internalPort));
-          }
-          rforwarded += wc.externalPort;
-          if (TS.notEmpty(wc.extraPorts)) {
-            for (ep in wc.extraPorts.split(",")) {
-              currPortS = wc.extraPortMap.get(ep);
-              if (TS.notEmpty(currPortS)) {
-                if (rforwarded.has(currPortS)!) {
-                  ssh.forwardPortR(Int.new(currPortS), "127.0.0.1", Int.new(ep));
-                }
-                rforwarded += currPortS;
+          for (ep in wc.extraPorts.split(",")) {
+            currPortS = wc.extraPortMap.get(ep);
+            if (TS.notEmpty(currPortS)) {
+              if (rforwarded.has(currPortS)!) {
+                ssh.forwardPortR(Int.new(currPortS), "127.0.0.1", Int.new(ep));
               }
+              rforwarded += currPortS;
             }
           }
         }
