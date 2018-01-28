@@ -7,83 +7,47 @@
     <title>Draftii</title>
     
     <link rel="stylesheet" href="css/layouts/pure-min.css">
-    
-    <!--[if lte IE 8]>
-        <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-old-ie-min.css">
-    <![endif]-->
-    <!--[if gt IE 8]><!-->
-        <link rel="stylesheet" href="css/layouts/grids-responsive-min.css">
-    <!--<![endif]-->
-    
-    
-        <!--[if lte IE 8]>
-            <link rel="stylesheet" href="css/layouts/blog-old-ie.css">
-        <![endif]-->
-        <!--[if gt IE 8]><!-->
-            <link rel="stylesheet" href="css/layouts/blog.css">
-        <!--<![endif]-->
+    <link rel="stylesheet" href="css/layouts/grids-responsive-min.css">
 <script type="text/javascript" src="Draftii_BEX_E.js">
 </script>
 </head>
 <body>
-
-
-
-
-
-
-
-<div id="layout" class="pure-g">
-    <div class="sidebar pure-u-1 pure-u-md-1-4">
-        <div id="menu">
-        <div class="pure-menu">
-            <ul class="pure-menu-list">
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link">+ New Entry +</a></li>
-            </ul>
-        </div>
-        </div>
-    </div>
-
-<div class="content pure-u-1 pure-u-md-3-4">
-<form class="pure-form pure-form-aligned">
+<div class="pure-g" id="dComposeDiv">
+  <div class="pure-u-1-5"></div>
+    <div class="pure-u-3-5">
+      <form class="pure-form">
+        <input type="hidden" value="" id="sdOldSubject"/>
+        <input type="hidden" value="" id="sdOldContent"/>
     <fieldset>
-        <!--<div class="pure-control-group">
-            <label for="spacer"></label>
-            <input id="name" type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline"></span>
-        </div>-->
-        
-        <div class="pure-control-group">
-            <label for="name">Subject</label>
-            <input id="sdSub" type="text" placeholder="?">
-        </div>
-        
-        <div class="pure-control-group">
-            <label for="name">Body</label>
-            <input id="sdBody" type="text" placeholder="...">
-        </div>
-
-        <div class="pure-controls">
-            <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDraftRequest', document.getElementById('sdSub').value, document.getElementById('sdBody').value);return false;">Save</button>
-        </div>
-        
-        <!--<div class="pure-controls">
-            <button type="submit" class="pure-button pure-button-primary">Cancel</button>
-        </div>-->
+        <div id="informDiv" style="display: none;">
+        <div id="informMessageDiv"></div></div>
+        <legend><i>Compose</i></legend>
     </fieldset>
-</form>
-</div>
-            
-            <div class="footer">
-                <div class="pure-menu pure-menu-horizontal">
+    <fieldset>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdSubject').value, document.getElementById('sdBody').value);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('closeDraftRequest');return false;">Close</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('informDiv').style.display='none';return false;">Clear</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdBody').value);return false;">Delete</button>
+        <textarea rows="1" class="pure-input-1" placeholder="Your Subject" id="sdSubject"></textarea>
+        <textarea rows="20" class="pure-input-1" placeholder="Your Note" id="sdBody"></textarea>
 
-                </div>
-            </div>
-        </div>
+    </fieldset>
+   </form>
     </div>
+    <div class="pure-u-1-5"></div>
 </div>
 
-
+<div class="pure-g" id="dListDiv">
+  <div class="pure-u-1-5"></div>
+    <div class="pure-u-3-5">
+      <form class="pure-form">
+      <textarea rows="1" class="pure-input-1" placeholder="Text Contained in Your Subject" id="dlSearch" onkeydown = "if (event.keyCode == 13) { callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;}"></textarea>
+      <button type="submit" class="pure-button pure-button-primary" onclick="callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;">Search</button>
+      </form>
+      <div id="dListHDiv"></div>
+    </div>
+    <div class="pure-u-1-5"></div>
+</div>
 
 
 </body>

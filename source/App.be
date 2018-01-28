@@ -1165,6 +1165,12 @@ use class App:PublicReadPlugin {
               mtype = "text/javascript";
             } elseIf (uri.ends(".css")) {
               mtype = "text/css";
+            } elseIf (uri.ends(".woff")) {
+              mtype = "application/font-woff";
+            } elseIf (uri.ends(".eot")) {
+              mtype = "application/vnd.ms-fontobject";  
+            } elseIf (uri.ends(".eot")) {
+              mtype = "application/font-sfnt";
             } else {
               mtype = "application/octet-stream";
             }
@@ -2126,12 +2132,10 @@ class App:AjaxPlugin {
       } catch (any e) {
         log.log("Caught exception handling request");
         if (log.will()) { if (undef(e)) { log.log("undefined exception") } else { log.log(e.toString()); } }
-        arg = Map.new();
-        arg["action"] = "failResponse";
         if (e.sameClass(Alert.new()@)) {
-          arg["reason"] = e.description;
+          arg = CallBackUI.informResponse(e.description);
         } else {
-          arg["reason"] = "Sorry, unable to handle request";
+          arg = CallBackUI.informResponse("Sorry, unable to handle request");
         }
         request.scriptReturn = arg;
       }

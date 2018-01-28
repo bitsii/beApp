@@ -20,8 +20,6 @@ use Container:Pair;
 use App:Alert;
 
 use App:LocalWebApp;
-use App:RemoteWebApp;
-use App:WebApp;
 use Text:String;
 use App:CallBackUI;
 
@@ -76,7 +74,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
    checkPublicReadPath(Path pa, request) Bool {
       String pas = pa.toString();
       Path adz = Path.apNew("App/" + self.name).file.absPath;
-      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".svg") || pas.ends(".txt") || pas.ends(".css") || pas.ends(".jpg"))) {
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".svg") || pas.ends(".txt") || pas.ends(".css") || pas.ends(".jpg") || pas.ends(".eot") || pas.ends(".ttf") || pas.ends("woff"))) {
         return(true);
       }
       return(false);
@@ -104,21 +102,124 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
   }
   
    draftManagerGet() KvDb {
-    //app.getKvDb("SECRETS").drop();
     return(app.getKvDb("DRAFTS"));
   }
   
-  saveDraftRequest(String subject, String body, request) Map {
+  catManagerGet() KvDb {
+    //app.getKvDb("SECRETS").drop();
+    return(app.getKvDb("CATS"));
+  }
+  
+  saveDraftRequest(String oldSubject, String subject, String body, request) Map {
      log.log("saveDraftRequest called");
+     
+     if (TS.isEmpty(subject)) {
+      throw(Alert.new("Subject cannot be empty..."));
+     }
+     
+     KvDb dm = self.draftManager;
+     
+     log.log("Draft is subject: " + subject + " body: " + body);
      
      Map dr = Maps.from("subject", subject, "body", body);
      
-     KvDb dm = self.draftManager;
+     String drjs = Json:Marshaller.marshall(dr);
+     
+     log.log("saving " + subject + " : " + drjs);
+     
+     dm.put(subject, drjs);
+     
+     if (TS.notEmpty(oldSubject) && oldSubject != subject) {
+       dm.delete(oldSubject);
+     }
+     
+     return(CallBackUI.informResponse("Saved"));
      
      //String emailC = Crypt.encryptPassToHex(veriKey, veriKey.substring(8), email);
       //return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("sendLinkMessageDiv", "Verification request sent, please check your email.")), CallBackUI.setElementsDisplaysResponse(Maps.from("sendLinkMessageDiv", "block")))));
       
-      return(null);
+      //return(null);
+   }
+   
+   deleteDraftRequest(String oldSubject, String subject, request) Map {
+     log.log("deleteDraftRequest called");
+     
+     if (TS.isEmpty(subject)) {
+      throw(Alert.new("Subject cannot be empty..."));
+     }
+     
+     KvDb dm = self.draftManager;
+     
+     log.log("Draft is subject: " + subject);
+     
+     if (TS.notEmpty(oldSubject) && oldSubject != subject) {
+       dm.delete(oldSubject);
+     }
+     dm.delete(subject);
+     
+     return(CallBackUI.informResponse("Draft deleted.  Hit \"Save\" to undo, or \"Close\" to exit."));
+     
+   }
+   
+   loadDraftRequest(String subject, request) Map {
+      log.log("in load draft");
+      Encode:Hex hex = Encode:Hex.new();
+      String drjs = self.draftManager.get(hex.decode(subject));
+      if (TS.notEmpty(drjs)) {
+        Map draft = Json:Unmarshaller.unmarshall(drjs);
+      } else {
+        throw(Alert.new("Draft missing, may have been renamed, refresh list?"));
+      }
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block", "dListDiv", "none")), CallBackUI.setElementsValuesResponse(Maps.from("sdSubject", draft.get("subject"), "sdBody",draft.get("body"), "sdOldSubject",draft.get("subject"))))));
+   
+   }
+   
+   getDraftListRequest(String search, request) Map {
+     return(doList(search, false, request));
+   }
+   
+   getDraftListRequest(request) Map {
+     return(doList(null, false, request));
+   }
+   
+   closeDraftRequest(request) Map {
+    return(doList(null, true, request));
+   }
+   
+   doList(String search, Bool force, request) Map {
+     log.log("in getDraftListRequest");
+     
+     if (TS.notEmpty(search)) {
+       Bool doSearch = true;
+       search = search.upper();
+     } else {
+       doSearch = false;
+     }
+     
+     String draftList = String.new();
+     draftList += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay','dComposeDiv');callUI('toggleDisplay','dListDiv');document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('informDiv').style.display='none';return false;\"><i>New Draft</i></a></p>";
+     draftList += "<p><a href=\"#\" onclick=\"callApp('getDraftListRequest');return false;\"><i>Refresh Draft List</i></a></p>";
+     Bool hadDraft = false;
+     Encode:Hex hex = Encode:Hex.new();
+     
+     for (auto kv in self.draftManager.getMap()) {
+       //todo escape
+       hadDraft = true;
+       Bool include = true;
+       if (doSearch) {
+         unless (kv.key.upper().has(search)) {
+           include = false;
+         }
+       }
+       if (include) {
+        draftList += "<p><a href=\"#\" onclick=\"callApp('loadDraftRequest', '" += hex.encode(kv.key) += "');return false;\">" += kv.key += "</a></p>";
+       }
+     }
+     if (hadDraft || force) {
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("dListHDiv",draftList)),CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "none", "dListDiv", "block")))));
+     } else {
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block")), CallBackUI.setElementsDisplaysResponse(Maps.from("dListDiv", "none")))));
+     }
    }
    
 }

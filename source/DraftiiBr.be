@@ -44,13 +44,22 @@ use class Draftii:Wui {
     }
     
     handleCallback(String res) {
+      log.log("got callback");
       hc.handleCallback(res);
     }
     
    startup() {
       IO:Logs.turnOnAll();
       log.log("sanbr started");
-      //handleCallOut(arg);
+      HC.callApp(Lists.from("getDraftListRequest"));
+   }
+   
+   informResponse(String r) {
+     log.log("in inform res");
+     if (TS.notEmpty(r)) {
+      HD.getElementById("informMessageDiv").innerHTML = r;
+      HD.getElementById("informDiv").display = "block";
+     }
    }
    
 }

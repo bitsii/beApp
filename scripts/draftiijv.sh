@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/Draftii/d --buildPath ../apprun/App/Draftii --emitLang jv --emitFlag iuDebug -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/Draftii.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/Draftii/d --buildPath ../apprun/App/Draftii --emitLang jv --emitFlag iuDebug -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/Draftii.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/App.be source/WebApp.be source/WebServer.be
 
 #--emitFlag iuOwnBackground
 

@@ -1,11 +1,77 @@
 
-get bridgehub working again
-  sqlite, test on pi
-  update installer, etc
-  drop autoupdate for now
-  need to set pi and root passwords during setup/install for security
+^^^^
+
+!!!!
+
+draftii
+
+filtering subject list
+  simple on page text hit enter/have button
+  "containes" on subject
+
+password protection
+  is per note
+  pass * 3 hash is the password, *6 is stored on the draft
+  map of *3 to *6 for those entered, will reuse to en/decrypt if present
+    only prompts once
+    if you use the same once per session/new draft
+    ?use last password on first save? 
+
+setup for imap, provider, folder
+  store imap password well per platform
+  use background sync / newstand ios android
+
+sync back/forth imap
+  sync up on save
+  line with note id, rand val, timestamp, content, sequence, latest wins
+  background when open
+    
+help doc
+
+separate off webapp rm from draftii
+
+all platforms
+
+out there?
+
+jv/lnx, android, 
+win
+cc mac ios
+
+out there fs
+
+option to change all docs with one password to another
+  ?backups too - think no
+  
+on device backups
+   view like drafts with a date
+   just a restorebutton
+   happens on every save/delete
+    or better - happens on time passing?
+
+!!!!
+
+
+  checkbox for glob search
+  
+single level category
+  pure side menu is promising
+  remember the last one/the one from the search
+
+optional category password
+  category decrypts all at once
+  subjects then available
+
+have a way to do oversize saves for large drafts, also attachments, have a load save for them
+  spill to disk, for both attachment and large ones
+
+better editor
+
+^^^^
   
 ====
+
+support without request signature too
 
 sep out pagetoken to diff plugin
 
