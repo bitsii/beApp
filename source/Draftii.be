@@ -110,7 +110,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
     return(app.getKvDb("CATS"));
   }
   
-  saveDraftRequest(String oldSubject, String subject, String body, request) Map {
+  saveDraftRequest(String oldSubject, String subject, String body, String create, String update, String seq, String salt, String passHash, String pass1, String pass2, request) Map {
      log.log("saveDraftRequest called");
      
      if (TS.isEmpty(subject)) {
@@ -121,7 +121,20 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      
      log.log("Draft is subject: " + subject + " body: " + body);
      
-     Map dr = Maps.from("subject", subject, "body", body);
+     String now = Time:Interval.now().seconds.toString();
+     
+     if (TS.isEmpty(create)) {
+      create = now;
+     }
+     update = now;
+     if (TS.isEmpty(seq)) {
+      seq = "0";
+     } else {
+      seq = (Int.new(seq) + 1).toString();
+     }
+     
+     
+     Map dr = Maps.from("subject", subject, "body", body, "create", create, "update", update, "seq", seq, "salt", salt, "passHash", passHash);
      
      String drjs = Json:Marshaller.marshall(dr);
      
@@ -170,7 +183,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       } else {
         throw(Alert.new("Draft missing, may have been renamed, refresh list?"));
       }
-      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block", "dListDiv", "none")), CallBackUI.setElementsValuesResponse(Maps.from("sdSubject", draft.get("subject"), "sdBody",draft.get("body"), "sdOldSubject",draft.get("subject"))))));
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block", "dListDiv", "none")), CallBackUI.setElementsValuesResponse(Maps.from("sdSubject", draft.get("subject"), "sdBody",draft.get("body"), "sdOldSubject",draft.get("subject"), "sdCreate", draft.get("create"), "sdUpdate", draft.get("update"), "sdSeq", draft.get("seq"), "sdSalt", draft.get("salt"), "sdPassHash", draft.get("passHash"))))));
    
    }
    
@@ -182,8 +195,8 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      return(doList(null, false, request));
    }
    
-   closeDraftRequest(request) Map {
-    return(doList(null, true, request));
+   closeDraftRequest(String search, request) Map {
+    return(doList(search, true, request));
    }
    
    doList(String search, Bool force, request) Map {
@@ -197,8 +210,8 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      }
      
      String draftList = String.new();
-     draftList += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay','dComposeDiv');callUI('toggleDisplay','dListDiv');document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('informDiv').style.display='none';return false;\"><i>New Draft</i></a></p>";
-     draftList += "<p><a href=\"#\" onclick=\"callApp('getDraftListRequest');return false;\"><i>Refresh Draft List</i></a></p>";
+     draftList += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay','dComposeDiv');callUI('toggleDisplay','dListDiv');document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('sdCreate').value = '';document.getElementById('sdUpdate').value = '';document.getElementById('sdSeq').value = '';document.getElementById('sdSalt').value = '';document.getElementById('sdPassHash').value = '';document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('informDiv').style.display='none';return false;\"><i>New Draft</i></a></p>";
+     draftList += "<p><a href=\"#\" onclick=\"callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;\"><i>Refresh Draft List</i></a></p>";
      Bool hadDraft = false;
      Encode:Hex hex = Encode:Hex.new();
      

@@ -5,25 +5,20 @@
 
 draftii
 
-filtering subject list
-  simple on page text hit enter/have button
-  "containes" on subject
-
 password protection
-  is per note
-  pass * 3 hash is the password, *6 is stored on the draft
-  map of *3 to *6 for those entered, will reuse to en/decrypt if present
-    only prompts once
-    if you use the same once per session/new draft
-    ?use last password on first save? 
+  salt is at the start
+  use the salt from the message or the last one seen in sync by create date  
+  put password status with Compose (protected by / not protected by) (Password is set/is not set)
+prompt when loading if not in map
+
+settings button (or top level menu?  replace compose / search with that, have it have a mode?)
 
 setup for imap, provider, folder
-  store imap password well per platform
-  use background sync / newstand ios android
+background sync, timed update in ui
 
 sync back/forth imap
   sync up on save
-  line with note id, rand val, timestamp, content, sequence, latest wins
+  subj rand val, timestamp, sequence, subject
   background when open
     
 help doc
@@ -33,12 +28,20 @@ separate off webapp rm from draftii
 all platforms
 
 out there?
-
+ 
 jv/lnx, android, 
 win
 cc mac ios
 
+store imap password well per platform
+use background sync / newstand ios android
+
 out there fs
+
+optional global password to set or change a password on a doc (and can be used as the pass, have a button for that)
+
+keep track of state in config - in list (and filter) or what doc open
+  ?sync it?
 
 option to change all docs with one password to another
   ?backups too - think no
@@ -48,6 +51,8 @@ on device backups
    just a restorebutton
    happens on every save/delete
     or better - happens on time passing?
+    
+
 
 !!!!
 

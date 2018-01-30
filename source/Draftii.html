@@ -18,16 +18,35 @@
       <form class="pure-form">
         <input type="hidden" value="" id="sdOldSubject"/>
         <input type="hidden" value="" id="sdOldContent"/>
+        <input type="hidden" value="" id="sdCreate"/>
+        <input type="hidden" value="" id="sdUpdate"/>
+        <input type="hidden" value="" id="sdSeq"/>
+        <input type="hidden" value="" id="sdSalt"/>
+        <input type="hidden" value="" id="sdPassHash"/>
     <fieldset>
         <div id="informDiv" style="display: none;">
         <div id="informMessageDiv"></div></div>
-        <legend><i>Compose</i></legend>
+        <legend><span id="composeMsgDiv"><i>Compose</i></span></legend>
     </fieldset>
+    <div id="passDiv" style="display: none;">
+      <fieldset>
+        <p><i>Password to Protect Note</i></p>
+        <label for="passEnter1">
+          <input type="password" id="passEnter1"> Password
+        </label>
+        </fieldset>
+        <fieldset>
+        <label for="passEnter2">
+          <input type="password" id="passEnter2"> Confirm Password
+        </label>
+        </fieldset>
+    </div>
     <fieldset>
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdSubject').value, document.getElementById('sdBody').value);return false;">Save</button>
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('closeDraftRequest');return false;">Close</button>
-        <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('informDiv').style.display='none';return false;">Clear</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdSubject').value, document.getElementById('sdBody').value, document.getElementById('sdCreate').value, document.getElementById('sdUpdate').value, document.getElementById('sdSeq').value, document.getElementById('sdSalt').value, document.getElementById('sdPassHash').value, document.getElementById('passEnter1').value, document.getElementById('passEnter2').value);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('closeDraftRequest', document.getElementById('dlSearch').value);return false;">Close</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('sdCreate').value = '';document.getElementById('sdUpdate').value = '';document.getElementById('sdSeq').value = '';document.getElementById('sdSalt').value = '';document.getElementById('sdPassHash').value = '';document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('informDiv').style.display='none';return false;">Clear</button>
         <button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdBody').value);return false;">Delete</button>
+        <button type="submit" id="sdPassButton" class="pure-button pure-button-primary" onclick="callUI('toggleDisplay', 'passDiv');return false;">Protect</button>
         <textarea rows="1" class="pure-input-1" placeholder="Your Subject" id="sdSubject"></textarea>
         <textarea rows="20" class="pure-input-1" placeholder="Your Note" id="sdBody"></textarea>
 
@@ -43,6 +62,7 @@
       <form class="pure-form">
       <textarea rows="1" class="pure-input-1" placeholder="Text Contained in Your Subject" id="dlSearch" onkeydown = "if (event.keyCode == 13) { callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;}"></textarea>
       <button type="submit" class="pure-button pure-button-primary" onclick="callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;">Search</button>
+      <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('dlSearch').value = '';callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;">Clear</button>
       </form>
       <div id="dListHDiv"></div>
     </div>
