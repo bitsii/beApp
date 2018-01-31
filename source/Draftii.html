@@ -12,6 +12,15 @@
 </script>
 </head>
 <body>
+
+<div class="pure-g" id="informDiv" style="display: none;">
+  <div class="pure-u-1-5"></div>
+    <div class="pure-u-3-5">
+      <div id="informMessageDiv"></div>
+    </div>
+    <div class="pure-u-1-5"></div>
+</div>
+  
 <div class="pure-g" id="dComposeDiv">
   <div class="pure-u-1-5"></div>
     <div class="pure-u-3-5">
@@ -24,8 +33,6 @@
         <input type="hidden" value="" id="sdSalt"/>
         <input type="hidden" value="" id="sdPassHash"/>
     <fieldset>
-        <div id="informDiv" style="display: none;">
-        <div id="informMessageDiv"></div></div>
         <legend><span id="composeMsgDiv"><i>Compose</i></span></legend>
     </fieldset>
     <div id="passDiv" style="display: none;">
@@ -43,8 +50,8 @@
     </div>
     <fieldset>
         <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdSubject').value, document.getElementById('sdBody').value, document.getElementById('sdCreate').value, document.getElementById('sdUpdate').value, document.getElementById('sdSeq').value, document.getElementById('sdSalt').value, document.getElementById('sdPassHash').value, document.getElementById('passEnter1').value, document.getElementById('passEnter2').value);return false;">Save</button>
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('closeDraftRequest', document.getElementById('dlSearch').value);return false;">Close</button>
-        <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('sdCreate').value = '';document.getElementById('sdUpdate').value = '';document.getElementById('sdSeq').value = '';document.getElementById('sdSalt').value = '';document.getElementById('sdPassHash').value = '';document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('informDiv').style.display='none';return false;">Clear</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('passDiv').style.display='none';document.getElementById('loadPassDiv').style.display='none';callApp('closeDraftRequest', document.getElementById('dlSearch').value);return false;">Close</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('sdCreate').value = '';document.getElementById('sdUpdate').value = '';document.getElementById('sdSeq').value = '';document.getElementById('sdSalt').value = '';document.getElementById('sdPassHash').value = '';document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('informDiv').style.display='none';document.getElementById('passDiv').style.display='none';document.getElementById('loadPassDiv').style.display='none';return false;">Clear</button>
         <button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdBody').value);return false;">Delete</button>
         <button type="submit" id="sdPassButton" class="pure-button pure-button-primary" onclick="callUI('toggleDisplay', 'passDiv');return false;">Protect</button>
         <textarea rows="1" class="pure-input-1" placeholder="Your Subject" id="sdSubject"></textarea>
@@ -64,6 +71,14 @@
       <button type="submit" class="pure-button pure-button-primary" onclick="callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;">Search</button>
       <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('dlSearch').value = '';callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;">Clear</button>
       </form>
+      <div id="loadPassDiv" style="display: none;">
+      <fieldset>
+        <p><i>Password to Open Note</i></p>
+        <input type="hidden" id="loadSubject">
+          <input type="password" id="loadPassEnter" onkeydown = "if (event.keyCode == 13) { callApp('loadDraftRequest', document.getElementById('loadSubject').value, document.getElementById('loadPassEnter').value);return false;}">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('loadDraftRequest', document.getElementById('loadSubject').value, document.getElementById('loadPassEnter').value);return false;">Open</button>
+      </fieldset>
+      </div>
       <div id="dListHDiv"></div>
     </div>
     <div class="pure-u-1-5"></div>

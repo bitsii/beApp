@@ -38,6 +38,8 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
           any oapp;
           String name = "Draftii";
           String homePage = "/App/Draftii/Draftii.html";
+          String lastSalt;
+          Map passHashes = Map.new();
         }
         super.new();
         log =@ IO:Logs.get(self);
@@ -61,6 +63,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       if (Logic:Bools.fromString(app.configManager.get("logs.turnOnAll"))) {
         IO:Logs.turnOnAll();
       }
+      lastSalt = app.configManager.get("dr.lastSalt");
       log.log("in start");
     }
     
@@ -110,6 +113,26 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
     return(app.getKvDb("CATS"));
   }
   
+  getPass1(String salt, String pass1) {
+    Digest:SHA256 ds = Digest:SHA256.new();
+    pass1 = salt + pass1;
+    for (Int i = 0;i < 3;i++=) {
+      pass1 = ds.digest(pass1);
+    }
+    pass1 = Encode:Hex.encode(pass1);
+    return(pass1);
+  }
+  
+  getPass2(String pass1) {
+    Digest:SHA256 ds = Digest:SHA256.new();
+    String pass2 = pass1;
+    for (Int i = 0;i < 3;i++=) {
+      pass2 = ds.digest(pass2);
+    }
+    pass2 = Encode:Hex.encode(pass2);
+    return(pass2);
+  }
+  
   saveDraftRequest(String oldSubject, String subject, String body, String create, String update, String seq, String salt, String passHash, String pass1, String pass2, request) Map {
      log.log("saveDraftRequest called");
      
@@ -133,8 +156,33 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       seq = (Int.new(seq) + 1).toString();
      }
      
+     if (TS.notEmpty(passHash) || TS.notEmpty(pass1)) {
+      if (TS.notEmpty(pass1) || TS.isEmpty(salt)) {
+        salt = lastSalt;
+        if (TS.isEmpty(salt)) {
+          salt = System:Random.getString(16);
+          lastSalt = salt;
+          app.configManager.put("dr.lastSalt", lastSalt);
+        }
+      }
+      if (TS.notEmpty(pass1)) {
+        if (TS.isEmpty(pass2) || pass1 != pass2) {
+          throw(Alert.new("Passwords don't match"));
+        }
+        pass1 = getPass1(salt, pass1);
+        pass2 = getPass2(pass1);
+        passHashes.put(pass2, pass1);
+      } else {
+        pass2 = passHash;
+        pass1 = passHashes.get(pass2);
+        if (TS.isEmpty(pass1)) {
+          throw(Alert.new("No ph to use"));
+        }
+      }
+      body = Crypt.encryptPassToHex(pass1, pass1.substring(8), body);
+     }
      
-     Map dr = Maps.from("subject", subject, "body", body, "create", create, "update", update, "seq", seq, "salt", salt, "passHash", passHash);
+     Map dr = Maps.from("subject", subject, "body", body, "create", create, "update", update, "seq", seq, "salt", salt, "passHash", pass2);
      
      String drjs = Json:Marshaller.marshall(dr);
      
@@ -148,10 +196,6 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      
      return(CallBackUI.informResponse("Saved"));
      
-     //String emailC = Crypt.encryptPassToHex(veriKey, veriKey.substring(8), email);
-      //return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("sendLinkMessageDiv", "Verification request sent, please check your email.")), CallBackUI.setElementsDisplaysResponse(Maps.from("sendLinkMessageDiv", "block")))));
-      
-      //return(null);
    }
    
    deleteDraftRequest(String oldSubject, String subject, request) Map {
@@ -174,7 +218,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      
    }
    
-   loadDraftRequest(String subject, request) Map {
+   loadDraftRequest(String subject, String pass, request) Map {
       log.log("in load draft");
       Encode:Hex hex = Encode:Hex.new();
       String drjs = self.draftManager.get(hex.decode(subject));
@@ -183,7 +227,32 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       } else {
         throw(Alert.new("Draft missing, may have been renamed, refresh list?"));
       }
-      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block", "dListDiv", "none")), CallBackUI.setElementsValuesResponse(Maps.from("sdSubject", draft.get("subject"), "sdBody",draft.get("body"), "sdOldSubject",draft.get("subject"), "sdCreate", draft.get("create"), "sdUpdate", draft.get("update"), "sdSeq", draft.get("seq"), "sdSalt", draft.get("salt"), "sdPassHash", draft.get("passHash"))))));
+      
+      if (TS.notEmpty(draft.get("passHash"))) {
+        log.log("have a passHash in load");
+        String pass1 = passHashes.get(draft.get("passHash"));
+        if (TS.isEmpty(pass1)) {
+          log.log("need to look for pass in request, and if not there prompt for pass");
+          if (TS.notEmpty(pass)) {
+            pass1 = getPass1(draft.get("salt"), pass);
+            String pass2 = getPass2(pass1);
+            if (pass2 != draft.get("passHash")) {
+              log.log("pass looks bad from passHash");
+              throw(Alert.new("Password Incorrect"));
+              //pass1 = null;
+            } else {
+              passHashes.put(pass2, pass1);
+            }
+          }
+        }
+        if (TS.isEmpty(pass1)) {
+          return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("loadPassDiv", "block")),CallBackUI.setElementsValuesResponse(Maps.from("loadSubject", subject)))));
+        }
+        if (TS.notEmpty(draft.get("body"))) {
+          draft.put("body", Crypt.decryptPassFromHex(pass1, pass1.substring(8), draft.get("body")));
+        }
+      }
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block", "dListDiv", "none", "informDiv", "none")), CallBackUI.setElementsValuesResponse(Maps.from("sdSubject", draft.get("subject"), "sdBody",draft.get("body"), "sdOldSubject",draft.get("subject"), "sdCreate", draft.get("create"), "sdUpdate", draft.get("update"), "sdSeq", draft.get("seq"), "sdSalt", draft.get("salt"), "sdPassHash", draft.get("passHash"))))));
    
    }
    
@@ -225,13 +294,13 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
          }
        }
        if (include) {
-        draftList += "<p><a href=\"#\" onclick=\"callApp('loadDraftRequest', '" += hex.encode(kv.key) += "');return false;\">" += kv.key += "</a></p>";
+        draftList += "<p><a href=\"#\" onclick=\"document.getElementById('loadPassDiv').style.display = 'none';callApp('loadDraftRequest', '" += hex.encode(kv.key) += "', document.getElementById('loadPassEnter').value);document.getElementById('loadPassEnter').value = '';document.getElementById('loadSubject').value = '';return false;\">" += kv.key += "</a></p>";
        }
      }
      if (hadDraft || force) {
-      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("dListHDiv",draftList)),CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "none", "dListDiv", "block")))));
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("dListHDiv",draftList)),CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "none", "dListDiv", "block", "informDiv", "none")))));
      } else {
-      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block")), CallBackUI.setElementsDisplaysResponse(Maps.from("dListDiv", "none")))));
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block")), CallBackUI.setElementsDisplaysResponse(Maps.from("dListDiv", "none", "informDiv", "none")))));
      }
    }
    

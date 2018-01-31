@@ -5,12 +5,6 @@
 
 draftii
 
-password protection
-  salt is at the start
-  use the salt from the message or the last one seen in sync by create date  
-  put password status with Compose (protected by / not protected by) (Password is set/is not set)
-prompt when loading if not in map
-
 settings button (or top level menu?  replace compose / search with that, have it have a mode?)
 
 setup for imap, provider, folder
@@ -21,8 +15,6 @@ sync back/forth imap
   subj rand val, timestamp, sequence, subject
   background when open
     
-help doc
-
 separate off webapp rm from draftii
 
 all platforms
@@ -37,6 +29,14 @@ store imap password well per platform
 use background sync / newstand ios android
 
 out there fs
+
+help doc
+
+have remove password in the protect page
+have a clear remembered passwords button
+put password status with Compose (protected by / not protected by) (Password is set/is not set)
+
+tests
 
 optional global password to set or change a password on a doc (and can be used as the pass, have a button for that)
 
