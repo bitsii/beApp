@@ -5,9 +5,10 @@
 
 draftii
 
-settings button (or top level menu?  replace compose / search with that, have it have a mode?)
+save imap settings button, close without save button
+menu to open close settings
+when not set have a message to suggest it
 
-setup for imap, provider, folder
 background sync, timed update in ui
 
 sync back/forth imap
@@ -27,6 +28,7 @@ cc mac ios
 
 store imap password well per platform
 use background sync / newstand ios android
+uglifyjs
 
 out there fs
 

@@ -21,6 +21,12 @@ var startup = function() {
   uiStartup(new be_$class/Draftii:Wui$());
 }
 
+function imChange(dropdown) {
+    var myindex  = dropdown.selectedIndex
+    var SelValue = dropdown.options[myindex].value
+    callUI('fillImap', SelValue);
+}
+
 window.onload = startup;
 """
 }
@@ -60,6 +66,38 @@ use class Draftii:Wui {
       HD.getElementById("informMessageDiv").innerHTML = r;
       HD.getElementById("informDiv").display = "block";
      }
+   }
+   
+   fillImap(String forService) {
+      //(
+      if (forService.ends("Disable)")) {
+        HD.getElementById("advancedImap").display = "none";
+        HD.getElementById("imapChosen").value = "";
+        HD.getElementById("imDitty").innerHTML = "";
+      } elseIf (forService.ends("GMail")) {
+        HD.getElementById("advancedImap").display = "none";
+        HD.getElementById("imapChosen").value = "GMail";
+        HD.getElementById("imapEndpoint").value = "imap.gmail.com";
+        HD.getElementById("imDitty").innerHTML = "<p>Use an account you already have, or create one here: <a href='https://accounts.google.com/SignUp?service=mail'>GMail Signup</a>";
+      } elseIf (forService.ends("GMX Mail")) {
+        HD.getElementById("advancedImap").display = "none";
+        HD.getElementById("imapChosen").value = "GMXMail";
+        HD.getElementById("imapEndpoint").value = "imap.gmx.com";
+        HD.getElementById("imDitty").innerHTML = "<p>Use an account you already have, or create one here: <a href='https://service.gmx.com/registration.html'>GMX Signup</a>";
+      } elseIf (forService.ends("Yahoo Mail")) {
+        HD.getElementById("advancedImap").display = "none";
+        HD.getElementById("imapChosen").value = "YahooMail";
+        HD.getElementById("imapEndpoint").value = "imap.mail.yahoo.com";
+        HD.getElementById("imDitty").innerHTML = "<p>Use an account you already have, or create one here: <a href='https://login.yahoo.com/account/create'>Yahoo Signup</a>";
+      } elseIf (forService.ends("Advanced")) {
+          HD.getElementById("advancedImap").display = "block";
+          HD.getElementById("imapChosen").value = "Custom";
+          HD.getElementById("imDitty").innerHTML = "<p>Set your secure IMAP endpoint, enter account information, and optionally provide a custom folder for notes.";
+      } elseIf (forService.ends("Disable")) {
+          HD.getElementById("advancedImap").display = "none";
+          HD.getElementById("imapChosen").value = "Disable";
+          HD.getElementById("imDitty").innerHTML = "<p>Syncing will be Disabled";
+      }
    }
    
 }

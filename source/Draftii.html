@@ -84,6 +84,34 @@
     <div class="pure-u-1-5"></div>
 </div>
 
+<div class="pure-g" id="imapSettingsDiv">
+  <div class="pure-u-1-5"></div>
+    <div class="pure-u-3-5">
+
+<form class="pure-form pure-form-stacked">
+<select name=imFillin onchange='imChange(this.form.imFillin);return false;'>
+<option selected>(Choose a mail provider or Disable)</option>
+<option>GMail</option>
+<option>GMX Mail</option>
+<option>Yahoo Mail</option>
+<option>Custom / Advanced</option>
+<option>Disable</option>
+</select>
+<label for="imapAccount">Email Address<input type="text" id="imapAccount"></label>
+<label for="imapPass">Email Password<input type="password" id="imapPass"></label>
+<label for="imapPass">Confirm Email Password<input type="password" id="imapPass2"></label>
+<span id="advancedImap" style="display: none;">
+<label for="imapEndpoint">Imap Endpoint<input type="text" id="imapEndpoint"></label>
+<label for="imapFolder">Draftii Folder<input type="text" id="imapFolder" value="Draftii"></label>
+</span>
+<div id="imDitty"></div>
+<input type="hidden" value="" id="imapChosen">
+</form>
+
+    </div>
+    <div class="pure-u-1-5"></div>
+</div>
+
 
 </body>
 </html>
