@@ -38,6 +38,9 @@ use class Draftii:Wui {
           IO:Log log =@ IO:Logs.get(self);
           List callbacks = Lists.from(self); //plugins
           HC hc = HC.new(callbacks);
+          fields {
+            List wasOpen = List.new();;
+          }
         }
     }
     
@@ -66,6 +69,30 @@ use class Draftii:Wui {
       HD.getElementById("informMessageDiv").innerHTML = r;
       HD.getElementById("informDiv").display = "block";
      }
+   }
+   
+   toggleDivCI(String toOpen) Bool {
+     HD.getElementById("informDiv").display = "none";
+     return(toggleDiv(toOpen));
+   }
+   
+   toggleDiv(String toOpen) Bool {
+    Bool didOpen = HC.toggleDisplay(toOpen);
+    if (didOpen) {
+      wasOpen = List.new();
+      List divs =@ Lists.from("imapSettingsDiv", "dComposeDiv", "dListDiv", "informDiv");
+      for (String div in divs) {
+        if (div != toOpen && HD.getElementById(div).display == "block") {
+          wasOpen += div;
+          HD.getElementById(div).display = "none";
+        }
+      }
+    } else {
+      for (div in wasOpen) {
+        HD.getElementById(div).display = "block";
+      }
+    }
+    return(didOpen);
    }
    
    fillImap(String forService) {
