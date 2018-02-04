@@ -5,16 +5,11 @@
 
 draftii
 
-get background going
-
 sync back/forth imap
-  sync up on save
-    short background checking for anything in queue
-  subj rand val, timestamp, sequence, subject
-  background when open
+  
+move body to separate db
   
 soft delete - delete via sync (body gone)
-versions
     
 separate off webapp rm from draftii
 
@@ -33,6 +28,7 @@ cc mac ios
 store imap password well per platform
 use background sync / newstand ios android
 uglifyjs
+oversize note spill to disk
 
 out there fs
 
@@ -54,8 +50,6 @@ on device backups
    just a restorebutton
    happens on save/delete based on time since last
      also happens on time passing - walk and apply time since last
-    
-
 
 !!!!
 

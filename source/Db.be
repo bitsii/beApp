@@ -570,6 +570,25 @@ class SqKvDb {
     }
   }
   
+  getSet() Set {
+    try {
+      Set res = Set.new();
+      List qa = List.new(0);
+      db.begin();
+      for (DbSt ares in db.executeQuery("SELECT KVKEY FROM " + tableName, qa)) {
+        String name = ares.getString(0);
+        res.put(name);
+      }
+      //ares.close();
+      db.commit();
+    } catch (any e) {
+      db.rollback();
+      dbFailed();
+      throw(e);
+    }
+    return(res);
+  }
+  
   getMap() Map {
     try {
       Map res = Map.new();

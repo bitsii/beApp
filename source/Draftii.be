@@ -30,6 +30,20 @@ use Crypto:Symmetric as Crypt;
 
 use System:Parameters;
 
+emit(jv) {
+"""
+import java.util.Properties;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.Folder;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.InternetAddress;
+import javax.mail.Transport;
+import javax.mail.Message;
+import javax.mail.Flags.Flag;
+"""
+}
+
 use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
 
      new() self {
@@ -40,6 +54,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
           String homePage = "/App/Draftii/Draftii.html";
           String lastSalt;
           Map passHashes = Map.new();
+          App:Background imapSyncer = App:Background.new();
         }
         super.new();
         log =@ IO:Logs.get(self);
@@ -63,10 +78,103 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       if (Logic:Bools.fromString(app.configManager.get("logs.turnOnAll"))) {
         IO:Logs.turnOnAll();
       }
-      lastSalt = app.configManager.get("dr.lastSalt");
       log.log("in start");
+      
+      lastSalt = app.configManager.get("dr.lastSalt");
+      
+      imapSyncer.startDelay = Time:Interval.new(2, 0);
+      imapSyncer.repeatDelay = Time:Interval.new(60, 0);
+      imapSyncer.minimumDelay = Time:Interval.new(30, 0);
+      imapSyncer.toInvoke = getInvocation("doImapSync", List.new());
+      imapSyncer.start();
     }
     
+    doImapSync() this {
+      log.log("in imapSync");
+      any e;
+      try {
+    
+        String imse = app.configManager.get("dr.imapSyncEnabled");
+        if (TS.isEmpty(imse) || imse == "false") {
+          log.log("sync disabled");
+          return(self);
+        }
+       
+        String imapAccount = app.configManager.get("dr.imapAccount");
+        String imapPass = app.configManager.get("dr.imapPass");
+        String imapEndpoint = app.configManager.get("dr.imapEndpoint");
+        String imapFolder = app.configManager.get("dr.imapFolder");
+    
+        String prot = "imaps";
+        
+        log.log("In doimap2");
+        
+        //Map dr = Maps.from("subject", subject, "body", body, "create", create, "update", update, "seq", seq, "salt", salt, "passHash", pass2);
+        
+        Map locSubTs = Map.new();
+        Map remSubTs = Map.new();
+        Set getSubs = Set.new();
+        Set putSubs = Set.new();
+        
+        Map drafts = self.draftManager.getMap();
+        
+        for (auto kv in drafts) {
+          Map draft = Json:Unmarshaller.unmarshall(kv.value);
+          locSubTs.put(draft.get("subject"), Int.new(draft.get("update")));
+        }
+        
+        String imsub;
+        List imsubs = List.new();
+        
+        emit(jv) {
+        """
+        Properties props = new Properties();
+        props.setProperty("mail.store.protocol", bevl_prot.bems_toJvString());
+        Session session = Session.getDefaultInstance(props, null);
+        Store store = session.getStore(bevl_prot.bems_toJvString());
+        if (!store.isConnected()) {
+          store.connect(bevl_imapEndpoint.bems_toJvString(), bevl_imapAccount.bems_toJvString(), bevl_imapPass.bems_toJvString());
+        }
+        Folder f = store.getFolder("Inbox");
+        if (bevl_imapFolder != null) {
+          Folder f2 = f.getFolder(bevl_imapFolder.bems_toJvString());
+          if (!f2.exists()) {
+            f2.create(Folder.HOLDS_MESSAGES);
+          }
+          f = f2;
+        }
+        f.open(Folder.READ_WRITE);
+          
+        Message[] messages = f.getMessages();
+        if (messages != null) {
+          for(int i = 0; i < messages.length; i++)
+          {
+            String subj = messages[i].getSubject();
+            bevl_imsub = new BEC_2_4_6_TextString(subj);
+            bevl_imsubs.bem_addValue_1(bevl_imsub);
+          }
+          f.close(true);
+          store.close();
+        }
+    """
+    }
+    log.log("Done with imap stuff");
+    
+    //foreach in imsubs split add to remts map
+    
+    //iterate tsmaps and add to sets
+    
+    //load from then send to based on set contents
+    
+    } catch (e) {
+      if(def(e)) {
+        log.log("Exception during imap update " + e);
+      } else {
+        log.log("Exception during imap update null");
+      }
+    }
+  }
+  
     versionGet() String {
       fields {
         String version =@ "5.8.1";
