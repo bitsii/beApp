@@ -5,11 +5,9 @@
 
 draftii
 
-sync back/forth imap
-  
-move body to separate db
-  
-soft delete - delete via sync (body gone)
+sync back/forth imap - body in attachment
+  soft deletes over a certain age are deleted in imap during sync
+  imap sync also deletes tombstones over a certain age (after the other, 2x age)
     
 separate off webapp rm from draftii
 
@@ -18,29 +16,44 @@ all platforms
 out there?
 
 readimap chosen, account, when opening/starting
-when imap not set have a message at startup to suggest it
-timed list update in ui a last update config
+  when imap not set have a message at startup to suggest it
+  timed list update in ui a last update config
  
 jv/lnx, android, 
 win
 cc mac ios
 
-store imap password well per platform
+store imap password well per platform - app private
+  same with keys and salts on password protected items
+  the whole db?
+  
 use background sync / newstand ios android
 uglifyjs
-oversize note spill to disk
 
 out there fs
 
 help doc
 
+have an optional admin password for "dangerous things"
+  deleting backups
+  deleting where password forgotten
+  ?remove password?
+  ?change password?
+  (could be checkboxes for when to require admin password, and way to set it)
+  ...
+  
+have a delete on the load draft password prompt page (admin protect)
 have remove password in the protect page
 have a clear remembered passwords button
 put password status with Compose (protected by / not protected by) (Password is set/is not set)
+remember or not remember passwords when app in background (config)
+
+clean up deletes over a certain age
+
+close and clear should check for unsaved changes
+  close should clear
 
 tests
-
-optional global password to set or change a password on a doc (and can be used as the pass, have a button for that)
 
 keep track of state in config - in list (and filter) or what doc open
   ?sync it?
@@ -48,24 +61,9 @@ keep track of state in config - in list (and filter) or what doc open
 on device backups
    view like drafts with a date
    just a restorebutton
-   happens on save/delete based on time since last
-     also happens on time passing - walk and apply time since last
+   happens on save/delete - have both revision backups and time based backups (diff buckets)
 
 !!!!
-
-
-  checkbox for glob search
-  
-single level category
-  pure side menu is promising
-  remember the last one/the one from the search
-
-optional category password
-  category decrypts all at once
-  subjects then available
-
-have a way to do oversize saves for large drafts, also attachments, have a load save for them
-  spill to disk, for both attachment and large ones
 
 better editor
 

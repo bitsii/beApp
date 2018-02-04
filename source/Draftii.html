@@ -19,7 +19,7 @@
 <div class="pure-menu pure-menu-horizontal">
     <a href="#" class="pure-menu-heading pure-menu-link">Draftii</a>
     <ul class="pure-menu-list">
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('toggleDivCIResponse', 'imapSettingsDiv');return false;">Sync Settings</a></li>
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('toggleDivCIResponse', 'imapSettingsDiv');return false;">Settings</a></li>
     </ul>
 </div>
 </div>
@@ -41,6 +41,7 @@
       <form class="pure-form">
         <input type="hidden" value="" id="sdOldSubject"/>
         <input type="hidden" value="" id="sdOldContent"/>
+        <input type="hidden" value="" id="sdBodyId" />
         <input type="hidden" value="" id="sdCreate"/>
         <input type="hidden" value="" id="sdUpdate"/>
         <input type="hidden" value="" id="sdSeq"/>
@@ -63,10 +64,10 @@
         </fieldset>
     </div>
     <fieldset>
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdSubject').value, document.getElementById('sdBody').value, document.getElementById('sdCreate').value, document.getElementById('sdUpdate').value, document.getElementById('sdSeq').value, document.getElementById('sdSalt').value, document.getElementById('sdPassHash').value, document.getElementById('passEnter1').value, document.getElementById('passEnter2').value);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdSubject').value, document.getElementById('sdBody').value, document.getElementById('sdBodyId').value, document.getElementById('sdCreate').value, document.getElementById('sdUpdate').value, document.getElementById('sdSeq').value, document.getElementById('sdSalt').value, document.getElementById('sdPassHash').value, document.getElementById('passEnter1').value, document.getElementById('passEnter2').value);return false;">Save</button>
         <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('passDiv').style.display='none';document.getElementById('loadPassDiv').style.display='none';callApp('closeDraftRequest', document.getElementById('dlSearch').value);return false;">Close</button>
-        <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('sdCreate').value = '';document.getElementById('sdUpdate').value = '';document.getElementById('sdSeq').value = '';document.getElementById('sdSalt').value = '';document.getElementById('sdPassHash').value = '';document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('informDiv').style.display='none';document.getElementById('passDiv').style.display='none';document.getElementById('loadPassDiv').style.display='none';return false;">Clear</button>
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdBody').value);return false;">Delete</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('sdBodyId').value = '';document.getElementById('sdCreate').value = '';document.getElementById('sdUpdate').value = '';document.getElementById('sdSeq').value = '';document.getElementById('sdSalt').value = '';document.getElementById('sdPassHash').value = '';document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('informDiv').style.display='none';document.getElementById('passDiv').style.display='none';document.getElementById('loadPassDiv').style.display='none';return false;">Clear</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteDraftRequest', document.getElementById('sdOldSubject').value, document.getElementById('sdSubject').value);return false;">Delete</button>
         <button type="submit" id="sdPassButton" class="pure-button pure-button-primary" onclick="callUI('toggleDisplay', 'passDiv');return false;">Protect</button>
         <textarea rows="1" class="pure-input-1" placeholder="Your Subject" id="sdSubject"></textarea>
         <textarea rows="20" class="pure-input-1" placeholder="Your Note" id="sdBody"></textarea>

@@ -82,9 +82,9 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       
       lastSalt = app.configManager.get("dr.lastSalt");
       
-      imapSyncer.startDelay = Time:Interval.new(2, 0);
-      imapSyncer.repeatDelay = Time:Interval.new(60, 0);
-      imapSyncer.minimumDelay = Time:Interval.new(30, 0);
+      imapSyncer.startDelay = Time:Interval.new(3, 0);
+      imapSyncer.repeatDelay = Time:Interval.new(180, 0);
+      imapSyncer.minimumDelay = Time:Interval.new(120, 0);
       imapSyncer.toInvoke = getInvocation("doImapSync", List.new());
       imapSyncer.start();
     }
@@ -123,8 +123,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
           locSubTs.put(draft.get("subject"), Int.new(draft.get("update")));
         }
         
-        String imsub;
-        List imsubs = List.new();
+        List contents = List.new();
         
         emit(jv) {
         """
@@ -149,16 +148,22 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
         if (messages != null) {
           for(int i = 0; i < messages.length; i++)
           {
-            String subj = messages[i].getSubject();
-            bevl_imsub = new BEC_2_4_6_TextString(subj);
-            bevl_imsubs.bem_addValue_1(bevl_imsub);
+            //String subj = messages[i].getSubject();
+            Object con = messages[i].getContent();
+            if (con != null) {
+              String mc = con.toString();
+              if (mc != null) {
+                //System.out.println("mc " + mc);
+                bevl_contents.bem_addValue_1(new $class/Text:String$(mc));
+              }
+            }
           }
           f.close(true);
           store.close();
         }
     """
     }
-    log.log("Done with imap stuff");
+    log.log("Done with imap read");
     
     //foreach in imsubs split add to remts map
     
@@ -241,7 +246,12 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
     return(pass2);
   }
   
-  saveDraftRequest(String oldSubject, String subject, String body, String create, String update, String seq, String salt, String passHash, String pass1, String pass2, request) Map {
+  draftPathGet() Path {
+    Path confp = Path.apNew(app.paths.dataPath.toString() + "/Drafts/");
+    return(confp);
+  }
+  
+  saveDraftRequest(String oldSubject, String subject, String body, String bodyId, String create, String update, String seq, String salt, String passHash, String pass1, String pass2, request) Map {
      log.log("saveDraftRequest called");
      
      if (TS.isEmpty(subject)) {
@@ -290,7 +300,24 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       body = Crypt.encryptPassToHex(pass1, pass1.substring(8), body);
      }
      
-     Map dr = Maps.from("subject", subject, "body", body, "create", create, "update", update, "seq", seq, "salt", salt, "passHash", pass2);
+     Path dp = self.draftPath;
+     if (dp.file.exists!) {
+      dp.file.mkdirs();
+     }
+     
+     if (TS.isEmpty(bodyId)) {
+       bodyId = System:Random.getString(24);
+       Path bodyPath = dp.copy().addStep(bodyId + ".txt");
+       while (bodyPath.file.exists) {
+         bodyId = System:Random.getString(24);
+         bodyPath = dp.copy().addStep(bodyId + ".txt");
+       }
+     }
+     
+     log.log("bodyId " + bodyId);
+     bodyPath = dp.copy().addStep(bodyId + ".txt");
+     
+     Map dr = Maps.from("subject", subject, "bodyId", bodyId, "create", create, "update", update, "seq", seq, "salt", salt, "passHash", pass2, "isDeleted", false);
      
      String drjs = Json:Marshaller.marshall(dr);
      
@@ -298,8 +325,13 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      
      dm.put(subject, drjs);
      
+     log.log("writing " + bodyPath);
+     
+     bodyPath.file.writer.open().writeStringClose(body);
+     
      if (TS.notEmpty(oldSubject) && oldSubject != subject) {
-       dm.delete(oldSubject);
+       Map drd = Maps.from("subject", oldSubject, "create", now, "update", now, "isDeleted", true);
+       dm.put(oldSubject, Json:Marshaller.marshall(drd));
      }
      
      return(CallBackUI.informResponse("Saved"));
@@ -317,10 +349,26 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      
      log.log("Draft is subject: " + subject);
      
+     String drjs = self.draftManager.get(subject);
+     if (TS.notEmpty(drjs)) {
+        Map draft = Json:Unmarshaller.unmarshall(drjs);
+      } else {
+        throw(Alert.new("Draft missing, may have been renamed, refresh list?"));
+      }
+     
+     Path dp = self.draftPath;
+     Path bodyPath = dp.copy().addStep(draft.get("bodyId") + ".txt");
+     if (bodyPath.file.exists) { bodyPath.file.delete(); }
+     
+     String now = Time:Interval.now().seconds.toString();
+     
+     drd = Maps.from("subject", subject, "create", now, "update", now, "isDeleted", true);
+     dm.put(subject, Json:Marshaller.marshall(drd));
+     
      if (TS.notEmpty(oldSubject) && oldSubject != subject) {
-       dm.delete(oldSubject);
+       Map drd = Maps.from("subject", oldSubject, "create", now, "update", now, "isDeleted", true);
+       dm.put(oldSubject, Json:Marshaller.marshall(drd));
      }
-     dm.delete(subject);
      
      return(CallBackUI.informResponse("Draft deleted.  Hit \"Save\" to undo, or \"Close\" to exit."));
      
@@ -332,9 +380,16 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       String drjs = self.draftManager.get(hex.decode(subject));
       if (TS.notEmpty(drjs)) {
         Map draft = Json:Unmarshaller.unmarshall(drjs);
+        if (draft.get("isDeleted")) {
+          throw(Alert.new("Draft appears deleted, refresh list?"));
+        }
       } else {
         throw(Alert.new("Draft missing, may have been renamed, refresh list?"));
       }
+      
+      Path dp = self.draftPath;
+      Path bodyPath = dp.copy().addStep(draft.get("bodyId") + ".txt");
+      draft.put("body", bodyPath.file.reader.open().readStringClose());
       
       if (TS.notEmpty(draft.get("passHash"))) {
         log.log("have a passHash in load");
@@ -360,7 +415,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
           draft.put("body", Crypt.decryptPassFromHex(pass1, pass1.substring(8), draft.get("body")));
         }
       }
-      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block", "dListDiv", "none", "informDiv", "none")), CallBackUI.setElementsValuesResponse(Maps.from("sdSubject", draft.get("subject"), "sdBody",draft.get("body"), "sdOldSubject",draft.get("subject"), "sdCreate", draft.get("create"), "sdUpdate", draft.get("update"), "sdSeq", draft.get("seq"), "sdSalt", draft.get("salt"), "sdPassHash", draft.get("passHash"))))));
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsDisplaysResponse(Maps.from("dComposeDiv", "block", "dListDiv", "none", "informDiv", "none")), CallBackUI.setElementsValuesResponse(Maps.from("sdSubject", draft.get("subject"), "sdBody",draft.get("body"), "sdBodyId", draft.get("bodyId"), "sdOldSubject",draft.get("subject"), "sdCreate", draft.get("create"), "sdUpdate", draft.get("update"), "sdSeq", draft.get("seq"), "sdSalt", draft.get("salt"), "sdPassHash", draft.get("passHash"))))));
    
    }
    
@@ -387,22 +442,27 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      }
      
      String draftList = String.new();
-     draftList += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay','dComposeDiv');callUI('toggleDisplay','dListDiv');document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('sdCreate').value = '';document.getElementById('sdUpdate').value = '';document.getElementById('sdSeq').value = '';document.getElementById('sdSalt').value = '';document.getElementById('sdPassHash').value = '';document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('informDiv').style.display='none';return false;\"><i>New Draft</i></a></p>";
+     draftList += "<p><a href=\"#\" onclick=\"callUI('toggleDisplay','dComposeDiv');callUI('toggleDisplay','dListDiv');document.getElementById('sdOldSubject').value = '';document.getElementById('sdSubject').value = '';document.getElementById('sdBody').value = '';document.getElementById('sdBodyId').value = '';document.getElementById('sdCreate').value = '';document.getElementById('sdUpdate').value = '';document.getElementById('sdSeq').value = '';document.getElementById('sdSalt').value = '';document.getElementById('sdPassHash').value = '';document.getElementById('passEnter1').value = '';document.getElementById('passEnter2').value = '';document.getElementById('informDiv').style.display='none';return false;\"><i>New Draft</i></a></p>";
      draftList += "<p><a href=\"#\" onclick=\"callApp('getDraftListRequest', document.getElementById('dlSearch').value);return false;\"><i>Refresh Draft List</i></a></p>";
      Bool hadDraft = false;
      Encode:Hex hex = Encode:Hex.new();
      
      for (auto kv in self.draftManager.getMap()) {
        //todo escape
-       hadDraft = true;
-       Bool include = true;
-       if (doSearch) {
-         unless (kv.key.upper().has(search)) {
-           include = false;
+       
+       Map drl = Json:Unmarshaller.unmarshall(kv.value);
+       unless (drl.get("isDeleted")) {
+       
+         hadDraft = true;
+         Bool include = true;
+         if (doSearch) {
+           unless (kv.key.upper().has(search)) {
+             include = false;
+           }
          }
-       }
-       if (include) {
-        draftList += "<p><a href=\"#\" onclick=\"document.getElementById('loadPassDiv').style.display = 'none';callApp('loadDraftRequest', '" += hex.encode(kv.key) += "', document.getElementById('loadPassEnter').value);document.getElementById('loadPassEnter').value = '';document.getElementById('loadSubject').value = '';return false;\">" += kv.key += "</a></p>";
+         if (include) {
+          draftList += "<p><a href=\"#\" onclick=\"document.getElementById('loadPassDiv').style.display = 'none';callApp('loadDraftRequest', '" += hex.encode(kv.key) += "', document.getElementById('loadPassEnter').value);document.getElementById('loadPassEnter').value = '';document.getElementById('loadSubject').value = '';return false;\">" += kv.key += "</a></p>";
+         }
        }
      }
      if (hadDraft || force) {
