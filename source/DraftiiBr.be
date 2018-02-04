@@ -39,7 +39,7 @@ use class Draftii:Wui {
           List callbacks = Lists.from(self); //plugins
           HC hc = HC.new(callbacks);
           fields {
-            List wasOpen = List.new();;
+            List wasOpen = List.new();
           }
         }
     }
@@ -71,14 +71,15 @@ use class Draftii:Wui {
      }
    }
    
-   toggleDivCI(String toOpen) Bool {
+   toggleDivCIResponse(String toOpen) Bool {
      HD.getElementById("informDiv").display = "none";
-     return(toggleDiv(toOpen));
+     return(toggleDivResponse(toOpen));
    }
    
-   toggleDiv(String toOpen) Bool {
+   toggleDivResponse(String toOpen) Bool {
     Bool didOpen = HC.toggleDisplay(toOpen);
     if (didOpen) {
+      log.log("tdiv open true");
       wasOpen = List.new();
       List divs =@ Lists.from("imapSettingsDiv", "dComposeDiv", "dListDiv", "informDiv");
       for (String div in divs) {
@@ -88,7 +89,9 @@ use class Draftii:Wui {
         }
       }
     } else {
+      log.log("tdiv open false");
       for (div in wasOpen) {
+        log.log("wasop " + div);
         HD.getElementById(div).display = "block";
       }
     }

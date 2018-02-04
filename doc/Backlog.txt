@@ -5,22 +5,26 @@
 
 draftii
 
-save imap settings button, close without save button
-when not set have a message at startup to suggest it
-
-background sync, timed update in ui
+get background going
 
 sync back/forth imap
   sync up on save
     short background checking for anything in queue
   subj rand val, timestamp, sequence, subject
   background when open
+  
+soft delete - delete via sync (body gone)
+versions
     
 separate off webapp rm from draftii
 
 all platforms
 
 out there?
+
+readimap chosen, account, when opening/starting
+when imap not set have a message at startup to suggest it
+timed list update in ui a last update config
  
 jv/lnx, android, 
 win
@@ -44,15 +48,12 @@ optional global password to set or change a password on a doc (and can be used a
 
 keep track of state in config - in list (and filter) or what doc open
   ?sync it?
-
-option to change all docs with one password to another
-  ?backups too - think no
   
 on device backups
    view like drafts with a date
    just a restorebutton
-   happens on every save/delete
-    or better - happens on time passing?
+   happens on save/delete based on time since last
+     also happens on time passing - walk and apply time since last
     
 
 

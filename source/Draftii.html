@@ -19,7 +19,7 @@
 <div class="pure-menu pure-menu-horizontal">
     <a href="#" class="pure-menu-heading pure-menu-link">Draftii</a>
     <ul class="pure-menu-list">
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('toggleDivCI', 'imapSettingsDiv');return false;">Sync Settings</a></li>
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('toggleDivCIResponse', 'imapSettingsDiv');return false;">Sync Settings</a></li>
     </ul>
 </div>
 </div>
@@ -101,7 +101,7 @@
 <div class="pure-g" id="imapSettingsDiv" style="display: none;">
   <div class="pure-u-1-5"></div>
     <div class="pure-u-3-5">
-
+Sync your Drafts between devices using your email account.
 <form class="pure-form pure-form-stacked">
 <select name=imFillin onchange='imChange(this.form.imFillin);return false;'>
 <option selected>(Choose a mail provider or Disable)</option>
@@ -111,6 +111,8 @@
 <option>Custom / Advanced</option>
 <option>Disable</option>
 </select>
+<button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveImapSettingsRequest', document.getElementById('imapChosen').value, document.getElementById('imapAccount').value, document.getElementById('imapPass').value, document.getElementById('imapPass2').value, document.getElementById('imapEndpoint').value, document.getElementById('imapFolder').value);return false;">Save</button>
+<button type="submit" class="pure-button pure-button-primary" onclick="callUI('toggleDivCIResponse', 'imapSettingsDiv');return false;">Close</button>
 <label for="imapAccount">Email Address<input type="text" id="imapAccount"></label>
 <label for="imapPass">Email Password<input type="password" id="imapPass"></label>
 <label for="imapPass">Confirm Email Password<input type="password" id="imapPass2"></label>

@@ -304,6 +304,33 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
      }
    }
    
+   saveImapSettingsRequest(String imapChosen, String imapAccount, String imapPass1, String imapPass2, String imapEndpoint, String imapFolder, request) Map {
+     if (TS.notEmpty(imapChosen) && imapChosen.ends("Disable")) {
+      app.configManager.put("dr.imapSyncEnabled", "false");
+      app.configManager.put("dr.imapChosen", imapChosen);
+     } else {
+   
+       if (TS.isEmpty(imapPass1) || TS.isEmpty(imapPass2) || imapPass1 != imapPass2) {
+        throw(Alert.new("Passwords missing or do not match"));
+       }
+       if (TS.isEmpty(imapAccount) || TS.isEmpty(imapEndpoint) || TS.isEmpty(imapFolder)) {
+        throw(Alert.new("Email, endpoint, and folder are required"));
+       }
+       
+       app.configManager.put("dr.imapSyncEnabled", "true");
+       
+       app.configManager.put("dr.imapChosen", imapChosen);
+       app.configManager.put("dr.imapAccount", imapAccount);
+       app.configManager.put("dr.imapPass", imapPass1);
+       app.configManager.put("dr.imapEndpoint", imapEndpoint);
+       app.configManager.put("dr.imapFolder", imapFolder);
+       
+       
+     }
+     
+     return(CallBackUI.toggleDivCIResponse("imapSettingsDiv"));
+   }
+   
 }
 
 use App:Account;
