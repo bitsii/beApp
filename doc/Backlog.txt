@@ -30,6 +30,8 @@ store imap password well per platform - app private
 use background sync / newstand ios android
 uglifyjs
 
+use seq in dync
+
 out there fs
 
 help doc

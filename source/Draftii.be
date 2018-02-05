@@ -32,6 +32,7 @@ use System:Parameters;
 
 emit(jv) {
 """
+import javax.activation.DataHandler;
 import java.util.Properties;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -40,6 +41,12 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.InternetAddress;
 import javax.mail.Transport;
 import javax.mail.Message;
+import javax.activation.FileDataSource;
+import javax.mail.Multipart;
+import javax.activation.DataSource;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.BodyPart;
 import javax.mail.Flags.Flag;
 """
 }
@@ -120,7 +127,9 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
         
         for (auto kv in drafts) {
           Map draft = Json:Unmarshaller.unmarshall(kv.value);
-          locSubTs.put(draft.get("subject"), Int.new(draft.get("update")));
+          unless (locSubTs.has(draft.get("subject")) && locSubTs.get(draft.get("subject")) > draft.get("update")) {
+            locSubTs.put(draft.get("subject"), draft.get("update"));
+          }
         }
         
         List contents = List.new();
@@ -158,8 +167,6 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
               }
             }
           }
-          f.close(true);
-          store.close();
         }
     """
     }
@@ -168,8 +175,84 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
     //foreach in imsubs split add to remts map
     
     //iterate tsmaps and add to sets
+    //Map locSubTs = Map.new();
+    //Map remSubTs = Map.new();
+    //Set getSubs = Set.new();
+    //Set putSubs = Set.new();
+    
+    for (kv in locSubTs) {
+      if (remSubTs.has(kv.key)! || kv.value > remSubTs.get(kv.key)) {
+        putSubs += kv.key;
+      }
+    }
+    
+    for (kv in remSubTs) {
+      if (locSubTs.has(kv.key)! || kv.value > locSubTs.get(kv.key)) {
+        getSubs += kv.key;
+      }
+    }
     
     //load from then send to based on set contents
+    
+    //load from
+    //for delete, can only load when the existing one is 
+    
+    //send to
+    for (String ps in putSubs) {
+      log.log("got push subject " + ps);
+      
+      String draftcnt = Encode:Hex.encode(drafts.get(ps));
+      
+      draft = Json:Unmarshaller.unmarshall(drafts.get(ps));
+      
+      unless (draft.get("isDeleted")) {
+        Path bodyPath = self.draftPath.copy().addStep(draft.get("bodyId") + ".txt");
+        String bodyPathS = bodyPath.toString();
+      } else {
+        bodyPathS = null;
+      }
+      
+    emit(jv) {
+    """
+    MimeMessage m = new MimeMessage(session);
+    //String cs = bevl_subj.bems_toJvString();
+    //m.setSubject(cs);
+    MimeBodyPart messageBodyPart = new MimeBodyPart();
+    //m.setText(bevl_draftcnt.bems_toJvString(), "utf-8", "plain");
+    messageBodyPart.setText(bevl_draftcnt.bems_toJvString(), "utf-8", "plain");
+    MimeMultipart multipart = new MimeMultipart();
+
+     multipart.addBodyPart(messageBodyPart);
+
+     messageBodyPart = new MimeBodyPart();
+     String filename = bevl_bodyPathS.bems_toJvString();
+     DataSource source = new FileDataSource(filename);
+     messageBodyPart.setDataHandler(new DataHandler(source));
+     messageBodyPart.setFileName(filename);
+     multipart.addBodyPart(messageBodyPart);
+
+     m.setContent(multipart);
+    
+    m.setFlag(Flag.DRAFT, true);
+    Message ms[] = {m};
+    f.appendMessages(ms);
+    """
+    }
+    
+    
+    }
+    
+    
+    //delete any duplicates from the remote (get a list of subs not the latest, deletem)
+    //two pass
+    
+    //close up
+    emit(jv) {
+    """
+    f.close(true);
+    store.close();
+    """
+    }
     
     } catch (e) {
       if(def(e)) {
