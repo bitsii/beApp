@@ -61,7 +61,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
           String homePage = "/App/Draftii/Draftii.html";
           String lastSalt;
           Map passHashes = Map.new();
-          App:Background imapSyncer = App:Background.new();
+          //App:Background imapSyncer = App:Background.new();
         }
         super.new();
         log =@ IO:Logs.get(self);
@@ -89,11 +89,11 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
       
       lastSalt = app.configManager.get("dr.lastSalt");
       
-      imapSyncer.startDelay = Time:Interval.new(3, 0);
-      imapSyncer.repeatDelay = Time:Interval.new(180, 0);
-      imapSyncer.minimumDelay = Time:Interval.new(120, 0);
-      imapSyncer.toInvoke = getInvocation("doImapSync", List.new());
-      imapSyncer.start();
+      //imapSyncer.startDelay = Time:Interval.new(3, 0);
+      //imapSyncer.repeatDelay = Time:Interval.new(180, 0);
+      //imapSyncer.minimumDelay = Time:Interval.new(120, 0);
+      //imapSyncer.toInvoke = getInvocation("doImapSync", List.new());
+      //imapSyncer.start();
     }
     
     doImapSync() this {
