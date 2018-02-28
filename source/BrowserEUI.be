@@ -293,6 +293,13 @@ class HC {
        if (callback.can(aname, args.length)) {
          return(callback.invoke(aname, args));
        }
+     }
+     for (callback in callbacks) {
+       if (callback.can(aname, 1)) {
+         List ca = List.new();
+         ca.put(0, args);
+         return(callback.invoke(aname, ca));
+       }
      }       
      return(null);
    }

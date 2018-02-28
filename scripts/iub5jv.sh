@@ -58,10 +58,16 @@ cp scripts/iuhcmd.sh ../apprun/App/IUHub
 cp scripts/upgrade.bat ../apprun/App/IUHub
 cp scripts/mpg123loop.sh ../apprun/App/IUHub
 cp scripts/stopmpg123loop.sh ../apprun/App/IUHub
+cp source/Konn.html ../apprun/App/IUHub
 cp source/IU.html ../apprun/App/IUHub
 cp extlibs/IUBridge/* ../apprun/App/IUHub
 cp icons/* ../apprun/App/IUHub
 cp licenses/* ../apprun/App/IUHub
+
+#pure 
+mkdir -p ../apprun/App/IUHub/css/layouts
+rm -f ../apprun/App/IUHub/css/layouts/*
+cp source/css/layouts/* ../apprun/App/IUHub/css/layouts
 
 #cam
 cp scripts/uppic.bat ../apprun/App/IUHub

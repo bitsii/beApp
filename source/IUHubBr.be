@@ -365,11 +365,41 @@ use class IUHub:Eui {
       handleCallOut(arg);
    }
    
+   hideNShowOne(String val) {
+    hideNShow(Set.new().put(val));
+   }
+   
+   hideNShowList(List toShow) {
+    hideNShow(Sets.from(toShow));
+   }
+    
+   hideNShow(Set toShow) {
+    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv");
+    for (String el in allElems) {
+      if (toShow.has(el)) {
+        HD.getElementById(el).display = "block";
+      } else {
+        HD.getElementById(el).display = "none";
+      }
+    }
+    //HD.getElementById("loginmsgdiv").innerHTML = "";
+   }
+   
+   hideNShowMenu(Set toShow) {
+    List allElems =@ Lists.from("loginmenudiv", "loggedinmenudiv");
+    for (String el in allElems) {
+      if (toShow.has(el)) {
+        HD.getElementById(el).display = "block";
+      } else {
+        HD.getElementById(el).display = "none";
+      }
+    }
+    //HD.getElementById("loginmsgdiv").innerHTML = "";
+   }
+   
    toLoginResponse() {
-      HD.getElementById("logindiv").display = "block";
-      HD.getElementById("loggedindiv").display = "none";
-      HD.getElementById("spinnerdiv").display = "none";
-      HD.getElementById("loginmsgdiv").innerHTML = "";
+      hideNShow(Sets.from("logindiv"));
+      hideNShowMenu(Sets.from("loginmenudiv"));
    }
    
    pageTokenResponse(Map arg) {
@@ -392,11 +422,12 @@ use class IUHub:Eui {
       arg["accountName"] = HD.getElementById("accountName").value;
       arg["accountPass"] = HD.getElementById("accountPass").value;
       arg["sessionName"] = HD.getElementById("sessionName").value;
-      arg["sessionLength"] = HD.getElementById("sessionLength").value;
+      //arg["sessionLength"] = HD.getElementById("sessionLength").value;
       if (HD.getElementById("sessionNeverExpires").checked) {
         arg["sessionLength"] = "-1";
         //log.log("set sel neg");
       } else {
+         arg["sessionLength"] = "60";
          //log.log("set sel neg not");
       }
       HD.getElementById("accountName").value = "";
@@ -447,39 +478,14 @@ use class IUHub:Eui {
      fields {
        Set perms = Set.new();
      }
+     hideNShow(Sets.from("devLinksListDiv", "actionLinksDiv"));
+     hideNShowMenu(Sets.from("loggedinmenudiv"));
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
-      //String lmsg = "Welcome " + arg["name"] + " to " + arg["deviceName"] + " on Version " + arg["appVersion"];
       String lmsg = "<p align=\"center\" style=\"font-size: 100%;font-weight: 800;\">" + arg["deviceName"] + "</p>";
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;
-      HD.getElementById("logindiv").display = "none";
-      HD.getElementById("loggedindiv").display = "block";
-      HD.getElementById("spinnerdiv").display = "none";
-      HD.getElementById("configItemsDiv").display = "block";
-      
-      
-      //if (TS.notEmpty(arg["loginUri"])) {
-        //String li = arg["loginUri"];
-        //HD.getElementById("liLink").href = li;
-        //if (HD.href.has(li)!) {
-        //  HD.href = li;
-        //}
-      //}
-      //log.log("updateResponse2 just logged in");
     }
-    //if (arg.has("profile")) {
-      profile = arg["profile"];
-      //if (arg["profile"] == "bridge" || arg["profile"] == "cambridge") {
-        //if (arg["profile"] == "cambridge") {
-          //if (TS.notEmpty(arg["doCam"]) && arg["doCam"] == "true") {
-            HD.getElementById("camBridgeMenu1").display = "block";
-            HD.getElementById("camBridgeMenu3").display = "block";
-          //}
-        //}
-        HD.getElementById("bridgeMenu2").display = "block";
-        HD.getElementById("bridgeHelp1").display = "block";
-        HD.getElementById("bridgeHelp2").display = "block";
-      //}
-    //}
+    profile = arg["profile"];
+    log.log("profile " + profile);
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
@@ -488,7 +494,6 @@ use class IUHub:Eui {
     } else {
       HD.getElementById("devLinksListDiv").innerHTML = "";
     }
-    //HD.getElementById("camLink").href = "IUCam.html";
     HD.getElementById("devLinksDiv").innerHTML = "";
     if (arg.has("permsString")) {
       String permsString = arg["permsString"];
@@ -497,23 +502,6 @@ use class IUHub:Eui {
           perms.put(perm);
         }
       }
-    }
-    String oinf = "";
-    if (TS.notEmpty(arg["accountSetOnce"]) && arg["accountSetOnce"] == "false") {
-      HC.toggleDisplay("accountAdminDiv");
-      oinf += "Please create an account.  ";
-    }
-    if (TS.notEmpty(arg["deviceNameSetOnce"]) && arg["deviceNameSetOnce"] == "false") {
-      HC.toggleDisplay("deviceNameDiv");
-      oinf += "Please provide a name for the device.  ";
-    }
-    if (TS.notEmpty(arg["imapSetOnce"]) && arg["imapSetOnce"] == "false") {
-      HC.toggleDisplay("imapSettingsDiv");
-      HD.getElementById("imapFolder").value = "IotUrls";
-      oinf += "Please connect the device to an email account.  ";
-    }
-    if (TS.notEmpty(oinf)) {
-      inform(oinf);
     }
     //HC.callAppLater(Lists.from("refreshLinksRequest"), 10000);
    }
@@ -529,10 +517,10 @@ use class IUHub:Eui {
    }
    
    clearImage() {
-     HD.getElementById("imgdiv").innerHTML = "";
+     /*HD.getElementById("imgdiv").innerHTML = "";
      HD.getElementById("clearPicId").display = "none";
      HD.getElementById("nlink").display = "none";
-     HD.getElementById("plink").display = "none";
+     HD.getElementById("plink").display = "none";*/
    }
    
    changePassRequest() {
@@ -554,13 +542,9 @@ use class IUHub:Eui {
    }
    
    showSessionsRequest() {
-    if (HD.getElementById("sessionsListDiv").display == "block") {
-      HD.getElementById("sessionsListDiv").display = "none";
-    } else {
       Map arg = Map.new();
       arg["action"] = "showSessionsRequest";
       handleCallOut(arg);
-    }
    }
    
    showSessionsResponse(Map arg) {

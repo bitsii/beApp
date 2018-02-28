@@ -76,7 +76,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
           any app;
           any oapp;
           String name = "IUHub";
-          String homePage = "/App/IUHub/IU.html";
+          String homePage = "/App/IUHub/Konn.html";
           OLocker wcol = OLocker.new();
           OLocker linksol = OLocker.new();
           App:Background trc = App:Background.new();
@@ -107,7 +107,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         String intPort = intPorti.toString();
         app.configManager.put("web.port", intPort);
         
-        String iurl = app.webProto + "://127.0.0.1:" += intPort += "/App/IUHub/IU.html?onceToken=" += olt;
+        String iurl = app.webProto + "://127.0.0.1:" += intPort += "/App/IUHub/Konn.html?onceToken=" += olt;
         //log.log("int url is " + iurl);
         File.apNew(params.getFirst("urlDoc")).writer.open().write(iurl).close();
         File.apNew(params.getFirst("urlScript")).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
@@ -945,7 +945,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
    checkPublicReadPath(Path pa, request) Bool {
       String pas = pa.toString();
       Path adz = Path.apNew("App/" + self.name).file.absPath;
-      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".svg") || pas.ends(".txt"))) {
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".svg") || pas.ends(".txt") || pas.ends(".css"))) {
         return(true);
       }
       return(false);
@@ -969,7 +969,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       ref = ref.substring(0, ref.find("?"));
      }
      log.log("okForPageToken second " + ref);
-     if (ref == "/App/IUHub/IU.html" || ref == "/App/IUHub/IUCam.html") {
+     if (ref == "/App/IUHub/IU.html" || ref == "/App/IUHub/Konn.html" || ref == "/App/IUHub/IUCam.html") {
       return(true);
      }
      return(false);
@@ -1122,7 +1122,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
    }
    
    getLoginUri(request) String {
-     String loginBookmark = "/App/IUHub/IU.html";
+     String loginBookmark = "/App/IUHub/Konn.html";
      return(loginBookmark);
    }
    

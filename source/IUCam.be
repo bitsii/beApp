@@ -273,7 +273,7 @@ use class IUCam:CamPlugin(App:AjaxPlugin) {
     checkPublicReadPath(Path pa, request) Bool {
       String pas = pa.toString();
       Path adz = Path.apNew("App/" + self.name).file.absPath;
-      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js"))) {
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".css"))) {
         return(true);
       }
       return(false);
@@ -297,7 +297,7 @@ use class IUCam:CamPlugin(App:AjaxPlugin) {
       ref = ref.substring(0, ref.find("?"));
      }
      log.log("okForPageToken second " + ref);
-     if (ref == "/App/IUHub/IU.html" || ref == "/App/IUHub/IUCam.html") {
+     if (ref == "/App/IUHub/IU.html" || ref == "/App/IUHub/Konn.html" || ref == "/App/IUHub/IUCam.html") {
       return(true);
      }
      return(false);

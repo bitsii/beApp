@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Konnectii">
+    <title>Konnectii</title>
+    
+    <link rel="stylesheet" href="css/layouts/pure-min.css">
+    
+    <link rel="stylesheet" href="css/layouts/grids-responsive-min.css">
+    
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="/combo/1.18.13?/css/layouts/side-menu-old-ie.css">
+        <![endif]-->
+        <!--[if gt IE 8]><!-->
+            <link rel="stylesheet" href="css/layouts/side-menu.css">
+        <!--<![endif]-->
+    <!--[if lt IE 9]>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.js"></script>
+    <![endif]-->
+<script type="text/javascript" src="IUHub_BEX_E.js">
+</script>
+</head>
+<body>
+
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu">
+            <a class="pure-menu-heading" href="#">Konnectii</a>
+            <ul class="pure-menu-list">
+                <div id="loginmenudiv">
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link">Login</a></li>
+                </div>
+                <div id="loggedinmenudiv" style="display: none;">
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowList', 'devLinksListDiv', 'actionLinksDiv');return false;">Device Links</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOne', 'passchangediv');return false;">Change Password</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOne', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
+                </div>
+            </ul>
+        </div>
+    </div>
+
+    <div id="main">
+    <div id="informDiv" style="display: none;">
+    <div id="informMessageDiv"></div>
+    <p><a href="#" onclick="callUI('hideInform');return false;">Clear Message</a></p>
+    </div>
+    <div id="loginmsgdiv"></div>
+    
+    <div id="passchangediv" style="display: none;">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="password">Old Password</label>
+            <input id="changePassOld" type="password" placeholder="Password">
+        </div>
+        <div class="pure-control-group">
+            <label for="password">New Password</label>
+            <input id="changePassNew" type="password" placeholder="Password">
+        </div>
+        <div class="pure-control-group">
+            <label for="password">Repeat New</label>
+            <input id="changePassNew2" type="password" placeholder="Password">
+        </div>
+        <input type="hidden" id="sessionName" value=""/>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('toggleDisplay', 'passwordDiv');callUI('changePassRequest');return false;">Change Password</button>
+        </div>
+        
+        </fieldset>
+    </form>
+    </div>
+    
+    <div id="logindiv">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="spacer">Login</label>
+            <input id="name" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Login to Device</span>
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="name">Account Name</label>
+            <input id="accountName" type="text" placeholder="Name">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="password">Account Password</label>
+            <input id="accountPass" type="password" placeholder="Password">
+        </div>
+        <input type="hidden" id="sessionName" value=""/>
+        <div class="pure-controls">
+        <label for="sessionNeverExpires" class="pure-checkbox">
+            <input id="sessionNeverExpires" type="checkbox"> Session never expires.
+        </label>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('login');return false;">Login</button>
+        
+        </div>
+        
+        </fieldset>
+    </form>
+    </div>
+    
+<div id="sessionsDiv" style="display: none;">
+<div id="sessionsListDiv" style="display: none;"></div>
+<p><a id="restartId" href="#" onclick="callUI('clearAllSessions');return false;">Clear all sessions (Logs everyone out)</a>
+<p><a id="restartId" href="#" onclick="callUI('clearAllTracking');return false;">Clear all bad ip tracking</a>
+</div>
+
+<div id="actionLinksDiv" style="display: none;"></div>
+<div id="devLinksListDiv" style="display: none;"></div>
+<div id="devLinksDiv" style="display: none;"></div>
+
+</div>
+
+</div>
+
+<script src="css/layouts/ui.js"></script>
+
+</body>
+</html>

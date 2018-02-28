@@ -91,7 +91,7 @@ class IU:WebConnect {
       }
       if (TS.notEmpty(internalAddress)) {
         internalBase = protocol + internalAddress + intPort + "/";
-        internalUrl = internalBase + "App/IUHub/IU.html";
+        internalUrl = internalBase + "App/IUHub/Konn.html";
         internalCamUrl = internalBase + "App/IUHub/IUCam.html";
         internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
         internalCamLink = "<a href=\"" + internalCamUrl + "\">Internal Link to " + deviceName + " Cam, use on device's network.</a>";
@@ -132,7 +132,7 @@ class IU:WebConnect {
       }
       if (TS.notEmpty(externalAddress)) {
         externalBase = protocol + externalAddress + extPort + "/";          
-        externalUrl = externalBase + "App/IUHub/IU.html";
+        externalUrl = externalBase + "App/IUHub/Konn.html";
         externalCamUrl = externalBase + "App/IUHub/IUCam.html";
         externalLink = "<a href=\"" + externalUrl + "\">External Link to " + deviceName + " Hub, use outside device's network (the internet).</a>";
         externalCamLink = "<a href=\"" + externalCamUrl + "\">External Link to " + deviceName + " Cam, use outside device's network (the internet).</a>";
@@ -140,7 +140,7 @@ class IU:WebConnect {
       }
       if (TS.notEmpty(hostedAddress)) {
         hostedBase = protocol + hostedAddress + extPort + "/";          
-        hostedUrl = hostedBase + "App/IUHub/IU.html";
+        hostedUrl = hostedBase + "App/IUHub/Konn.html";
         hostedLink = "<a href=\"" + hostedUrl + "\">Hosted Link to " + deviceName + " Hub, use anywhere there is internet connectivity.</a>";
         log.log("Hosted url use outside device's network (the internet)." + hostedUrl);
       }

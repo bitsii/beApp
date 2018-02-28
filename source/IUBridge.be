@@ -210,7 +210,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      doForwardInner() {
       String doUpnpForwardS = app.configManager.get("doUpnpForward");
       if (TS.isEmpty(doUpnpForwardS)) {
-        doUpnpForwardS = "true";
+        doUpnpForwardS = "false";
       }
       Bool doUpnpForward = Bool.new(doUpnpForwardS);
      
@@ -265,7 +265,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   forwardPorts(WebConnect wc, Net:Ssh ssh, Set rforwarded) {
       String doUpnpForwardS = app.configManager.get("doUpnpForward");
       if (TS.isEmpty(doUpnpForwardS)) {
-        doUpnpForwardS = "true";
+        doUpnpForwardS = "false";
       }
       Bool doUpnpForward = Bool.new(doUpnpForwardS);
       log.log("Forwarding");
