@@ -60,6 +60,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      
    }
    
+   nameGet() String {
+       String name =@ "KBridge";
+       return(name);
+     }
+   
    runBackgroundTasks() {
       bfw.runMyTasks();
       //bup.runMyTasks();

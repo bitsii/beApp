@@ -75,8 +75,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
        fields {
           any app;
           any oapp;
-          String name = "IUHub";
-          String homePage = "/App/IUHub/Konn.html";
+          String homePage = "/App/" + self.name + "/Konn.html";
           OLocker wcol = OLocker.new();
           OLocker linksol = OLocker.new();
           App:Background trc = App:Background.new();
@@ -90,6 +89,11 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
           IO:Logs.turnOnAll();
         //}
         Web:Client:CertificateManager.validateHosts = false;
+     }
+     
+     nameGet() String {
+       String name =@ "IUHub";
+       return(name);
      }
      
      handleCmd(Parameters params) Bool {
@@ -107,7 +111,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         String intPort = intPorti.toString();
         app.configManager.put("web.port", intPort);
         
-        String iurl = app.webProto + "://127.0.0.1:" += intPort += "/App/IUHub/Konn.html?onceToken=" += olt;
+        String iurl = app.webProto + "://127.0.0.1:" += intPort += "/App/" + self.name + "/Konn.html?onceToken=" += olt;
         //log.log("int url is " + iurl);
         File.apNew(params.getFirst("urlDoc")).writer.open().write(iurl).close();
         File.apNew(params.getFirst("urlScript")).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
@@ -969,7 +973,8 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       ref = ref.substring(0, ref.find("?"));
      }
      log.log("okForPageToken second " + ref);
-     if (ref == "/App/IUHub/IU.html" || ref == "/App/IUHub/Konn.html" || ref == "/App/IUHub/IUCam.html") {
+     String pref = "/App/" + self.name;
+     if (ref == pref + "/Konn.html" || ref == pref + "/IUCam.html") {
       return(true);
      }
      return(false);
@@ -1122,7 +1127,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
    }
    
    getLoginUri(request) String {
-     String loginBookmark = "/App/IUHub/Konn.html";
+     String loginBookmark = "/App/" + self.name + "/Konn.html";
      return(loginBookmark);
    }
    

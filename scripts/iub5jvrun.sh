@@ -6,7 +6,7 @@ export MYPWD=`pwd`
 
 export MYHN=`hostname`
 
-java -classpath "App/IUHub/*" be.BEX_E --plugin App:PublicReadPlugin --plugin App:AuthPlugin --plugin App:FileManagerPlugin --plugin IUBridge:BridgePlugin --plugin IUCam:CamPlugin --plugin App:ConfigPlugin --appPlugin IUHub --appType server $*
+java -classpath "App/KBridge/*" be.BEX_E --plugin App:PublicReadPlugin --plugin App:AuthPlugin --plugin App:FileManagerPlugin --plugin IUBridge:BridgePlugin --plugin IUCam:CamPlugin --plugin App:ConfigPlugin --appPlugin KBridge --appType server $*
 
 #--appType browser 
 

@@ -3,80 +3,80 @@
 mkdir -p ../apprun
 mkdir -p ../apprun/App
 mkdir -p ../apprun/Data
-mkdir -p ../apprun/Data/IUHub
+mkdir -p ../apprun/Data/KBridge
 
-rm -rf ../apprun/App/IUHub
-mkdir -p ../apprun/App/IUHub
+rm -rf ../apprun/App/KBridge
+mkdir -p ../apprun/App/KBridge
 
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abe-pl/target5/*;extlibs/IUBridge/*"
+    export CLASSPATH="../abe-pl/target5/*;extlibs/KBridge/*"
     ;;
   *)
-    export CLASSPATH="../abe-pl/target5/*:extlibs/IUBridge/*"
+    export CLASSPATH="../abe-pl/target5/*:extlibs/KBridge/*"
     ;;
 esac
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang jv --emitFlag iuDebug --emitFlag iuCamBridge -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUCam.be source/IUBridge.be source/IUCamBridge.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang jv --emitFlag iuDebug --emitFlag iuCamBridge -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/IUCam.be source/KBridge.be source/IUCamBridge.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 #--emitFlag iuOwnBackground
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-javac ../abe-pl/system/jv/be/*.java ../apprun/App/IUHub/Base/target/jv/be/*.java
+javac ../abe-pl/system/jv/be/*.java ../apprun/App/KBridge/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-cd ../apprun/App/IUHub/Base/target/jv
+cd ../apprun/App/KBridge/Base/target/jv
 jar -cf ../../../BEX_E_lui_jv.jar .
 cd ../../../../../../ioturl
 
 cd ../abe-pl/system/jv
-jar -cf ../../../apprun/App/IUHub/BEX_E_lib_jv.jar .
+jar -cf ../../../apprun/App/KBridge/BEX_E_lib_jv.jar .
 cd ../../../ioturl
 
 find ../abe-pl/system -name "*.class" -exec rm {} \;
 
 #hub
-cp ../apprun/App/IUHub/Base/target/js/be/BEX_E.js ../apprun/App/IUHub/IUHub_BEX_E.js
-cp scripts/upgrade.bat ../apprun/App/IUHub
-cp scripts/postupgrade.bat ../apprun/App/IUHub
-cp scripts/install.sh ../apprun/App/IUHub
-cp scripts/interactiveInstall.sh ../apprun/App/IUHub
-cp scripts/upgrade.sh ../apprun/App/IUHub
-cp scripts/upgrade2.sh ../apprun/App/IUHub
-cp scripts/postupgrade.sh ../apprun/App/IUHub
-cp scripts/startiuh.sh ../apprun/App/IUHub
-cp scripts/iuhrun.sh ../apprun/App/IUHub
-cp scripts/iuhcmdrs.sh ../apprun/App/IUHub
-cp scripts/iuhcmd.sh ../apprun/App/IUHub
-cp scripts/upgrade.bat ../apprun/App/IUHub
-cp scripts/mpg123loop.sh ../apprun/App/IUHub
-cp scripts/stopmpg123loop.sh ../apprun/App/IUHub
-cp source/Konn.html ../apprun/App/IUHub
-cp source/IU.html ../apprun/App/IUHub
-cp extlibs/IUBridge/* ../apprun/App/IUHub
-cp icons/* ../apprun/App/IUHub
-cp licenses/* ../apprun/App/IUHub
+cp ../apprun/App/KBridge/Base/target/js/be/BEX_E.js ../apprun/App/KBridge/IUHub_BEX_E.js
+cp scripts/upgrade.bat ../apprun/App/KBridge
+cp scripts/postupgrade.bat ../apprun/App/KBridge
+cp scripts/install.sh ../apprun/App/KBridge
+cp scripts/interactiveInstall.sh ../apprun/App/KBridge
+cp scripts/upgrade.sh ../apprun/App/KBridge
+cp scripts/upgrade2.sh ../apprun/App/KBridge
+cp scripts/postupgrade.sh ../apprun/App/KBridge
+cp scripts/startiuh.sh ../apprun/App/KBridge
+cp scripts/iuhrun.sh ../apprun/App/KBridge
+cp scripts/iuhcmdrs.sh ../apprun/App/KBridge
+cp scripts/iuhcmd.sh ../apprun/App/KBridge
+cp scripts/upgrade.bat ../apprun/App/KBridge
+cp scripts/mpg123loop.sh ../apprun/App/KBridge
+cp scripts/stopmpg123loop.sh ../apprun/App/KBridge
+cp source/Konn.html ../apprun/App/KBridge
+cp source/IU.html ../apprun/App/KBridge
+cp extlibs/KBridge/* ../apprun/App/KBridge
+cp icons/* ../apprun/App/KBridge
+cp licenses/* ../apprun/App/KBridge
 
 #pure 
-mkdir -p ../apprun/App/IUHub/css/layouts
-rm -f ../apprun/App/IUHub/css/layouts/*
-cp source/css/layouts/* ../apprun/App/IUHub/css/layouts
+mkdir -p ../apprun/App/KBridge/css/layouts
+rm -f ../apprun/App/KBridge/css/layouts/*
+cp source/css/layouts/* ../apprun/App/KBridge/css/layouts
 
 #cam
-cp scripts/uppic.bat ../apprun/App/IUHub
-cp scripts/uppic.sh ../apprun/App/IUHub
-cp scripts/picUpload.sh ../apprun/App/IUHub
-cp scripts/getcams.bat ../apprun/App/IUHub
-cp scripts/getcams.sh ../apprun/App/IUHub
-cp scripts/motionrun.sh ../apprun/App/IUHub
-cp scripts/camclean.sh ../apprun/App/IUHub
-cp source/MOCAM.conf ../apprun/App/IUHub
+cp scripts/uppic.bat ../apprun/App/KBridge
+cp scripts/uppic.sh ../apprun/App/KBridge
+cp scripts/picUpload.sh ../apprun/App/KBridge
+cp scripts/getcams.bat ../apprun/App/KBridge
+cp scripts/getcams.sh ../apprun/App/KBridge
+cp scripts/motionrun.sh ../apprun/App/KBridge
+cp scripts/camclean.sh ../apprun/App/KBridge
+cp source/MOCAM.conf ../apprun/App/KBridge
 
 ./scripts/iub5jvrun.sh $*

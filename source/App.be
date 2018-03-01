@@ -619,6 +619,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       }
       a.pass = arg["newPass"];
       self.accountManager.putAccount(a);
+      return(CallBackUI.informResponse("Password Changed"));
    }
    
    loadAccountRequest(String accountName, request) {
@@ -813,11 +814,11 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         return(loggedIn(a, res, arg, request));
       } else {
         log.log("Login notok");
-        app.badLogin(request);
+        badLogin(request);
       }
     } else {
       log.log("No such account " + arg["accountName"]);
-      app.badLogin(request);
+      badLogin(request);
     }
     return(logoutRequest(arg, request));
   }

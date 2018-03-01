@@ -1,15 +1,15 @@
 #!/bin/bash
 
-rm -rf ../apprun/App/IUHub/Base
+rm -rf ../apprun/App/KBridge/Base
 
 if [ -e ~/node_modules/uglify-js/bin/uglifyjs ]
 then
-  ~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/IUHub/IUHub_BEX_E.js > ../apprun/App/IUHub/IUHub_BEX_E.js.1
-  rm -f ../apprun/App/IUHub/IUHub_BEX_E.js
-  mv ../apprun/App/IUHub/IUHub_BEX_E.js.1 ../apprun/App/IUHub/IUHub_BEX_E.js
+  ~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/KBridge/IUHub_BEX_E.js > ../apprun/App/KBridge/IUHub_BEX_E.js.1
+  rm -f ../apprun/App/KBridge/IUHub_BEX_E.js
+  mv ../apprun/App/KBridge/IUHub_BEX_E.js.1 ../apprun/App/KBridge/IUHub_BEX_E.js
 fi
 
-cd ../apprun/App/IUHub
+cd ../apprun/App/KBridge
 
 mv BEX_E_lib_jv.jar BEX_E_lib_jv.ja
 mv BEX_E_lui_jv.jar BEX_E_lui_jv.ja
@@ -19,14 +19,14 @@ rm *.jar
 mv BEX_E_lib_jv.ja BEX_E_lib_jv.jar
 mv BEX_E_lui_jv.ja BEX_E_lui_jv.jar
 
-rm ../../../IUBHub.zip
+rm ../../../KBridge.zip
 
 cd ..
 
-zip -r IUBHub.zip IUHub
+zip -r KBridge.zip KBridge
 
-cd IUHub
+cd KBridge
 
-mv -f ../IUBHub.zip ../../..
+mv -f ../KBridge.zip ../../..
 
 cd ../../../ioturl
