@@ -152,6 +152,24 @@ class HD {
       return(res);     
    }
    
+   titleSet(String title) self {
+    emit(js) {
+    """
+    document.title = beva_title.bems_toJsString();
+    """
+    }
+   }
+   
+   titleGet() String {
+     String res;
+      emit(js) {
+      """
+      bevl_res = new be_$class/Text:String$().bems_new(document.title);
+      """
+      }
+      return(res);  
+   }
+   
 }
 
 class HE {

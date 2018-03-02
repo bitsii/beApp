@@ -1591,6 +1591,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       }
       app.configManager.put("deviceNameSetOnce", "true");
       //return(CallBackUI.setElementsDisplaysResponse(Maps.from("deviceNameDiv", "none")));
+      //return(CallBackUI.reloadResponse());
       return(CallBackUI.reloadResponse());
       }
    

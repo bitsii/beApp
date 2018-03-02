@@ -40,9 +40,11 @@
                 </div>
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowList', 'devLinksListDiv', 'actionLinksDiv');return false;">Device Links</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowList', 'devLinksListDiv', 'actionLinksDiv');return false;">Browse Devices</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link Devices</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOne', 'passchangediv');return false;">Change Password</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOne', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOne', 'dnamechangediv');return false;">Set Devicename</a></li>
                 </div>
             </ul>
         </div>
@@ -73,6 +75,21 @@
         <input type="hidden" id="sessionName" value=""/>
         <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary" onclick="callUI('changePassRequest');return false;">Change Password</button>
+        </div>
+        
+        </fieldset>
+    </form>
+    </div>
+    
+    <div id="dnamechangediv" style="display: none;">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="password">New Devicename</label>
+            <input id="newDeviceName" type="text" placeholder="My Devicename">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Set Devicename</button>
         </div>
         
         </fieldset>

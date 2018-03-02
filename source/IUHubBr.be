@@ -374,7 +374,7 @@ use class IUHub:Eui {
    }
     
    hideNShow(Set toShow) {
-    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv");
+    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -486,6 +486,11 @@ use class IUHub:Eui {
     }
     profile = arg["profile"];
     log.log("profile " + profile);
+    if (profile == "bridge") {
+      HD.title = "Konnectii Bridge";
+    } elseIf (profile == "router") {
+      HD.title = "Konnectii Router";
+    }
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
