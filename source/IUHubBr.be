@@ -365,16 +365,16 @@ use class IUHub:Eui {
       handleCallOut(arg);
    }
    
-   hideNShowOne(String val) {
-    hideNShow(Set.new().put(val));
+   hideNShowOneResponse(String val) {
+    hideNShowResponse(Set.new().put(val));
    }
    
-   hideNShowList(List toShow) {
-    hideNShow(Sets.from(toShow));
+   hideNShowListResponse(List toShow) {
+    hideNShowResponse(Sets.from(toShow));
    }
     
-   hideNShow(Set toShow) {
-    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv");
+   hideNShowResponse(Set toShow) {
+    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -385,7 +385,7 @@ use class IUHub:Eui {
     //HD.getElementById("loginmsgdiv").innerHTML = "";
    }
    
-   hideNShowMenu(Set toShow) {
+   hideNShowMenuResponse(Set toShow) {
     List allElems =@ Lists.from("loginmenudiv", "loggedinmenudiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
@@ -398,8 +398,8 @@ use class IUHub:Eui {
    }
    
    toLoginResponse() {
-      hideNShow(Sets.from("logindiv"));
-      hideNShowMenu(Sets.from("loginmenudiv"));
+      hideNShowResponse(Sets.from("logindiv"));
+      hideNShowMenuResponse(Sets.from("loginmenudiv"));
    }
    
    pageTokenResponse(Map arg) {
@@ -478,8 +478,8 @@ use class IUHub:Eui {
      fields {
        Set perms = Set.new();
      }
-     hideNShow(Sets.from("devLinksListDiv", "actionLinksDiv"));
-     hideNShowMenu(Sets.from("loggedinmenudiv"));
+     hideNShowResponse(Sets.from("devLinksListDiv", "actionLinksDiv"));
+     hideNShowMenuResponse(Sets.from("loggedinmenudiv"));
      if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
       String lmsg = "<p align=\"center\" style=\"font-size: 100%;font-weight: 800;\">" + arg["deviceName"] + "</p>";
       HD.getElementById("loginmsgdiv").innerHTML = lmsg;

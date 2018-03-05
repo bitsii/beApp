@@ -142,6 +142,19 @@ use class KRouter:RouterPlugin(HubPlugin) {
       return(actionLinks);
    }
    
+   startLinkRequest(request) Map {
+    WebConnect wc = wcol.o;
+    log.log("wc ir " + wc.internalUrl + " wc print " + wc.certificatePrint);
+    return(null);
+   }
+   
+   updateLinkRequest(Map args, request) Map {
+     log.log("in uplr");
+     Account a = request.context.get("account");
+     log.log("uplr account " + a.user);
+     return(Maps.from("action", "updateLinksResponse"));
+   }
+   
    loggedIn(Account a, Map res, Map arg, request) Map {
     res = super.loggedIn(a, res, arg, request);
     String dnso = app.configManager.get("deviceNameSetOnce");

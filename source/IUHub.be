@@ -588,6 +588,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       res["loginUri"] = self.getLoginUri(request);
+      res["certificatePrint"] = wcol.o.certificatePrint;
       
       String imso = app.configManager.get("imapSetOnce");
       if (TS.isEmpty(imso) || imso != "true") {

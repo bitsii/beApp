@@ -40,11 +40,11 @@
                 </div>
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowList', 'devLinksListDiv', 'actionLinksDiv');return false;">Browse Devices</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowListResponse', 'devLinksListDiv', 'actionLinksDiv');return false;">Browse Devices</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link Devices</a></li>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOne', 'passchangediv');return false;">Change Password</a></li>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOne', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOne', 'dnamechangediv');return false;">Set Devicename</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');return false;">Change Password</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'dnamechangediv');return false;">Set Devicename</a></li>
                 </div>
             </ul>
         </div>
@@ -120,6 +120,38 @@
             <input id="sessionNeverExpires" type="checkbox"> Session never expires.
         </label>
         <button type="submit" class="pure-button pure-button-primary" onclick="callUI('login');return false;">Login</button>
+        
+        </div>
+        
+        </fieldset>
+    </form>
+    </div>
+    
+    <div id="devicelogindiv" style="display: none;">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="spacer">Link</label>
+            <input id="name" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Link to Router</span>
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="name">Router Address (URL)</label>
+            <input id="routerAddress" type="text" placeholder="Name">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="name">Router Account Name</label>
+            <input id="routerAccountName" type="text" placeholder="Name">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="password">Router Account Password</label>
+            <input id="routerAccountPass" type="password" placeholder="Password">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('routerLinkRequest', document.getElementById('routerAddress').value, document.getElementById('routerAccountName').value, document.getElementById('routerAccountPass').value);return false;">Link to Router</button>
         
         </div>
         

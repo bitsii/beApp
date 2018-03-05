@@ -19,6 +19,7 @@ use System:Parameters;
 
 use App:Alert;
 use App:AppStart;
+use App:CallBackUI;
 
 use Net:UPnP as Upnp;
 
@@ -69,6 +70,91 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       bfw.runMyTasks();
       //bup.runMyTasks();
    }
+   
+   startLinkRequest(request) Map {
+    return(CallBackUI.hideNShowOneResponse("devicelogindiv"));
+   }
+   
+   routerLinkRequest(String url, String account, String pass, request) Map {
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+    }
+    log.log("linking");
+    
+    Account a = request.context.get("account");
+    String destUrl = url;
+    Map argOut = Map.new();
+    argOut["accountName"] = account;
+    argOut["accountPass"] = pass;
+    argOut["sessionLength"] = "-1";
+    argOut["action"] = "loginRequest";
+    argOut["serviceLogin"] = "yup";
+    
+    Web:Client client = Web:Client.new();
+    String payload = Json:Marshaller.marshall(argOut);
+    client.outputHeaders.put("referer", destUrl);
+    client.url = destUrl;
+    
+    try {
+      Web:Client:CertificateManager.validateHosts = false;
+      Web:Client:CertificateManager.validateCertificates = false;
+      //Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      log.log("GOT SOMETHING BACK!!!");
+      client.close();
+      if (TS.notEmpty(res)) {
+        log.log("res " + res);
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        //store stuff
+        Map ds = Map.new();
+        ds["serviceSessionKey"] = resMap["serviceSessionKey"];
+        ds["pageToken"] = resMap["pageToken"];
+        ds["destUrl"] = destUrl;
+        ds["certificatePrint"] = resMap["certificatePrint"];
+        String dss = Json:Marshaller.marshall(ds);
+        log.log("sldss " + dss);
+        updateMyLink(app.plugin.wcol.o, ds);
+        //app.configManager.put("LinkSession." + a.user + "!" + destUrl, dss);
+        //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
+      }
+      //resetCertMan(wco.certificatePrint);
+    } catch(any e) {
+      //resetCertMan(wco.certificatePrint);
+    }
+    
+    return(CallBackUI.informResponse("link"));
+   }
+   
+   updateMyLink(WebConnect wco, Map ds) Map {
+    try {
+      String destUrl = ds["destUrl"];
+      log.log("sending wc to " + destUrl);
+      Map argOut = Map.new();
+      argOut["action"] = "updateLinkRequest";
+      argOut["pageToken"] = ds["pageToken"];
+      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+      argOut["wc"] = wco.toMap();
+      Web:Client:CertificateManager.validateHosts = false;
+      Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
+      Web:Client client = Web:Client.new();
+      String payload = Json:Marshaller.marshall(argOut);
+      client.outputHeaders.put("referer", destUrl);
+      client.url = destUrl;
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      client.close();
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        log.log("!!! got res from updatelink  " + res);
+      }
+    } catch (any e) {
+      resetCertMan(wco.certificatePrint);
+      log.log("got exception during checkConn");
+      log.log(e);
+    }
+    return(null);
+  }
    
    checkUpgrade() {
     log.log("in checkupgrade");
