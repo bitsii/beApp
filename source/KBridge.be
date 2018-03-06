@@ -115,12 +115,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         String dss = Json:Marshaller.marshall(ds);
         log.log("sldss " + dss);
         updateMyLink(app.plugin.wcol.o, ds);
-        //app.configManager.put("LinkSession." + a.user + "!" + destUrl, dss);
+        app.configManager.put("LinkSession." + a.user + "!" + destUrl, dss);
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
       }
-      //resetCertMan(wco.certificatePrint);
+      resetCertMan(ds["certificatePrint"]);
     } catch(any e) {
-      //resetCertMan(wco.certificatePrint);
+      resetCertMan(ds["certificatePrint"]);
     }
     
     return(CallBackUI.informResponse("link"));
@@ -148,8 +148,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         Map resMap = Json:Unmarshaller.unmarshall(res);
         log.log("!!! got res from updatelink  " + res);
       }
+      resetCertMan(ds["certificatePrint"]);
     } catch (any e) {
-      resetCertMan(wco.certificatePrint);
+      resetCertMan(ds["certificatePrint"]);
       log.log("got exception during checkConn");
       log.log(e);
     }

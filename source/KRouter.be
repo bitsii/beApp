@@ -152,6 +152,20 @@ use class KRouter:RouterPlugin(HubPlugin) {
      log.log("in uplr");
      Account a = request.context.get("account");
      log.log("uplr account " + a.user);
+    
+    Json:Marshaller mar = Json:Marshaller.new();
+    
+    Map links = Map.new();
+    Map lm = args["wc"];
+    if (def(lm)) {
+      log.log("putting into links");
+      WebConnect wc = WebConnect.new().fromMap(lm);
+      links.put(wc.deviceId, wc);
+      String conjs = mar.marshall(lm);
+      app.configManager.put("link." + wc.deviceId, conjs);
+    }
+    app.plugin.linksol.o = links;
+     
      return(Maps.from("action", "updateLinksResponse"));
    }
    
