@@ -155,16 +155,13 @@ use class KRouter:RouterPlugin(HubPlugin) {
     
     Json:Marshaller mar = Json:Marshaller.new();
     
-    Map links = Map.new();
     Map lm = args["wc"];
     if (def(lm)) {
       log.log("putting into links");
       WebConnect wc = WebConnect.new().fromMap(lm);
-      links.put(wc.deviceId, wc);
       String conjs = mar.marshall(lm);
-      app.configManager.put("link." + wc.deviceId, conjs);
+      app.configManager.put("link." + a.user + "!" + wc.deviceId, conjs);
     }
-    app.plugin.linksol.o = links;
      
      return(Maps.from("action", "updateLinksResponse"));
    }

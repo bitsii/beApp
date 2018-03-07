@@ -77,7 +77,6 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
           any oapp;
           String homePage = "/App/" + self.name + "/Konn.html";
           OLocker wcol = OLocker.new();
-          OLocker linksol = OLocker.new();
           App:Background trc = App:Background.new();
           App:Background buu = App:Background.new();
           Bool runBackground = true;
@@ -150,27 +149,24 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     }  
   }
   
-  loadLinks() {
-    if (undef(app.plugin.linksol.o)) {
-      loadLinksInner();
-    }
-  }
-  
-  loadLinksInner() {
+  getLinks(Account a) Map {
     Map links = Map.new();
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    for (any kv in app.configManager.getMap("link.")) {
+    for (any kv in app.configManager.getMap("link." + a.user + "!")) {
       WebConnect wc = WebConnect.new();
       wc.fromMap(unmar.unmarshall(kv.value));
       links.put(wc.deviceId, wc);
       log.log("loaded link " + wc.deviceName);
     }
-    //wc = app.plugin.wcol.o;
-    //if (def(wc)) {
-    //  links.put(wc.deviceId, wc);
-    //}
-    app.plugin.linksol.o = links;
-    oapp.plugin.linksol.o = links;
+    return(links);
+  }
+  
+  getLink(Account a, String deviceId) {
+    Map links = getLinks(a);
+    if (def(links)) {
+      return(links.get(deviceId));
+    }
+    return(null);
   }
   
   doUpdate() {
@@ -236,7 +232,6 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     }
     
     loadWc();
-    loadLinks();
     
     webPort = app.webPort;
     certificateThumbprint = app.certificateThumbprint; 
@@ -314,7 +309,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       return(CallBackUI.getDevCredsResponse(devId, devName));
     } else {
       Map ds = Json:Unmarshaller.unmarshall(devSession);
-      if (true) { return(openBrowserFromDeviceSession(ds)) };
+      if (true) { return(openBrowserFromDeviceSession(ds, request)) };
     }
     return(null);
   }
@@ -403,13 +398,13 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     return(null);
   }
   
-  openBrowserFromDeviceSession(Map ds) Map {
+  openBrowserFromDeviceSession(Map ds, request) Map {
     //this only works for hub/app/one user at a time
     //it's only called that way, so...
     fields {
       System:Thread godevChk;
     }
-    Map links = self.linksol.o;
+    Map links = getLinks(request.context.get("account"));
     if (def(links)) {
       WebConnect wco = links.get(ds.get("deviceId"));
       if (def(wco)) {
@@ -485,7 +480,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     log.log("in devlogin");
     Account a = request.context.get("account");
     if (def(a)) {
-      Map links = self.linksol.o;
+      Map links = getLinks(a);
       if (def(links)) {
         WebConnect wco = links.get(arg.get("deviceId"));
       }
@@ -749,8 +744,8 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
              log.log("Exception during imap stuff " );
             }
           }
-          app.plugin.linksol.o = links;
-          oapp.plugin.linksol.o = links;
+          //app.plugin.linksol.o = links;
+          //oapp.plugin.linksol.o = links;
           for (any kv in app.configManager.getMap("link.")) {
             String kid = kv.key.substring(5);
             log.log("checking kid " + kid);
@@ -1326,7 +1321,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
    getDevLinks(Account a, Map arg, request) String {
     String devLinks = String.new();
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    for (any kv in app.plugin.linksol.o) {
+    for (any kv in getLinks(a)) {
       WebConnect wc = kv.value;
       
       //if (request.embedded) { }
@@ -1342,7 +1337,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
    
    wakeDevRequest(String deviceId, request) {
      Wol wol = Wol.new();
-     WebConnect wc = app.plugin.linksol.o.get(deviceId);
+     WebConnect wc = getLink(request.context.get("account"), deviceId);
      if (def(wc)) {
        log.log("waking " + wc.deviceName);
        for (Int i = 0;i < 3;i++=) {
@@ -1359,7 +1354,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
    getDevLinksRequest(String deviceId, request) Map {
      String devLinks = String.new();
      Pair links = Pair.new();
-     WebConnect wc = app.plugin.linksol.o.get(deviceId);
+     WebConnect wc = getLink(request.context.get("account"), deviceId);
      WebConnect mywc = app.plugin.wcol.o;
      if (def(wc)) {
        Bool internal = isInternal(request);
