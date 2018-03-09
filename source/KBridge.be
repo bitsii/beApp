@@ -56,6 +56,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       App:Background bfw = App:Background.new();
       //App:Background bup = App:Background.new();
       String profile = "bridge";
+      String defaultUpnpF = "true";
      }
      super.new();
      
@@ -114,8 +115,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         ds["certificatePrint"] = resMap["certificatePrint"];
         String dss = Json:Marshaller.marshall(ds);
         log.log("sldss " + dss);
-        updateMyLink(app.plugin.wcol.o, ds);
         app.configManager.put("LinkSession." + a.user + "!" + destUrl, dss);
+        updateMyLink(app.plugin.wcol.o, ds);
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
       }
       resetCertMan(ds["certificatePrint"]);
@@ -125,6 +126,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     
     return(CallBackUI.informResponse("link"));
    }
+   
+   updateMyLinks() {
+     WebConnect wc = app.plugin.wcol.o;
+     Json:Unmarshaller unmar = Json:Unmarshaller.new();
+     Map lss = app.configManager.getMap("LinkSession.");
+     for (auto kv in lss) {
+       Map ds = unmar.unmarshall(kv.value);
+       updateMyLink(wc, ds);
+     }
+   }   
    
    updateMyLink(WebConnect wco, Map ds) Map {
     try {
@@ -302,7 +313,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      doForwardInner() {
       String doUpnpForwardS = app.configManager.get("doUpnpForward");
       if (TS.isEmpty(doUpnpForwardS)) {
-        doUpnpForwardS = "false";
+        doUpnpForwardS = defaultUpnpF;
       }
       Bool doUpnpForward = Bool.new(doUpnpForwardS);
      
@@ -343,10 +354,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
            ssh = null;
          }
       }
-      wc.updateExternal(doUpnpForward);
+      wc.updateExternal(homePage, doUpnpForward);
       forwardPorts(wc, ssh, rforwarded);
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
+      updateMyLinks();
       app.plugin.updateUrls();
       log.log("saving");
       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
@@ -357,7 +369,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   forwardPorts(WebConnect wc, Net:Ssh ssh, Set rforwarded) {
       String doUpnpForwardS = app.configManager.get("doUpnpForward");
       if (TS.isEmpty(doUpnpForwardS)) {
-        doUpnpForwardS = "false";
+        doUpnpForwardS = defaultUpnpF;
       }
       Bool doUpnpForward = Bool.new(doUpnpForwardS);
       log.log("Forwarding");

@@ -214,7 +214,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     log.log("starting wc update");
     //fwd was here
     log.log("setting links");
-    wc.updateInternal();
+    wc.updateInternal(homePage);
     app.plugin.wcol.o = wc;
     oapp.plugin.wcol.o = wc;
     log.log("updating addresses");
@@ -568,18 +568,12 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
     return("hub");
   }
   
-  refreshLinksRequest(request) Map {
-    Account a = request.context.get("account");
-    return(CallBackUI.refreshLinksResponse(getActionLinks(a, Map.new(), request), getDevLinks(a, Map.new(), request)));
-  }
-  
   loggedIn(Account a, Map res, Map arg, request) Map {
       res["action"] = "updateResponse";
       res["profile"] = self.profile;
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
-      res["devLinksList"] = getDevLinks(a, arg, request);
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       res["loginUri"] = self.getLoginUri(request);
@@ -821,9 +815,6 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
         if (TS.notEmpty(wc.certificatePrint)) {
           msg += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
         }
-        //if (TS.notEmpty(wc.externalCamLink)) {
-        //  msg += "<p>" + wc.externalCamLink += "</p>\n<p>" += //wc.internalCamLink += "</p>\n";
-        //}
         String payload = Encode:Hex.new().encode(Json:Marshaller.marshall(wc.toMap()));
         msg += "<input type=\"hidden\" name=\"payload\" value=\"" += payload += "\"/>";
         log.log("In doimap3");
@@ -1318,23 +1309,6 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       return(Pair.new(intsl, extsl));
    }
    
-   getDevLinks(Account a, Map arg, request) String {
-    String devLinks = String.new();
-    Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    for (any kv in getLinks(a)) {
-      WebConnect wc = kv.value;
-      
-      //if (request.embedded) { }
-      if (false) {
-        devLinks += "<p><a href=\"#\" onclick=\"callApp('connectToDeviceRequest', '" += wc.deviceId += "', '" += wc.deviceName += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"help-about.svg\" alt=\"Device Links\"/>Go to  " += wc.deviceName += "</a></p>";
-      } else {
-        devLinks += "<p><a href=\"#\" onclick=\"callUI('toggleDevLinks', '" += wc.deviceId += "');callApp('getDevLinksRequest', '" += wc.deviceId += "');return false;\"><img style=\"margin-top:0px; margin-bottom:0px;margin-left:0px;margin-right:0px;\" src=\"help-about.svg\" alt=\"Device Links\"/>Links for  " += wc.deviceName += "</a></p>";
-      }
-      
-    }
-     return(devLinks);
-   }
-   
    wakeDevRequest(String deviceId, request) {
      Wol wol = Wol.new();
      WebConnect wc = getLink(request.context.get("account"), deviceId);
@@ -1351,40 +1325,8 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
      }
    }
    
-   getDevLinksRequest(String deviceId, request) Map {
-     String devLinks = String.new();
-     Pair links = Pair.new();
-     WebConnect wc = getLink(request.context.get("account"), deviceId);
-     WebConnect mywc = app.plugin.wcol.o;
-     if (def(wc)) {
-       Bool internal = isInternal(request);
-       if (internal) {
-        links.first = wc.internalLink;
-        links.second = wc.externalLink;
-       } else {
-        links.second = wc.internalLink;
-        links.first = wc.externalLink;
-       }
-       if (TS.notEmpty(links.first)) {
-        devLinks += "<p>" += links.first += " (recommended)</p>";
-       }
-       if (TS.notEmpty(wc.hostedLink)) {
-        devLinks += "<p>" += wc.hostedLink += "</p>";
-       }
-       if (TS.notEmpty(links.second)) {
-        devLinks += "<p>" += links.second += "</p>";
-       }
-       //check to see if I am on same network as device first
-       devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" += wc.deviceId += "');return false;\">Wakeup  " += wc.deviceName += "</a></p>";
-       if (TS.notEmpty(wc.certificatePrint)) {
-         devLinks += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
-       }
-    }
-     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("devLinksDiv", devLinks)))
-   }
-   
    aboutRequest(request) Map {
-     String about = "<p>IotUrl Hub Version " + self.version + "<p>";
+     String about = "<p>Konnectii Bridge Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    

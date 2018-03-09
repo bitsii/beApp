@@ -32,11 +32,6 @@ class IU:WebConnect {
       String externalLink;
       String hostedLink;
       
-      String internalCamUrl;
-      String externalCamUrl;
-      String internalCamLink;
-      String externalCamLink;
-      
       String certificatePrint = "";
       List internalMacAddresses = List.new();
       String extraPorts;
@@ -44,7 +39,7 @@ class IU:WebConnect {
       Map servicesConf = Map.new();
       
       String deviceId;
-      String deviceName;
+      String deviceName = "";
       
       String sharedLoginToken;
       
@@ -72,7 +67,7 @@ class IU:WebConnect {
     return(externalPorti.toString());
   }
 
-  updateInternal() self {
+  updateInternal(String homePage) self {
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -90,20 +85,18 @@ class IU:WebConnect {
         intPort = "";
       }
       if (TS.notEmpty(internalAddress)) {
-        internalBase = protocol + internalAddress + intPort + "/";
-        internalUrl = internalBase + "App/IUHub/Konn.html";
-        internalCamUrl = internalBase + "App/IUHub/IUCam.html";
-        internalLink = "<a href=\"" + internalUrl + "\">Internal Link to " + deviceName + " Hub, use on device's network.</a>";
-        internalCamLink = "<a href=\"" + internalCamUrl + "\">Internal Link to " + deviceName + " Cam, use on device's network.</a>";
+        internalBase = protocol + internalAddress + intPort;
+        internalUrl = internalBase + homePage;
+        internalLink = "<a href=\"" + internalUrl + "\" target=\"_blank\">Internal Link to " + deviceName + " Bridge, use on device's network.</a>";
         log.log("Internal url " + internalUrl);
       }
   }
   
-  updateExternal() self {
-    updateExternal(true);
+  updateExternal(String homePage) self {
+    updateExternal(homePage, true);
   }
   
-  updateExternal(Bool doUpnp) self {
+  updateExternal(String homePage, Bool doUpnp) self {
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -131,17 +124,15 @@ class IU:WebConnect {
         extPort = "";
       }
       if (TS.notEmpty(externalAddress)) {
-        externalBase = protocol + externalAddress + extPort + "/";          
-        externalUrl = externalBase + "App/IUHub/Konn.html";
-        externalCamUrl = externalBase + "App/IUHub/IUCam.html";
-        externalLink = "<a href=\"" + externalUrl + "\">External Link to " + deviceName + " Hub, use outside device's network (the internet).</a>";
-        externalCamLink = "<a href=\"" + externalCamUrl + "\">External Link to " + deviceName + " Cam, use outside device's network (the internet).</a>";
+        externalBase = protocol + externalAddress + extPort;          
+        externalUrl = externalBase + homePage;
+        externalLink = "<a href=\"" + externalUrl + "\" target=\"_blank\">External Link to " + deviceName + " Bridge, use outside device's network (the internet).</a>";
         log.log("External url " + externalUrl);
       }
       if (TS.notEmpty(hostedAddress)) {
-        hostedBase = protocol + hostedAddress + extPort + "/";          
-        hostedUrl = hostedBase + "App/IUHub/Konn.html";
-        hostedLink = "<a href=\"" + hostedUrl + "\">Hosted Link to " + deviceName + " Hub, use anywhere there is internet connectivity.</a>";
+        hostedBase = protocol + hostedAddress + extPort;          
+        hostedUrl = hostedBase + homePage;
+        hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted Link to " + deviceName + " Bridge, use anywhere there is internet connectivity.</a>";
         log.log("Hosted url use outside device's network (the internet)." + hostedUrl);
       }
       
