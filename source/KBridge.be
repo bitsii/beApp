@@ -76,6 +76,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(CallBackUI.hideNShowOneResponse("devicelogindiv"));
    }
    
+   getRemoteAccessRequest(request) Map {
+   
+     return(CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv", "forwardPortsDiv")));
+   }
+   
    routerLinkRequest(String url, String account, String pass, request) Map {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
@@ -124,7 +129,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       resetCertMan(ds["certificatePrint"]);
     }
     
-    return(CallBackUI.informResponse("link"));
+    return(CallBackUI.informResponse("Device Link Successful"));
    }
    
    updateMyLinks() {

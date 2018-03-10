@@ -374,7 +374,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv");
+    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv", "remoteaccessdiv", "forwardPortsDiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -478,19 +478,42 @@ use class IUHub:Eui {
      fields {
        Set perms = Set.new();
      }
-     hideNShowResponse(Sets.from("devLinksListDiv", "actionLinksDiv"));
-     hideNShowMenuResponse(Sets.from("loggedinmenudiv"));
-     if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
-      String lmsg = "<p align=\"center\" style=\"font-size: 100%;font-weight: 800;\">" + arg["deviceName"] + "</p>";
-      HD.getElementById("loginmsgdiv").innerHTML = lmsg;
+     //profile - security - menu setup
+    
+    if (arg.has("permsString")) {
+      String permsString = arg["permsString"];
+      if (TS.notEmpty(permsString)) {
+        for (String perm in permsString.split(",")) {
+          perms.put(perm);
+        }
+      }
     }
+    
     profile = arg["profile"];
     log.log("profile " + profile);
     if (profile == "bridge") {
       HD.title = "Konnectii Bridge";
+      
+      HD.getElementById("browseDevicesME").display = "none";
+      HD.getElementById("linkDevicesME").display = "none";
+      
     } elseIf (profile == "router") {
       HD.title = "Konnectii Router";
+      
+      HD.getElementById("setDevicenameME").display = "none";
+      HD.getElementById("remoteAccessME").display = "none";
+      
     }
+         
+     hideNShowResponse(Sets.from("devLinksListDiv", "actionLinksDiv"));
+     hideNShowMenuResponse(Sets.from("loggedinmenudiv"));
+     
+     
+     if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
+      String lmsg = "<p align=\"center\" style=\"font-size: 100%;font-weight: 800;\">" + arg["deviceName"] + "</p>";
+      HD.getElementById("loginmsgdiv").innerHTML = lmsg;
+    }
+    
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
@@ -500,14 +523,7 @@ use class IUHub:Eui {
       HD.getElementById("devLinksListDiv").innerHTML = "";
     }
     HD.getElementById("devLinksDiv").innerHTML = "";
-    if (arg.has("permsString")) {
-      String permsString = arg["permsString"];
-      if (TS.notEmpty(permsString)) {
-        for (String perm in permsString.split(",")) {
-          perms.put(perm);
-        }
-      }
-    }
+
     //HC.callAppLater(Lists.from("refreshLinksRequest"), 10000);
    }
    
