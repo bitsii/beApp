@@ -1362,7 +1362,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
        app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
-       return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
+       return(CallBackUI.informResponse("Service Removed"));
        }
        return(null);
    }
@@ -1376,7 +1376,7 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
        //TODO update imap wc
-        return(CallBackUI.setElementsDisplaysResponse(Maps.from("forwardPortsDiv", "none")));
+        return(CallBackUI.informResponse("Service Saved"));
        }
        return(null);
    }

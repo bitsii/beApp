@@ -76,9 +76,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(CallBackUI.hideNShowOneResponse("devicelogindiv"));
    }
    
+   getRemoteListenRequest(request) Map {
+   
+     return(CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")));
+   }
+   
    getRemoteAccessRequest(request) Map {
    
-     return(CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv", "forwardPortsDiv")));
+     return(CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")));
    }
    
    routerLinkRequest(String url, String account, String pass, request) Map {

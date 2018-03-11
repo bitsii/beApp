@@ -41,7 +41,8 @@
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
                 <li class="pure-menu-item" id="browseDevicesME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowListResponse', 'devLinksListDiv', 'actionLinksDiv');return false;">Browse Devices</a></li>
-                <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">Remote Access</a></li>
+                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');return false;">External Access</a></li>
+                <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">External Services</a></li>
                 <li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link Devices</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');return false;">Change Password</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
@@ -101,20 +102,20 @@
     <form class="pure-form pure-form-aligned">
     <fieldset>
         <div class="pure-control-group">
-            <label for="spacer">Remote Tunnels</label>
-            <input id="name" type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Tunnel remote internet Bridge and service connections</span>
+            <label for="rlspacer"></label>
+            <input id="rlspacer" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Expose to the internet via a remote host</span>
         </div>
         <div class="pure-control-group">
             <label for="sshHost">SSH Hostname</label>
             <input id="sshHost" type="text" placeholder="SSH Hostname">
         </div>
         <div class="pure-control-group">
-            <label for="sshHost">SSH Login</label>
+            <label for="sshLogin">SSH Login</label>
             <input id="sshLogin" type="text" placeholder="SSH Login">
         </div>
         <div class="pure-control-group">
-            <label for="sshHost">SSH Password</label>
+            <label for="sshPass">SSH Password</label>
             <input id="sshPass" type="password" placeholder="SSH Password">
         </div>
         <div class="pure-controls">
@@ -126,24 +127,49 @@
     
 <div id="forwardPortsDiv" style="display: none;">
 <form class="pure-form pure-form-aligned">
+<fieldset>
+  <div class="pure-control-group">
+      <label for="spacer"></label>
+      <input id="name" type="hidden" placeholder="Space">
+      <span class="pure-form-message-inline">Expose services to the internet</span>
+  </div>
+<div class="pure-control-group">
+<label for="fpfid">Select Service</label>
 <select name=fpFillin onchange='fpChange(this.form.fpFillin);return false;'>
-<option >(Select a service to start (or configure manually))</option>
+<option >(Manual Configuration)</option>
 <option>Secure Shell (ssh)</option>
 <option>Remote Desktop (rdp)</option>
 <option>NoMachine (nx)</option>
 <option>VNC</option>
 <option>Apple Remote Desktop (ard)</option>
 </select>
-</form>
-<p><label>Service Name</label><input type="text" id="fpName"</input></p>
-<p><label>Local Port</label><input type="text" id="fpPort"</input></p>
-<p><label>External Port</label><input type="text" id="fpExPort"</input>(Blank to Autoselect)</p>
-<p><label>Url Pattern</label><input type="text" id="fpPattern"</input></p>
-<div id="fpDitty"></div>
-<p><a href="#" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);callUI('toggleDisplay', 'forwardPortsDiv');return false;">Save Service Setup</a>  <a href="#" onclick="callApp('deleteForwardRequest', document.getElementById('fpPort').value);return false;">Delete Service</a>  <a href="#" onclick="callUI('toggleDisplay', 'forwardPortsDiv');return false;">Cancel</a></p>
-<div id="forwardPortsListDiv"></div>
 </div>
-    
+<div class="pure-control-group">
+    <label for="fpName">Service Name</label>
+    <input id="fpName" type="text" placeholder="Service Name">
+</div>
+<div class="pure-control-group">
+    <label for="fpPort">Port</label>
+    <input id="fpPort" type="text" placeholder="Port">
+    <input id="fpExPort" type="hidden" value="">
+</div>
+<div class="pure-control-group">
+    <label for="fpPattern">Url Pattern</label>
+    <input id="fpPattern" type="text" placeholder="Url Pattern">
+</div>
+
+<div class="pure-control-group">
+    <label for="spacer"></label>
+    <input id="name" type="hidden" placeholder="Space">
+    <span class="pure-form-message-inline" id="fpDitty"></span>
+</div>
+<div class="pure-controls">
+<button type="submit" class="pure-button pure-button-primary" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);return false;">Save Service</button>
+<button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteForwardRequest', document.getElementById('fpPort').value);return false;">Delete Service</button>
+</div>
+    </fieldset>
+</form>
+</div>
     
     <div id="logindiv">
     <form class="pure-form pure-form-aligned">
