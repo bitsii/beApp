@@ -78,7 +78,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    getRemoteListenRequest(request) Map {
    
-     return(CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")));
+     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))), CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")))));
    }
    
    getRemoteAccessRequest(request) Map {
