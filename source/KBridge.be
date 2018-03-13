@@ -83,7 +83,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    getRemoteAccessRequest(request) Map {
    
-     return(CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")));
+     //return(CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")));
+     
+     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())), CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")))));
    }
    
    routerLinkRequest(String url, String account, String pass, request) Map {
@@ -260,8 +262,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       super.start();
       
       bfw.startDelay = Time:Interval.new(20, 0);
-      bfw.repeatDelay = Time:Interval.new(1200, 0);
-      bfw.minimumDelay = Time:Interval.new(600, 0);
+      bfw.repeatDelay = Time:Interval.new(300, 0);
+      bfw.minimumDelay = Time:Interval.new(120, 0);
       bfw.toInvoke = getInvocation("doForward", List.new());
       
       //bup.startDelay = Time:Interval.new(30, 0);
@@ -274,6 +276,87 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         //bup.start();
       }
    }
+   
+   getInternetListenRequest(request) Map {
+     //String sshPass = app.configManager.get("il.sshHost", "");
+     return(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))));
+   }
+   
+   saveInternetListenRequest(String host, String login, String pass, request) Map {
+    if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      //need to remove old if present
+      app.configManager.put("il.sshHost", host);
+      app.configManager.put("il.sshLogin", login);
+      app.configManager.put("il.sshPass", pass);
+      String siteNames = app.configManager.get("auth.siteNames");
+      String proto = app.webProto + "://";
+      if (TS.notEmpty(host)) {
+        if (undef(siteNames)) { siteNames = ""; }
+        if (siteNames.has(proto + host)!) {
+          if (TS.notEmpty(siteNames)) {
+            siteNames += ",";
+          }
+          siteNames += proto += host;
+          app.configManager.put("auth.siteNames", siteNames);
+        }
+      }
+      doForward();
+    }
+    return(null);
+   }
+   
+   getForwardPortsList() String {
+     String fpl = String.new();
+     WebConnect wc = wcol.o;
+       if (def(wc)) {
+       for (any kv in wc.getServices()) {
+        fpl += "<p><a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a></p>";
+       }
+     }
+     return(fpl);
+   }
+   
+   loadForwardPortRequest(String port, request) Map {
+     String fpl = String.new();
+     WebConnect wc = wcol.o;
+     Map fp = wc.getServices().get(port);
+     for (any kv in fp) {
+      log.log("fp " + kv.key + " " + kv.value);
+     }
+     log.log("urlPat " + fp.get("urlPat"));
+    return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpExPort", wc.extraPortMap.get(port), "fpPattern", fp.get("urlPat"))));
+   }
+   
+   deleteForwardRequest(String port, request) Map {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+       WebConnect wc = app.plugin.wcol.o;
+       //now fpname and urlpat tied to port
+       wc.deleteService(port);
+       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+       app.plugin.wcol.o = wc;
+       oapp.plugin.wcol.o = wc;
+       doForward();
+       return(getRemoteAccessRequest(request));
+       }
+       return(null);
+   }
+   
+   updateForwardRequest(String fpName, String port, String exPort, String urlPat, request) Map {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+       WebConnect wc = app.plugin.wcol.o;
+       //now fpname and urlpat tied to port
+       wc.putService(fpName, port, exPort, urlPat);
+       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+       app.plugin.wcol.o = wc;
+       oapp.plugin.wcol.o = wc;
+       //TODO update imap wc
+       doForward();
+       //return(CallBackUI.informResponse("Service Saved"));
+       return(getRemoteAccessRequest(request));
+       }
+       return(null);
+   }
+
 
    updateActionLinks(String actionLinks, Account a, Map arg, request) String {
       super.updateActionLinks(actionLinks, a, arg, request);

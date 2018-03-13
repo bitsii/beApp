@@ -906,33 +906,6 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
      return(null);
    }
    
-   getInternetListenRequest(request) Map {
-     //String sshPass = app.configManager.get("il.sshHost", "");
-     return(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))));
-   }
-   
-   saveInternetListenRequest(String host, String login, String pass, request) Map {
-    if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-      //need to remove old if present
-      app.configManager.put("il.sshHost", host);
-      app.configManager.put("il.sshLogin", login);
-      app.configManager.put("il.sshPass", pass);
-      String siteNames = app.configManager.get("auth.siteNames");
-      String proto = app.webProto + "://";
-      if (TS.notEmpty(host)) {
-        if (undef(siteNames)) { siteNames = ""; }
-        if (siteNames.has(proto + host)!) {
-          if (TS.notEmpty(siteNames)) {
-            siteNames += ",";
-          }
-          siteNames += proto += host;
-          app.configManager.put("auth.siteNames", siteNames);
-        }
-      }
-    }
-    return(null);
-   }
-   
    checkPublicReadPath(Path pa, request) Bool {
       String pas = pa.toString();
       Path adz = Path.apNew("App/" + self.name).file.absPath;
@@ -1329,58 +1302,6 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
      String about = "<p>Konnectii Bridge Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
-   
-   getForwardPortsListRequest(request) Map {
-     String fpl = String.new();
-     WebConnect wc = wcol.o;
-       if (def(wc)) {
-       for (any kv in wc.getServices()) {
-        fpl += "<p><a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a></p>";
-       }
-     }
-     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", fpl)), CallBackUI.setElementsValuesResponse(Maps.from("fpName", "", "fpPort", "", "fpExPort", "", "fpPattern", "")))));
-     
-     //return(null);
-   }
-   
-   loadForwardPortRequest(String port, request) Map {
-     String fpl = String.new();
-     WebConnect wc = wcol.o;
-     Map fp = wc.getServices().get(port);
-     for (any kv in fp) {
-      log.log("fp " + kv.key + " " + kv.value);
-     }
-     log.log("urlPat " + fp.get("urlPat"));
-    return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpExPort", wc.extraPortMap.get(port), "fpPattern", fp.get("urlPat"))));
-   }
-   
-   deleteForwardRequest(String port, request) Map {
-     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-       WebConnect wc = app.plugin.wcol.o;
-       //now fpname and urlpat tied to port
-       wc.deleteService(port);
-       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
-       app.plugin.wcol.o = wc;
-       oapp.plugin.wcol.o = wc;
-       return(CallBackUI.informResponse("Service Removed"));
-       }
-       return(null);
-   }
-   
-   updateForwardRequest(String fpName, String port, String exPort, String urlPat, request) Map {
-     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-       WebConnect wc = app.plugin.wcol.o;
-       //now fpname and urlpat tied to port
-       wc.putService(fpName, port, exPort, urlPat);
-       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
-       app.plugin.wcol.o = wc;
-       oapp.plugin.wcol.o = wc;
-       //TODO update imap wc
-        return(CallBackUI.informResponse("Service Saved"));
-       }
-       return(null);
-   }
-   
    
 }
 
