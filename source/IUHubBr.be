@@ -474,6 +474,15 @@ use class IUHub:Eui {
      }
    }
    
+   getUpnpResponse(Bool upnpEnabled, String duckDomain) {
+      HD.getElementById("enableUpnp").checked = upnpEnabled;
+      if (TS.isEmpty(duckDomain)) {
+        HD.getElementById("duckDomain").value = "";
+      } else {
+        HD.getElementById("duckDomain").value = duckDomain;
+      }
+   }
+   
    updateResponse(Map arg) {
      fields {
        Set perms = Set.new();

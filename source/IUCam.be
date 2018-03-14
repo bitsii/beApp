@@ -191,13 +191,13 @@ use App:WebApp;
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
-use class IUCam:CamPlugin(App:AjaxPlugin) {
+use class IUCam:CamPlugin(IU:IUPlugin) {
 
      new() self {
        fields {
           any app;
           String name = "IUCam";
-          String homePage = "/App/IUCam/IUCam.html";
+          String homePage = "/App/IUCam/IU.html";
           Background bg = Background.new();
           App:Background abg = App:Background.new();
           Bool runBackground = true;

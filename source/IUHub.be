@@ -69,7 +69,7 @@ use class IUHub:HubStart {
 
 use System:Parameters;
 
-use class IUHub:HubPlugin(App:AjaxPlugin) {
+use class IUHub:HubPlugin(IU:IUPlugin) {
 
      new() self {
        fields {
@@ -897,14 +897,6 @@ use class IUHub:HubPlugin(App:AjaxPlugin) {
       }
     }
   }
-  
-   restartRequest(Map arg, request) Map {
-     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-        log.log("Restarting as requested, will have exit code 3 by login " + request.context.get("account").user);
-        System:Process.exit(3);
-     }
-     return(null);
-   }
    
    checkPublicReadPath(Path pa, request) Bool {
       String pas = pa.toString();

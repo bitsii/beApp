@@ -58,6 +58,11 @@ var convertArgs = function(args) {
       //new string
       var astr = (new be_BEC_2_4_6_TextString()).bems_new(ta);
       alist.bem_addValue_1(astr);
+    } else if (typeof ta === 'boolean') {
+      var abool = (new be_BEC_2_5_4_LogicBool()).beml_set_bevi_bool(ta);
+      alist.bem_addValue_1(abool);
+    } else if (ta == null) {
+      alist.bem_addValue_1(null);
     }
   }
   

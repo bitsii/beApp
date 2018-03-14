@@ -41,8 +41,9 @@
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
                 <li class="pure-menu-item" id="browseDevicesME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowListResponse', 'devLinksListDiv', 'actionLinksDiv');return false;">Browse Devices</a></li>
-                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');return false;">External Access</a></li>
+                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');return false;">External Access</a></li>
                 <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">External Services</a></li>
+                <li class="pure-menu-item" id="restartME"><a href="#" class="pure-menu-link" onclick="callUI('restart');return false;">Restart Bridge</a></li>
                 <li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link Devices</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');return false;">Change Password</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
@@ -120,6 +121,31 @@
         </div>
         <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveInternetListenRequest', document.getElementById('sshHost').value, document.getElementById('sshLogin').value, document.getElementById('sshPass').value);return false;">Save</button>
+        </div>
+        </fieldset>
+    </form>
+    
+        <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="upsp"></label>
+            <input id="upsp" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Expose to the internet via upnp port forward</span>
+        </div>
+        <div class="pure-control-group">
+         <label for="enableUpnp" class="pure-checkbox">Enable UPnP</label>
+            <input id="enableUpnp" type="checkbox">
+        </div>
+        <div class="pure-control-group">
+            <label for="duckDomain">DuckDNS Domain</label>
+            <input id="duckDomain" type="text" placeholder="duckDomain">
+        </div>
+        <div class="pure-control-group">
+            <label for="duckToken">DuckDNS Token</label>
+            <input id="duckToken" type="password" placeholder="DuckDNS Token">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveUpnpRequest', document.getElementById('enableUpnp').checked, document.getElementById('duckDomain').value, document.getElementById('duckToken').value);return false;">Save</button>
         </div>
         </fieldset>
     </form>

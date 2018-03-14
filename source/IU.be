@@ -92,11 +92,7 @@ class IU:WebConnect {
       }
   }
   
-  updateExternal(String homePage) self {
-    updateExternal(homePage, true);
-  }
-  
-  updateExternal(String homePage, Bool doUpnp) self {
+  updateExternal(String homePage, String webBase, Bool doUpnp) self {
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -124,7 +120,11 @@ class IU:WebConnect {
         extPort = "";
       }
       if (TS.notEmpty(externalAddress)) {
-        externalBase = protocol + externalAddress + extPort;          
+        if (TS.notEmpty(webBase)) {
+          externalBase = protocol + webBase + extPort;
+        } else {
+          externalBase = protocol + externalAddress + extPort;  
+        }
         externalUrl = externalBase + homePage;
         externalLink = "<a href=\"" + externalUrl + "\" target=\"_blank\">External Link to " + deviceName + " Bridge, use outside device's network (the internet).</a>";
         log.log("External url " + externalUrl);
@@ -952,5 +952,17 @@ private static void wakeOnLan(String hex) throws Exception
     }
     return(null);
   }
+
+}
+
+use class IU:IUPlugin(App:AjaxPlugin) {
+
+  restartRequest(Map arg, request) Map {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        log.log("Restarting as requested, will have exit code 3 by login " + request.context.get("account").user);
+        System:Process.exit(3);
+     }
+     return(null);
+   }
 
 }

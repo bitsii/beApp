@@ -56,7 +56,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       App:Background bfw = App:Background.new();
       //App:Background bup = App:Background.new();
       String profile = "bridge";
-      String defaultUpnpF = "true";
+      String defaultUpnpF = "false";
      }
      super.new();
      
@@ -282,14 +282,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      return(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))));
    }
    
-   saveInternetListenRequest(String host, String login, String pass, request) Map {
-    if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-      //need to remove old if present
-      app.configManager.put("il.sshHost", host);
-      app.configManager.put("il.sshLogin", login);
-      app.configManager.put("il.sshPass", pass);
+   getUpnpRequest(request) Map {
+     return(CallBackUI.getUpnpResponse(self.upnpEnabled, app.configManager.get("duck.domain")));
+   }
+   
+   addSiteName(String proto, String host) {
       String siteNames = app.configManager.get("auth.siteNames");
-      String proto = app.webProto + "://";
       if (TS.notEmpty(host)) {
         if (undef(siteNames)) { siteNames = ""; }
         if (siteNames.has(proto + host)!) {
@@ -300,6 +298,31 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           app.configManager.put("auth.siteNames", siteNames);
         }
       }
+   }
+   
+   saveUpnpRequest(Bool enableUpnp, String duckDomain, String duckToken, request) {
+      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        log.log("in saveupnpr");
+        if (enableUpnp) {
+          app.configManager.put("doUpnpForward", "true");
+        } else {
+          app.configManager.put("doUpnpForward", "false");
+        }
+        if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
+          app.configManager.put("duck.domain", duckDomain);
+          app.configManager.put("duck.token", duckToken);
+        }
+        doForward();
+      }
+   }
+   
+   saveInternetListenRequest(String host, String login, String pass, request) Map {
+    if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      //need to remove old if present
+      app.configManager.put("il.sshHost", host);
+      app.configManager.put("il.sshLogin", login);
+      app.configManager.put("il.sshPass", pass);
+      addSiteName(app.webProto + "://", host);
       doForward();
     }
     return(null);
@@ -403,13 +426,18 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
     }
     
-     doForwardInner() {
+    upnpEnabledGet() Bool {
       String doUpnpForwardS = app.configManager.get("doUpnpForward");
       if (TS.isEmpty(doUpnpForwardS)) {
         doUpnpForwardS = defaultUpnpF;
       }
       Bool doUpnpForward = Bool.new(doUpnpForwardS);
-     
+      return(doUpnpForward);
+    }
+    
+     doForwardInner() {
+      
+      Bool doUpnpForward = self.upnpEnabled;
       log.log("wc forwarding ports");
       log.log("getting wc");
       loadWc();
@@ -447,7 +475,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
            ssh = null;
          }
       }
-      wc.updateExternal(homePage, doUpnpForward);
+      String extBase = "";
+      String dd = app.configManager.get("duck.domain");
+      if (TS.notEmpty(dd)) {
+        extBase = dd + ".duckdns.org";
+      }
+      wc.updateExternal(homePage, extBase, doUpnpForward);
       forwardPorts(wc, ssh, rforwarded);
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
@@ -460,11 +493,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   
   
   forwardPorts(WebConnect wc, Net:Ssh ssh, Set rforwarded) {
-      String doUpnpForwardS = app.configManager.get("doUpnpForward");
-      if (TS.isEmpty(doUpnpForwardS)) {
-        doUpnpForwardS = defaultUpnpF;
-      }
-      Bool doUpnpForward = Bool.new(doUpnpForwardS);
+      Bool doUpnpForward = self.upnpEnabled;
       log.log("Forwarding");
       Int fwdSecs = 7200;//fwd upnp for how long
       Upnp upnp = Upnp.new();
