@@ -28,7 +28,7 @@ javac ../abe-pl/system/jv/be/*.java ../apprun/App/IUCam/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang js --ownProcess false -mainClass=IUCam:Eui ../abe-pl/source/extended/Log.be source/IUCamBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -44,7 +44,7 @@ find ../abe-pl/system -name "*.class" -exec rm {} \;
 
 #hub
 cp ../apprun/App/IUCam/Base/target/js/be/BEX_E.js ../apprun/App/IUCam/IUHub_BEX_E.js
-cp source/IU.html ../apprun/App/IUCam
+cp source/IUCam.html ../apprun/App/IUCam
 cp extlibs/IUCam/* ../apprun/App/IUCam
 cp icons/* ../apprun/App/IUCam
 cp licenses/* ../apprun/App/IUCam

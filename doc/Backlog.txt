@@ -5,6 +5,7 @@
 
 ####
 
+deleteing accounts leaves them logged in
 
 draftii
     

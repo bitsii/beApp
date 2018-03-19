@@ -309,6 +309,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           app.configManager.put("doUpnpForward", "false");
         }
         if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
+          addSiteName(app.webProto + "://", duckDomain + ".duckdns.org");
           app.configManager.put("duck.domain", duckDomain);
           app.configManager.put("duck.token", duckToken);
         }

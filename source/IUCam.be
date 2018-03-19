@@ -197,13 +197,16 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
        fields {
           any app;
           String name = "IUCam";
-          String homePage = "/App/IUCam/IU.html";
+          String homePage = "/App/IUCam/IUCam.html";
           Background bg = Background.new();
           App:Background abg = App:Background.new();
           Bool runBackground = true;
         }
         super.new();
         log =@ IO:Logs.get(self);
+        //ifEmit(iuDebug) {
+          IO:Logs.turnOnAll();
+        //}
      }
      
      runBackgroundTasks() {
@@ -273,7 +276,7 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
     checkPublicReadPath(Path pa, request) Bool {
       String pas = pa.toString();
       Path adz = Path.apNew("App/" + self.name).file.absPath;
-      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".css"))) {
+      if (pas.begins(adz.toString()) && (pas.ends(".html") || pas.ends(".js") || pas.ends(".svg") || pas.ends(".txt") || pas.ends(".css"))) {
         return(true);
       }
       return(false);
@@ -297,7 +300,9 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
       ref = ref.substring(0, ref.find("?"));
      }
      log.log("okForPageToken second " + ref);
-     if (ref == "/App/IUHub/IU.html" || ref == "/App/IUHub/Konn.html" || ref == "/App/IUHub/IUCam.html") {
+     String pref = "/App/" + self.name;
+     log.log("pref " + pref);
+     if (ref == pref + "/IUCam.html") {
       return(true);
      }
      return(false);
@@ -418,7 +423,7 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
       app.configManager.put("camsDetectedOnce", "true");
       Account a = request.context.get("account");
       updateCams();
-      return(app.plugin.refreshLinksRequest(request));
+      return(CallBackUI.reloadResponse());
    }
    
    updateCams() {
@@ -543,6 +548,16 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
         Int.new(days);//make sure its int
         app.configManager.put("cam.cleanDays", days);
       }
+   }
+   
+   loggedIn(Account a, Map res, Map arg, request) Map {
+      res["action"] = "updateResponse";
+      res["profile"] = "cam";
+      res["justLoggedIn"] = true;
+      res["permsString"] = a.permsString;
+      res["actionLinks"] = updateActionLinks(String.new(), a, arg, request);
+      res["doCam"] = "true";
+      return(res);
    }
 
 }

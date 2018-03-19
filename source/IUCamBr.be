@@ -129,6 +129,68 @@ use class IUCam:Eui {
       handleCallOut(arg);
    }
    
+   showAccountAdminRequest() {
+     if (HD.getElementById("accountAdminDiv").display == "block") {
+       hideAccountAdmin();
+     } else {
+       Map arg = Map.new();
+       arg["action"] = "showAccountAdminRequest";
+       handleCallOut(arg);
+     }
+   }
+   
+   deleteAccountRequest(String accountName) {
+     unless (HD.getElementById("confirmAccountDelete").checked) {
+      return(inform("Must confirm account deletion"));
+     }
+     HD.getElementById("confirmAccountDelete").checked = false;
+     Map arg = Map.new();
+     arg["action"] = "deleteAccountRequest";
+     arg["accountName"] = accountName;
+     hideAccountAdmin();
+     handleCallOut(arg);
+   }
+   
+   showAccountAdminResponse(Map arg) {
+     HD.getElementById("accountAdminDiv").display = "block";
+     HD.getElementById("accountLinksDiv").innerHTML = arg["accountLinks"];
+   }
+   
+   clearAccountAdmin() {
+     HD.getElementById("aadminName").value = "";
+     HD.getElementById("aadminPass").value = "";
+     HD.getElementById("aadminPass2").value = "";
+     HD.getElementById("aadminIsAdmin").checked = false;
+   }
+   
+   hideAccountAdmin() {
+     HD.getElementById("accountAdminDiv").display = "none";
+     clearAccountAdmin();
+   }
+   
+   loadAccountResponse(Map arg) {
+     clearAccountAdmin();
+     HD.getElementById("aadminName").value = arg["accountName"];
+     HD.getElementById("aadminIsAdmin").checked = arg["admin"];
+   }
+   
+   saveAccountRequest() {
+     Map arg = Map.new();
+     arg["action"] = "saveAccountRequest";
+     arg["accountName"] = HD.getElementById("aadminName").value;
+     arg["admin"] = HD.getElementById("aadminIsAdmin").checked;
+     String pass = HD.getElementById("aadminPass").value;
+     if (TS.notEmpty(pass)) {
+       String pass2 = HD.getElementById("aadminPass2").value;
+       if (pass != pass2) {
+        return(inform("Account Admin passwords don't match"));
+       }
+       arg["accountPass"] = pass;
+     }
+     clearAccountAdmin();
+     handleCallOut(arg);
+   }
+   
    showConfig() {
       if (TS.notEmpty(HD.getElementById("configsDiv").innerHTML)) {
         hideConfig();
@@ -267,16 +329,21 @@ use class IUCam:Eui {
       HD.title = "IOTurl Cam";
       
     }
-     
-     if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
-      String lmsg = "<p align=\"center\" style=\"font-size: 100%;font-weight: 800;\">" + arg["deviceName"] + "</p>";
-      HD.getElementById("loginmsgdiv").innerHTML = lmsg;
-    }
     
     if (arg.has("actionLinks")) {
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
     }
     
+    if (arg.has("justLoggedIn") && arg["justLoggedIn"]) {
+      HD.getElementById("logindiv").display = "none";
+      HD.getElementById("loggedindiv").display = "block";
+    }
+    
+   }
+   
+   toLoginResponse() {
+      HD.getElementById("logindiv").display = "block";
+      HD.getElementById("loggedindiv").display = "none";
    }
    
    detectCams() {
@@ -290,10 +357,10 @@ use class IUCam:Eui {
    }
    
    clearImage() {
-     /*HD.getElementById("imgdiv").innerHTML = "";
+     HD.getElementById("imgdiv").innerHTML = "";
      HD.getElementById("clearPicId").display = "none";
      HD.getElementById("nlink").display = "none";
-     HD.getElementById("plink").display = "none";*/
+     HD.getElementById("plink").display = "none";
    }
    
    showSessionsRequest() {

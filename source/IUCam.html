@@ -59,9 +59,6 @@ h5.luiForm {
 <div id="informMessageDiv"></div>
 <p><a href="#" onclick="callUI('hideInform');return false;">Clear Message</a></p>
 </div>
-<div id="spinnerdiv">
-  
-</div>
 <div id="logindiv" style="display: none;">
 <p>Login</p>
 <form>
@@ -99,11 +96,9 @@ h5.luiForm {
 
 <p>
 
-<div id="camBridgeMenu1" style="display: none;">
 <!--Files-->
 <img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/>
 <!--Files-->
-</div>
 
 <p>
   
@@ -115,19 +110,9 @@ h5.luiForm {
 <img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/>
 <!--Device Name-->
 
-<!--Accounts-->
-<img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/>
-<!--Accounts-->
-
-<!--Imap-->
-<img src="applications-mail.svg" onclick="callUI('showImapRequest');return false;" title="Imap"/>
-<!--Imap-->
-
 <!--Configuration-->
 <img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="callUI('showConfig');return false;" title="Configuration"/>
 <!--Configuration-->
-
-<p>
     
 <!--Security Extras-->
 <img src="applications-viewers.svg" onclick="callUI('toggleDisplay', 'seDiv');callUI('showSessionsRequest');return false;" title="Security Extras"/>
@@ -137,6 +122,12 @@ h5.luiForm {
 <img src="preferences-desktop-privacy.svg" onclick="callUI('toggleDisplay', 'passwordDiv');return false;" title="Password"/>
 <!--Password-->
 
+<p>
+  
+<!--Accounts-->
+<img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/>
+<!--Accounts-->
+
 <!--Restart-->
 <img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/>
 <!--Restart-->
@@ -145,33 +136,9 @@ h5.luiForm {
 <img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/>
 <!--About-->
 
-<p>
-<div id="bridgeMenu2" style="display: none;">
-    
-<!--Service Connections-->
-<img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>
-<!--Service Connections-->
-
-<!--Services-->
-<img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/>
-<!--Services-->
-      
-<!--Internet Listen-->
-<img src="preferences-desktop-online-accounts.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/>
-<!--Internet Listen-->
-
-<!--Run Background-->
-<img src="folder-recent.svg" onclick="callApp('runBackgroundTasksRequest');return false;" title="Run Background Tasks"/>
-<!--Run Background-->
-
-</div>
-
-<div id="camBridgeMenu3" style="display: none;">
 <!--IUCam-->
 <img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/>
 <!--IUCam-->
-
-</div>
 
 </div>
 
@@ -195,27 +162,6 @@ h5.luiForm {
 <p><a href="#" onclick="callApp('changeDeviceNameRequest', document.getElementById('newDeviceName').value);return false;">Change Device Name</a> <a href="#" onclick="callUI('toggleDisplay', 'deviceNameDiv');return false;">Cancel</a></p>
 </div>
 <!--Device Name-->
-
-<!--Imap-->
-<div id="imapSettingsDiv" style="display: none;">
-<form>
-<select name=imFillin onchange='imChange(this.form.imFillin);return false;'>
-<option >(Select a mail provider to start)</option>
-<option>GMail</option>
-<option>GMX Mail</option>
-<option>Yahoo Mail</option>
-</select>
-</form>
-<p><label class="luiForm">Imap Endpoint</label><input type="text" id="imapEndpoint"</input></p>
-<p><label class="luiForm">Imap Account</label><input type="text" id="imapAccount"</input></p>
-<p><label class="luiForm">Message Folder</label><input type="text" id="imapFolder"</input></p>
-<p>(IotUrls recommended)</p>
-<p><label class="luiForm">Password</label><input type="password" id="imapPass"</input></p>
-<p><label class="luiForm">Repeat Password</label><input type="password" id="imapPass2"</input></p>
-<div id="imDitty"></div>
-<p><a href="#" onclick="callUI('imapSettingsRequest');return false;">Save Imap Settings</a></p>
-</div>
-<!--Imap-->
 
 <!--About-->
 <div id="aboutDiv" style="display: none;">
@@ -244,16 +190,10 @@ General help - clicking on icons will open/close their functional areas - click 
 <p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'configItemsDiv');return false;" title="Configuration Items"/> Open Configuration Panel
 <!--Help-->
 <p><img src="help-contents.svg" onclick="callUI('toggleDisplay', 'helpDiv');return false;" title="Help"/> Help (this...)
-<div id="bridgeHelp1" style="display: none;">
 <!--Files-->
 <p><img src="folder-videos.svg" onclick="callUI('browseWebCam');return false;" title="WebCam Files"/> Browse cam pictures
-</div>
 <!--Device Name-->
 <p><img src="tag-new.svg" onclick="callApp('getDeviceNameRequest');callUI('toggleDisplay', 'deviceNameDiv');return false;" title="Device Name"/> Change device name
-<!--Accounts-->
-<p><img src="system-users.svg" onclick="callUI('showAccountAdminRequest');return false;" title="Accounts"/> Create, modify, and delete accounts
-<!--Imap-->
-<p><img src="applications-mail.svg" onclick="callUI('showImapRequest');return false;" title="Imap"/> Connect device to email account
 <!--Configuration-->
 <p><img src="application-vnd.oasis.opendocument.spreadsheet.svg" onclick="callUI('showConfig');return false;" title="Configuration"/> Direct access to configuration (advanced)
 <!--Security Extras-->
@@ -264,16 +204,8 @@ General help - clicking on icons will open/close their functional areas - click 
 <p><img src="system-software-update.svg" onclick="callUI('restart');return false;" title="Restart"/> Restart the Hub application
 <!--About-->
 <p><img src="help-info.svg" onclick="callUI('toggleDisplay', 'aboutDiv');callApp('aboutRequest');return false;" title="About"/> Information about this software and device
-<div id="bridgeHelp2" style="display: none;">
-<!--Service Connections-->
-<p><img src="applications-system.svg" onclick="callUI('toggleDisplay', 'primaryLinksDiv');return false;" title="Service Connections"/>  Get service connections to device
-<!--Services-->
-<p><img src="applications-debugging.svg" onclick="callUI('toggleDisplay', 'forwardPortsDiv');callApp('getForwardPortsListRequest');return false;" title="Service Configuration"/> View and create service connections (remote connectivity to the device desktop and other services)
 <!--IUCam-->
 <p><img src="accessories-camera.svg" onclick="callUI('toggleCamSettings');return false;" title="Cam Settings"/> Cam configuration
-<!--Internet Listen-->
-<p><img src="preferences-desktop-online-accounts.svg" onclick="callApp('getInternetListenRequest');callUI('toggleDisplay', 'internetListenDiv');return false;" title="Internet Listen"/> Configure to listen on a remote internet host (over ssh tunnel)
-</div>
 </div>
 <!--Help-->
   

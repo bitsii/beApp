@@ -926,7 +926,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      }
      log.log("okForPageToken second " + ref);
      String pref = "/App/" + self.name;
-     if (ref == pref + "/Konn.html" || ref == pref + "/IUCam.html") {
+     if (ref == pref + "/Konn.html") {
       return(true);
      }
      return(false);
@@ -1215,6 +1215,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
    
   updateActionLinks(String actionLinks, Account a, Map arg, request) String {
      //CMD.username!Display = cmd
+     log.log("in hub updateActionLinks");
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
      actionLinks += "<p><a href=\"#\" onclick=\"callApp('refreshLinksRequest');return false;\">(Refresh)</a></p>";
      for (any kv in ecm) {
@@ -1261,12 +1262,12 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           for (any kv in svcs) {
             if (TS.notEmpty(kv.value.get("intLink"))) {
               intsl += "<p>" += kv.value.get("intLink") += "</p>";
-            } 
-            if (TS.notEmpty(kv.value.get("extLink"))) {
-              extsl += "<p>" += kv.value.get("extLink") += "</p>";
             }
             if (TS.notEmpty(kv.value.get("hstLink"))) {
               extsl += "<p>" += kv.value.get("hstLink") += "</p>";
+            } 
+            if (TS.notEmpty(kv.value.get("extLink"))) {
+              extsl += "<p>" += kv.value.get("extLink") += "</p>";
             }
           }
         }

@@ -525,7 +525,10 @@ use class IUHub:Eui {
     }
     
     if (arg.has("actionLinks")) {
+      log.log("setting actionlinks");
       HD.getElementById("actionLinksDiv").innerHTML = arg["actionLinks"];
+      HD.getElementById("primaryLinksDiv").display = "block";
+      //log.log("actionlinks " + arg["actionLinks"]);
     }
     if (arg.has("devLinksList")) {
       HD.getElementById("devLinksListDiv").innerHTML = arg["devLinksList"];

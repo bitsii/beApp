@@ -968,11 +968,17 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       return(false);
     }
     
-    String extAddress = self.plugin.wcol.o.externalAddress;
-    String extPort = self.plugin.wcol.o.externalPort;
+    String pref = app.webProto + "://";
+    log.log("prefix " + pref);
+    String intPort = app.configManager.get("web.port");
+    if (ref.begins(pref + "127.0.0.1:" + intPort) || ref.begins(pref + "localhost:" + intPort)) {
+      //log.log("icc false localhost");
+      return(false);
+    }
     
-    //String extAddress = self.configManager.get("upnp.extAddress");
-    //String extPort = self.configManager.get("hub.extPort");
+    //removed, in sitenames from duckdns, only supported way now
+    /*String extAddress = self.plugin.wcol.o.externalAddress;
+    String extPort = self.plugin.wcol.o.externalPort;
     
     if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
       extUrl = app.webProto + "://" + extAddress + ":" + extPort;
@@ -985,7 +991,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
       //log.log("isCrossSite false new extUrl begins " + extUrl + " " + ref);
       return(false);
-    }
+    }*/
     //log.log("isCrossSite true not begins " + la + " " + ref);
     return(true);
   }

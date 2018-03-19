@@ -43,6 +43,8 @@ class IU:WebConnect {
       
       String sharedLoginToken;
       
+      String extNameBase;
+      
     }
   }
   
@@ -92,10 +94,12 @@ class IU:WebConnect {
       }
   }
   
-  updateExternal(String homePage, String webBase, Bool doUpnp) self {
+  updateExternal(String homePage, String _extNameBase, Bool doUpnp) self {
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
+    
+    extNameBase = _extNameBase;
     
     if (TS.isEmpty(externalPort)) {
       externalPort = getAPort();
@@ -120,8 +124,8 @@ class IU:WebConnect {
         extPort = "";
       }
       if (TS.notEmpty(externalAddress)) {
-        if (TS.notEmpty(webBase)) {
-          externalBase = protocol + webBase + extPort;
+        if (TS.notEmpty(extNameBase)) {
+          externalBase = protocol + extNameBase + extPort;
         } else {
           externalBase = protocol + externalAddress + extPort;  
         }
@@ -225,7 +229,11 @@ class IU:WebConnect {
         }
         String extUrl = conf.get("urlPat").copy();
         if (TS.notEmpty(extUrl) && TS.notEmpty(externalAddress)) {
-          extUrl = extUrl.swap("$ip$", externalAddress);
+          if (TS.notEmpty(extNameBase)) {
+            extUrl = extUrl.swap("$ip$", extNameBase);
+          } else {
+            extUrl = extUrl.swap("$ip$", externalAddress);
+          }
           extUrl = extUrl.swap("$port$", service.get("intPort"));
           service.put("extLink", extUrl + " External Connection for " += conf.get("name") += " - use outside device's network (the internet).");
         }

@@ -59,7 +59,6 @@ cp scripts/upgrade.bat ../apprun/App/KBridge
 cp scripts/mpg123loop.sh ../apprun/App/KBridge
 cp scripts/stopmpg123loop.sh ../apprun/App/KBridge
 cp source/Konn.html ../apprun/App/KBridge
-cp source/IU.html ../apprun/App/KBridge
 cp extlibs/KBridge/* ../apprun/App/KBridge
 cp icons/* ../apprun/App/KBridge
 cp licenses/* ../apprun/App/KBridge
