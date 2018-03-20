@@ -17,11 +17,11 @@ killall java 2>/dev/null
 
 #mkdir and copy and cd
 echo "Preparing application area"
-rm -rf $INSDIR/apprun/App/IUHub
-mkdir -p $INSDIR/apprun/App/IUHub
-mkdir -p $INSDIR/apprun/Data/IUHub
+rm -rf $INSDIR/apprun/App/KBridge
+mkdir -p $INSDIR/apprun/App/KBridge
+mkdir -p $INSDIR/apprun/Data/KBridge
 #copy
-cp $IZDIR/* $INSDIR/apprun/App/IUHub
+cp -r $IZDIR/* $INSDIR/apprun/App/KBridge
 
 cd $INSDIR
 
@@ -30,9 +30,9 @@ apt -qq --assume-yes update
 echo "Installing required additional system software"
 apt -qq --assume-yes install oracle-java8-jdk
 apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
-apt -qq --assume-yes install mpg123
+apt -qq --assume-yes install mpg123 shellinabox
 
-cd apprun/App/IUHub
+cd apprun/App/KBridge
 
 echo "Getting required additional application software"
 wget --tries=10 --retry-connrefused https://www.bouncycastle.org/download/bcprov-jdk15on-155.jar
@@ -55,13 +55,13 @@ echo "net.ipv6.conf.default.disable_ipv6 = 1" >> tmp/scadd
 echo "net.ipv6.conf.lo.disable_ipv6 = 1" >> tmp/scadd
 cat tmp/scadd >> /etc/sysctl.conf
 
-echo "Setting IUHub to start at boot"
+echo "Setting Konnectii Bridge to start at boot"
 echo "#!/bin/sh -e" > tmp/stadd
 if [ -e "/etc/rc.local" ]
 then
 cat /etc/rc.local | grep -v "exit " | grep -v "startiuh.sh" | grep -v "#\!/bin" >> tmp/stadd
 fi
-echo "su $INSUSER -c \"$INSDIR/apprun/App/IUHub/startiuh.sh\"" >> tmp/stadd
+echo "su $INSUSER -c \"$INSDIR/apprun/App/KBridge/startiuh.sh\"" >> tmp/stadd
 echo "exit 0" >> tmp/stadd
 cat tmp/stadd > /etc/rc.local
 
@@ -69,39 +69,43 @@ cat tmp/stadd > /etc/rc.local
 chown -R $INSUSER apprun
 chown -R $INSUSER tmp
 
-su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --hubCmd saveLocalUrl --urlFile localUrl.txt"
+su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --hubCmd saveLocalUrl --urlFile localUrl.txt"
 
 #create account
 
-su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --authCmd putAccount --user $INUSR --pass $INPASS --perms admin"
+su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --authCmd putAccount --user $INUSR --pass $INPASS --perms admin"
 
 echo ""
 
-su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.endpoint --value $INIMAPSRV"
+su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key deviceName --value $INDNAME"
 
 echo ""
 
-su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.user --value $INIMAPACCT"
+su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value $DOUPNPFWD"
+
+if [ "$DDOMAIN" != "" ]; then
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key duck.domain --value $DDOMAIN"
+fi
+
+if [ "$DTOKEN" != "" ]; then
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key duck.token --value $DTOKEN"
+fi
+
+if [ "$SHOST" != "" ]; then
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshHost --value $SHOST"
+fi
+
+if [ "$SUSER" != "" ]; then
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshLogin --value $SUSER"
+fi
+
+if [ "$SPASS" != "" ]; then
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshPass --value $SPASS"
+fi
 
 echo ""
 
-su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.pass --value $INIMAPPASS"
-
-echo ""
-
-su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key deviceName --value $INDNAME"
-
-echo ""
-
-su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key imap.subFolder --value IotUrls"
-
-echo ""
-
-su $INSUSER -c "./apprun/App/IUHub/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value $DOUPNPFWD"
-
-echo ""
-
-su $INSUSER -c "./apprun/App/IUHub/startiuh.sh"
+su $INSUSER -c "./apprun/App/KBridge/startiuh.sh"
 
 echo "service is starting now, it may take a few moments to come up"
 echo "the server url is below, you can copy and paste into a browser on the network"

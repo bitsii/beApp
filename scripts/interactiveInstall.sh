@@ -34,35 +34,62 @@ read indname
 echo ""
 echo "export INDNAME=\"$indname\"" >> $INSDIR/insprops.sh
 
-echo "Do you want to try to enable network access over UPnP port forwarding from your home router?"
-echo -n "Do UPnP Forward, enter true or false (default/empty is true): "
+echo "Do you want to expose to the internet using UPnP port forwarding from your home router?"
+echo -n "Do UPnP Forward, enter true or false: "
 read doupnpfwd
 echo ""
-if [ -z "$doupnpfwd" ]; then doupnpfwd = "true"; fi
 echo "export DOUPNPFWD=\"$doupnpfwd\"" >> $INSDIR/insprops.sh
 
-echo "Please provide imap information for sharing connection information."
-echo -n "Imap server: "
-read inimapsrv
-echo ""
-echo -n "Imap account: "
-read inimapacct
-echo ""
-echo -n "Imap Password: "
-read -s inimappassword
-echo ""
-echo -n "Repeat Imap Password: "
-read -s inimappassword2
-echo ""
-
-if [ "$inimappassword" != "$inimappassword2" ]; then
-echo "Passwords don't match"
-exit 1
+if [ "$doupnpfwd" == "true" ]; then
+  echo "Do you want to use DuckDNS (https://duckdns.org) to locate your Upnp/Port Forwarded "
+  echo "device by name (recommended)?"
+  echo -n "Configure DuckDNS, enter true or false: "
+  read doduck
+  echo ""
+  if [ "$doduck" == "true" ]; then
+    echo "Please provide DuckDNS info (setup an account and domain at https://duckdns.org first"
+    echo "If you don't have one yet)"
+    echo -n "domain: "
+    read ddomain
+    echo ""
+    echo -n "token: "
+    read dtoken
+    echo ""
+    echo "export DDOMAIN=\"$ddomain\"" >> $INSDIR/insprops.sh
+    echo "export DTOKEN=\"$dtoken\"" >> $INSDIR/insprops.sh
+  fi
 fi
 
-echo "export INIMAPSRV=\"$inimapsrv\"" >> $INSDIR/insprops.sh
-echo "export INIMAPACCT=\"$inimapacct\"" >> $INSDIR/insprops.sh
-echo "export INIMAPPASS=\"$inimappassword\"" >> $INSDIR/insprops.sh
+echo "Do you want to expose device to the internet via a remote host?"
+echo "Configure remote access via remote host (ssh port forward)"
+echo -n "enter true or false: "
+read dossh
+echo ""
+if [ "$dossh" == "true" ]; then
+  echo "Please provide ssh info"
+  echo -n "ssh host: "
+  read shost
+  echo ""
+  echo -n "ssh username: "
+  read suser
+  echo ""
+  
+  echo -n "ssh Password: "
+  read -s sinpassword
+  echo ""
+  echo -n "Repeat ssh Password: "
+  read -s sinpassword2
+  echo ""
+
+  if [ "$sinpassword" != "$sinpassword2" ]; then
+  echo "Passwords don't match"
+  exit 1
+  fi
+  
+  echo "export SHOST=\"$shost\"" >> $INSDIR/insprops.sh
+  echo "export SUSER=\"$suser\"" >> $INSDIR/insprops.sh
+  echo "export SPASS=\"$sinpassword\"" >> $INSDIR/insprops.sh
+fi
 
 chown $INSUSER $INSDIR/insprops.sh
 

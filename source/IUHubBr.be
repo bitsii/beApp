@@ -512,6 +512,7 @@ use class IUHub:Eui {
       HD.getElementById("setDevicenameME").display = "none";
       HD.getElementById("remoteListenME").display = "none";
       HD.getElementById("remoteAccessME").display = "none";
+      HD.getElementById("showServicesME").display = "none";
       
     }
          

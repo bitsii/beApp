@@ -124,6 +124,8 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         app.configManager.put("web.port", intPort);
         
         String defadd = Net:Gateway.defaultAddress;
+        Net:Interface ni = Net:Interface.new();
+        defadd = ni.interfaceForNetwork(defadd).address;
         
         iurl = app.webProto + "://" + defadd + ":" += intPort;
         File.apNew(params.getFirst("urlFile")).writer.open().write(iurl).close();
