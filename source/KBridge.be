@@ -236,6 +236,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (TS.isEmpty(mode)) {
         return(super.handleCmd(params));
       }
+      if (mode == "addDuckName") {
+        addSiteName(app.webProto + "://", params.getFirst("bridgeDuckName") + ".duckdns.org");
+      }
+      if (mode == "addSshName") {
+        addSiteName(app.webProto + "://", params.getFirst("bridgeSshName"));
+      }
       if (mode == "sftpFile") {
         log.log("sftpFile");
         String sfps = params.getFirst("sourceFile");

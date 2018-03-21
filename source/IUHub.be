@@ -1233,22 +1233,35 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      //add links
      Bool internal = isInternal(request);
      WebConnect wc = wcol.o;
+     if (TS.notEmpty(wc.hostedLink)) {
+          actionLinks += "<p>" += wc.hostedLink += "</p>";
+        }
+        if (TS.notEmpty(wc.externalLink)) {
+          actionLinks += "<p>" += wc.externalLink += "</p>";
+        }
+        if (TS.notEmpty(wc.internalLink)) {
+          actionLinks += "<p>" += wc.internalLink += "</p>";
+        }
       Pair sl = self.serviceLinks;
       if (internal) {
         actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.first;
+        if (TS.notEmpty(sl.second)) {
         actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show external service connections</a>";
         actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.second;
         actionLinks += "</div>";
+        }
         actionLinks += "</div>";
       } else {
         actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.second;
+        if (TS.notEmpty(sl.first)) {
         actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show internal service connections</a>";
         actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
         actionLinks += sl.first;
         actionLinks += "</div>";
+        }
         actionLinks += "</div>";
       }
      return(actionLinks);

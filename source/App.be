@@ -841,6 +841,11 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     return(res);
   }
   
+  start() {
+    log.log("initting managers auth");
+    self.trackingManagerGet();
+  }
+  
   trackingManagerGet() KvDb {
     return(app.getKvDb("TRACKING"));
   }
@@ -1862,6 +1867,8 @@ class WebApp {
   }
   
   start() {
+    self.configManagerGet();
+    self.sessionManagerGet();
     for (any pl in plugins) {
       if (pl.can("start", 0)) {
         pl.start();

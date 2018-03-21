@@ -30,7 +30,9 @@ apt -qq --assume-yes update
 echo "Installing required additional system software"
 apt -qq --assume-yes install oracle-java8-jdk
 apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
-apt -qq --assume-yes install mpg123 shellinabox
+apt -qq --assume-yes install mpg123
+
+#shellinabox
 
 cd apprun/App/KBridge
 
@@ -85,6 +87,7 @@ su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig
 
 if [ "$DDOMAIN" != "" ]; then
   su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key duck.domain --value $DDOMAIN"
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd addDuckName --bridgeDuckName $DDOMAIN"
 fi
 
 if [ "$DTOKEN" != "" ]; then
@@ -93,6 +96,7 @@ fi
 
 if [ "$SHOST" != "" ]; then
   su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshHost --value $SHOST"
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd addSshName --bridgeSshName $SHOST"
 fi
 
 if [ "$SUSER" != "" ]; then

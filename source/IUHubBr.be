@@ -747,6 +747,12 @@ use class IUHub:Eui {
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "Run command: ssh -p $port$ $ip$";
         HD.getElementById("fpDitty").innerHTML = "<p>ssh - <a href=\"https://duckduckgo.com/?q=ssh\">About Secure Shell</a>";
+      } elseIf (forService.ends("(web shell)")) {
+        HD.getElementById("fpName").value = "Shellinabox - Web bash access";
+        HD.getElementById("fpPort").value = "4200";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\">Shellinabox</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox page</a>";
       } elseIf (forService.ends("(rdp)")) {
         HD.getElementById("fpName").value = "Remote Desktop";
         HD.getElementById("fpPort").value = "3389";
