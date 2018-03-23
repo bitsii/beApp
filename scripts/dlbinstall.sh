@@ -6,18 +6,18 @@ mkdir -p INSBR
 
 cd INSBR
 
-rm -f IUBHub.zip
+rm -f KBridge.zip
 
 
-until unzip -o IUBHub.zip; do
-  until wget https://bitbucket.org/ioturl/ioturl/downloads/IUBHub.zip; do
+until unzip -o KBridge.zip; do
+  until wget https://bitbucket.org/ioturl/ioturl/downloads/KBridge.zip; do
     sleep 10
   done
   sleep 10
 done
 
 
-chmod +x ./IUHub/*.sh
+chmod +x ./KBridge/*.sh
 
-./IUHub/install.sh
+./KBridge/install.sh
 

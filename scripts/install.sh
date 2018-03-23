@@ -30,9 +30,7 @@ apt -qq --assume-yes update
 echo "Installing required additional system software"
 apt -qq --assume-yes install oracle-java8-jdk
 apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
-apt -qq --assume-yes install mpg123
-
-#shellinabox
+apt -qq --assume-yes install mpg123 shellinabox
 
 cd apprun/App/KBridge
 
@@ -105,6 +103,14 @@ fi
 
 if [ "$SPASS" != "" ]; then
   su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshPass --value $SPASS"
+fi
+
+if [ "$HPORTLOC" != "" ]; then
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key web.port --value $HPORTLOC"
+fi
+
+if [ "$HPORTEXT" != "" ]; then
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key hub.extPort --value $HPORTEXT"
 fi
 
 echo ""

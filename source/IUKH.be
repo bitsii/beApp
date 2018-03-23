@@ -106,8 +106,6 @@ class Konnectii:Host {
     }
   }
   
-  //INIMAPSRV,INIMAPACCT,INIMAPPASS,INDNAME
-  
   doBridge(Parameters params) this {
     //log.log("starting doBridge");
     
