@@ -968,9 +968,14 @@ use class IU:IUPlugin(App:AjaxPlugin) {
   restartRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         log.log("Restarting as requested, will have exit code 3 by login " + request.context.get("account").user);
-        System:Process.exit(3);
+        restart();
      }
      return(null);
+   }
+   
+   restart() {
+     log.log("doing restart/exit");
+     System:Process.exit(3);
    }
 
 }

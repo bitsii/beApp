@@ -194,7 +194,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       wc = WebConnect.new();
       app.plugin.wcol.o = wc;
       oapp.plugin.wcol.o = wc;
-      wc.extraPorts = app.configManager.get("upnp.extraPorts");
     }
     log.log("after wc init");
     wc.webProto = app.webProto;

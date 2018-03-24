@@ -268,8 +268,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       super.start();
       
       bfw.startDelay = Time:Interval.new(20, 0);
-      bfw.repeatDelay = Time:Interval.new(300, 0);
-      bfw.minimumDelay = Time:Interval.new(120, 0);
+      bfw.repeatDelay = Time:Interval.new(60, 0);
+      bfw.minimumDelay = Time:Interval.new(30, 0);
       bfw.toInvoke = getInvocation("doForward", List.new());
       
       //bup.startDelay = Time:Interval.new(30, 0);
@@ -365,6 +365,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
+       closeSsh();
        doForward();
        return(getRemoteAccessRequest(request));
        }
@@ -424,15 +425,38 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     
     
     doForward() {
-      try {
-        wcl.lock();
-        doForwardInner();
-        wcl.unlock();
-      } catch(any e) {
-        wcl.unlock();
+      for (Int i = 0;i < 5;i++=) {
+        Bool res = false;
+        try {
+          wcl.lock();
+          res = doForwardInner();
+          wcl.unlock();
+        } catch(any e) {
+          wcl.unlock();
+          log.log("error during doforward " + e);
+        }
+        if (res) {
+          i = 5;
+        } else {
+          closeSsh();
+        }
       }
     }
     
+    closeSsh() {
+      if (def(ssh)) {
+        try {
+           wcl.lock();
+           ssh.close();
+           ssh = null;
+           wcl.unlock();
+         } catch (any sshe) {
+           ssh = null;
+           wcl.unlock();
+         }
+      }
+    }
+        
     upnpEnabledGet() Bool {
       String doUpnpForwardS = app.configManager.get("doUpnpForward");
       if (TS.isEmpty(doUpnpForwardS)) {
@@ -442,8 +466,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(doUpnpForward);
     }
     
-     doForwardInner() {
-      
+     doForwardInner() Bool {
+      Bool success = true;
       Bool doUpnpForward = self.upnpEnabled;
       log.log("wc forwarding ports");
       log.log("getting wc");
@@ -456,7 +480,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         wc = WebConnect.new();
         app.plugin.wcol.o = wc;
         oapp.plugin.wcol.o = wc;
-        wc.extraPorts = app.configManager.get("upnp.extraPorts");
       }
       String sshHost = app.configManager.get("il.sshHost");
       String sshLogin = app.configManager.get("il.sshLogin");
@@ -474,13 +497,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           }
         }
       } catch (any sshe) {
+        success = false;
         log.log("Error during ssh op " + sshe);
-        try {
-           ssh.close();
-           ssh = null;
-         } catch (sshe) {
-           ssh = null;
-         }
       }
       String extBase = "";
       String dd = app.configManager.get("duck.domain");
@@ -488,7 +506,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         extBase = dd + ".duckdns.org";
       }
       wc.updateExternal(homePage, extBase, doUpnpForward);
-      forwardPorts(wc, ssh, rforwarded);
+      try {
+        forwardPorts(wc, ssh, rforwarded);
+      } catch (any fpe) {
+        success = false;
+        log.log("exception during forwardports " + fpe);
+      }
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
       updateMyLinks();
@@ -496,6 +519,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("saving");
       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
       log.log("upnp doForward done");
+      return(success);
   }
   
   
@@ -529,10 +553,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         if (TS.notEmpty(wc.extraPorts)) {
           for (ep in wc.extraPorts.split(",")) {
             currPortS = wc.extraPortMap.get(ep);
-            if (TS.notEmpty(currPortS)) {
-              if (rforwarded.has(currPortS)!) {
-                ssh.forwardPortR(Int.new(currPortS), "127.0.0.1", Int.new(ep));
-              }
+            if (TS.isEmpty(currPortS)) {
+              currPortS = wc.getAPort();
+              wc.extraPortMap.put(ep, currPortS);
+            }
+            log.log("SSH check Forwarding extraport external " + currPortS + " to " + ep);
+            if (rforwarded.has(currPortS)!) {
+              log.log("SSH Forwarding extraport external " + currPortS + " to " + ep);
+              ssh.forwardPortR(Int.new(currPortS), "127.0.0.1", Int.new(ep));
               rforwarded += currPortS;
             }
           }

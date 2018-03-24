@@ -42,6 +42,7 @@
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
                 <li class="pure-menu-item" id="browseDevicesME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowListResponse', 'devLinksListDiv', 'actionLinksDiv');return false;">Browse Devices</a></li>
                 <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Show Services</a></li>
+                <li class="pure-menu-item" id="fileManagerME"><a href="#" class="pure-menu-link" onclick="callUI('localBrowseRequest');return false;">Browse Files</a></li>
                 <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');return false;">Remote Access</a></li>
                 <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">Remote Services</a></li>
                 <li class="pure-menu-item" id="restartME"><a href="#" class="pure-menu-link" onclick="callUI('restart');return false;">Restart Bridge</a></li>
@@ -99,6 +100,29 @@
         </fieldset>
     </form>
     </div>
+    
+    
+    
+    <!--Files-->
+<div class="pure-g">
+    <div class="pure-u-1-24"></div>
+    <div class="pure-u-23-24">
+<p><a href="#" id="clearPicId" onclick="callUI('clearImage');return false;" style="display: none;">Clear Picture</a><div id="plink"></div><div id="nlink"></div></p>
+<div id="imgdiv"></div>
+<div id="browseFilesDiv" style="display: none;">
+<p>Upload a File <input type="file" id="files" name="files[]" multiple /></p>
+<p>Confirm file deletion <input type="checkbox" id="confirmDeleteId"/><input id="deleteSubmit" type="submit" value="Delete Selected File" onclick="deleteSelected();return false;"></p>
+<p><label class="luiForm">Copy to Name</label><input type="text" id="copyNameId"></input><input id="copySubmit" type="submit" value="Copy Selected File" onclick="copySelected();return false;"></p>
+<p><input id="upgradeSubmit" type="submit" value="Upgrade Using Selected File" onclick="upgradeSelected();return false;"></p>
+<p><input id="restoreConfigSubmit" type="submit" value="Restore Configuration using Selected File" onclick="restoreSelected();return false;"></p>
+<div id="localBrowseListDiv"></div>
+</div>
+</div>
+</div>
+<script>
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+<!--Files-->
     
     <div id="remoteaccessdiv" style="display: none;">
     <form class="pure-form pure-form-aligned">
@@ -265,7 +289,11 @@
         </fieldset>
     </form>
     </div>
-    
+  
+<div class="pure-g">
+    <div class="pure-u-1-24"></div>
+    <div class="pure-u-23-24">
+      
 <div id="sessionsDiv" style="display: none;">
 <div id="sessionsListDiv" style="display: none;"></div>
 <p><a id="restartId" href="#" onclick="callUI('clearAllSessions');return false;">Clear all sessions (Logs everyone out)</a>
@@ -275,6 +303,9 @@
 <div id="actionLinksDiv" style="display: none;"></div>
 <div id="devLinksListDiv" style="display: none;"></div>
 <div id="devLinksDiv" style="display: none;"></div>
+
+</div>
+</div>
 
 </div>
 

@@ -374,7 +374,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv", "remoteaccessdiv", "forwardPortsDiv");
+    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv", "remoteaccessdiv", "forwardPortsDiv", "browseFilesDiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -513,6 +513,7 @@ use class IUHub:Eui {
       HD.getElementById("remoteListenME").display = "none";
       HD.getElementById("remoteAccessME").display = "none";
       HD.getElementById("showServicesME").display = "none";
+      HD.getElementById("fileManagerME").display = "none";
       
     }
          
@@ -611,12 +612,8 @@ use class IUHub:Eui {
    }
    
    localBrowseRequest() {
-     if (HD.getElementById("browseFilesDiv").display == "block") {
-      closeFileBrowser();
-     } else {
-      HD.getElementById("browseFilesDiv").display = "block";
-      localBrowseRequest("");
-     }
+     hideNShowOneResponse("browseFilesDiv");
+     localBrowseRequest("");
    }
    
    closeFileBrowser() {
@@ -751,7 +748,7 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "Shellinabox - Web bash access";
         HD.getElementById("fpPort").value = "4200";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\">Shellinabox</a>";
+        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">Shellinabox</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox page</a>";
       } elseIf (forService.ends("(rdp)")) {
         HD.getElementById("fpName").value = "Remote Desktop";
