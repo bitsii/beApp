@@ -11,10 +11,6 @@ export IZDIR=`dirname $0`
 
 . $INSDIR/insprops.sh
 
-killall startiuh.sh 2>/dev/null
-killall iuhcmdrs.sh 2>/dev/null
-killall java 2>/dev/null
-
 #mkdir and copy and cd
 echo "Preparing application area"
 rm -rf $INSDIR/apprun/App/KBridge

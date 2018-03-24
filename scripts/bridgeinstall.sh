@@ -93,4 +93,4 @@ fi
 
 chown $INSUSER $INSDIR/insprops.sh
 
-$IZDIR/install.sh
+$IZDIR/bridgesetup.sh

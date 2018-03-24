@@ -19,5 +19,5 @@ done
 
 chmod +x ./KBridge/*.sh
 
-./KBridge/install.sh
+./KBridge/bridgesetup.sh
 

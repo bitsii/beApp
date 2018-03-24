@@ -1592,6 +1592,18 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
         log.log("Deleting config " + key);
         app.configManager.delete(key);
       }
+      if (mode == "saveLocalUrl") {
+        log.log("saveLocalUrl");
+        
+        String intPort = app.configManager.put("web.port", intPort);
+        
+        String defadd = Net:Gateway.defaultAddress;
+        Net:Interface ni = Net:Interface.new();
+        defadd = ni.interfaceForNetwork(defadd).address;
+        
+        String iurl = app.webProto + "://" + defadd + ":" += intPort;
+        File.apNew(params.getFirst("urlFile")).writer.open().write(iurl).close();
+      }
       return(true);
     }
     
