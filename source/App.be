@@ -1443,7 +1443,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       String dirListHtml = String.new();
       dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
       if (dirFile.exists && checkReadPath(dirFile.path, arg, request)) {
-        dirListHtml += "<p>Listing for " += htmle.encode(dirFile.path.toString()) += "</p>";
+        dirListHtml += "<p>Listing 2 for " += htmle.encode(dirFile.path.toString()) += "</p>";
         dirListHtml += "<table>";
         if (adminLinks) {
           if (System:CurrentPlatform.name == "mswin") {

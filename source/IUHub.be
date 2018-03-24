@@ -1038,43 +1038,42 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      
    upgrade(String path) {
      if (TS.notEmpty(path)) {
-       Path dpath = Path.apNew("App/IUHub.zip");
+       Path dpath = Path.apNew("App/KBridge.zip");
        File dirFile = File.apNew(path);
+       if (path.ends("KBridge.zip")!) {
+        throw(Alert.new("upgrade file must be named KBridge.zip and must be a bridge installer/upgrade zip file"));
+       }
        any e;
        try {
-       app.lock.lock();
-       log.log("copying " + dirFile.path + " to " + dpath);
-       if (dpath.file.exists) { dpath.file.delete(); }
+        app.lock.lock();
+        log.log("copying " + dirFile.path + " to " + dpath);
+        if (dirFile.exists!) { throw(Alert.new("upgrade file does not exist")); }
+        if (dpath.file.exists) { dpath.file.delete(); }
         IO:Writer outw = dpath.file.writer.open();
         IO:Reader inr = dirFile.reader.open();
         inr.copyData(outw);
         outw.close();
         inr.close();
-        app.lock.unlock();
-        } catch (e) {
-          app.lock.unlock();
-        }
-        if (System:CurrentPlatform.name == "mswin") {
-          String piccmd = "App\\IUHub\\upgrade.bat";
-        } else {
-          piccmd = "App/IUHub/upgrade.sh";
-        }
-        try {
-        app.lock.lock();
-        Time:Sleep.sleepSeconds(1);
+        log.log("upgrade copy complete");
+        Path upd = Path.apNew("App/KBridge/upgradeDone.txt");
+        if (upd.file.exists) { log.log("del updf"); upd.file.delete(); }
+        log.log("running upgrade");
+        String piccmd = "App/KBridge/upgrade.sh";
         System:Command.new(piccmd).run();
-        app.lock.unlock();
-        } catch (e) {
-			app.lock.unlock();
+        log.log("waiting for upgradeDone");
+        for (Int i = 0;i < 200;i++=) {
+          if (upd.file.exists) {
+            log.log("upd exists exit");
+            System:Process.exit(4);
+          } else {
+            log.log("upd not exist sleep");
+            Time:Sleep.sleepSeconds(2);
+          }
         }
-        try {
-        app.lock.lock();
-        Time:Sleep.sleepSeconds(10);
-        System:Process.exit(4);
         app.lock.unlock();
-        } catch (e) {
-			app.lock.unlock();
-        }
+       } catch (e) {
+          app.lock.unlock();
+       }
      }
      return(null);
    }
@@ -1218,7 +1217,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      //CMD.username!Display = cmd
      log.log("in hub updateActionLinks");
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
-     actionLinks += "<p><a href=\"#\" onclick=\"callApp('refreshLinksRequest');return false;\">(Refresh)</a></p>";
+     //actionLinks += "<p><a href=\"#\" onclick=\"callApp('refreshLinksRequest');return false;\">(Refresh)</a></p>";
      for (any kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);

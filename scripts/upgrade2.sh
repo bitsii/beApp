@@ -1,22 +1,23 @@
 #!/bin/bash
 
-sleep 2
+cd App
 
-mkdir -p App/IUHub.bak
-rm -f App/IUHub.bak/*
-cp App/IUHub/* App/IUHub.bak
-cd App/IUHub
-
-unzip -t ../IUHub.zip
+unzip -t KBridge.zip
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-cd ..
-unzip -o IUHub.zip
-cd IUHub
-chmod +x *.sh
+unzip -o KBridge.zip
 
-cd ../..
-sleep 1
-./App/IUHub/postupgrade.sh
-sleep 1
+lae=$?;if [[ $lae -ne 0 ]]; then chmod +x KBridge/*.sh;exit $lae; fi
+
+chmod +x KBridge/*.sh
+
+sync
+
+cd ..
+
+./App/KBridge/postupgrade.sh
+
+touch ./App/KBridge/upgradeDone.txt
+
+sync
