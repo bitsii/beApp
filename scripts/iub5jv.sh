@@ -34,6 +34,7 @@ mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --bui
 #--outputPlatform linux 
 #rm
 #--emitFlag iuDebug 
+# and change last line from run to rel
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -84,3 +85,5 @@ cp scripts/camclean.sh ../apprun/App/KBridge
 cp source/MOCAM.conf ../apprun/App/KBridge
 
 ./scripts/iub5jvrun.sh $*
+
+#./scripts/iubrel.sh

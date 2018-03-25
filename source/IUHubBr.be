@@ -750,6 +750,13 @@ use class IUHub:Eui {
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">Shellinabox</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox page</a>";
+        //(
+      } elseIf (forService.ends("webcam)")) {
+        HD.getElementById("fpName").value = "IUCam - webcam with motion";
+        HD.getElementById("fpPort").value = "6416";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">IUCam WebCam</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/ioturl/ioturl/wikis/home\">IUCam Page</a>";
       } elseIf (forService.ends("(rdp)")) {
         HD.getElementById("fpName").value = "Remote Desktop";
         HD.getElementById("fpPort").value = "3389";

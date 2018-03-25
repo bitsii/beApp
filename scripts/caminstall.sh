@@ -34,10 +34,20 @@ read camport
 echo ""
 
 if [ "$camport" == "" ]; then
-  camport = "6416"
+  camport="6416"
 fi
 
+export camport="$camport"
+
 echo "export HPORTLOC=\"$camport\"" >> $INSDIR/caminsprops.sh
+
+echo "If you will access the Cam instance through Konnectii Bridge, enter the https address the cam will have"
+echo "on the internet (e.g. https://adomain.com)"
+echo -n "Cam Internet Address: "
+read incamaddr
+echo ""
+
+echo "export HCAMURL=\"$incamaddr\"" >> $INSDIR/caminsprops.sh
 
 chown $INSUSER $INSDIR/caminsprops.sh
 
@@ -86,6 +96,10 @@ if [ "$HPORTLOC" != "" ]; then
   su $INSUSER -c "./apprun/App/IUCam/iuccmd.sh --appType cmd --confCmd putConfig --key web.port --value $HPORTLOC"
 fi
 
+if [ "$HCAMURL" != "" ]; then
+  su $INSUSER -c "./apprun/App/IUCam/iuccmd.sh --appType cmd --confCmd putConfig --key auth.siteNames --value $HCAMURL"
+fi
+
 su $INSUSER -c "./apprun/App/IUCam/iuccmd.sh --appType cmd --confCmd saveLocalUrl --urlFile localCamUrl.txt"
 
 #create account
@@ -103,6 +117,6 @@ echo "setup the remote service in konnectii bridge to access outside local netwo
 
 cat $INSDIR/apprun/localCamUrl.txt
 
-rm -f $INSDIR/insprops.sh
+rm -f $INSDIR/caminsprops.sh
 
 echo ""

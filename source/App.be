@@ -1595,7 +1595,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       if (mode == "saveLocalUrl") {
         log.log("saveLocalUrl");
         
-        String intPort = app.configManager.put("web.port", intPort);
+        String intPort = app.configManager.get("web.port");
         
         String defadd = Net:Gateway.defaultAddress;
         Net:Interface ni = Net:Interface.new();
@@ -1689,6 +1689,11 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       }
       return(null);
    }
+   
+  start() {
+    log.log("initting managers conf");
+    app.configManagerGet();
+  }
     
 }
 

@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang jv --emitFlag iuDebug -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/IUCam.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang jv --outputPlatform linux -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/IUCam.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 #--emitFlag iuOwnBackground
 
@@ -28,7 +28,7 @@ javac ../abe-pl/system/jv/be/*.java ../apprun/App/IUCam/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang js --ownProcess false -mainClass=IUCam:Eui ../abe-pl/source/extended/Log.be source/IUCamBr.be source/BrowserEUI.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUCam:Eui ../abe-pl/source/extended/Log.be source/IUCamBr.be source/BrowserEUI.be
 
 #for rel add 
 # --outputPlatform linux 
@@ -70,6 +70,6 @@ cp scripts/startiuc.sh ../apprun/App/IUCam
 cp scripts/iucrun.sh ../apprun/App/IUCam
 cp source/MOCAM.conf ../apprun/App/IUCam
 
-./scripts/iuc5jvrun.sh $*
+#./scripts/iuc5jvrun.sh $*
 
-#./scripts/iucrel.sh
+./scripts/iucrel.sh
