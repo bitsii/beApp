@@ -26,7 +26,9 @@ apt -qq --assume-yes update
 echo "Installing required additional system software"
 apt -qq --assume-yes install oracle-java8-jdk
 apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
-apt -qq --assume-yes install mpg123 shellinabox
+apt -qq --assume-yes install mpg123 shellinabox screen
+
+#python3-pip hass
 
 cd apprun/App/KBridge
 

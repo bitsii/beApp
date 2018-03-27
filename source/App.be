@@ -1201,6 +1201,66 @@ use class App:PublicReadPlugin {
      }
 }
 
+use class App:ProxyPlugin {
+
+     new() self {
+       fields {
+          any app;
+          String name = "Proxy";
+          IO:Log log =@ IO:Logs.get(self);
+          String destUrl = "http://192.168.8.205:8080";
+        }
+     }
+     
+       
+     handleWeb(request) this {
+       /*String rmtd = request.inputMethod;
+       String uri = request.uri;
+       log.log("uri " + uri);
+       Encode:Url.decode(uri.substring(1));
+       request.outputContentType = mtype;
+       IO:Writer outw = request.openOutput();
+       IO:Reader inr = imgfile.reader.open();
+       inr.copyData(outw);
+       request.closeOutputWriter();
+       inr.close();
+       return(self);*/
+       
+       String uri = request.uri;
+       if (TS.isEmpty(uri)) {
+        log.log("uri empty");
+        uri = "/";
+       }
+       log.log("proxy uri " + uri);
+       String destReq = destUrl + uri;
+       log.log("destReq " + destReq);
+       
+       String rmtd = request.inputMethod;
+       log.log("req mtd " + rmtd);
+       
+       Web:Client client = Web:Client.new();
+       client.url = destReq;
+       
+       IO:Reader inr = client.openInput();
+       
+       String ct = client.inputHeaders.get("Content-Type");
+       
+       if (TS.notEmpty(ct)) {
+        log.log("ct " + ct);
+        request.outputContentType = ct;
+       } else {
+        log.log("ct empty");
+       }
+       
+       IO:Writer outw = request.openOutput();
+       inr.copyData(outw);
+       request.closeOutputWriter();
+       inr.close();
+       
+       
+     }
+}
+
 use class App:FileManagerPlugin(App:AjaxPlugin) {
 
      new() self {
@@ -1443,7 +1503,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       String dirListHtml = String.new();
       dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
       if (dirFile.exists && checkReadPath(dirFile.path, arg, request)) {
-        dirListHtml += "<p>Listing 2 for " += htmle.encode(dirFile.path.toString()) += "</p>";
+        dirListHtml += "<p>Listing 3 for " += htmle.encode(dirFile.path.toString()) += "</p>";
         dirListHtml += "<table>";
         if (adminLinks) {
           if (System:CurrentPlatform.name == "mswin") {
