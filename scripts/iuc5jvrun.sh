@@ -6,7 +6,7 @@ export MYPWD=`pwd`
 
 export MYHN=`hostname`
 
-java -classpath "App/IUCam/*" be.BEX_E --plugin App:ProxyPlugin --plugin App:PublicReadPlugin --plugin App:AuthPlugin --plugin App:FileManagerPlugin --plugin IUCam:CamPlugin --plugin App:ConfigPlugin --appPlugin IUCam --appType server $*
+java -classpath "App/IUCam/*" be.BEX_E --plugin App:PublicReadPlugin --plugin App:AuthPlugin --plugin App:FileManagerPlugin --plugin IUCam:CamPlugin --plugin App:ConfigPlugin --appPlugin IUCam --webDoSsl false --appType server $*
 
 #--appType browser 
 

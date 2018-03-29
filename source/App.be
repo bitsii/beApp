@@ -957,6 +957,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     String snlist = app.configManager.get("auth.siteNames");
     if (TS.notEmpty(snlist)) {
       for (String sn in snlist.split(",")) {
+        //log.log("sn is " + sn);
         if (ref.begins(sn)) {
           //log.log("ixs false sitelist");
           return(false);
@@ -1201,55 +1202,132 @@ use class App:PublicReadPlugin {
      }
 }
 
-use class App:ProxyPlugin {
+use class App:WebReverseProxyPlugin {
 
      new() self {
        fields {
           any app;
-          String name = "Proxy";
+          String name = "WRProxy";
           IO:Log log =@ IO:Logs.get(self);
-          String destUrl = "http://192.168.8.205:8080";
+          //String destUrl = "http://127.0.0.1:";
+          //String destUrl = "http://192.168.8.205:8080";
+          String destUrl;
+          Bool sslValidate;
         }
+        IO:Logs.turnOnAll();
      }
      
-       
+     start() {
+       if (undef(destUrl)) {
+        destUrl = app.params.getFirst("proxyDestUrl");
+       }
+       if (undef(destUrl)) {
+        throw(Exception.new("proxyDestUrl parameter undefined"));
+       }
+       if (undef(sslValidate)) {
+         String svs = app.params.getFirst("proxySslValidate");
+         if (TS.isEmpty(svs)) {
+          svs = "true";
+         }
+         self.sslValidate = Bool.new(svs);
+       }
+     }
+     
+     sslValidateSet(Bool sslv) {
+      sslValidate = sslv;
+      Web:Client:CertificateManager.validateHosts = sslv;
+      Web:Client:CertificateManager.validateCertificates = sslv;
+     }
+     
      handleWeb(request) this {
-       /*String rmtd = request.inputMethod;
-       String uri = request.uri;
-       log.log("uri " + uri);
-       Encode:Url.decode(uri.substring(1));
-       request.outputContentType = mtype;
-       IO:Writer outw = request.openOutput();
-       IO:Reader inr = imgfile.reader.open();
-       inr.copyData(outw);
-       request.closeOutputWriter();
-       inr.close();
-       return(self);*/
-       
+            
        String uri = request.uri;
        if (TS.isEmpty(uri)) {
         log.log("uri empty");
         uri = "/";
        }
        log.log("proxy uri " + uri);
-       String destReq = destUrl + uri;
+       
+       String qs = request.queryString;
+       if (TS.isEmpty(qs)) {
+        log.log("qs empty");
+        qs = "";
+       } else {
+        qs = "?" + qs;
+       }
+       log.log("qs " + qs);
+       
+       String destReq = destUrl + uri + qs;
+       
        log.log("destReq " + destReq);
        
        String rmtd = request.inputMethod;
        log.log("req mtd " + rmtd);
        
        Web:Client client = Web:Client.new();
+       client.followRedirects = false;
        client.url = destReq;
+       
+       //"User-Agent"
+       //Set suppress =@ Sets.from("Server", "Accept", "Connection", "Content-Length", "Content-Type", "Date", "Expect", "Host", "If-Modified-Since", "Range", "Referrer", "Referer", "Transfer-Encoding", "Proxy-Connection");
+       
+       Set include =@ Sets.from("User-Agent", "Cookie", "Referer", "Set-Cookie");
+       
+       //headers
+       Set hkeys = request.inputHeaderKeys;
+       for (String hkey in hkeys) {
+        //log.log("inputHeaderKey " + hkey);
+        String ihv = request.getInputHeader(hkey);
+        //log.log("inputHeaderValue " + ihv);
+        if (include.has(hkey)) {
+          log.log("sending client header " + hkey + " " + ihv);
+          client.outputHeaders.put(hkey, ihv);
+        } else {
+          log.log("suppressed header " + hkey + " " + ihv);
+        }
+       }
+       
+       //cookies SEE IF PART OF HEADERS
+       //user agent PART OF HEADERS BUT CHECK
+       //body for posts DONE
+       if (rmtd == "POST" || rmtd == "PUT") {
+         log.log("in put or post");
+         client.verb = rmtd;
+         client.outputContentType = request.inputContentType;
+         outw = client.openOutput();
+         inr = request.openInput();
+         inr.copyData(outw);
+       }
        
        IO:Reader inr = client.openInput();
        
-       String ct = client.inputHeaders.get("Content-Type");
+       String ct = client.inputContentType;
        
        if (TS.notEmpty(ct)) {
         log.log("ct " + ct);
         request.outputContentType = ct;
        } else {
         log.log("ct empty");
+       }
+              
+       for (auto kv in client.inputHeaders) {
+        if (include.has(kv.key)) {
+          log.log("sending response header " + kv.key + " " + kv.value);
+          request.setOutputHeader(kv.key, kv.value);
+        } else {
+          if (kv.key == "Location") {
+            log.log("got a location header");
+            String loc = kv.value;
+            if (loc.has(destUrl)) {
+              loc = loc.substring(destUrl.size);
+            }
+            log.log("final loc, will send " + loc)
+            //request.setOutputHeader(kv.key, loc);
+            request.outputContent = "<html><head><script>location=\"" + loc + "\"</script></html>";
+            return(self);
+          }
+          log.log("suppressed response header " + kv.key + " " + kv.value);
+        }
        }
        
        IO:Writer outw = request.openOutput();
@@ -1909,13 +1987,16 @@ class WebApp {
         Bool doSsl;
       }
       if (undef(doSsl)) {
-        String doSsls = self.configManager.get("web.ssl");
+        doSsls = params.getFirst("webDoSsl");
         if (TS.isEmpty(doSsls)) {
-          doSsls = "true";
-          ifEmit(cs) {
-            doSsls = "false";
+          String doSsls = self.configManager.get("web.ssl");
+          if (TS.isEmpty(doSsls)) {
+            doSsls = "true";
+            ifEmit(cs) {
+              doSsls = "false";
+            }
+            self.configManager.put("web.ssl", doSsls);
           }
-          self.configManager.put("web.ssl", doSsls);
         }
         doSsl = Logic:Bools.fromString(doSsls);
       }
@@ -1970,6 +2051,9 @@ class WebApp {
         String intPort;
       }
       if (TS.isEmpty(intPort)) {
+        if (def(params) && def(params.getFirst("webPort"))) {
+          return(params.getFirst("webPort"));
+        }
         intPort = self.configManager.get("web.port");
         if (TS.isEmpty(intPort)) {
           Int intPorti = System:Random.getIntMax(6000);

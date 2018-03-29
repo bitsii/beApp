@@ -4,6 +4,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+use System:Parameters;
+
 emit(cs) {
     """
 //for mono ws, prefix Http* with Mono.Net for mono ver, drop (or System.Net) for ms builtin
@@ -294,7 +296,8 @@ use class Web:Client {
             IO:Reader inputReader;
             String url;
             String certificateThumbprint;
-            Map outputHeaders = Map.new();
+            Map outputHeaders = Map.new(); //really is just a map, multi value is comma separated string
+            Bool followRedirects = true;
         }
     }
     
@@ -346,9 +349,10 @@ use class Web:Client {
         }
         """
         }
-        for (any kv in outputHeaders) {
+        for (auto kv in outputHeaders) {
           String hk = kv.key;
           String hv = kv.value;
+          if (def(hv)) {
           emit(cs) {
           """
           if (bevl_hv == null) {
@@ -361,7 +365,9 @@ use class Web:Client {
           emit(jv) {
           """
           bevi_conn.setRequestProperty(bevl_hk.bems_toJvString(), bevl_hv.bems_toJvString());
+          bevi_conn.setInstanceFollowRedirects(bevp_followRedirects.bevi_bool);
           """
+          }
           }
         }
         
@@ -415,7 +421,7 @@ use class Web:Client {
     
     openInput() IO:Reader {
         fields {
-          Map inputHeaders = Map.new();
+          Map inputHeaders = Map.new(); //really is just a map, multi value is comma sep string
         }
         String ihkey;
         String ihval;
@@ -504,6 +510,10 @@ use class Web:Client {
         bevi_conn = null;
         """
         }
+    }
+    
+    inputContentTypeGet() String {
+      return(self.inputHeaders.get("Content-Type"));
     }
 
 }

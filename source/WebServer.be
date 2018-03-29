@@ -216,7 +216,7 @@ use class Web:ScriptRequest {
      String uri;
      emit(cs) {
      """
-     string url = bevi_req.RawUrl;
+     string url = bevi_req.RawUrl; //includes query string, ?HttpRequest.Url.OriginalString
      if (url != null) {
        bevl_uri = new $class/Text:String$(url);
      }
@@ -231,6 +231,19 @@ use class Web:ScriptRequest {
      """
      }
      return(uri);
+   }
+   
+   queryStringGet() String {
+     String qs;
+     emit(jv) {
+     """
+     String qs = bevi_req.getQueryString();
+     if (qs != null) {
+       bevl_qs = new $class/Text:String$(qs);
+     }
+     """
+     }
+     return(qs);
    }
    
    embeddedGet() {
@@ -387,6 +400,26 @@ use class Web:ScriptRequest {
      }
      return(val);
    }
+      
+   inputHeaderKeysGet() Set {
+     Set res = Set.new();
+     String val;
+     emit(jv) {
+     """
+     java.util.Enumeration<java.lang.String> emvals = bevi_req.getHeaderNames();
+     if (emvals != null) {
+        while (emvals.hasMoreElements()) {
+         String emval = emvals.nextElement();
+         if (emval != null) {
+           bevl_val = new $class/Text:String$(emval);
+           bevl_res.bem_addValue_1(bevl_val);
+         }
+       }
+     }
+     """
+     }
+     return(res);
+   }
    
    setOutputHeader(String name, String value) {
      String val;
@@ -485,6 +518,10 @@ use class Web:ScriptRequest {
             Map context = Map.new();
             Bool continueHandling = true;
         }
+    }
+    
+    inputContentTypeGet() String {
+      return(self.getInputHeader("Content-Type"));
     }
     
     openOutput() IO:Writer {
