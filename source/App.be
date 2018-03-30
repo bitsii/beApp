@@ -25,16 +25,20 @@ use class App:Paths {
     fields {
       any app = _app;
       String name = app.plugin.name;
+      String dataName = name;
+    }
+    if (app.plugin.can("dataNameGet", 0)) {
+      dataName = app.plugin.dataName; 
     }
   }
 
   dataPathGet() Path {
     ifEmit(platDroid) {
       any app = createInstance("UI:JvAd:WebBrowser");
-      dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(name);
+      dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(dataName);
     }
     ifNotEmit(platDroid) {
-      Path dbp = Path.apNew("Data").addStep(name);
+      Path dbp = Path.apNew("Data").addStep(dataName);
     }
     return(dbp);
   }
@@ -951,11 +955,13 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     String la = request.localAddress;
     if (TS.isEmpty(ref) || TS.isEmpty(la)) {
       //log.log("isCrossSite true empty");
+      //if (TS.isEmpty(ref)) { log.log("ref empty"); } else { log.log("la empty"); }
       return(true);
     }
     //log.log("referer is " + ref);
     String snlist = app.configManager.get("auth.siteNames");
     if (TS.notEmpty(snlist)) {
+      //log.log("siteNames " + snlist);
       for (String sn in snlist.split(",")) {
         //log.log("sn is " + sn);
         if (ref.begins(sn)) {
@@ -976,7 +982,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     
     String pref = app.webProto + "://";
     log.log("prefix " + pref);
-    String intPort = app.configManager.get("web.port");
+    String intPort = app.webPort;
     if (ref.begins(pref + "127.0.0.1:" + intPort) || ref.begins(pref + "localhost:" + intPort)) {
       //log.log("icc false localhost");
       return(false);
@@ -1208,6 +1214,7 @@ use class App:WebReverseProxyPlugin {
        fields {
           any app;
           String name = "WRProxy";
+          String dataName = "KBridge";
           IO:Log log =@ IO:Logs.get(self);
           //String destUrl = "http://127.0.0.1:";
           //String destUrl = "http://192.168.8.205:8080";
@@ -1218,6 +1225,7 @@ use class App:WebReverseProxyPlugin {
      }
      
      start() {
+       log.log("later sessionid " + app.configManager.get("auth.sessionId"));
        if (undef(destUrl)) {
         destUrl = app.params.getFirst("proxyDestUrl");
        }
@@ -1263,6 +1271,15 @@ use class App:WebReverseProxyPlugin {
        
        String rmtd = request.inputMethod;
        log.log("req mtd " + rmtd);
+       
+       String accountName = request.getSession("account.name");
+       if (TS.isEmpty(accountName)) {
+        log.log("no accountname, halting");
+        request.outputContent = "<html><head><body><p>Logged out<p>Please log back into Konnectii Bridge to continue</body></html>";
+        return(self);
+       } else {
+        log.log("found account " + accountName);
+       }
        
        Web:Client client = Web:Client.new();
        client.followRedirects = false;
@@ -1733,7 +1750,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       if (mode == "saveLocalUrl") {
         log.log("saveLocalUrl");
         
-        String intPort = app.configManager.get("web.port");
+        String intPort = app.webPort;
         
         String defadd = Net:Gateway.defaultAddress;
         Net:Interface ni = Net:Interface.new();
@@ -2137,6 +2154,7 @@ class WebApp {
     }
     if (undef(sessionId)) {
       sessionId = self.configManager.get("auth.sessionId");
+      log.log("sessionId " + sessionId);
       if (TS.isEmpty(sessionId)) {
         sessionId = System:Random.getString(16);
         self.configManager.put("auth.sessionId", sessionId);

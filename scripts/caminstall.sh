@@ -28,19 +28,6 @@ fi
 echo "export INUSR=\"$inusername\"" > $INSDIR/caminsprops.sh
 echo "export INPASS=\"$inpassword\"" >> $INSDIR/caminsprops.sh
 
-echo "Internal port for cam web app?"
-echo -n "enter port > 1000, blank is 6416"
-read camport
-echo ""
-
-if [ "$camport" == "" ]; then
-  camport="6416"
-fi
-
-export camport="$camport"
-
-echo "export HPORTLOC=\"$camport\"" >> $INSDIR/caminsprops.sh
-
 echo "If you will access the Cam instance through Konnectii Bridge, enter the https address the cam will have"
 echo "on the internet (e.g. https://adomain.com)"
 echo -n "Cam Internet Address: "
@@ -91,10 +78,6 @@ cat tmp/stadd > /etc/rc.local
 #chown
 chown -R $INSUSER apprun
 chown -R $INSUSER tmp
-
-if [ "$HPORTLOC" != "" ]; then
-  su $INSUSER -c "./apprun/App/IUCam/iuccmd.sh --appType cmd --confCmd putConfig --key web.port --value $HPORTLOC"
-fi
 
 if [ "$HCAMURL" != "" ]; then
   su $INSUSER -c "./apprun/App/IUCam/iuccmd.sh --appType cmd --confCmd putConfig --key auth.siteNames --value $HCAMURL"

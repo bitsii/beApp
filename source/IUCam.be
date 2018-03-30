@@ -197,6 +197,7 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
        fields {
           any app;
           String name = "IUCam";
+          String dataName = "KBridge";
           String homePage = "/App/IUCam/IUCam.html";
           Background bg = Background.new();
           App:Background abg = App:Background.new();
