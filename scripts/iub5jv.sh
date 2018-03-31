@@ -69,6 +69,13 @@ cp extlibs/KBridge/* ../apprun/App/KBridge
 cp icons/* ../apprun/App/KBridge
 cp licenses/* ../apprun/App/KBridge
 
+#oh
+cp scripts/iupohcmdrs.sh ../apprun/App/KBridge
+cp scripts/iupohcmd.sh ../apprun/App/KBridge
+cp scripts/startoh.sh ../apprun/App/KBridge
+cp script/startohinner.sh ../apprun/App/KBridge
+cp script/startiupoh.sh ../apprun/App/KBridge
+
 #pure 
 mkdir -p ../apprun/App/KBridge/css/layouts
 rm -f ../apprun/App/KBridge/css/layouts/*

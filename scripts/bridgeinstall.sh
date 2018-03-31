@@ -40,26 +40,6 @@ read doupnpfwd
 echo ""
 echo "export DOUPNPFWD=\"$doupnpfwd\"" >> $INSDIR/insprops.sh
 
-if [ "$doupnpfwd" == "true" ]; then
-  echo "Do you want to use DuckDNS (https://duckdns.org) to locate your Upnp/Port Forwarded "
-  echo "device by name (recommended)?"
-  echo -n "Configure DuckDNS, enter true or false: "
-  read doduck
-  echo ""
-  if [ "$doduck" == "true" ]; then
-    echo "Please provide DuckDNS info (setup an account and domain at https://duckdns.org first"
-    echo "If you don't have one yet)"
-    echo -n "domain: "
-    read ddomain
-    echo ""
-    echo -n "token: "
-    read dtoken
-    echo ""
-    echo "export DDOMAIN=\"$ddomain\"" >> $INSDIR/insprops.sh
-    echo "export DTOKEN=\"$dtoken\"" >> $INSDIR/insprops.sh
-  fi
-fi
-
 echo "Do you want to expose device to the internet via a remote host?"
 echo "Configure remote access via remote host (ssh port forward)"
 echo -n "enter true or false: "

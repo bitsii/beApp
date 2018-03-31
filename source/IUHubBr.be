@@ -474,13 +474,8 @@ use class IUHub:Eui {
      }
    }
    
-   getUpnpResponse(Bool upnpEnabled, String duckDomain) {
+   getUpnpResponse(Bool upnpEnabled) {
       HD.getElementById("enableUpnp").checked = upnpEnabled;
-      if (TS.isEmpty(duckDomain)) {
-        HD.getElementById("duckDomain").value = "";
-      } else {
-        HD.getElementById("duckDomain").value = duckDomain;
-      }
    }
    
    updateResponse(Map arg) {
@@ -749,14 +744,20 @@ use class IUHub:Eui {
         HD.getElementById("fpPort").value = "4200";
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">Shellinabox</a>";
-        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox page</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox on GitHub</a>";
         //(
       } elseIf (forService.ends("webcam)")) {
         HD.getElementById("fpName").value = "IUCam - webcam with motion";
         HD.getElementById("fpPort").value = "6416";
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">IUCam WebCam</a>";
-        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/ioturl/ioturl/wikis/home\">IUCam Page</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/ioturl/ioturl/wikis/home\">IUCam on GitLab</a>";
+      } elseIf (forService.ends("automation)")) {
+        HD.getElementById("fpName").value = "openHAB - Home Automation";
+        HD.getElementById("fpPort").value = "6415";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">openHab Home Automation</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"http://www.openhab.org/\">openHAB Site</a>";
       } elseIf (forService.ends("(rdp)")) {
         HD.getElementById("fpName").value = "Remote Desktop";
         HD.getElementById("fpPort").value = "3389";

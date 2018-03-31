@@ -757,32 +757,11 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       }
     }
   }
-  
-  updateDuck() this {
-    log.log("in updateduck");
-    String duckDomain = app.configManager.get("duck.domain");
-    String duckToken = app.configManager.get("duck.token");
-    if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
-       log.log("doing duckupdate");
-       String url =  "https://duckdns.org/update/" + duckDomain + "/" + duckToken;
-       Web:Client client = Web:Client.new();
-       Web:Client:CertificateManager.validateCertificates = false;
-       client.verb = "GET";
-       client.url = url;
-       String res = client.openInput().readString();
-       client.close();
-       Web:Client:CertificateManager.validateCertificates = true;
-       log.log("duckupdate done");
-    }
-  }
-    
+      
   updateNetAddresses() {
     log.log("In doimap");
     any e;
     try {
-    
-      updateDuck();
-    
       WebConnect wc = wcol.o;
       if(def(wc)) {
         log.log("In doimap1");

@@ -988,7 +988,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       return(false);
     }
     
-    //removed, in sitenames from duckdns, only supported way now
+    //removed, in sitenames only supported way now
     /*String extAddress = self.plugin.wcol.o.externalAddress;
     String extPort = self.plugin.wcol.o.externalPort;
     

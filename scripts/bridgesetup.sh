@@ -81,15 +81,6 @@ echo ""
 
 su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value $DOUPNPFWD"
 
-if [ "$DDOMAIN" != "" ]; then
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key duck.domain --value $DDOMAIN"
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd addDuckName --bridgeDuckName $DDOMAIN"
-fi
-
-if [ "$DTOKEN" != "" ]; then
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key duck.token --value $DTOKEN"
-fi
-
 if [ "$SHOST" != "" ]; then
   su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshHost --value $SHOST"
   su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd addSshName --bridgeSshName $SHOST"

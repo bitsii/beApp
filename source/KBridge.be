@@ -236,9 +236,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (TS.isEmpty(mode)) {
         return(super.handleCmd(params));
       }
-      if (mode == "addDuckName") {
-        addSiteName(app.webProto + "://", params.getFirst("bridgeDuckName") + ".duckdns.org");
-      }
       if (mode == "addSshName") {
         addSiteName(app.webProto + "://", params.getFirst("bridgeSshName"));
       }
@@ -289,7 +286,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
    
    getUpnpRequest(request) Map {
-     return(CallBackUI.getUpnpResponse(self.upnpEnabled, app.configManager.get("duck.domain")));
+     return(CallBackUI.getUpnpResponse(self.upnpEnabled));
    }
    
    addSiteName(String proto, String host) {
@@ -306,18 +303,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
    }
    
-   saveUpnpRequest(Bool enableUpnp, String duckDomain, String duckToken, request) {
+   saveUpnpRequest(Bool enableUpnp, request) {
       if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         log.log("in saveupnpr");
         if (enableUpnp) {
           app.configManager.put("doUpnpForward", "true");
         } else {
           app.configManager.put("doUpnpForward", "false");
-        }
-        if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
-          addSiteName(app.webProto + "://", duckDomain + ".duckdns.org");
-          app.configManager.put("duck.domain", duckDomain);
-          app.configManager.put("duck.token", duckToken);
         }
         doForward();
       }
@@ -501,10 +493,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("Error during ssh op " + sshe);
       }
       String extBase = "";
-      String dd = app.configManager.get("duck.domain");
-      if (TS.notEmpty(dd)) {
-        extBase = dd + ".duckdns.org";
-      }
       wc.updateExternal(homePage, extBase, doUpnpForward);
       try {
         forwardPorts(wc, ssh, rforwarded);
