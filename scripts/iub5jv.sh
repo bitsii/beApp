@@ -73,8 +73,8 @@ cp licenses/* ../apprun/App/KBridge
 cp scripts/iupohcmdrs.sh ../apprun/App/KBridge
 cp scripts/iupohcmd.sh ../apprun/App/KBridge
 cp scripts/startoh.sh ../apprun/App/KBridge
-cp script/startohinner.sh ../apprun/App/KBridge
-cp script/startiupoh.sh ../apprun/App/KBridge
+cp scripts/startohinner.sh ../apprun/App/KBridge
+cp scripts/startiupoh.sh ../apprun/App/KBridge
 
 #pure 
 mkdir -p ../apprun/App/KBridge/css/layouts

@@ -2154,11 +2154,11 @@ class WebApp {
     }
     if (undef(sessionId)) {
       sessionId = self.configManager.get("auth.sessionId");
-      log.log("sessionId " + sessionId);
       if (TS.isEmpty(sessionId)) {
         sessionId = System:Random.getString(16);
         self.configManager.put("auth.sessionId", sessionId);
       }
+      //log.log("sessionId " + sessionId);
     }
     if (undef(sessionManager)) {
       sessionManager = Web:SessionManager.new(self.getKvDb("SESSIONS"), "GsSess" + sessionId);
