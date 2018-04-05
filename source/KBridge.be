@@ -502,7 +502,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
-      updateMyLinks();
+      try {
+        updateMyLinks();
+      } catch (fpe) {
+        log.log("exception during updateMyLinks ");
+      }
       app.plugin.updateUrls();
       log.log("saving");
       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));

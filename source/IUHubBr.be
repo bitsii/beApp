@@ -499,7 +499,7 @@ use class IUHub:Eui {
       HD.title = "Konnectii Bridge";
       
       HD.getElementById("browseDevicesME").display = "none";
-      HD.getElementById("linkDevicesME").display = "none";
+      //HD.getElementById("linkDevicesME").display = "none";
       
     } elseIf (profile == "router") {
       HD.title = "Konnectii Router";
