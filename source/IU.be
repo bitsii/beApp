@@ -89,7 +89,7 @@ class IU:WebConnect {
       if (TS.notEmpty(internalAddress)) {
         internalBase = protocol + internalAddress + intPort;
         internalUrl = internalBase + homePage;
-        internalLink = "<a href=\"" + internalUrl + "\" target=\"_blank\">Internal Link to " + deviceName + " Bridge, use on device's network.</a>";
+        internalLink = "<a href=\"" + internalUrl + "\" target=\"_blank\">Internal " + deviceName + " Bridge, use on device's network.</a>";
         log.log("Internal url " + internalUrl);
       }
   }
@@ -136,7 +136,7 @@ class IU:WebConnect {
       if (TS.notEmpty(hostedAddress)) {
         hostedBase = protocol + hostedAddress + extPort;          
         hostedUrl = hostedBase + homePage;
-        hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted Link to " + deviceName + " Bridge, use anywhere there is internet connectivity.</a>";
+        hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Bridge, use wherever there's internet.</a>";
         log.log("Hosted url use outside device's network (the internet)." + hostedUrl);
       }
       
@@ -241,7 +241,7 @@ class IU:WebConnect {
         if (TS.notEmpty(hstUrl) && TS.notEmpty(hostedAddress)) {
           hstUrl = hstUrl.swap("$ip$", hostedAddress);
           hstUrl = hstUrl.swap("$port$", service.get("intPort"));
-          service.put("hstLink", hstUrl + " Hosted Connection for " += conf.get("name") += " - use anywhere there is internet connectivity.");
+          service.put("hstLink", hstUrl + " Hosted " += conf.get("name") += " - use wherever there's internet.");
         }
       }
       return(services);

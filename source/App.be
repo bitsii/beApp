@@ -476,7 +476,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       if (TS.isEmpty(mode)) {
         return(false);
       }
-      if (mode == "showLogins") {
+      if (mode == "showAccounts") {
         for (String login in self.accountManager.getLogins()) {
           log.log("Account login " + login);
         }
@@ -1169,7 +1169,16 @@ use class App:PublicReadPlugin {
          }
          File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
          Path pa = imgfile.absPath;
-         if (app.plugin.checkPublicReadPath(pa, request)) {
+         Bool readOk = false;
+         for (any pl in app.plugins) {
+          if (pl.can("checkPublicReadPath", 2)) {
+            if (pl.checkPublicReadPath(pa, request)) {
+              readOk = true;
+              break;
+            }
+          }
+         }
+         if (readOk) {
             log.log("chkrdp fm true public");
            log.log("imgfile " + imgfile.path);
            if (imgfile.exists) {
