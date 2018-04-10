@@ -9,7 +9,8 @@ export INSUSER=pi
 export INSDIR=/home/pi
 export IZDIR=`dirname $0`
 
-echo "Please provide initial account information, you'll need this to login and use the application."
+echo "Please provide initial account information, you'll need this to login to"
+echo "Konnectii Bridge after install"
 echo -n "Username: "
 read inusername
 echo ""
@@ -34,42 +35,17 @@ read indname
 echo ""
 echo "export INDNAME=\"$indname\"" >> $INSDIR/insprops.sh
 
-echo "Do you want to expose to the internet using UPnP port forwarding from your home router?"
-echo -n "Do UPnP Forward, enter true or false: "
-read doupnpfwd
+echo "Link bridge to Konnectii to locate and login to bridge on the local network"
+echo "and the Internet https://konnectii.com"
+echo -n "Konnectii username: "
+read konuser
 echo ""
-echo "export DOUPNPFWD=\"$doupnpfwd\"" >> $INSDIR/insprops.sh
-
-echo "Do you want to expose device to the internet via a remote host?"
-echo "Configure remote access via remote host (ssh port forward)"
-echo -n "enter true or false: "
-read dossh
+echo -n "Konnectii Password: "
+read -s konpass
 echo ""
-if [ "$dossh" == "true" ]; then
-  echo "Please provide ssh info"
-  echo -n "ssh host: "
-  read shost
-  echo ""
-  echo -n "ssh username: "
-  read suser
-  echo ""
   
-  echo -n "ssh Password: "
-  read -s sinpassword
-  echo ""
-  echo -n "Repeat ssh Password: "
-  read -s sinpassword2
-  echo ""
-
-  if [ "$sinpassword" != "$sinpassword2" ]; then
-  echo "Passwords don't match"
-  exit 1
-  fi
-  
-  echo "export SHOST=\"$shost\"" >> $INSDIR/insprops.sh
-  echo "export SUSER=\"$suser\"" >> $INSDIR/insprops.sh
-  echo "export SPASS=\"$sinpassword\"" >> $INSDIR/insprops.sh
-fi
+echo "export KONUSER=\"$konuser\"" >> $INSDIR/insprops.sh
+echo "export KONPASS=\"$konpass\"" >> $INSDIR/insprops.sh
 
 chown $INSUSER $INSDIR/insprops.sh
 

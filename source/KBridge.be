@@ -92,9 +92,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
-    log.log("linking");
     
     Account a = request.context.get("account");
+    return(routerLink(url, a.user, account, pass));
+    }
+   
+   routerLink(String url, String auser, String account, String pass) Map {
+    log.log("linking");
+    
     String destUrl = url;
     Map argOut = Map.new();
     argOut["accountName"] = account;
@@ -127,7 +132,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         ds["certificatePrint"] = resMap["certificatePrint"];
         String dss = Json:Marshaller.marshall(ds);
         log.log("sldss " + dss);
-        app.configManager.put("LinkSession." + a.user + "!" + destUrl, dss);
+        app.configManager.put("LinkSession." + auser + "!" + destUrl, dss);
         updateMyLink(app.plugin.wcol.o, ds);
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
       }
@@ -235,6 +240,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String mode = params.getFirst("bridgeCmd");
       if (TS.isEmpty(mode)) {
         return(super.handleCmd(params));
+      }
+      if (mode == "routerLink") {
+        routerLink("https://127.0.0.1:5555", params.getFirst("auser"), params.getFirst("konUser"), params.getFirst("konPass"));
       }
       if (mode == "addSshName") {
         addSiteName(app.webProto + "://", params.getFirst("bridgeSshName"));

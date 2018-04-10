@@ -79,29 +79,8 @@ su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig
 
 echo ""
 
-su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value $DOUPNPFWD"
-
-if [ "$SHOST" != "" ]; then
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshHost --value $SHOST"
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd addSshName --bridgeSshName $SHOST"
-fi
-
-if [ "$SUSER" != "" ]; then
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshLogin --value $SUSER"
-fi
-
-if [ "$SPASS" != "" ]; then
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key il.sshPass --value $SPASS"
-fi
-
-if [ "$HPORTLOC" != "" ]; then
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key web.port --value $HPORTLOC"
-fi
-
-if [ "$HPORTEXT" != "" ]; then
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key hub.extPort --value $HPORTEXT"
-fi
-
+su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --auser $INUSR --konUser $KONUSER --konPass $KONPASS"        
+        
 echo ""
 
 su $INSUSER -c "./apprun/App/KBridge/startiuh.sh"
