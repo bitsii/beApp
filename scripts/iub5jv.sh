@@ -58,6 +58,8 @@ cp scripts/upgrade.sh ../apprun/App/KBridge
 cp scripts/upgrade2.sh ../apprun/App/KBridge
 cp scripts/postupgrade.sh ../apprun/App/KBridge
 cp scripts/startiuh.sh ../apprun/App/KBridge
+cp scripts/startiubc.sh ../apprun/App/KBridge
+cp scripts/startiuboh.sh ../apprun/App/KBridge
 cp scripts/iuhrun.sh ../apprun/App/KBridge
 cp scripts/iuhcmdrs.sh ../apprun/App/KBridge
 cp scripts/iuhcmd.sh ../apprun/App/KBridge
