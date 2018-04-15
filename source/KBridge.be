@@ -56,7 +56,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       App:Background bfw = App:Background.new();
       //App:Background bup = App:Background.new();
       String profile = "bridge";
-      String defaultUpnpF = "false";
+      String defaultUpnpF = "true";
      }
      super.new();
      

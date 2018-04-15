@@ -40,13 +40,13 @@
                 </div>
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
+                <li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Konnect</a></li>
+                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');return false;">Remote Access</a></li>
+                <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">Remote Services</a></li>
                 <li class="pure-menu-item" id="browseDevicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Browse Devices</a></li>
                 <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Show Services</a></li>
                 <li class="pure-menu-item" id="fileManagerME"><a href="#" class="pure-menu-link" onclick="callUI('localBrowseRequest');return false;">Browse Files</a></li>
-                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');return false;">Remote Access</a></li>
-                <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">Remote Services</a></li>
                 <li class="pure-menu-item" id="restartME"><a href="#" class="pure-menu-link" onclick="callUI('restart');return false;">Restart Bridge</a></li>
-                <li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link Devices</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');return false;">Change Password</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
                 <li class="pure-menu-item" id="setDevicenameME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'dnamechangediv');return false;">Set Devicename</a></li>
@@ -258,21 +258,22 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-control-group">
             <label for="spacer">Link</label>
             <input id="name" type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Link to Router</span>
+            <span class="pure-form-message-inline">Link to Router at <a href="https://www.konnectii.com/" target="_blank">Konnectii.com</a></span>
         </div>
         
-        <div class="pure-control-group">
+        <!--<div class="pure-control-group">
             <label for="name">Router Address (URL)</label>
             <input id="routerAddress" type="text" placeholder="Name">
-        </div>
+        </div>-->
+        <input id="routerAddress" type="hidden" value="https://www.konnectii.com">
         
         <div class="pure-control-group">
-            <label for="name">Router Account Name</label>
+            <label for="name">Konnectii Login</label>
             <input id="routerAccountName" type="text" placeholder="Name">
         </div>
         
         <div class="pure-control-group">
-            <label for="password">Router Account Password</label>
+            <label for="password">Konnectii Password</label>
             <input id="routerAccountPass" type="password" placeholder="Password">
         </div>
         <div class="pure-controls">
