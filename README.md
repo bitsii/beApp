@@ -1,21 +1,11 @@
-IotUrl is an [OpenSource] (https://opensource.com/) ([MPL2] (http://mozilla.org/MPL/2.0/)) web application which runs on a Rasberry Pi 3 and is intended to provide useful solutions for remote presence, remote access, and home automation.  At present it provides you with a way to take pictures of an area through a remote webcam via the internet and capture images based on motion detected by the camera.  
+IotUrl is an [OpenSource] (https://opensource.com/) ([MPL2] (http://mozilla.org/MPL/2.0/)) web application which runs on a Rasberry Pi and gives you an easy way to connect to it on the local network or access it over the Internet when you're away using the [Konnectii.com] (https://www.konnectii.com) website .  Supports a simple motion + webcam application and installation of [openHab home automation software] (http://www.openhab.org/) as well as easy remote access to the command line.
 
-There are some advantages to this approach over options for remote monitoring:
+To get started there's some [stuff you may need] (https://gitlab.com/ioturl/ioturl/wikis/the-stuff-you'll-need)
 
-* The Pi is a cost-effective, low power device
-*  All images and data remain on your devices and under your control.  An email account is used to provide links to the device address but all images and other data are accessed directly from the Pi via a mobile (and desktop...) friendly web application running on the Pi.  
+Once you have your stuff you can [begin your installation] (https://gitlab.com/ioturl/ioturl/wikis/install-page)
 
-To get started there's some [stuff you'll need] (https://gitlab.com/ioturl/ioturl/wikis/the-stuff-you'll-need)
+If you have questions or need some help [you can ask here] (https://stackoverflow.com/questions/tagged/ioturl)
 
-Once you have it you can [begin your installation] (https://gitlab.com/ioturl/ioturl/wikis/install-page)
+If you find an issue please [let us know] (https://gitlab.com/ioturl/ioturl/issues)
 
-Or if there's something you can't figure out [ask about it] (https://stackoverflow.com/questions/tagged/ioturl)
-
-If you think there's a problem [let us know] (https://gitlab.com/ioturl/ioturl/issues)
-
-You might also feel like [taking a peek at the source] (https://bitbucket.org/ioturl/ioturl) ( you might even want to [make it better] (https://gitlab.com/ioturl/ioturl/wikis/developer-instructions) )
-
-...or need to find your way back to [the authoritative version of this page] (https://gitlab.com/ioturl/ioturl/wikis/home) someday
-
-
-
+... and here is [the authoritative version of this page] (https://gitlab.com/ioturl/ioturl/wikis/home)
