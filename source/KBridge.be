@@ -100,8 +100,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    routerLink(String url, String auser, String account, String pass) Map {
     log.log("linking");
     
-    log.log("first do forward");
-    doForward();
+    log.log("get the devicename deviceid going");
+    String dn = self.deviceName;
+    String did = self.deviceId;
+    
+    log.log("first do update");
+    doUpdate();
     log.log("now link");
     
     String destUrl = url;
@@ -246,7 +250,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         return(super.handleCmd(params));
       }
       if (mode == "routerLink") {
-        routerLink("https://www.konnectii.com", params.getFirst("auser"), params.getFirst("konUser"), params.getFirst("konPass"));
+        routerLink(params.getFirst("konUrl"), params.getFirst("auser"), params.getFirst("konUser"), params.getFirst("konPass"));
       }
       if (mode == "addSshName") {
         addSiteName(app.webProto + "://", params.getFirst("bridgeSshName"));
