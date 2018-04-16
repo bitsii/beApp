@@ -24,22 +24,31 @@ cd $INSDIR
 echo "Updating software lists"
 apt -qq --assume-yes update
 echo "Installing required additional system software"
-apt -qq --assume-yes install oracle-java8-jdk
+apt -qq --assume-yes install openjdk-8-jdk-headless
 apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
 apt -qq --assume-yes install mpg123 shellinabox screen
+
+echo "Second go to be sure"
+apt -qq --assume-yes install openjdk-8-jdk-headless
+apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
+apt -qq --assume-yes install mpg123 shellinabox screen
+
+echo "Try for other java"
+apt install oracle-java8-jdk 
+update-java-alternatives -s jdk-8-oracle-arm32-vfp-hflt
 
 #python3-pip hass
 
 cd apprun/App/KBridge
 
 echo "Getting required additional application software"
-wget --tries=10 --retry-connrefused https://www.bouncycastle.org/download/bcprov-jdk15on-155.jar
-wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar
-wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.3.4/hsqldb-2.3.4.jar
-wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.19.3/sqlite-jdbc-3.19.3.jar
-wget --tries=10 --retry-connrefused https://github.com/javaee/javamail/releases/download/JAVAMAIL-1_5_6/javax.mail.jar
-wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.4.0.M1/jetty-all-9.4.0.M1-uber.jar
-wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/com/jcraft/jsch/0.1.54/jsch-0.1.54.jar
+wget --tries=20 --timeout 20 --retry-connrefused https://www.bouncycastle.org/download/bcprov-jdk15on-155.jar
+wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar
+wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.3.4/hsqldb-2.3.4.jar
+wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.19.3/sqlite-jdbc-3.19.3.jar
+wget --tries=20 --timeout 20 --retry-connrefused https://github.com/javaee/javamail/releases/download/JAVAMAIL-1_5_6/javax.mail.jar
+wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.4.0.M1/jetty-all-9.4.0.M1-uber.jar
+wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/com/jcraft/jsch/0.1.54/jsch-0.1.54.jar
 
 chmod +x *.sh
 

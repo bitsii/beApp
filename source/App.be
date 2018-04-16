@@ -2198,6 +2198,7 @@ class WebApp {
     
     main() this {
       handleCmd();
+      System:Process.exit(0);
     }
     
 }

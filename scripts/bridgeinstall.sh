@@ -10,7 +10,8 @@ export INSDIR=/home/pi
 export IZDIR=`dirname $0`
 
 echo "Please provide initial account information, you'll need this to login to"
-echo "Konnectii Bridge after install"
+echo "Konnectii Bridge after install.  This is not yet your Konnectii site login, this is the one"
+echo "You want to use to login to the pi (they can be the same, but do not have to be)"
 echo -n "Username: "
 read inusername
 echo ""
@@ -36,7 +37,8 @@ echo ""
 echo "export INDNAME=\"$indname\"" >> $INSDIR/insprops.sh
 
 echo "Link bridge to Konnectii to locate and login to bridge on the local network"
-echo "and the Internet https://konnectii.com"
+echo "and the Internet from https://www.konnectii.com.  Enter the username and password"
+echo "you registered on the site - if you have not yet registered an account there pls do so now..."
 echo -n "Konnectii username: "
 read konuser
 echo ""

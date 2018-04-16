@@ -100,6 +100,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    routerLink(String url, String auser, String account, String pass) Map {
     log.log("linking");
     
+    log.log("first do forward");
+    doForward();
+    log.log("now link");
+    
     String destUrl = url;
     Map argOut = Map.new();
     argOut["accountName"] = account;
@@ -136,9 +140,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         updateMyLink(app.plugin.wcol.o, ds);
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
       }
-      resetCertMan(ds["certificatePrint"]);
+      //resetCertMan(ds["certificatePrint"]);
     } catch(any e) {
-      resetCertMan(ds["certificatePrint"]);
+      //resetCertMan(ds["certificatePrint"]);
     }
     
     return(CallBackUI.informResponse("Device Link Successful"));
@@ -179,7 +183,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       resetCertMan(ds["certificatePrint"]);
     } catch (any e) {
       resetCertMan(ds["certificatePrint"]);
-      log.log("got exception during checkConn");
+      log.log("got exception during updatemylink");
       log.log(e);
     }
     return(null);
@@ -242,7 +246,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         return(super.handleCmd(params));
       }
       if (mode == "routerLink") {
-        routerLink("https://127.0.0.1:5555", params.getFirst("auser"), params.getFirst("konUser"), params.getFirst("konPass"));
+        routerLink("https://www.konnectii.com", params.getFirst("auser"), params.getFirst("konUser"), params.getFirst("konPass"));
       }
       if (mode == "addSshName") {
         addSiteName(app.webProto + "://", params.getFirst("bridgeSshName"));

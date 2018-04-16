@@ -27,6 +27,19 @@ echo "Updating software lists"
 apt -qq --assume-yes update
 echo "Installing required additional system software"
 apt -qq --assume-yes install mono-runtime
+echo "Reverify"
+apt -qq --assume-yes install mono-runtime
+
+#what bridge will want
+echo "Installing required additional system software"
+apt -qq --assume-yes install openjdk-8-jdk-headless
+apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
+apt -qq --assume-yes install mpg123 shellinabox screen
+
+echo "Second go to be sure"
+apt -qq --assume-yes install openjdk-8-jdk-headless
+apt -qq --assume-yes install fswebcam alsa-utils miniupnpc motion zip unzip unattended-upgrades libav-tools
+apt -qq --assume-yes install mpg123 shellinabox screen
 
 cd apprun/App/$INSNAME
 
