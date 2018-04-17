@@ -48,6 +48,7 @@
                 <li class="pure-menu-item" id="fileManagerME"><a href="#" class="pure-menu-link" onclick="callUI('localBrowseRequest');return false;">Browse Files</a></li>
                 <li class="pure-menu-item" id="restartME"><a href="#" class="pure-menu-link" onclick="callUI('restart');return false;">Restart Bridge</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');return false;">Change Password</a></li>
+                <li class="pure-menu-item" id="manageAccountsME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'accountdiv');callApp('showAccountsRequest');return false;">Manage Accounts</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
                 <li class="pure-menu-item" id="setDevicenameME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'dnamechangediv');return false;">Set Devicename</a></li>
                 </div>
@@ -251,6 +252,50 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         </fieldset>
     </form>
     </div>
+    
+    <div id="accountdiv">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="spacer">Accounts</label>
+            <input id="name" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Create and Update Accounts</span>
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="updateAccountName">Account Name</label>
+            <input id="updateAccountName" type="text" placeholder="Name">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="updateAccountPass">Account Password</label>
+            <input id="updateAccountPass" type="password" placeholder="Password">
+        </div>
+        
+        <div class="pure-control-group">
+         <label for="updateAccountIsAdmin" class="pure-checkbox">Admin Account</label>
+            <input id="updateAccountIsAdmin" type="checkbox">
+        </div>
+        
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('updateAccountRequest', document.getElementById('updateAccountName').value, document.getElementById('updateAccountPass').value, document.getElementById('updateAccountIsAdmin').checked);return false;">Save Account</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('removeAccountRequest', document.getElementById('updateAccountName').value);return false;">Delete Account</button>
+        </div>
+        
+        </fieldset>
+    </form>
+    
+    <div class="pure-g">
+    <div class="pure-u-1-24"></div>
+    <div class="pure-u-23-24">
+    <div id="accountListDiv">
+    </div>
+    </div>
+    </div>
+    
+    </div>
+    
+    
     
     <div id="devicelogindiv" style="display: none;">
     <form class="pure-form pure-form-aligned">

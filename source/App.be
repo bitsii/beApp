@@ -671,6 +671,70 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       self.accountManager.deleteAccount(a);
       return(showAccountAdminRequest(arg, request));
   }
+  
+  updateAccountRequest(String name, String pass, Bool isAdmin, request) {
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+    Account a = self.accountManager.getAccount(name);
+      if (undef(a)) {
+        log.log(name + " not found, creating new");
+        a = Account.new();
+        a.user = name;
+      } else {
+        if (a.user == self.accountManager.getRequestAccount(request).user) {
+          throw(Alert.new("Cannot change own account"));
+        }
+        log.log(name + " found, use existing");
+      }
+      if (TS.notEmpty(pass)) {
+        log.log("pass set, changing");
+        a.pass = pass;
+      }
+      if (isAdmin) {
+        a.perms.put("admin");
+      } else {
+        a.perms.delete("admin");
+      }
+      self.accountManager.putAccount(a);
+      
+      //return(CallBackUI.informResponse("Account " + name + " saved."));
+      //return(showAccountsRequest(request));
+      
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.informResponse("Account " + name + " saved."), showAccountsRequest(request)))); 
+      
+  }
+  
+  removeAccountRequest(String name, request) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      Account a = self.accountManager.getAccount(name);
+      if (def(a)) {
+        if (a.user == self.accountManager.getRequestAccount(request).user) {
+          throw(Alert.new("Cannot delete own account"));
+        }
+      }
+      self.accountManager.deleteAccount(a);
+      //return(CallBackUI.informResponse("Account " + name + " removed."));
+      //return(showAccountsRequest(request));
+      
+      return(CallBackUI.multiResponse(Lists.from(CallBackUI.informResponse("Account " + name + " removed."), showAccountsRequest(request)))); 
+  }
+  
+  showAccountsRequest(request) {
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      String accountLinks = "";
+    List logins = self.accountManager.getLogins();
+      for (String login in logins) {
+        
+        Account a = self.accountManager.getAccount(login);
+        accountLinks += "<p>Account Name: " += login += " is administrator: " += a.isAdmin;
+      }
+      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("accountListDiv", accountLinks)));
+  }
       
    saveAccountRequest(Map arg, request) {
       unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {

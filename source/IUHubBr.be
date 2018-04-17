@@ -374,7 +374,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv", "remoteaccessdiv", "forwardPortsDiv", "browseFilesDiv");
+    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv", "remoteaccessdiv", "forwardPortsDiv", "browseFilesDiv", "accountdiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -500,6 +500,15 @@ use class IUHub:Eui {
       
       HD.getElementById("browseDevicesME").display = "none";
       //HD.getElementById("linkDevicesME").display = "none";
+      
+      if (perms.has("admin")!) {
+        HD.getElementById("linkDevicesME").display = "none";
+        HD.getElementById("remoteListenME").display = "none";
+        HD.getElementById("remoteAccessME").display = "none";
+        HD.getElementById("restartME").display = "none";
+        HD.getElementById("manageAccountsME").display = "none";
+        HD.getElementById("setDevicenameME").display = "none";
+      }
       
     } elseIf (profile == "router") {
       HD.title = "Konnectii Router";
