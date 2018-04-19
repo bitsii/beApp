@@ -672,19 +672,14 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       return(showAccountAdminRequest(arg, request));
   }
   
-  updateAccountRequest(String name, String pass, Bool isAdmin, request) {
-    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-        throw(Alert.new("Must be administrator"));
-      }
+  updateAccount(String name, String pass, Bool isAdmin) {
+  
     Account a = self.accountManager.getAccount(name);
       if (undef(a)) {
         log.log(name + " not found, creating new");
         a = Account.new();
         a.user = name;
       } else {
-        if (a.user == self.accountManager.getRequestAccount(request).user) {
-          throw(Alert.new("Cannot change own account"));
-        }
         log.log(name + " found, use existing");
       }
       if (TS.notEmpty(pass)) {
@@ -697,6 +692,18 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         a.perms.delete("admin");
       }
       self.accountManager.putAccount(a);
+  
+  }
+  
+  updateAccountRequest(String name, String pass, Bool isAdmin, request) {
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      if (name == self.accountManager.getRequestAccount(request).user) {
+        throw(Alert.new("Cannot change own account"));
+      }
+    
+      updateAccount(name, pass, isAdmin);
       
       //return(CallBackUI.informResponse("Account " + name + " saved."));
       //return(showAccountsRequest(request));
@@ -1794,6 +1801,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
        fields {
           any app;
           String name = "Conf";
+          String kvdb = "CONFIG";
         }
         super.new();
         log =@ IO:Logs.get(self);
@@ -1804,21 +1812,32 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       if (TS.isEmpty(mode)) {
         return(false);
       }
+      String kvdbov = params.getFirst("kvdb");
+      if (TS.notEmpty(kvdbov)) {
+        kvdb = kvdbov;
+      }
+      app.getKvDb(kvdb);//warmup
       if (mode == "showConfig") {
-        for (any kv in app.configManager.getMap()) {
-          log.log("Config name " + kv.key + " value " + kv.value);
+        if (TS.notEmpty(params.getFirst("prefix"))) {
+          for (kv in app.getKvDb(kvdb).getMap(params.getFirst("prefix"))) {
+            log.log("Config name " + kv.key + " value " + kv.value);
+          }
+        } else {
+          for (any kv in app.getKvDb(kvdb).getMap()) {
+            log.log("Config name " + kv.key + " value " + kv.value);
+          }
         }
       }
       if (mode == "putConfig") {
         String key = params.getFirst("key");
         String value = params.getFirst("value");
         log.log("Creating config " + key + " " + value);
-        app.configManager.put(key, value);
+        app.getKvDb(kvdb).put(key, value);
       }
       if (mode == "deleteConfig") {
         key = params.getFirst("key");
         log.log("Deleting config " + key);
-        app.configManager.delete(key);
+        app.getKvDb(kvdb).delete(key);
       }
       if (mode == "saveLocalUrl") {
         log.log("saveLocalUrl");
@@ -1840,7 +1859,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       if ((def(request.context.get("account")) && request.context.get("account").isAdmin) && TS.notEmpty(name)) {
         app.plugin.deviceName = deviceName;
       }
-      app.configManager.put("deviceNameSetOnce", "true");
+      app.getKvDb(kvdb).put("deviceNameSetOnce", "true");
       //return(CallBackUI.setElementsDisplaysResponse(Maps.from("deviceNameDiv", "none")));
       //return(CallBackUI.reloadResponse());
       return(CallBackUI.reloadResponse());
@@ -1850,7 +1869,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
      Set noshow =@ Sets.from("imap.pass", "auth.sessionId", "imap.user");
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        String conf = String.new();
-       Map ecm = app.configManager.getMap();
+       Map ecm = app.getKvDb(kvdb).getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
          for (any kv in ecm) {
@@ -1874,7 +1893,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    }
    
    backupConfig() String {
-     Map ecm = app.configManager.getMap();
+     Map ecm = app.getKvDb(kvdb).getMap();
      if (ecm.isEmpty) {
        ecm = Map.new();
      }
@@ -1903,7 +1922,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    updateConfigRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       log.log("update for " + arg["configKey"] + " value " + arg["configValue"]);
-      app.configManager.put(arg["configKey"], arg["configValue"]);
+      app.getKvDb(kvdb).put(arg["configKey"], arg["configValue"]);
       return(showConfigRequest(arg, request));
       }
       return(null);
@@ -1912,7 +1931,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    deleteConfigRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       log.log("delete for " + arg["configKey"]);
-      app.configManager.delete(arg["configKey"]);
+      app.getKvDb(kvdb).delete(arg["configKey"]);
       return(showConfigRequest(arg, request));
       }
       return(null);
@@ -1920,7 +1939,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    
   start() {
     log.log("initting managers conf");
-    app.configManagerGet();
+    app.getKvDb(kvdb);
   }
     
 }
