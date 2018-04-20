@@ -155,12 +155,21 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    updateMyLinks() {
      WebConnect wc = app.plugin.wcol.o;
      Json:Unmarshaller unmar = Json:Unmarshaller.new();
+     Json:Marshaller mar = Json:Marshaller.new();
      Map lss = app.configManager.getMap("LinkSession.");
      for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
-       updateMyLink(wc, ds);
+       Map res = updateMyLink(wc, ds);
      }
-   }   
+     if (res.has("links")) {
+      for (Map lm in res.get("links")) {
+        log.log("putting into links");
+        wc = WebConnect.new().fromMap(lm);
+        String conjs = mar.marshall(lm);
+        app.configManager.put("devlink!" + wc.deviceId, conjs);
+      }
+     }
+   }
    
    updateMyLink(WebConnect wco, Map ds) Map {
     try {
@@ -190,7 +199,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("got exception during updatemylink");
       log.log(e);
     }
-    return(null);
+    return(resMap);
   }
    
    checkUpgrade() {
@@ -410,6 +419,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    loggedIn(Account a, Map res, Map arg, request) Map {
     res = super.loggedIn(a, res, arg, request);
+    res["devLinksList"] = getDevLinks(null, arg, request);
     String dnso = app.configManager.get("deviceNameSetOnce");
     if (TS.isEmpty(dnso) || dnso != "true") {
       //res["deviceNameSetOnce"] = "false";

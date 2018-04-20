@@ -151,10 +151,68 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }  
   }
   
+  getDevLinks(Account a, Map arg, request) String {
+    String devLinks = String.new();
+     Map accountLinks = getLinks(a);
+     if (accountLinks.isEmpty) {
+       devLinks += "<p>No device links found.";
+     }
+     devLinks += "<p>Login to device's Bridge and use Konnect to add it to your account.";
+     for (auto kv in accountLinks) {
+       Pair links = Pair.new();
+       WebConnect wc = kv.value;
+       if (def(wc)) {
+         Bool internal = fromSameNet(wc, request);
+         //TODO check by pinging links also, possibly in background at login (or from time to time)
+         //remember which last worked, only do occasionally, async, with a refresh
+         //specifically just to filter out external
+         if (internal) {
+          links.first = wc.internalLink;
+          links.second = wc.externalLink;
+         } else {
+          links.second = wc.internalLink;
+          links.first = wc.externalLink;
+         }
+         if (TS.notEmpty(wc.hostedLink)) {
+          devLinks += "<p>" += wc.hostedLink += "</p>";
+         }
+         if (TS.notEmpty(links.first)) {
+          devLinks += "<p>" += links.first += "</p>";
+         }
+         if (TS.notEmpty(links.second)) {
+          devLinks += "<p>" += links.second += "</p>";
+         }
+         if (TS.notEmpty(wc.certificatePrint)) {
+           devLinks += "<p>Certificate Thumbprint for " += wc.deviceName += ": " += wc.certificatePrint += "</p>";
+         }
+      }
+    }
+    return(devLinks);
+  }
+  
+  fromSameNet(WebConnect wc, request) Bool {
+    Bool internal = false;
+    if (request.embedded) {
+       internal = true;
+     } else {
+       if (def(wc)) {
+        internal = onSameNet(request.remoteAddress, wc.internalAddress);
+       } else {
+        internal = false;
+       }
+     }
+     return(internal);
+  }
+  
   getLinks(Account a) Map {
     Map links = Map.new();
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    for (any kv in app.configManager.getMap("link." + a.user + "!")) {
+    if (def(a)) {
+      String key = "link." + a.user + "!";
+    } else {
+      key = "devlink!";
+    }
+    for (any kv in app.configManager.getMap(key)) {
       WebConnect wc = WebConnect.new();
       wc.fromMap(unmar.unmarshall(kv.value));
       links.put(wc.deviceId, wc);
@@ -1209,7 +1267,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      //is remote
      //add links
      Bool internal = isInternal(request);
-     WebConnect wc = wcol.o;
+     /*WebConnect wc = wcol.o;
      if (TS.notEmpty(wc.hostedLink)) {
           actionLinks += "<p>" += wc.hostedLink += "</p>";
         }
@@ -1218,7 +1276,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         }
         if (TS.notEmpty(wc.internalLink)) {
           actionLinks += "<p>" += wc.internalLink += "</p>";
-        }
+        }*/
       Pair sl = self.serviceLinks;
       if (internal) {
         actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
