@@ -182,6 +182,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          if (TS.notEmpty(links.second)) {
           devLinks += "<p>" += links.second += "</p>";
          }
+         if (undef(a)) {
+           devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" + wc.deviceId + "');return false;\">Wakeup " += wc.deviceName += " using Wake on Lan packet</a></p>";
+         }
          if (TS.notEmpty(wc.certificatePrint)) {
            devLinks += "<p>Certificate Thumbprint for " += wc.deviceName += ": " += wc.certificatePrint += "</p>";
          }
@@ -1327,7 +1330,8 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
    
    wakeDevRequest(String deviceId, request) {
      Wol wol = Wol.new();
-     WebConnect wc = getLink(request.context.get("account"), deviceId);
+     //WebConnect wc = getLink(request.context.get("account"), deviceId);
+     WebConnect wc = getLink(null, deviceId);
      if (def(wc)) {
        log.log("waking " + wc.deviceName);
        for (Int i = 0;i < 3;i++=) {
