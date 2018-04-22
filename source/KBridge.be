@@ -537,6 +537,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("saving");
       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
       log.log("upnp doForward done");
+      app.pluginsByName.get("Auth").authedUrls.put(wc.externalUrl);
+      app.pluginsByName.get("Auth").authedUrls.put(wc.hostedUrl);
       return(success);
   }
   

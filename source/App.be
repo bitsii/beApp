@@ -453,6 +453,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           String name = "Auth";
           Set nonAuthedRequests = Set.new();
           OLocker lastLoginBad = OLocker.new(false);
+          Set authedUrls = Set.new();
         }
         super.new();
      }
@@ -1018,9 +1019,6 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   }
   
   isCrossSite(request) Bool {
-    fields {
-      String extUrl;
-    }
     if (request.embedded) { return(false); }
     String ref = request.getInputHeader("referer");
     String la = request.localAddress;
@@ -1028,6 +1026,13 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       //log.log("isCrossSite true empty");
       //if (TS.isEmpty(ref)) { log.log("ref empty"); } else { log.log("la empty"); }
       return(true);
+    }
+    for (sn in authedUrls) {
+      //log.log("sn is " + sn);
+      if (ref.begins(sn)) {
+        //log.log("ixs false sitelist");
+        return(false);
+      }
     }
     //log.log("referer is " + ref);
     String snlist = app.configManager.get("auth.siteNames");
@@ -1046,10 +1051,6 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       //log.log("isCrossSite false begins " + la + " " + ref);
       return(false);
     }
-    if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
-      //log.log("isCrossSite false extUrl begins " + extUrl + " " + ref);
-      return(false);
-    }
     
     String pref = app.webProto + "://";
     log.log("prefix " + pref);
@@ -1059,22 +1060,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       return(false);
     }
     
-    //removed, in sitenames only supported way now
-    /*String extAddress = self.plugin.wcol.o.externalAddress;
-    String extPort = self.plugin.wcol.o.externalPort;
-    
-    if (TS.notEmpty(extAddress) && TS.notEmpty(extPort)) {
-      extUrl = app.webProto + "://" + extAddress + ":" + extPort;
-      //log.log("new extUrl " + extUrl);
-    } else {
-      //log.log("extAddress or extPort empty");
-      if (TS.isEmpty(extAddress)) { log.log("extAddress empty"); }
-      if (TS.isEmpty(extPort)) { log.log("extPort empty"); }
-    }
-    if (TS.notEmpty(extUrl) && ref.begins(extUrl)) {
-      //log.log("isCrossSite false new extUrl begins " + extUrl + " " + ref);
-      return(false);
-    }*/
+
     //log.log("isCrossSite true not begins " + la + " " + ref);
     return(true);
   }
