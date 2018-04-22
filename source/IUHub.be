@@ -157,7 +157,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      if (accountLinks.isEmpty) {
        devLinks += "<p>No device links found.";
      }
-     devLinks += "<p>Login to device's Bridge and use Konnect to add it to your account.";
+     devLinks += "<p>Use Konnect on device to add it to your Konnectii account.";
      for (auto kv in accountLinks) {
        Pair links = Pair.new();
        WebConnect wc = kv.value;
@@ -183,7 +183,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           devLinks += "<p>" += links.second += "</p>";
          }
          if (undef(a)) {
-           devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" + wc.deviceId + "');return false;\">Wakeup " += wc.deviceName += " using Wake on Lan packet</a></p>";
+           devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" + wc.deviceId + "');return false;\">Wakeup " += wc.deviceName += "</a> - using Wake on Lan</p>";
          }
          if (TS.notEmpty(wc.certificatePrint)) {
            devLinks += "<p>Certificate Thumbprint for " += wc.deviceName += ": " += wc.certificatePrint += "</p>";
