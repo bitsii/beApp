@@ -181,7 +181,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       argOut["serviceSessionKey"] = ds["serviceSessionKey"];
       argOut["wc"] = wco.toMap();
       Web:Client:CertificateManager.validateHosts = false;
-      Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateCertificates = false;
+      //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
       Web:Client client = Web:Client.new();
       String payload = Json:Marshaller.marshall(argOut);
       client.outputHeaders.put("referer", destUrl);
@@ -193,11 +194,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         Map resMap = Json:Unmarshaller.unmarshall(res);
         log.log("!!! got res from updatelink  " + res);
       }
-      resetCertMan(ds["certificatePrint"]);
+      //resetCertMan(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
     } catch (any e) {
-      resetCertMan(ds["certificatePrint"]);
+      //resetCertMan(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
       log.log("got exception during updatemylink");
-      log.log(e);
+      log.log(e.toString());
     }
     return(resMap);
   }
@@ -529,6 +534,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         updateMyLinks();
       } catch (fpe) {
         log.log("exception during updateMyLinks ");
+        if (def(fpe)) {
+          log.log("fpe " + fpe);
+        }
       }
       app.plugin.updateUrls();
       log.log("saving");
