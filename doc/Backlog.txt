@@ -215,7 +215,6 @@ on host ssh setup instructs and script (sshd_config change)
 
 haproxy for privilaged -> localhost
 
-siteNames ui
 real certs (let's encrypt and the other one, pay ones)
 
 upload in progress indicator

@@ -173,6 +173,18 @@ use class IUCam:Background {
   
   runTasks() {
     //log.log("Running tasks");
+    
+    any dpf = app.paths.dataPath.parent.addStep("KBridge").addStep("authedUrls");
+    if (dpf.file.exists) { 
+      log.log("got dpf");
+      String au = dpf.file.reader.open().readStringClose();
+      List aul = Json:Unmarshaller.unmarshall(au);
+      for (String aule in aul) {
+         log.log("putting aule " + aule);
+         app.pluginsByName.get("Auth").authedUrls.put(aule);
+      }
+    }
+    
     runMyTasks();
     mu.updateOnInterval();
   }

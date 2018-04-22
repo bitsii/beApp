@@ -4,10 +4,9 @@ export INSUSER=pi
 export INSDIR=/home/pi
 export IZDIR=`dirname $0`
 
-if [ $# -ge 3 ]; then
+if [ $# -ge 2 ]; then
   inusername=$1
   inpassword=$2
-  incamaddr=$3
 else
   echo "Please provide initial account information, you'll need this to login and use the application."
   echo -n "Username: "
@@ -24,18 +23,11 @@ else
   echo "Passwords don't match"
   exit 1
   fi
-  
-  echo "If you will access the Cam instance through Konnectii Bridge, enter the https address the cam will have"
-  echo "on the internet (e.g. https://adomain.com)"
-  echo -n "Cam Internet Address: "
-  read incamaddr
-  echo ""
 
 fi
 
 echo "export INUSR=\"$inusername\"" > $INSDIR/caminsprops.sh
 echo "export INPASS=\"$inpassword\"" >> $INSDIR/caminsprops.sh
-echo "export HCAMURL=\"$incamaddr\"" >> $INSDIR/caminsprops.sh
 
 . $INSDIR/caminsprops.sh
 
@@ -61,10 +53,6 @@ wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/eclipse/j
 chmod +x *.sh
 
 cd $INSDIR
-
-if [ "$HCAMURL" != "" ]; then
-  ./apprun/App/IUCam/iuccmd.sh --appType cmd --confCmd putConfig --key auth.siteNames --value $HCAMURL
-fi
 
 ./apprun/App/IUCam/iuccmd.sh --appType cmd --confCmd saveLocalUrl --urlFile localCamUrl.txt
 

@@ -261,9 +261,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (mode == "routerLink") {
         routerLink(params.getFirst("konUrl"), params.getFirst("auser"), params.getFirst("konUser"), params.getFirst("konPass"));
       }
-      if (mode == "addSshName") {
-        addSiteName(app.webProto + "://", params.getFirst("bridgeSshName"));
-      }
       if (mode == "sftpFile") {
         log.log("sftpFile");
         String sfps = params.getFirst("sourceFile");
@@ -346,7 +343,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.configManager.put("il.sshHost", host);
       app.configManager.put("il.sshLogin", login);
       app.configManager.put("il.sshPass", pass);
-      addSiteName(app.webProto + "://", host);
+      //addSiteName(app.webProto + "://", host);
       doForward();
     }
     return(null);
@@ -537,8 +534,25 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("saving");
       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
       log.log("upnp doForward done");
-      app.pluginsByName.get("Auth").authedUrls.put(wc.externalUrl);
-      app.pluginsByName.get("Auth").authedUrls.put(wc.hostedUrl);
+      
+      List au = List.new();
+      if (TS.notEmpty(wc.externalUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.externalUrl);
+        auto parts = wc.externalUrl.split(":");
+        String fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs;
+      }
+      if (TS.notEmpty(wc.hostedUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.hostedUrl);
+        parts = wc.hostedUrl.split(":");
+        fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs;
+      }
+      any dpf = app.paths.dataPath.addStep("authedUrls");
+      if (dpf.file.exists) { dpf.file.delete(); }
+      dpf.file.writer.open().writeStringClose(Json:Marshaller.marshall(au));
       return(success);
   }
   
