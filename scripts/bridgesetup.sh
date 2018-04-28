@@ -5,9 +5,10 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-export INSUSER=pi
-export INSDIR=/home/pi
-export IZDIR=`dirname $0`
+if [ -z "$INSDIR" ]; then
+  echo "Missing install user and directory information, run bridgeinstall.sh, not bridgesetup.sh"
+  exit
+fi
 
 . $INSDIR/insprops.sh
 
@@ -90,6 +91,16 @@ echo ""
 
 su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.konnectii.com --auser $INUSR --konUser $KONUSER --konPass $KONPASS"        
         
+echo ""
+
+if [ "$PRIVATENET" == "y" ]; then
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false" 
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"       
+else
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value true" 
+  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value false"      
+fi
+
 echo ""
 
 su $INSUSER -c "./apprun/App/KBridge/startiuh.sh"

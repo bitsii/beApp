@@ -1,7 +1,17 @@
 #!/bin/bash
 
-export INSUSER=pi
-export INSDIR=/home/pi
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root, try running the command 'sudo $0'"
+  exit
+fi
+
+if [ -n "$SUDO_USER" ]; then
+  export INSUSER="$SUDO_USER"
+else
+  export INSUSER="$USER"
+fi
+
+export INSDIR=`echo $(getent passwd $INSUSER )| cut -d : -f 6`
 export IZDIR=`dirname $0`
 
 if [ $# -ge 2 ]; then

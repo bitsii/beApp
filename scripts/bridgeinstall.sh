@@ -5,13 +5,18 @@ if [ "$EUID" -ne 0 ]
   exit
 fi
 
-export INSUSER=pi
-export INSDIR=/home/pi
+if [ -n "$SUDO_USER" ]; then
+  export INSUSER="$SUDO_USER"
+else
+  export INSUSER="$USER"
+fi
+
+export INSDIR=`echo $(getent passwd $INSUSER )| cut -d : -f 6`
 export IZDIR=`dirname $0`
 
 echo "Please provide initial account information, you'll need this to login to"
 echo "Konnectii Bridge after install.  This is not yet your Konnectii site login, this is the one"
-echo "You want to use to login to the pi (they can be the same, but do not have to be)"
+echo "You want to use to login to the bridge on this host or device (they can be the same, but do not have to be)"
 echo -n "Username: "
 read inusername
 echo ""
@@ -30,7 +35,7 @@ fi
 echo "export INUSR=\"$inusername\"" > $INSDIR/insprops.sh
 echo "export INPASS=\"$inpassword\"" >> $INSDIR/insprops.sh
 
-echo "Please provide a short, friendly name for the device."
+echo "Please provide a short, friendly name for the host or device."
 echo -n "DeviceName: "
 read indname
 echo ""
@@ -48,6 +53,13 @@ echo ""
   
 echo "export KONUSER=\"$konuser\"" >> $INSDIR/insprops.sh
 echo "export KONPASS=\"$konpass\"" >> $INSDIR/insprops.sh
+
+echo "Are you installing this on a host directly on the public internet or a device on your"
+echo "home, office, or other private network?"
+echo -n "Installing on private network? y or n: "
+read privatenet
+
+echo "export PRIVATENET=\"$privatenet\"" >> $INSDIR/insprops.sh
 
 chown $INSUSER $INSDIR/insprops.sh
 
