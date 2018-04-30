@@ -152,6 +152,26 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(CallBackUI.informResponse("Device Link Successful"));
    }
    
+   unlinkAllRequest(request) {
+     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+    }
+    Map lss = app.configManager.getMap("LinkSession.");
+     for (auto kv in lss) {
+       app.configManager.delete(kv.key);
+     }
+   }
+   
+   clearAllDevsRequest(request) {
+     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+    }
+    Map lss = app.configManager.getMap("devlink!");
+     for (auto kv in lss) {
+       app.configManager.delete(kv.key);
+     }
+   }
+   
    updateMyLinks() {
      WebConnect wc = app.plugin.wcol.o;
      Json:Unmarshaller unmar = Json:Unmarshaller.new();
@@ -316,6 +336,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      return(CallBackUI.getUpnpResponse(self.upnpEnabled));
    }
    
+   getOnPublicNetRequest(request) Map {
+     return(CallBackUI.getOnPublicNetResponse(self.onPublicNet));
+   }
+   
    addSiteName(String proto, String host) {
       String siteNames = app.configManager.get("auth.siteNames");
       if (TS.notEmpty(host)) {
@@ -327,6 +351,18 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           siteNames += proto += host;
           app.configManager.put("auth.siteNames", siteNames);
         }
+      }
+   }
+   
+   saveOnPublicNetRequest(Bool enableUpnp, request) {
+      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        log.log("in saveOnPublicNetRequest");
+        if (enableUpnp) {
+          app.configManager.put("onPublicNet", "true");
+        } else {
+          app.configManager.put("onPublicNet", "false");
+        }
+        doForward();
       }
    }
    
@@ -445,6 +481,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     
     
     doForward() {
+      doUpdate();
       for (Int i = 0;i < 5;i++=) {
         Bool res = false;
         try {
@@ -477,6 +514,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
     }
         
+    onPublicNetGet() Bool {
+      String doUpnpForwardS = app.configManager.get("onPublicNet");
+      if (TS.isEmpty(doUpnpForwardS)) {
+        doUpnpForwardS = "false";
+      }
+      Bool doUpnpForward = Bool.new(doUpnpForwardS);
+      return(doUpnpForward);
+    }
+    
     upnpEnabledGet() Bool {
       String doUpnpForwardS = app.configManager.get("doUpnpForward");
       if (TS.isEmpty(doUpnpForwardS)) {
@@ -489,6 +535,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      doForwardInner() Bool {
       Bool success = true;
       Bool doUpnpForward = self.upnpEnabled;
+      Bool onPublicNet = self.onPublicNet;
       log.log("wc forwarding ports");
       log.log("getting wc");
       loadWc();
@@ -521,7 +568,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("Error during ssh op " + sshe);
       }
       String extBase = "";
-      wc.updateExternal(homePage, extBase, doUpnpForward);
+      wc.updateExternal(homePage, extBase, doUpnpForward, onPublicNet);
       try {
         forwardPorts(wc, ssh, rforwarded);
       } catch (any fpe) {

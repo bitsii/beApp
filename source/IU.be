@@ -94,7 +94,7 @@ class IU:WebConnect {
       }
   }
   
-  updateExternal(String homePage, String _extNameBase, Bool doUpnp) self {
+  updateExternal(String homePage, String _extNameBase, Bool doUpnp, Bool onPublicNet) self {
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -102,7 +102,11 @@ class IU:WebConnect {
     extNameBase = _extNameBase;
     
     if (TS.isEmpty(externalPort)) {
-      externalPort = getAPort();
+      if (onPublicNet) {
+        externalPort = internalPort;
+      } else {
+        externalPort = getAPort();
+      }
     }
     
     try {
@@ -133,13 +137,19 @@ class IU:WebConnect {
         externalLink = "<a href=\"" + externalUrl + "\" target=\"_blank\">External " + deviceName + " Konnectii Bridge</a> - use outside device's network.";
         log.log("External url " + externalUrl);
       }
+      if (onPublicNet) {
+        externalUrl = "";
+        externalLink = "";
+        internalUrl = "";
+        internalLink = "";
+        hostedAddress = internalAddress;
+      }
       if (TS.notEmpty(hostedAddress)) {
         hostedBase = protocol + hostedAddress + extPort;          
         hostedUrl = hostedBase + homePage;
         hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
         log.log("Hosted url use outside device's network (the internet)." + hostedUrl);
       }
-      
   }
   
     putService(String name, String port, String exPort, String urlPat) {

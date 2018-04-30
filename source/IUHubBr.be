@@ -478,6 +478,10 @@ use class IUHub:Eui {
       HD.getElementById("enableUpnp").checked = upnpEnabled;
    }
    
+   getOnPublicNetResponse(Bool upnpEnabled) {
+      HD.getElementById("onPublicNet").checked = upnpEnabled;
+   }
+   
    updateResponse(Map arg) {
      fields {
        Set perms = Set.new();

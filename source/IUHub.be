@@ -258,6 +258,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     log.log("after wc init");
     wc.webProto = app.webProto;
+    if (TS.isEmpty(webPort)) {
+      webPort = app.webPort;
+    }
     wc.internalPort = webPort;
     if (TS.isEmpty(certificateThumbprint)) {
       certificateThumbprint = app.certificateThumbprint; 
