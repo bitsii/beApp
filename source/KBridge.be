@@ -560,15 +560,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String si = app.configManager.get("il.sshHost");
       String br = app.configManager.get("il.sshBridgedHost");
       if (TS.isEmpty(br)) {
-        log.log("getSshHost is si " + si);
+        //log.log("getSshHost is si " + si);
         return(si);
       }
-      log.log("getSshHost from hosted bridge " + br);
+      //log.log("getSshHost from hosted bridge " + br);
       Map links = getLinks(null);
        for (auto kv in links) {
         WebConnect wc = kv.value;
         if (TS.notEmpty(wc.deviceName) && wc.deviceName == br) {
-          log.log("get sshhost found hb, addr " + wc.hostedAddress);
+          //log.log("get sshhost found hb, addr " + wc.hostedAddress);
           return(wc.hostedAddress);
         }
        }
