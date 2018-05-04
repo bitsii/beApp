@@ -164,6 +164,12 @@ if [ "$OSTYPE" == "Linux" ]; then
   else
     su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
     su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
+    cat /etc/ssh/sshd_config  | grep -v "AllowTcpForwarding " | grep -v "GatewayPorts" > tmp/stadd
+    echo "AllowTcpForwarding yes" >> tmp/stadd
+    echo "GatewayPorts yes" >> tmp/stadd
+    cat tmp/stadd > /etc/ssh/sshd_config
+    service ssh restart
+    service sshd restart
   fi
   su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.konnectii.com --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
   su $INSUSER -c "./apprun/App/KBridge/startiuh.sh"

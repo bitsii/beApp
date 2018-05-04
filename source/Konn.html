@@ -134,7 +134,23 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <span class="pure-form-message-inline">Expose to the internet via a remote host</span>
         </div>
         <div class="pure-control-group">
-            <label for="sshHost">SSH Hostname</label>
+            <label for="rlspacer"></label>
+            <input id="rlspacer" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline"><i>Either choose a device name which is directly on the internet</i></span>
+        </div>
+        <div class="pure-control-group">
+            <label for="rlspacer"></label>
+            <input id="rlspacer" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline"><i>(Hosted Bridge) or provide a hostname</i></span>
+        </div>
+        <div class="pure-control-group">
+        <label for="devDrop">Hosted Bridge</label>
+        <select id="hostedBridges" name=devDrop>
+        <option >(None)</option>
+        </select>
+        </div>
+        <div class="pure-control-group">
+            <label for="sshHost">or SSH Hostname</label>
             <input id="sshHost" type="text" placeholder="SSH Hostname">
         </div>
         <div class="pure-control-group">
@@ -146,7 +162,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <input id="sshPass" type="password" placeholder="SSH Password">
         </div>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveInternetListenRequest', document.getElementById('sshHost').value, document.getElementById('sshLogin').value, document.getElementById('sshPass').value);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveInternetListenRequest', document.getElementById('hostedBridges').options[document.getElementById('hostedBridges').selectedIndex].value, document.getElementById('sshHost').value, document.getElementById('sshLogin').value, document.getElementById('sshPass').value);return false;">Save</button>
         </div>
         </fieldset>
     </form>

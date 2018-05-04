@@ -470,5 +470,68 @@ class HC {
      HD.reload();
    }
    
+   clearOptionsResponse(String selectId) {
+     emit(js) {
+     """
+          var select = document.getElementById(beva_selectId.bems_toJsString());
+          var i;
+          for(i = select.options.length - 1 ; i >= 0 ; i--)
+          {
+              select.remove(i);
+          }
+     """
+     }
+   }
+   
+   addOptionsResponse(String selectId, Map textVals) {
+     emit(js) {
+     """
+       var select = document.getElementById(beva_selectId.bems_toJsString());
+     """
+     }
+     
+     for (auto kv in textVals) {
+       String val = kv.value;
+       String txt = kv.key;
+       emit(js) {
+       """
+         var opt = document.createElement("option");
+         opt.value = bevl_val.bems_toJsString();
+         opt.textContent = bevl_txt.bems_toJsString();
+         select.appendChild(opt);
+       """
+       }
+     }
+   }
+   
+   setSelectedOptionResponse(String selectId, String text) {
+   
+     emit(js) {
+     """
+       var dd = document.getElementById(beva_selectId.bems_toJsString());
+       var textToFind = beva_text.bems_toJsString();
+       for (var i = 0; i < dd.options.length; i++) {
+        if (dd.options[i].text === textToFind) {
+            dd.selectedIndex = i;
+            break;
+        }
+       }
+     """
+     }
+   }
+   
+   setOptionsSelectedResponse(String selectId, Map textVals, String text) {
+     clearOptionsResponse(selectId);
+     addOptionsResponse(selectId, textVals);
+     if (TS.notEmpty(text)) {
+      setSelectedOptionResponse(selectId, text);
+     }
+   }
+   
+   setOptionsResponse(String selectId, Map textVals) {
+     clearOptionsResponse(selectId);
+     addOptionsResponse(selectId, textVals);
+   }
+   
 }
 

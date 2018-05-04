@@ -1,6 +1,12 @@
 #!/bin/bash
 
-killall motion
+export OSTYPE=`uname`
+
+if [ "$OSTYPE" == "Darwin" ]; then
+
+  export PATH=$PATH:/usr/sbin:/usr/local/bin
+
+fi
 
 cd apprun
 

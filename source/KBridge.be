@@ -77,8 +77,24 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
    
    getRemoteListenRequest(request) Map {
-   
-     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))), CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")))));
+     
+     String br = app.configManager.get("il.sshBridgedHost");
+     if (TS.isEmpty(br)) {
+      br = "(None)";
+     }
+     
+     Map hb = Map.new();
+     Map links = getLinks(null);
+     for (auto kv in links) {
+      WebConnect wc = kv.value;
+      if (TS.notEmpty(wc.deviceName) && TS.notEmpty(wc.hostedAddress)) {
+        hb.put(wc.deviceName, wc.deviceName);
+      }
+     }
+     hb.put("(None)", "(None)")
+     
+     
+     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))), CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")), CallBackUI.setOptionsSelectedResponse("hostedBridges",hb, br))));
    }
    
    getRemoteAccessRequest(request) Map {
@@ -289,7 +305,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (mode == "sftpFile") {
         log.log("sftpFile");
         String sfps = params.getFirst("sourceFile");
-        String sshHost = app.configManager.get("il.sshHost");
+        String sshHost = getSshHost();
         String sshLogin = app.configManager.get("il.sshLogin");
         String sshPass = app.configManager.get("il.sshPass");
         String dfps = "WebCam/sftpFiles-" + app.plugin.deviceId;
@@ -378,15 +394,23 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
    }
    
-   saveInternetListenRequest(String host, String login, String pass, request) Map {
+   saveInternetListenRequest(String hostedBridge, String host, String login, String pass, request) Map {
     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-      //need to remove old if present
-      app.configManager.put("il.sshHost", host);
+      log.log("in sil");
+      if (TS.isEmpty(host) && TS.notEmpty(hostedBridge)) {
+        log.log("using hostedBridge");
+        app.configManager.put("il.sshHost", "");
+        if (hostedBridge == "(None)") { hostedBridge = ""; log.log("empty hb"); }
+        app.configManager.put("il.sshBridgedHost", hostedBridge);
+      } else {
+        log.log("using sshHost");
+        app.configManager.put("il.sshHost", host);
+        app.configManager.put("il.sshBridgedHost", "");
+      }
       app.configManager.put("il.sshLogin", login);
-      app.configManager.put("il.sshPass", pass);
-      //addSiteName(app.webProto + "://", host);
+      app.configManager.put("il.sshPass", pass);        
       doForward();
-    }
+      }
     return(null);
    }
    
@@ -532,6 +556,25 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(doUpnpForward);
     }
     
+    getSshHost() String {
+      String si = app.configManager.get("il.sshHost");
+      String br = app.configManager.get("il.sshBridgedHost");
+      if (TS.isEmpty(br)) {
+        log.log("getSshHost is si " + si);
+        return(si);
+      }
+      log.log("getSshHost from hosted bridge " + br);
+      Map links = getLinks(null);
+       for (auto kv in links) {
+        WebConnect wc = kv.value;
+        if (TS.notEmpty(wc.deviceName) && wc.deviceName == br) {
+          log.log("get sshhost found hb, addr " + wc.hostedAddress);
+          return(wc.hostedAddress);
+        }
+       }
+       return(null);
+    }
+    
      doForwardInner() Bool {
       Bool success = true;
       Bool doUpnpForward = self.upnpEnabled;
@@ -548,7 +591,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         app.plugin.wcol.o = wc;
         oapp.plugin.wcol.o = wc;
       }
-      String sshHost = app.configManager.get("il.sshHost");
+      String sshHost = getSshHost();
       String sshLogin = app.configManager.get("il.sshLogin");
       String sshPass = app.configManager.get("il.sshPass");
       try {

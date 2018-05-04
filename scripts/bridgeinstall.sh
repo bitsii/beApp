@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export OSTYPE=`uname`
+
 if [ "$OSTYPE" == "Linux" ]; then
   if [ "$EUID" -ne 0 ]
     then echo "Please run as root, try running the command 'sudo $0'"
