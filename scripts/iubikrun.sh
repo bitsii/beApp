@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cd ../apprun
+
+export MYPWD=`pwd`
+
+export MYHN=`hostname`
+
+./App/KBridge/kb.exe --plugin App:PublicReadPlugin --plugin App:AuthPlugin --plugin App:FileManagerPlugin --plugin IUBridge:BridgePlugin --plugin App:ConfigPlugin --appPlugin KBridge --appType server $*
+
+#--appType browser 
+
+cd ../ioturl

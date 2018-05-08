@@ -197,7 +197,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        Map ds = unmar.unmarshall(kv.value);
        Map res = updateMyLink(wc, ds);
      }
-     if (res.has("links")) {
+     if (def(res) && res.has("links")) {
       for (Map lm in res.get("links")) {
         log.log("putting into links");
         wc = WebConnect.new().fromMap(lm);

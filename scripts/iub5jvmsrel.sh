@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang jv --emitFlag iuDebug -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/KBridge.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang jv --outputPlatform mswin -mainClass=App:AppStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/KBridge.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 #--emitFlag iuOwnBackground
 
@@ -28,12 +28,12 @@ javac ../abe-pl/system/jv/be/*.java ../apprun/App/KBridge/Base/target/jv/be/*.ja
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang js --emitFlag iuDebug --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+mono --debug ../abe-pl/target5/BEX_E_mcs.exe ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang js --outputPlatform mswin --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 #for rel add 
-#--outputPlatform linux 
+# --outputPlatform linux 
 #rm
-#--emitFlag iuDebug 
+# --emitFlag iuDebug 
 # and change last line from run to rel
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
@@ -64,6 +64,8 @@ cp scripts/startiuboh.sh ../apprun/App/KBridge
 cp scripts/iuhrun.sh ../apprun/App/KBridge
 cp scripts/iuhcmdrs.sh ../apprun/App/KBridge
 cp scripts/iuhcmd.sh ../apprun/App/KBridge
+cp scripts/iubcmd.bat ../apprun/App/KBridge
+cp scripts/iubcmdrs.bat ../apprun/App/KBridge
 cp scripts/upgrade.bat ../apprun/App/KBridge
 cp scripts/mpg123loop.sh ../apprun/App/KBridge
 cp scripts/stopmpg123loop.sh ../apprun/App/KBridge
@@ -94,11 +96,6 @@ cp scripts/motionrun.sh ../apprun/App/KBridge
 cp scripts/camclean.sh ../apprun/App/KBridge
 cp source/MOCAM.conf ../apprun/App/KBridge
 
-#cd ../apprun
-#ikvmc -out:App/KBridge/kb.exe App/KBridge/*.jar -target:exe -main:be.BEX_E
-#cd ../ioturl
-#./scripts/iubikrun.sh $*
+#./scripts/iub5jvrun.sh $*
 
-./scripts/iub5jvrun.sh $*
-
-#./scripts/iubrel.sh
+./scripts/iubrelms.sh
