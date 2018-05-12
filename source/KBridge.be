@@ -326,6 +326,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    start() {
       super.start();
+      app.pluginsByName.get("Auth").nonAuthedRequests.put("initialSetupRequest");
       
       bfw.startDelay = Time:Interval.new(20, 0);
       bfw.repeatDelay = Time:Interval.new(60, 0);
@@ -502,7 +503,38 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    profileGet() String {
     return(profile);
   }
+  
+  initialSetupRequest(String setupToken, String user, String pass, String devName, String konUser, String konPass, request) {
+    //(
+    log.log("In isr, say hello :-)");
+    if (TS.isEmpty(user) || TS.isEmpty(pass) || TS.isEmpty(devName) || TS.isEmpty(konUser) || TS.isEmpty(konPass)) {
+      throw(Alert.new("Account Name, Account Password, Device Name, Konnectii User, and Konnectii Password are all required"));
+    }
     
+    log.log("" + setupToken + " " + user + " " + pass + " " + devName + " " + konUser + " " + konPass);
+    
+    String stok = app.configManager.get("setupToken");
+    //log.log("stok " + stok + " setuptoken " + setupToken);
+     if (TS.notEmpty(stok) && TS.notEmpty(setupToken) && stok == setupToken) {
+      log.log("stok passed");
+      
+      self.deviceName = devName;
+      
+      Account a = Account.new();
+      a.user = user;
+      a.pass = pass;
+      a.perms.put("admin");
+      app.pluginsByName.get("Auth").accountManager.putAccount(a);
+      app.pluginsByName.get("Auth").setupSession(Maps.from("accountName", user), request);
+      app.configManager.delete("setupToken");
+      routerLink("https://www.konnectii.com", user, konUser, konPass);
+      updateMyLinks();
+      return(CallBackUI.initialSetupResponse());
+     }
+     
+     return(null);
+    
+  }
     
     doForward() {
       doUpdate();

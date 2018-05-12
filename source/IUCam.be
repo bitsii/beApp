@@ -309,7 +309,7 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
      }
      ref = ref.substring(pos);
      log.log("okForPageToken " + ref);
-     if (ref.has("?") && ref.has("&")! && ref.has("?onceToken=")) {
+     if (ref.has("?")) {
       ref = ref.substring(0, ref.find("?"));
      }
      log.log("okForPageToken second " + ref);

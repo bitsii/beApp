@@ -789,11 +789,6 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         log.log("checking embeddedLogin eml notempty");
         accountName = eml;
       }
-    } elseIf (TS.isEmpty(accountName) && arg.has("onceToken")) {
-      accountName = app.configManager.get("auth.onceToken." + arg["onceToken"]);
-    }
-    if (arg.has("onceToken")) {
-      app.configManager.delete("auth.onceToken." + arg["onceToken"]);
     }
     if (TS.notEmpty(accountName)) {
       Account a = self.accountManager.getAccount(accountName);
@@ -1137,7 +1132,12 @@ use class App:AuthPlugin(App:AjaxPlugin) {
             }
             if (def(arg) && def(arg.get("action"))) {
               String aname = arg.get("action");
-               unless (nonAuthedRequests.has(aname)) {
+               if (nonAuthedRequests.has(aname)) {
+                 log.log("nar has");
+                 request.continueHandling = true;
+                 return(self);
+               } else {
+                log.log("nar nohas");
                 unless (aname == "pageTokenRequest") {
                   accountName = request.getSession("account.name");
                   if (TS.isEmpty(accountName)) {
@@ -1149,11 +1149,9 @@ use class App:AuthPlugin(App:AjaxPlugin) {
                   } else {
                   
                     unless (aname == "loginRequest" || checkRenewSession(request)) {
-                      unless (aname == "checkLoggedInRequest" && arg.has("onceToken") && TS.notEmpty(app.configManager.get("auth.onceToken." + arg["onceToken"]))) {
                         log.log("rejecting expired session request");
                         toLogin(request);
                         return(self);
-                      }
                     }
                   
                     //checkLoggedInRequest is ok
@@ -1176,7 +1174,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
                     //if (def(stok)) { log.log("session pageToken " + stok); }
                   }
                 }
-              }
+              } 
               log.log("here");
               request.context.put("account", self.accountManager.getRequestAccount(request));
               super.handleWeb(request);

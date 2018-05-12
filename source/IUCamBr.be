@@ -254,11 +254,6 @@ use class IUCam:Eui {
       hc.pageToken = arg["pageToken"];
       Map carg = Map.new();
       carg["action"] = "checkLoggedInRequest";
-      String ot = HD.href;
-      if (ot.has("?onceToken=") && ot.has("&")!) {
-        ot = ot.substring(ot.find("=") + 1, ot.size);
-        carg["onceToken"] = ot;
-      }
       //log.log("href at startup " + HD.href);
       handleCallOut(carg);
    }

@@ -75,7 +75,7 @@
             <input id="changePassNew" type="password" placeholder="Password">
         </div>
         <div class="pure-control-group">
-            <label for="password">Repeat New</label>
+            <label for="password">Repeat Password</label>
             <input id="changePassNew2" type="password" placeholder="Password">
         </div>
         <input type="hidden" id="sessionName" value=""/>
@@ -255,6 +255,61 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     </fieldset>
 </form>
 <div id="forwardPortsListDiv"></div>
+</div>
+
+<div id="setupDiv">
+<form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="spacer">Setup</label>
+            <input id="name" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Initial Setup</span>
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="setupDeviceName">Name for Device</label>
+            <input id="setupDeviceName" type="text" placeholder="Name">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="setupAccountName">Admin Account Name</label>
+            <input id="setupAccountName" type="text" placeholder="Name">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="setupAccountPass">Account Password</label>
+            <input id="setupAccountPass" type="password" placeholder="Password">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="setupAccountPass2">Repeat Password</label>
+            <input id="setupAccountPass2" type="password" placeholder="Password">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="spacer">Link</label>
+            <input id="name" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Link to Router at <a href="https://www.konnectii.com/" target="_blank">Konnectii.com</a></span>
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="setupKonnLogin">Konnectii Login</label>
+            <input id="setupKonnLogin" type="text" placeholder="Name">
+        </div>
+        
+        <div class="pure-control-group">
+            <label for="setupKonnPass">Konnectii Password</label>
+            <input id="setupKonnPass" type="password" placeholder="Password">
+        </div>
+        
+        <!-- String user, String pass, String devName, String konUser, String konPass -->
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('initialSetup');return false;">Complete Setup</button>
+        </div>
+        
+        </fieldset>
+    </form>
+    
 </div>
     
     <div id="logindiv">

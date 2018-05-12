@@ -93,10 +93,10 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install mpg123 shellinabox 
 
   echo "Installing required additional system software"
-  apt -qq --assume-yes install openjdk-8-jdk-headless
+  apt -qq --assume-yes install openjdk-8-jdk
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen
 
-  apt -qq --assume-yes install openjdk-8-jdk-headless
+  apt -qq --assume-yes install openjdk-8-jdk
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen
 
   #apt install oracle-java8-jdk 

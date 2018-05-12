@@ -100,25 +100,28 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       if (TS.isEmpty(mode)) {
         return(false);
       }
-      if (mode == "saveSetupUrl") {
-        log.log("saveSetupUrl");
-        String olt = System:Random.getString(64);
-        app.configManager.put("auth.onceToken." + olt, "setup_admin");
+      if (mode == "initialSetup") {
+        log.log("initialSetup");
         
-        Int intPorti = System:Random.getIntMax(6000);
-        intPorti += 3000;
-        String intPort = intPorti.toString();
-        app.configManager.put("web.port", intPort);
+        String intPort = app.configManager.get("web.port");
         
-        String iurl = app.webProto + "://127.0.0.1:" += intPort += "/App/" + self.name + "/Konn.html?onceToken=" += olt;
+        Int toksz = System:Random.getIntMax(16);
+        String token = System:Random.getString(toksz + 16);
+        
+        app.configManager.put("setupToken", token);
+        
+        String iurl = app.webProto + "://127.0.0.1:" += intPort += "/App/" + self.name + "/Konn.html?setupToken=" + token;
+        
+        UI:ExternalBrowser.openToUrl(iurl);
+        
         //log.log("int url is " + iurl);
-        File.apNew(params.getFirst("urlDoc")).writer.open().write(iurl).close();
-        File.apNew(params.getFirst("urlScript")).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
+        //File.apNew(params.getFirst("urlDoc")).writer.open().write(iurl).close();
+        //File.apNew(params.getFirst("urlScript")).writer.open().write("#!/bin/bash\nx-www-browser " + iurl + "\n").close();
       }
       if (mode == "saveLocalUrl") {
         log.log("saveLocalUrl");
         
-        intPorti = System:Random.getIntMax(6000);
+        Int intPorti = System:Random.getIntMax(6000);
         intPorti += 3000;
         intPort = intPorti.toString();
         app.configManager.put("web.port", intPort);
@@ -326,18 +329,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       }
       log.log("in hubplugin start");
       app.pluginsByName.get("Auth").nonAuthedRequests.put("pingRequest");
-      List acs = app.pluginsByName.get("Auth").accountManager.getLogins();
-      if (undef(acs) || acs.size < 1 && false) {
-        log.log("creating setup account");
-        Account ac = Account.new();
-        ac.permsString = "admin";
-        ac.user = "setup_admin";
-        String sapass = System:Random.getString(32);
-        ac.pass = sapass;
-        app.pluginsByName.get("Auth").accountManager.putAccount(ac);
-        app.configManager.put("auth.embeddedLogin", ac.user);
-        log.log("setup " + sapass);
-      }
      
       trc.repeatDelay = Time:Interval.new(7200, 0);
       trc.minimumDelay = Time:Interval.new(7000, 0);
@@ -362,171 +353,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     return(res);
   }
     
-  connectToDeviceRequest(String devId, String devName, request) Map {
-    //get one time login token    
-    Account a = request.context.get("account");
-    fields {
-      String lastDevId = devId;
-      String lastDevName = devName;
-    }
-    String devSession = app.configManager.get("DeviceSession." + a.user + "!" + devId);
-    if (TS.isEmpty(devSession)) {
-      return(CallBackUI.getDevCredsResponse(devId, devName));
-    } else {
-      Map ds = Json:Unmarshaller.unmarshall(devSession);
-      if (true) { return(openBrowserFromDeviceSession(ds, request)) };
-    }
-    return(null);
-  }
-  
-  onceLoginTokenRequest(Map arg, request) {
-    log.log("!!!!!!!!!!!!!!!!in oncelogintokenreq");
-    Account a = request.context.get("account");
-    String olt = System:Random.getString(64);
-    app.configManager.put("auth.onceToken." + olt, a.user);
-    Map res = Map.new();
-    res["onceToken"] = olt;
-    return(res);
-  }
-  
-  checkOpenBrowserRequest(request) Map {
-    log.log("in chkopenbr!!!!!!!!!!!!");
-    if (godevChk.finished.o) {
-      Bool allDone = true;
-    } else {
-      allDone = false;
-    }
-    checkOpenTries++=;
-    Bool opened = false;
-    if (checkOpenTries < 200) {
-      if (godevChk.finished.o && def(godevChk.returned.o)) {
-        log.log("open br");
-        opened = true;
-        UI:ExternalBrowser.openToUrl(godevChk.returned.o.first + "?onceToken=" + godevChk.returned.o.second);
-      } elseIf (allDone!) {
-        return(CallBackUI.checkOpenBrowserResponse());
-      }
-    } else {
-      log.log("giving up after too many tries");
-    }
-    log.log("allDone");
-    if (opened!) {
-      return(CallBackUI.getDevCredsResponse(lastDevId, lastDevName));
-    }
-    return(null);//should give message TODO
-  }
-  
-  checkConn(WebConnect wco, Map ds) Pair {
-    log.log("starting checkConn");
-    String destUrl = chooseUrl(wco);
-    if (TS.isEmpty(destUrl)) {
-      log.log("destUrl is empty");
-      return(null);
-    } else {
-      log.log("destUrl not empty");
-    }
-    return(checkConnInner(wco, ds, destUrl));
-  }
-  
-  checkConnInner(WebConnect wco, Map ds, String destUrl) Pair {
-    try {
-      log.log("checking conn for " + destUrl);
-      Map argOut = Map.new();
-      argOut["action"] = "onceLoginTokenRequest";
-      argOut["pageToken"] = ds["pageToken"];
-      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
-      Web:Client:CertificateManager.validateHosts = false;
-      Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
-      Web:Client client = Web:Client.new();
-      String payload = Json:Marshaller.marshall(argOut);
-      client.outputHeaders.put("referer", destUrl);
-      client.url = destUrl;
-      client.openOutput().write(payload);
-      String res = client.openInput().readString();
-      client.close();
-      if (TS.notEmpty(res)) {
-        Map resMap = Json:Unmarshaller.unmarshall(res);
-        log.log("!!! got res from obfds  " + res);
-        if (resMap.has("onceToken")) {
-          String onceToken = resMap.get("onceToken");
-          //UI:ExternalBrowser.openToUrl(destUrl + "?onceToken=" + resMap.get("onceToken"));
-        }
-      }
-    } catch (any e) {
-      resetCertMan(wco.certificatePrint);
-      log.log("got exception during checkConn");
-      log.log(e);
-    }
-    if (TS.notEmpty(destUrl) && TS.notEmpty(onceToken)) {
-      return(Pair.new(destUrl, onceToken));
-    }
-    return(null);
-  }
-  
-  openBrowserFromDeviceSession(Map ds, request) Map {
-    //this only works for hub/app/one user at a time
-    //it's only called that way, so...
-    fields {
-      System:Thread godevChk;
-    }
-    Map links = getLinks(request.context.get("account"));
-    if (def(links)) {
-      WebConnect wco = links.get(ds.get("deviceId"));
-      if (def(wco)) {
-        
-        godevChk = System:Thread.new(getInvocation("checkConn", Lists.from(wco, ds))).start();
-        
-        fields {
-          Int checkOpenTries = 0;
-        }
-        return(CallBackUI.checkOpenBrowserResponse());
-      }
-    }
-    return(null);
-  }
-  
-  checkDevLogin(WebConnect wco, Map arg, Account a) {
-    String destUrl = chooseUrl(wco);
-    if (TS.isEmpty(destUrl)) {
-      return(null);
-    }
-    Map argOut = Map.new();
-    argOut["accountName"] = arg["accountName"];
-    argOut["accountPass"] = arg["accountPass"];
-    argOut["sessionLength"] = arg["sessionLength"];
-    argOut["action"] = "loginRequest";
-    argOut["serviceLogin"] = "yup";
-    Web:Client client = Web:Client.new();
-    String payload = Json:Marshaller.marshall(argOut);
-    client.outputHeaders.put("referer", destUrl);
-    client.url = destUrl;
-    try {
-      Web:Client:CertificateManager.validateHosts = false;
-      //Web:Client:CertificateManager.validateCertificates = false;
-      Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
-      client.openOutput().write(payload);
-      String res = client.openInput().readString();
-      log.log("GOT SOMETHING BACK!!!");
-      client.close();
-      if (TS.notEmpty(res)) {
-        Map resMap = Json:Unmarshaller.unmarshall(res);
-        //store stuff
-        Map ds = Map.new();
-        ds["serviceSessionKey"] = resMap["serviceSessionKey"];
-        ds["pageToken"] = resMap["pageToken"];
-        ds["deviceId"] = arg["deviceId"];
-        String dss = Json:Marshaller.marshall(ds);
-        app.configManager.put("DeviceSession." + a.user + "!" + arg["deviceId"], dss);
-        if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
-      }
-      log.log("!!! got res from dev loginrequest " + res);
-      resetCertMan(wco.certificatePrint);
-    } catch(any e) {
-      resetCertMan(wco.certificatePrint);
-    }
-
-  }
-  
   runBackgroundTasks() {
     trc.runMyTasks();
     buu.runMyTasks();
@@ -541,25 +367,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
   }
   
-  deviceLoginRequest(Map arg, request) {
-    log.log("in devlogin");
-    Account a = request.context.get("account");
-    if (def(a)) {
-      Map links = getLinks(a);
-      if (def(links)) {
-        WebConnect wco = links.get(arg.get("deviceId"));
-      }
-      if (def(wco)) {
-        
-        godevChk = System:Thread.new(getInvocation("checkDevLogin", Lists.from(wco, arg, a))).start();
-        checkOpenTries = 0;
-        return(CallBackUI.checkOpenBrowserResponse());
-        
-      }
-    }
-    return(null); //TODO error
-  }
-  
   saveAccountRequest(Map arg, request) {
     log.log("in hub saveAccountRequest");
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
@@ -567,25 +374,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     any authPlug = app.pluginsByClassName.get("App:AuthPlugin");
     authPlug.saveAccountRequest(arg, request);
-    //if (request.embedded) {
-      String anso = app.configManager.get("accountSetOnce");
-      if (TS.isEmpty(anso) || anso != "true") {
-        if (arg["accountName"] != "setup_admin") {
-          Account a = request.context.get("account");
-          if (a.user == "setup_admin") {
-            Account b = app.pluginsByName.get("Auth").accountManager.getAccount(arg["accountName"]);
-            if (def(b) && b.perms.has("admin")) {
-              log.log("first account, swapping and setting");
-              request.putSession("account.name", b.user);
-              app.configManager.put("auth.embeddedLogin", b.user);
-              app.configManager.put("accountSetOnce", "true");
-              app.pluginsByName.get("Auth").accountManager.deleteAccount(a);
-              return(CallBackUI.reloadResponse());
-            }
-          }
-        }
-      }
-    //}
     return(null);
   }
      
@@ -965,7 +753,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      }
      ref = ref.substring(pos);
      log.log("okForPageToken " + ref);
-     if (ref.has("?") && ref.has("&")! && ref.has("?onceToken=")) {
+     if (ref.has("?")) {
       ref = ref.substring(0, ref.find("?"));
      }
      log.log("okForPageToken second " + ref);

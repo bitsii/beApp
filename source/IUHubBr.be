@@ -374,7 +374,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv", "remoteaccessdiv", "forwardPortsDiv", "browseFilesDiv", "accountdiv");
+    List allElems =@ Lists.from("logindiv", "actionLinksDiv", "devLinksListDiv", "devLinksDiv", "passchangediv", "sessionsDiv", "dnamechangediv", "devicelogindiv", "remoteaccessdiv", "forwardPortsDiv", "browseFilesDiv", "accountdiv", "setupDiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -383,6 +383,23 @@ use class IUHub:Eui {
       }
     }
     //HD.getElementById("loginmsgdiv").innerHTML = "";
+   }
+   
+   //initialSetupRequest(String setupToken, String user, String pass, String devName, String konUser, String konPass, request)
+   initialSetup() {
+     if (TS.isEmpty(HD.getElementById("setupAccountPass").value) || TS.isEmpty(HD.getElementById("setupAccountPass2").value) || HD.getElementById("setupAccountPass").value != HD.getElementById("setupAccountPass2").value) {
+      inform("Account password required, Account Password and Repeat Password must match");
+     }
+     HC.callApp(Lists.from("initialSetupRequest", setupToken, HD.getElementById("setupAccountName").value, HD.getElementById("setupAccountPass").value, HD.getElementById("setupDeviceName").value, HD.getElementById("setupKonnLogin").value, HD.getElementById("setupKonnPass").value));
+     
+     
+   }
+   
+   initialSetupResponse() {
+     String hr = HD.href;
+      log.log("href " + hr);
+      auto hrll = hr.split("?");
+      HD.href = hrll.get(0);
    }
    
    hideNShowMenuResponse(Set toShow) {
@@ -402,17 +419,46 @@ use class IUHub:Eui {
       hideNShowMenuResponse(Sets.from("loginmenudiv"));
    }
    
+   checkPrepSetup() Bool {
+      //check for setup log.log("href " + HD.href);
+      fields {
+        String setupToken;
+      }
+      //only do once
+      if (def(setupToken)) {
+        return(false);
+      }
+      String hr = HD.href;
+      log.log("href " + hr);
+      auto hrll = hr.split("?");
+      if (hrll.size > 1) {
+        hr = hrll.get(1);
+        log.log("hr " + hr);
+      }
+      if (hr.begins("setupToken=")) {
+        hrll = hr.split("=");
+        if (hrll.size > 1) {
+          hr = hrll.get(1);
+          log.log("st " + hr);
+          setupToken = hr;
+          return(true);
+        }
+      }
+      return(false);
+   }
+   
    pageTokenResponse(Map arg) {
       hc.pageToken = arg["pageToken"];
-      Map carg = Map.new();
-      carg["action"] = "checkLoggedInRequest";
-      String ot = HD.href;
-      if (ot.has("?onceToken=") && ot.has("&")!) {
-        ot = ot.substring(ot.find("=") + 1, ot.size);
-        carg["onceToken"] = ot;
+      
+      if (checkPrepSetup()) {
+        toLoginResponse();
+        hideNShowResponse(Sets.from("setupDiv"));
+      } else {
+        Map carg = Map.new();
+        carg["action"] = "checkLoggedInRequest";
+        //log.log("href at startup " + HD.href);
+        handleCallOut(carg);
       }
-      //log.log("href at startup " + HD.href);
-      handleCallOut(carg);
    }
    
    login() {
@@ -433,20 +479,6 @@ use class IUHub:Eui {
       HD.getElementById("accountName").value = "";
       HD.getElementById("accountPass").value = "";
       HD.getElementById("sessionName").value = "";
-      handleCallOut(arg);
-   }
-   
-   deviceLogin() {
-      Map arg = Map.new();
-      arg["action"] = "deviceLoginRequest";
-      arg["accountName"] = HD.getElementById("dcAccountName").value;
-      arg["accountPass"] = HD.getElementById("dcAccountPass").value;
-      arg["deviceId"] = devIdForCreds;
-      arg["sessionName"] = "";
-      arg["sessionLength"] = "-1";
-      HD.getElementById("dcAccountName").value = "";
-      HD.getElementById("dcAccountPass").value = "";
-      HD.getElementById("devCredsDiv").display = "none";//reopen on fail
       handleCallOut(arg);
    }
    
@@ -710,10 +742,6 @@ use class IUHub:Eui {
           arg["path"] = path;
           handleCallOut(arg);
       }
-   }
-   
-   checkOpenBrowserResponse() {
-     HC.callAppLater(Lists.from("checkOpenBrowserRequest"), 100);
    }
    
    refreshLinksResponse(String actionLinks, String devLinks) {
