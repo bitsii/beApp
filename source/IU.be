@@ -19,18 +19,25 @@ class IU:WebConnect {
       String internalAddress;
       String externalAddress;
       String hostedAddress;
+      String konnAddress;
       String internalPort = "";
       String externalPort = "";
       String protocol = "https://";
       String internalBase;
       String externalBase;
       String hostedBase;
+      String konnBase;
       String internalUrl;
       String externalUrl;
       String hostedUrl;
+      String konnUrl;
       String internalLink;
       String externalLink;
       String hostedLink;
+      String konnLink;
+      
+      String konnName;
+      String homePage;
       
       String certificatePrint = "";
       List internalMacAddresses = List.new();
@@ -69,7 +76,8 @@ class IU:WebConnect {
     return(externalPorti.toString());
   }
 
-  updateInternal(String homePage) self {
+  updateInternal(String _homePage) self {
+    homePage = _homePage;
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -94,7 +102,8 @@ class IU:WebConnect {
       }
   }
   
-  updateExternal(String homePage, String _extNameBase, Bool doUpnp, Bool onPublicNet) self {
+  updateExternal(String _homePage, String _extNameBase, Bool doUpnp, Bool onPublicNet) self {
+    homePage = _homePage;
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -148,7 +157,23 @@ class IU:WebConnect {
         hostedBase = protocol + hostedAddress + extPort;          
         hostedUrl = hostedBase + homePage;
         hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
-        log.log("Hosted url use outside device's network (the internet)." + hostedUrl);
+        log.log("Hosted url use wherever there's internet." + hostedUrl);
+      }
+      updateKonnLink();
+  }
+  
+  updateKonnLink() {
+    if (TS.notEmpty(externalPort)) {
+      String extPort = ":" + externalPort;
+    } else {
+      extPort = "";
+    }
+    if (TS.notEmpty(konnName)) {
+        konnAddress = konnName + ".konnectii.com";
+        konnBase = protocol + konnAddress + extPort;
+        konnUrl = konnBase + homePage;
+        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">Virtual DNS for " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
+        log.log("Virtual DNS url use wherever there's internet." + konnUrl);
       }
   }
   
@@ -255,6 +280,13 @@ class IU:WebConnect {
           hstUrl = hstUrl.swap("$port$", service.get("intPort"));
           hstUrl = hstUrl.swap("$type$", "Hosted");
           service.put("hstLink", hstUrl + " - use wherever there's internet.");
+        }
+        String konnUrl = conf.get("urlPat").copy();
+        if (TS.notEmpty(konnUrl) && TS.notEmpty(konnAddress)) {
+          konnUrl = konnUrl.swap("$ip$", konnAddress);
+          konnUrl = konnUrl.swap("$port$", service.get("intPort"));
+          konnUrl = konnUrl.swap("$type$", "VirtualDNS");
+          service.put("konnUrl", konnUrl + " - use wherever there's internet.");
         }
       }
       return(services);

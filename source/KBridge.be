@@ -200,9 +200,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      if (def(res) && res.has("links")) {
       for (Map lm in res.get("links")) {
         log.log("putting into links");
-        wc = WebConnect.new().fromMap(lm);
+        WebConnect awc = WebConnect.new().fromMap(lm);
         String conjs = mar.marshall(lm);
-        app.configManager.put("devlink!" + wc.deviceId, conjs);
+        app.configManager.put("devlink!" + awc.deviceId, conjs);
+        log.log("awc did " + awc.deviceId + " wc did " + wc.deviceId);
+        if (awc.deviceId == wc.deviceId) {
+          //now with konnUrl et all
+          app.configManager.put("hub.webConnect", conjs);
+          app.plugin.wcol.o = awc;
+          log.log("put awc in for webcon " + conjs);
+        }
       }
      }
    }
