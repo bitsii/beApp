@@ -149,10 +149,11 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <option >(None)</option>
         </select>
         </div>
-        <div class="pure-control-group">
+        <!--<div class="pure-control-group">
             <label for="sshHost">or SSH Hostname</label>
             <input id="sshHost" type="text" placeholder="SSH Hostname">
-        </div>
+        </div>-->
+        <input id="sshHost" type="hidden" value="">
         <div class="pure-control-group">
             <label for="sshLogin">SSH Login</label>
             <input id="sshLogin" type="text" placeholder="SSH Login">
@@ -396,12 +397,6 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <span class="pure-form-message-inline">Link to Router at <a href="https://www.konnectii.com/" target="_blank">Konnectii.com</a></span>
         </div>
         
-        <!--<div class="pure-control-group">
-            <label for="name">Router Address (URL)</label>
-            <input id="routerAddress" type="text" placeholder="Name">
-        </div>-->
-        <input id="routerAddress" type="hidden" value="https://www.konnectii.com">
-        
         <div class="pure-control-group">
             <label for="name">Konnectii Login</label>
             <input id="routerAccountName" type="text" placeholder="Name">
@@ -412,7 +407,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <input id="routerAccountPass" type="password" placeholder="Password">
         </div>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('routerLinkRequest', document.getElementById('routerAddress').value, document.getElementById('routerAccountName').value, document.getElementById('routerAccountPass').value);return false;">Link to Router</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('routerLinkRequest', document.getElementById('routerAccountName').value, document.getElementById('routerAccountPass').value);return false;">Link to Router</button>
         </div>
         <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary" onclick="callApp('unlinkAllRequest');return false;">Unlink from Router</button>

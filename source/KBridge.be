@@ -104,13 +104,19 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())), CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")))));
    }
    
-   routerLinkRequest(String url, String account, String pass, request) Map {
+   routerLinkRequest(String account, String pass, request) Map {
+    log.log("in router link request");
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
     
+    String rtrurl = app.configManager.get("router.Url");
+    if (TS.isEmpty(rtrurl)) {
+      rtrurl = "https://www.konnectii.com";
+    }
+    
     Account a = request.context.get("account");
-    return(routerLink(url, a.user, account, pass));
+    return(routerLink(rtrurl, a.user, account, pass));
     }
    
    routerLink(String url, String auser, String account, String pass) Map {
@@ -122,9 +128,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     
     log.log("first do update");
     doUpdate();
-    log.log("now link");
     
     String destUrl = url;
+    
+    
+    log.log("now link " + destUrl);
+    
     Map argOut = Map.new();
     argOut["accountName"] = account;
     argOut["accountPass"] = pass;
@@ -159,12 +168,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         app.configManager.put("LinkSession." + auser + "!" + destUrl, dss);
         updateMyLink(app.plugin.wcol.o, ds);
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
+        doForward(); //includes an update
       }
       //resetCertMan(ds["certificatePrint"]);
     } catch(any e) {
       //resetCertMan(ds["certificatePrint"]);
     }
-    
     return(CallBackUI.informResponse("Device Link Successful"));
    }
    
@@ -176,6 +185,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      for (auto kv in lss) {
        app.configManager.delete(kv.key);
      }
+     WebConnect wc = app.plugin.wcol.o;
+     if (def(wc)) {
+      log.log("clearing wc konnname");
+      wc.konnName = null;
+     }
+     app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+     clearAllDevsRequest(request);
    }
    
    clearAllDevsRequest(request) {
@@ -198,6 +214,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        Map res = updateMyLink(wc, ds);
      }
      if (def(res) && res.has("links")) {
+      KvDb knwc = app.getKvDb("KNAMEWCS");
       for (Map lm in res.get("links")) {
         log.log("putting into links");
         WebConnect awc = WebConnect.new().fromMap(lm);
@@ -209,6 +226,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           app.configManager.put("hub.webConnect", conjs);
           app.plugin.wcol.o = awc;
           log.log("put awc in for webcon " + conjs);
+        }
+        if (TS.notEmpty(awc.konnName)) {
+          knwc.put(awc.konnName, conjs);
         }
       }
      }
@@ -534,7 +554,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.pluginsByName.get("Auth").accountManager.putAccount(a);
       app.pluginsByName.get("Auth").setupSession(Maps.from("accountName", user), request);
       app.configManager.delete("setupToken");
-      routerLink("https://www.konnectii.com", user, konUser, konPass);
+      String rtrurl = app.configManager.get("router.Url");
+      if (TS.isEmpty(rtrurl)) {
+        rtrurl = "https://www.konnectii.com";
+      }
+      routerLink(rtrurl, user, konUser, konPass);
       updateMyLinks();
       return(CallBackUI.initialSetupResponse());
      }
@@ -881,6 +905,221 @@ use Net:Ssh:Forward {
   }
   
 }
+
+class KBridge:KBNamePlugin {
+
+   new() self {
+    fields {
+      any app;
+      any plugin = self;
+      String dataName = "KBridge";
+      IO:Log log =@ IO:Logs.get(self);
+    }
+    IO:Logs.turnOnAll();
+   }
+   
+   start() {
+   }
+   
+   
+   getIpBack(WebConnect mywc, WebConnect wc) {
+    //give back internal if box shared same gateway, external address as own
+    //otherwise hosted first external second
+    String ipback;
+    if (TS.notEmpty(wc.gateway) && TS.notEmpty(mywc.gateway) && TS.notEmpty(wc.externalAddress) && TS.notEmpty(mywc.externalAddress) && wc.gateway == mywc.gateway && wc.externalAddress == mywc.externalAddress) {
+      ipback = wc.internalAddress;
+    } elseIf (TS.notEmpty(wc.hostedAddress)) {
+      ipback = wc.hostedAddress;
+    } elseIf (TS.notEmpty(wc.externalAddress)) {
+      ipback = wc.externalAddress;
+    } elseIf (TS.notEmpty(wc.internalAddress)) { //if nothing else available
+      ipback = wc.internalAddress;
+    }
+    return(ipback);
+   }
+   
+   getWcs() {
+     String wcs = app.configManager.get("hub.webConnect");
+    if (TS.notEmpty(wcs)) {
+      log.log("deserializing wcs " + wcs);
+      WebConnect wc = WebConnect.new();
+      wc.fromMap(Json:Unmarshaller.unmarshall(wcs));
+      return(wc);
+    }  
+    return(null);
+   }
+   
+   addressForKName(String mykn, String otherkn) Map {
+    try {
+      String rtrurl = app.configManager.get("router.Url");
+      if (TS.isEmpty(rtrurl)) {
+        rtrurl = "https://www.konnectii.com";
+      }
+      log.log("in afk rtrurl " + rtrurl);
+      String destUrl = rtrurl;
+      Map argOut = Map.new();
+      argOut["action"] = "addressForKNameRequest";
+      argOut["mykn"] = mykn;
+      argOut["otherkn"] = otherkn;
+      Web:Client:CertificateManager.validateHosts = false;
+      Web:Client:CertificateManager.validateCertificates = false;
+      //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
+      Web:Client client = Web:Client.new();
+      String payload = Json:Marshaller.marshall(argOut);
+      client.outputHeaders.put("referer", destUrl);
+      client.url = destUrl;
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      client.close();
+      log.log("calling for kn");
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        log.log("!!! got res from addressForKName  " + res);
+      }
+      //resetCertMan(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
+    } catch (any e) {
+      //resetCertMan(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
+      log.log("got exception during updatemylink");
+      log.log(e.toString());
+    }
+    return(resMap);
+  }
+   
+   handleWeb(request) this {
+     try {
+       log.log("got req");
+       
+       String contentIn = request.inputContent;
+       log.log("conin " + contentIn);
+       
+       Map inresm = Json:Unmarshaller.unmarshall(contentIn);
+       Map inpar = inresm["parameters"];
+       
+       String inpqn = inpar.get("qname");
+       if (TS.notEmpty(inpqn) && inpqn.ends("ioturl.net.")) {
+       
+        String qt = inpar["qtype"];
+        String qn = inpar["qname"];
+        
+        auto llsp = qn.split(".");
+        if (llsp.size > 2) {
+          qn = llsp.first;
+          log.log("qn at end " + qn);
+        }
+       
+        Map ansob;
+        List resl;
+        Map rese;
+        String ansres;
+        
+        KvDb knwc = app.getKvDb("KNAMEWCS");
+        String wcs = knwc.get(qn);
+        
+        WebConnect mywc = getWcs();
+        if (undef(mywc)) {
+          throw(Exception.new("no wc"));
+        }
+        if (undef(mywc.internalAddress)) {
+          throw(Exception.new("no wc internaladdr"));
+        }
+        
+        
+        if (qt == "SOA") {
+          
+          //  String soa = "mylocalnetaddr.";
+          //  soa = "konnectii.duckdns.org.";
+          
+         // if (def(wcs)) {
+            ansob = Maps.from("qtype", "SOA", "qname", "ioturl.net", "content", mywc.internalAddress + ". 2012080849 7200 3600 1209600 3600", "ttl", 3600, "domain_id", -1);
+          //} else {
+          //  ansob = Maps.from("qtype", "SOA", "qname", "ioturl.net", "content", "konnectii.duckdns.org. 2012080849 7200 3600 1209600 3600", "ttl", 3600, "domain_id", -1);
+          //}
+          
+          
+          resl = List.new();
+          resl += ansob;
+          rese = Map.new();
+          rese.put("result", resl);
+          
+          ansres = Json:Marshaller.marshall(rese);
+          log.log("soa res " + ansres);
+          request.outputContent = ansres;
+          
+        } elseIf (qt == "ANY") {
+          log.log("in any");
+          if (TS.isEmpty(wcs)) {
+            log.log("wcs empty");
+            if (TS.notEmpty(mywc.konnName)) {
+              log.log("kn not empty, doing address for kname");
+              Map resmap = addressForKName(mywc.konnName, qn);
+              if (def(resmap)) {
+                ipback = resmap["ipback"];
+              }
+            } else {
+              log.log("mywc konname empty");
+            }
+          } else {
+            WebConnect wc = WebConnect.new().fromMap(Json:Unmarshaller.unmarshall(wcs));
+            log.log("wcs " + wcs);
+            String ipback = getIpBack(mywc, wc);
+          }
+          if (TS.notEmpty(ipback)) {
+              //check for ipback starting with integer, cname if not
+              
+              //ansob = Maps.from("qtype","A", "qname", qn + ".ioturl.net", "content",ipback, "ttl", 60);
+              //ansob = Maps.from("qtype","ALIAS", "qname", qn + ".ioturl.net", "content","konnectii.duckdns.org", "ttl", 60);
+              
+              Bool isIp = true;
+              
+              auto llip = ipback.split(".");
+              log.log("llip sz " + llip.size);
+              if (llip.size != 4) {
+                isIp = false;
+              } else {
+                for (String llipp in llip) {
+                  log.log("llipp " + llipp);
+                  if (llipp.isInteger()!) {
+                    isIp = false;
+                  }
+                }
+              }
+              
+              if (isIp) {
+                ansob = Maps.from("qtype","A", "qname", qn + ".ioturl.net", "content",ipback, "ttl", 60);
+              } else {
+                //ansob = Maps.from("qtype","ALIAS", "qname", qn + ".ioturl.net", "content",ipback, "ttl", 60);
+                throw(Exception.new("not ip"));
+              }
+              
+              resl = List.new();
+              resl += ansob;
+              rese = Map.new();
+              rese.put("result", resl);
+              
+              ansres = Json:Marshaller.marshall(rese);
+              log.log("any res " + ansres);
+              request.outputContent = ansres;
+            }
+        }
+        
+      }
+         
+      } catch (any e) {
+        log.log("Caught exception handling request");
+        if (log.will()) { if (undef(e)) { log.log("undefined exception") } else { log.log(e.toString()); } }
+      }
+    }
+    
+    nameGet() String {
+       String name =@ "KBName";
+       return(name);
+     }
+}
+
 
 
 use App:Account;

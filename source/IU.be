@@ -38,6 +38,7 @@ class IU:WebConnect {
       
       String konnName;
       String homePage;
+      Bool onPublicNet = false;
       
       String certificatePrint = "";
       List internalMacAddresses = List.new();
@@ -102,8 +103,9 @@ class IU:WebConnect {
       }
   }
   
-  updateExternal(String _homePage, String _extNameBase, Bool doUpnp, Bool onPublicNet) self {
+  updateExternal(String _homePage, String _extNameBase, Bool doUpnp, Bool _onPublicNet) self {
     homePage = _homePage;
+    onPublicNet = _onPublicNet;
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -151,15 +153,24 @@ class IU:WebConnect {
         externalLink = "";
         internalUrl = "";
         internalLink = "";
-        hostedAddress = internalAddress;
+        //hostedAddress = internalAddress;
       }
-      if (TS.notEmpty(hostedAddress)) {
-        hostedBase = protocol + hostedAddress + extPort;          
-        hostedUrl = hostedBase + homePage;
-        hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
-        log.log("Hosted url use wherever there's internet." + hostedUrl);
-      }
+      updateHosted();
       updateKonnLink();
+  }
+  
+  updateHosted() {
+    if (TS.notEmpty(externalPort)) {
+      String extPort = ":" + externalPort;
+    } else {
+      extPort = "";
+    }
+    if (TS.notEmpty(hostedAddress)) {
+      hostedBase = protocol + hostedAddress + extPort;          
+      hostedUrl = hostedBase + homePage;
+      hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
+      log.log("Hosted url use wherever there's internet." + hostedUrl);
+    }
   }
   
   updateKonnLink() {
@@ -169,7 +180,7 @@ class IU:WebConnect {
       extPort = "";
     }
     if (TS.notEmpty(konnName)) {
-        konnAddress = konnName + ".konnectii.com";
+        konnAddress = konnName + ".ioturl.net";
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
         konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">Virtual DNS for " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";

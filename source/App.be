@@ -1281,7 +1281,6 @@ use class App:WebReverseProxyPlugin {
           String dataName = "KBridge";
           IO:Log log =@ IO:Logs.get(self);
           //String destUrl = "http://127.0.0.1:";
-          //String destUrl = "http://192.168.8.205:8080";
           String destUrl;
           Bool sslValidate;
         }
