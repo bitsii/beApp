@@ -176,6 +176,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           links.second = wc.internalLink;
           links.first = wc.externalLink;
          }
+         if (TS.notEmpty(wc.konnLink)) {
+           devLinks += "<p>" += wc.konnLink += "</p>";
+         }
          if (TS.notEmpty(wc.hostedLink)) {
           devLinks += "<p>" += wc.hostedLink += "</p>";
          }

@@ -711,6 +711,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("fs " + fs);
         au += fs;
       }
+      if (TS.notEmpty(wc.konnUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
+        parts = wc.konnUrl.split(":");
+        fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs;
+      }
       any dpf = app.paths.dataPath.addStep("authedUrls");
       if (dpf.file.exists) { dpf.file.delete(); }
       dpf.file.writer.open().writeStringClose(Json:Marshaller.marshall(au));
@@ -1000,14 +1007,17 @@ class KBridge:KBNamePlugin {
        Map inpar = inresm["parameters"];
        
        String inpqn = inpar.get("qname");
-       if (TS.notEmpty(inpqn) && inpqn.ends("ioturl.net.")) {
+       if (TS.notEmpty(inpqn) && inpqn.lower().ends("ioturl.net.")) {
+       
+        String qresn = inpqn.substring(0, inpqn.size - 1);
+        log.log("qresn " + qresn);
        
         String qt = inpar["qtype"];
         String qn = inpar["qname"];
         
         auto llsp = qn.split(".");
         if (llsp.size > 2) {
-          qn = llsp.first;
+          qn = llsp.first.upper();
           log.log("qn at end " + qn);
         }
        
@@ -1089,7 +1099,7 @@ class KBridge:KBNamePlugin {
               }
               
               if (isIp) {
-                ansob = Maps.from("qtype","A", "qname", qn + ".ioturl.net", "content",ipback, "ttl", 60);
+                ansob = Maps.from("qtype","A", "qname", qresn, "content",ipback, "ttl", 60);
               } else {
                 //ansob = Maps.from("qtype","ALIAS", "qname", qn + ".ioturl.net", "content",ipback, "ttl", 60);
                 throw(Exception.new("not ip"));

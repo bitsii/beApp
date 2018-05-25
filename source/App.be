@@ -1024,7 +1024,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     }
     for (sn in authedUrls) {
       //log.log("al sn is " + sn);
-      if (ref.begins(sn)) {
+      if (ref.lower().begins(sn.lower())) {
         //log.log("ixs false sitelist");
         return(false);
       }
