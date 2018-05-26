@@ -668,6 +668,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           } else {
             ssh.sendKeepAlive();
           }
+        } else {
+          wc.hostedAddress = "";
         }
       } catch (any sshe) {
         success = false;

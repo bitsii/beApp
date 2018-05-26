@@ -170,6 +170,10 @@ class IU:WebConnect {
       hostedUrl = hostedBase + homePage;
       hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
       log.log("Hosted url use wherever there's internet." + hostedUrl);
+    } else {
+      hostedBase = "";
+      hostedUrl = ""
+      hostedLink = "";
     }
   }
   
@@ -185,6 +189,11 @@ class IU:WebConnect {
         konnUrl = konnBase + homePage;
         konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">Virtual DNS for " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
         log.log("Virtual DNS url use wherever there's internet." + konnUrl);
+      } else {
+        konnAddress = "";
+        konnBase = "";
+        konnUrl = ""
+        konnLink = "";
       }
   }
   
@@ -297,7 +306,7 @@ class IU:WebConnect {
           konnUrl = konnUrl.swap("$ip$", konnAddress);
           konnUrl = konnUrl.swap("$port$", service.get("intPort"));
           konnUrl = konnUrl.swap("$type$", "VirtualDNS");
-          service.put("konnUrl", konnUrl + " - use wherever there's internet.");
+          service.put("konnLink", konnUrl + " - use wherever there's internet.");
         }
       }
       return(services);

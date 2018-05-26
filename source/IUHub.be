@@ -154,51 +154,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }  
   }
   
-  getDevLinks(Account a, Map arg, request) String {
-    String devLinks = String.new();
-     Map accountLinks = getLinks(a);
-     if (accountLinks.isEmpty) {
-       devLinks += "<p>No device links found.";
-     }
-     devLinks += "<p>Use Konnect on device to add it to your Konnectii account.";
-     for (auto kv in accountLinks) {
-       Pair links = Pair.new();
-       WebConnect wc = kv.value;
-       if (def(wc)) {
-         Bool internal = fromSameNet(wc, request);
-         //TODO check by pinging links also, possibly in background at login (or from time to time)
-         //remember which last worked, only do occasionally, async, with a refresh
-         //specifically just to filter out external
-         if (internal) {
-          links.first = wc.internalLink;
-          links.second = wc.externalLink;
-         } else {
-          links.second = wc.internalLink;
-          links.first = wc.externalLink;
-         }
-         if (TS.notEmpty(wc.konnLink)) {
-           devLinks += "<p>" += wc.konnLink += "</p>";
-         }
-         if (TS.notEmpty(wc.hostedLink)) {
-          devLinks += "<p>" += wc.hostedLink += "</p>";
-         }
-         if (TS.notEmpty(links.first)) {
-          devLinks += "<p>" += links.first += "</p>";
-         }
-         if (TS.notEmpty(links.second)) {
-          devLinks += "<p>" += links.second += "</p>";
-         }
-         if (undef(a)) {
-           devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" + wc.deviceId + "');return false;\">Wakeup " += wc.deviceName += "</a> - using Wake on Lan</p>";
-         }
-         if (TS.notEmpty(wc.certificatePrint)) {
-           devLinks += "<p>Certificate Thumbprint for " += wc.deviceName += ": " += wc.certificatePrint += "</p>";
-         }
-      }
-    }
-    return(devLinks);
-  }
-  
   fromSameNet(WebConnect wc, request) Bool {
     Bool internal = false;
     if (request.embedded) {
@@ -614,123 +569,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   }
       
   updateNetAddresses() {
-    log.log("In doimap");
-    any e;
-    try {
-      WebConnect wc = wcol.o;
-      if(def(wc)) {
-        log.log("In doimap1");
-        String prot = app.configManager.get("imap.protocol");
-        if (TS.isEmpty(prot)) {
-          prot = "imaps";
-        }
-        String endpoint = app.configManager.get("imap.endpoint");
-        String user = app.configManager.get("imap.user");
-        String pass = app.configManager.get("imap.pass");
-        String subf = app.configManager.get("imap.subFolder");
-        if (undef(subf)) {
-          subf = "IotUrls";
-        } elseIf (TS.isEmpty(subf)) {
-          subf = null;
-        }
-        if (TS.isEmpty(endpoint) || TS.isEmpty(user) || TS.isEmpty(pass)) {
-          return(null);
-        }
-        log.log("In doimap2");
-        String msg = "";
-        if (TS.notEmpty(wc.hostedLink)) {
-          msg += "<p>" + wc.hostedLink += "</p>\n";
-        }
-        if (TS.notEmpty(wc.externalLink)) {
-          msg += "<p>" + wc.externalLink += "</p>\n";
-        }
-        if (TS.notEmpty(wc.internalLink)) {
-          msg += "<p>" += wc.internalLink += "</p>\n";
-        }
-        if (TS.notEmpty(wc.certificatePrint)) {
-          msg += "<p>Certificate Thumbprint: " += wc.certificatePrint += "</p>";
-        }
-        String payload = Encode:Hex.new().encode(Json:Marshaller.marshall(wc.toMap()));
-        msg += "<input type=\"hidden\" name=\"payload\" value=\"" += payload += "\"/>";
-        log.log("In doimap3");
-        Pair sl = self.serviceLinks;
-        msg += "<p>Service connections for " += self.deviceName += "</p>";
-        msg += sl.first;
-        msg += sl.second;
-        //for (any kv in wc.extraPortMap) {
-        //  msg += "<p>External port " += kv.value += " redirected to internal port " += kv.key += "</p>";
-        //}
-        log.log("In doimap4");
-        String subjPref = "DeviceLinks " + self.deviceId + " ";
-        String subj = subjPref + Time:Interval.now().seconds + " " + self.deviceName;
-        log.log("In doimap5");
-        log.log("doing email subj " + subj);
-        log.log("doing email msg " + msg);
-        log.log("In doimap6");
-        emit(jv) {
-        """
-        Properties props = new Properties();
-        props.setProperty("mail.store.protocol", bevl_prot.bems_toJvString());
-          Session session = Session.getDefaultInstance(props, null);
-          Store store = session.getStore(bevl_prot.bems_toJvString());
-          if (!store.isConnected()) {
-            store.connect(bevl_endpoint.bems_toJvString(), bevl_user.bems_toJvString(), bevl_pass.bems_toJvString());
-          }
-          Folder f = store.getFolder("Inbox");
-          if (bevl_subf != null) {
-            Folder f2 = f.getFolder(bevl_subf.bems_toJvString());
-            if (!f2.exists()) {
-              f2.create(Folder.HOLDS_MESSAGES);
-            }
-            f = f2;
-          }
-          f.open(Folder.READ_WRITE);
-          
-          MimeMessage m = new MimeMessage(session);
-          //m.setFrom(new InternetAddress(from));
-          //m.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-       
-          String cs = bevl_subj.bems_toJvString();
-          
-          m.setSubject(cs);
-          //m.setText(bevl_msg.bems_toJvString());
-          m.setText(bevl_msg.bems_toJvString(), "utf-8", "html");
-
-          
-          m.setFlag(Flag.DRAFT, true);
-          Message ms[] = {m};
-          f.appendMessages(ms);
-          
-          if (bevl_subjPref != null) {
-          
-            String ls = bevl_subjPref.bems_toJvString();
-            
-            Message[] messages = f.getMessages();
-            if (messages != null) {
-              for(int i = 0; i < messages.length; i++)
-              {
-                String subj = messages[i].getSubject();
-                if (subj != null && subj.startsWith(ls) && !subj.equals(cs)) {
-                  //System.out.println("deleting message");
-                  messages[i].setFlag(Flag.DELETED, true);
-                }
-              }
-            }            
-          }
-          
-          f.close(true);
-          store.close();
-        """
-        }
-        log.log("Done with imap stuff");
-      }
-    } catch (e) {
-      if(def(e)) {
-        log.log("Exception during imap update " + e);
-      } else {
-        log.log("Exception during imap update null");
-      }
-    }
+    
   }
    
    checkPublicReadPath(Path pa, request) Bool {
@@ -1047,79 +886,131 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     return(actionLinks);
   }
    
+  getDevLinks(Account a, Map arg, request) String {
+    String outerLinks = String.new();
+    String devLinks = String.new();
+     Map accountLinks = getLinks(a);
+     if (accountLinks.isEmpty) {
+       outerLinks += "<p>No device links found.";
+     }
+     outerLinks += "<p>Use Konnect on device to add it to your Konnectii account.";
+     for (auto kv in accountLinks) {
+       Pair links = Pair.new();
+       WebConnect wc = kv.value;
+       if (def(wc)) {
+         Bool internal = fromSameNet(wc, request);
+         //TODO check by pinging links also, possibly in background at login (or from time to time)
+         //remember which last worked, only do occasionally, async, with a refresh
+         //specifically just to filter out external
+         if (internal) {
+          links.first = wc.internalLink;
+          links.second = wc.externalLink;
+         } else {
+          links.second = wc.internalLink;
+          links.first = wc.externalLink;
+         }
+         //add way for bridge to say it is handling dns
+         //ahead of time find any of those, for any device here
+         //check to see if it has same internet address as something that
+         //says it's handling dns
+         if (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink)) {
+           outerLinks += "<p>" += wc.konnLink += "</p>";
+         } else {
+           outerLinks += "<p>" += links.first += "</p>";
+         }
+         if (TS.notEmpty(wc.konnLink)) {
+           devLinks += "<p>" += wc.konnLink += "</p>";
+         }
+         if (TS.notEmpty(wc.hostedLink)) {
+          devLinks += "<p>" += wc.hostedLink += "</p>";
+         }
+         if (TS.notEmpty(links.first)) {
+          devLinks += "<p>" += links.first += "</p>";
+         }
+         if (TS.notEmpty(links.second)) {
+          devLinks += "<p>" += links.second += "</p>";
+         }
+         if (undef(a)) {
+           devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" + wc.deviceId + "');return false;\">Wakeup " += wc.deviceName += "</a> - using Wake on Lan</p>";
+         }
+         if (TS.notEmpty(wc.certificatePrint)) {
+           devLinks += "<p>Certificate Thumbprint for " += wc.deviceName += ": " += wc.certificatePrint += "</p>";
+         }
+      }
+    }
+    String actionLinks = String.new();
+    actionLinks += "<div id=\"outerLinksDiv\">";
+    actionLinks += outerLinks;
+    if (TS.notEmpty(devLinks)) {
+    actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'innerLinksDiv');return false;\">Show all connection options.</a>";
+    actionLinks += "<div id=\"innerLinksDiv\" style=\"display: none;\">";
+    actionLinks += devLinks;
+    actionLinks += "</div>";
+    }
+    return(actionLinks);
+  }
+   
   updateActionLinks(String actionLinks, Account a, Map arg, request) String {
      //CMD.username!Display = cmd
      log.log("in hub updateActionLinks");
      Map ecm = app.configManager.getMap("CMD." + a.user + "!");
-     //actionLinks += "<p><a href=\"#\" onclick=\"callApp('refreshLinksRequest');return false;\">(Refresh)</a></p>";
-     for (any kv in ecm) {
+     for (kv in ecm) {
       String key = kv.key;
       key = key.substring(key.find("!") + 1, key.size);
       actionLinks += "<p><a href=\"#\" onclick=\"callUI('runCommand', '" += kv.key += "');return false;\">" += key += "</a></p>";
      }
-     /*String showCam = app.configManager.get("PLUGIN.cam");
-     if (TS.isEmpty(showCam) || showCam == "enabled") {
-       actionLinks += "<p><a href=\"IUCam.html\">Go to IUCam</a></p>";
-     }*/
-     //is remote
-     //add links
      Bool internal = isInternal(request);
-     /*WebConnect wc = wcol.o;
-     if (TS.notEmpty(wc.hostedLink)) {
-          actionLinks += "<p>" += wc.hostedLink += "</p>";
-        }
-        if (TS.notEmpty(wc.externalLink)) {
-          actionLinks += "<p>" += wc.externalLink += "</p>";
-        }
-        if (TS.notEmpty(wc.internalLink)) {
-          actionLinks += "<p>" += wc.internalLink += "</p>";
-        }*/
-      Pair sl = self.serviceLinks;
-      if (internal) {
-        actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
-        actionLinks += sl.first;
-        if (TS.notEmpty(sl.second)) {
-        actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show external service connections</a>";
-        actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
-        actionLinks += sl.second;
-        actionLinks += "</div>";
-        }
-        actionLinks += "</div>";
-      } else {
-        actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
-        actionLinks += sl.second;
-        if (TS.notEmpty(sl.first)) {
-        actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show internal service connections</a>";
-        actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
-        actionLinks += sl.first;
-        actionLinks += "</div>";
-        }
-        actionLinks += "</div>";
-      }
-     return(actionLinks);
-   }
-   
-   serviceLinksGet() Pair {
-     WebConnect wc = wcol.o;
-      String intsl = String.new();
-      String extsl = String.new();
+     
+     String outerLinks = String.new();
+     String innerLinks = String.new();
+      
+      WebConnect wc = wcol.o;
+      
       if (def(wc)) {
         Map svcs = wc.getServices();
         if (def(svcs)) {
           for (any kv in svcs) {
+            if (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink"))) {
+              outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+            } else {
+              if (internal) {
+                outerLinks += "<p>" += kv.value.get("intLink") += "</p>";
+              } else {
+                if (TS.notEmpty(kv.value.get("hstLink"))) {
+                  outerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
+                } elseIf (TS.notEmpty(kv.value.get("extLink"))) {
+                  outerLinks += "<p>" += kv.value.get("extLink") += "</p>";
+                } elseIf (TS.notEmpty(kv.value.get("intLink"))) {
+                  outerLinks += "<p>" += kv.value.get("intLink") += "</p>";
+                }
+              }
+            }
+            if (TS.notEmpty(kv.value.get("konnLink"))) {
+              innerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+            }
             if (TS.notEmpty(kv.value.get("intLink"))) {
-              intsl += "<p>" += kv.value.get("intLink") += "</p>";
+              innerLinks += "<p>" += kv.value.get("intLink") += "</p>";
             }
             if (TS.notEmpty(kv.value.get("hstLink"))) {
-              extsl += "<p>" += kv.value.get("hstLink") += "</p>";
+              innerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
             } 
             if (TS.notEmpty(kv.value.get("extLink"))) {
-              extsl += "<p>" += kv.value.get("extLink") += "</p>";
+              innerLinks += "<p>" += kv.value.get("extLink") += "</p>";
             }
           }
         }
       }
-      return(Pair.new(intsl, extsl));
+     
+      
+      actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
+      actionLinks += outerLinks;
+      actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show all service connection options</a>";
+      actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
+      actionLinks += innerLinks;
+      actionLinks += "</div>";
+      actionLinks += "</div>";
+      
+     return(actionLinks);
    }
    
    wakeDevRequest(String deviceId, request) {
