@@ -914,21 +914,23 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          //check to see if it has same internet address as something that
          //says it's handling dns
          if (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink)) {
+           String dlUse = devLinks;
            outerLinks += "<p>" += wc.konnLink += "</p>";
          } else {
+           dlUse = outerLinks;
            outerLinks += "<p>" += links.first += "</p>";
          }
          if (TS.notEmpty(wc.konnLink)) {
-           devLinks += "<p>" += wc.konnLink += "</p>";
+           dlUse += "<p>" += wc.konnLink += "</p>";
          }
          if (TS.notEmpty(wc.hostedLink)) {
-          devLinks += "<p>" += wc.hostedLink += "</p>";
+          dlUse += "<p>" += wc.hostedLink += "</p>";
          }
          if (TS.notEmpty(links.first)) {
           devLinks += "<p>" += links.first += "</p>";
          }
          if (TS.notEmpty(links.second)) {
-          devLinks += "<p>" += links.second += "</p>";
+          dlUse += "<p>" += links.second += "</p>";
          }
          if (undef(a)) {
            devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" + wc.deviceId + "');return false;\">Wakeup " += wc.deviceName += "</a> - using Wake on Lan</p>";
@@ -942,7 +944,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     actionLinks += "<div id=\"outerLinksDiv\">";
     actionLinks += outerLinks;
     if (TS.notEmpty(devLinks)) {
-    actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'innerLinksDiv');return false;\">Show all connection options.</a>";
+    actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'innerLinksDiv');return false;\">Show/Hide more connection options.</a>";
     actionLinks += "<div id=\"innerLinksDiv\" style=\"display: none;\">";
     actionLinks += devLinks;
     actionLinks += "</div>";
@@ -971,8 +973,10 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         if (def(svcs)) {
           for (any kv in svcs) {
             if (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink"))) {
+              String dlUse = innerLinks;
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
             } else {
+              dlUse = outerLinks;
               if (internal) {
                 outerLinks += "<p>" += kv.value.get("intLink") += "</p>";
               } else {
@@ -986,16 +990,16 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
               }
             }
             if (TS.notEmpty(kv.value.get("konnLink"))) {
-              innerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+              dlUse += "<p>" += kv.value.get("konnLink") += "</p>";
             }
             if (TS.notEmpty(kv.value.get("intLink"))) {
-              innerLinks += "<p>" += kv.value.get("intLink") += "</p>";
+              dlUse += "<p>" += kv.value.get("intLink") += "</p>";
             }
             if (TS.notEmpty(kv.value.get("hstLink"))) {
               innerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
             } 
             if (TS.notEmpty(kv.value.get("extLink"))) {
-              innerLinks += "<p>" += kv.value.get("extLink") += "</p>";
+              dlUse += "<p>" += kv.value.get("extLink") += "</p>";
             }
           }
         }
@@ -1004,7 +1008,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       
       actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
       actionLinks += outerLinks;
-      actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show all service connection options</a>";
+      actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show/Hide more service connection options</a>";
       actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";
       actionLinks += innerLinks;
       actionLinks += "</div>";

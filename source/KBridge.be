@@ -356,8 +356,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.pluginsByName.get("Auth").nonAuthedRequests.put("initialSetupRequest");
       
       bfw.startDelay = Time:Interval.new(20, 0);
-      bfw.repeatDelay = Time:Interval.new(60, 0);
-      bfw.minimumDelay = Time:Interval.new(30, 0);
+      bfw.repeatDelay = Time:Interval.new(300, 0);//was 60
+      bfw.minimumDelay = Time:Interval.new(120, 0);//was 30
       bfw.toInvoke = getInvocation("doForward", List.new());
       
       //bup.startDelay = Time:Interval.new(30, 0);
