@@ -2074,6 +2074,30 @@ class WebApp {
     return("http");
   }
   
+  appNameGet() String {
+    fields {
+      String appName;
+    }
+    if (undef(appName)) {
+      if (def(params)) {
+        String an = params.getFirst("appName");
+      }
+      if (undef(an)) {
+        an = "";
+      }
+      appName = an;
+    }
+    return(appName);
+  }
+  
+  configPrefixGet() String {
+    String an = self.appName;
+    if (TS.notEmpty(an)) {
+      return("webApp." + an + ".");
+    }
+    return(an);
+  }
+  
    doSslGet() Bool {
       fields {
         Bool doSsl;
@@ -2081,13 +2105,13 @@ class WebApp {
       if (undef(doSsl)) {
         doSsls = params.getFirst("webDoSsl");
         if (TS.isEmpty(doSsls)) {
-          String doSsls = self.configManager.get("web.ssl");
+          String doSsls = self.configManager.get(self.configPrefix + "web.ssl");
           if (TS.isEmpty(doSsls)) {
             doSsls = "true";
             ifEmit(cs) {
               doSsls = "false";
             }
-            self.configManager.put("web.ssl", doSsls);
+            self.configManager.put(self.configPrefix + "web.ssl", doSsls);
           }
         }
         doSsl = Logic:Bools.fromString(doSsls);
@@ -2146,15 +2170,28 @@ class WebApp {
         if (def(params) && def(params.getFirst("webPort"))) {
           return(params.getFirst("webPort"));
         }
-        intPort = self.configManager.get("web.port");
+        intPort = self.configManager.get(self.configPrefix + "web.port");
         if (TS.isEmpty(intPort)) {
           Int intPorti = System:Random.getIntMax(6000);
           intPorti += 3000;
           intPort = intPorti.toString();
-          self.configManager.put("web.port", intPort);
+          self.configManager.put(self.configPrefix + "web.port", intPort);
         }
       }
       return(intPort);
+    }
+    
+  httpBindAddressGet() String {
+      fields {
+        String httpBindAddress;
+      }
+      if (TS.isEmpty(httpBindAddress)) {
+        if (def(params) && def(params.getFirst("httpBindAddress"))) {
+          return(params.getFirst("httpBindAddress"));
+        }
+        httpBindAddress = self.configManager.get(self.configPrefix + "web.httpBindAddress");
+      }
+      return(httpBindAddress);
     }
   
   pathsGet() App:Paths {

@@ -771,6 +771,32 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         }
       }
     }
+    
+    enableAppRequest(String appName, request) Map {
+      log.log("in enableApp");
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      log.log("enabling app");
+      app.configManager.put("app." + appName, "enabled");
+      String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
+      System:Command.new(cmdPath).run();
+      log.log("enable done");
+      return(CallBackUI.informResponse("App " + appName + " Enabled"));
+    }
+    
+    disableAppRequest(String appName, request) Map {
+      log.log("in disableApp");
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      log.log("enabling app");
+      app.configManager.put("app." + appName, "disabled");
+      String cmdPath = "./App/KBridge/" + appName + "Disable.sh";
+      System:Command.new(cmdPath).run();    
+      log.log("enable done");
+      return(CallBackUI.informResponse("App " + appName + " Disabled"));
+    }
      
    
 }

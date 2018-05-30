@@ -94,6 +94,12 @@ cp scripts/motionrun.sh ../apprun/App/KBridge
 cp scripts/camclean.sh ../apprun/App/KBridge
 cp source/MOCAM.conf ../apprun/App/KBridge
 
+#apps
+cp scripts/DnsEnable.sh ../apprun/App/KBridge
+cp scripts/DnsDisable.sh ../apprun/App/KBridge
+cp scripts/startiubn.sh ../apprun/App/KBridge
+cp scripts/iubncmdrs.sh ../apprun/App/KBridge
+
 #cd ../apprun
 #ikvmc -out:App/KBridge/kb.exe App/KBridge/*.jar -target:exe -main:be.BEX_E
 #cd ../ioturl

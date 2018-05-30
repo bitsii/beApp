@@ -69,6 +69,7 @@ use class Web:Server {
   init() {
     fields {
       Int port = 8080;
+      String httpBindAddress;
       any app;
       Bool ssl = false;
       String sslPath;
@@ -130,11 +131,20 @@ use class Web:Server {
       ussl = "notnull";
     }
     
+    String locaddr;
+    if (TS.notEmpty(httpBindAddress)) {
+      locaddr = httpBindAddress;
+    }
+    
     emit(jv) {
     """
     if (bevl_ussl == null) {
       //for http
-      server = new Server(bevp_port.bevi_int);
+      if (bevl_locaddr != null) {
+        server = new Server(new java.net.InetSocketAddress(bevl_locaddr.bems_toJvString(), bevp_port.bevi_int));
+      } else {
+        server = new Server(bevp_port.bevi_int);
+      }
     } else {
       //for https
       server = new Server();
