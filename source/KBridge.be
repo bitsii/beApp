@@ -772,6 +772,28 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
     }
     
+    getAppsStatesRequest(request) Map {
+      Map appStates = app.configManager.getMap("app.");
+      Map displays = Map.new();
+      for (any kv in appStates) {
+        if (TS.notEmpty(kv.value) && TS.notEmpty(kv.key) && kv.key.size > 4) {
+          if (kv.value == "enabled" || kv.value == "disabled") {
+            String appName = kv.key.substring(4, kv.key.size);
+            if (kv.value == "enabled") {
+              log.log("setting " + appName + " enabled");
+              displays.put(appName + "AppEnabled", "inline");
+              displays.put(appName + "AppDisabled", "none");
+            } else {
+              log.log("setting " + appName + " disabled");
+              displays.put(appName + "AppEnabled", "none");
+              displays.put(appName + "AppDisabled", "inline");
+            }
+          }
+        }
+      }
+      return(CallBackUI.setElementsDisplaysResponse(displays));
+    }
+    
     enableAppRequest(String appName, request) Map {
       log.log("in enableApp");
       unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
@@ -782,7 +804,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
       System:Command.new(cmdPath).run();
       log.log("enable done");
-      return(CallBackUI.informResponse("App " + appName + " Enabled"));
+      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline")));
+      //return(CallBackUI.informResponse("App " + appName + " Enabled"));
     }
     
     disableAppRequest(String appName, request) Map {
@@ -790,12 +813,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         throw(Alert.new("Must be administrator"));
       }
-      log.log("enabling app");
+      log.log("disabling app");
       app.configManager.put("app." + appName, "disabled");
       String cmdPath = "./App/KBridge/" + appName + "Disable.sh";
       System:Command.new(cmdPath).run();    
-      log.log("enable done");
-      return(CallBackUI.informResponse("App " + appName + " Disabled"));
+      log.log("disable done");
+      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "inline", appName + "AppEnabled", "none")));
+      //return(CallBackUI.informResponse("App " + appName + " Disabled"));
     }
      
    

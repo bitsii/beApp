@@ -52,7 +52,7 @@
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
                 <li class="pure-menu-item" id="setDevicenameME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'dnamechangediv');return false;">Set Devicename</a></li>
                 </div>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'appsDiv');return false;">Apps</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'appsDiv');callApp('getAppsStatesRequest');return false;">Apps</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'aboutDiv');return false;">About</a></li>
             </ul>
         </div>
@@ -411,7 +411,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <div class="pure-g">
     <div class="pure-u-1-24"></div>
     <div class="pure-u-23-24">
-    <p><a id="iuwcAppMsg">Local DNS - for seamless access to services by dns name </a> <a href="#" onclick="callApp('enableAppRequest', 'Dns');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Dns');return false;">Disable</a></p>
+    <p>Local DNS - for seamless access to services by dns name <span style="color:green"><a style="display: none;" id="DnsAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="DnsAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Dns');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Dns');return false;">Disable</a></p>
     </div>
     </div>
     </div>
