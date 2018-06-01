@@ -234,8 +234,10 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     wc.deviceId = app.plugin.deviceId;
     wc.deviceName = app.plugin.deviceName; 
-    if (TS.isEmpty(wc.externalPort)) {
+    if (TS.notEmpty(app.configManager.get("hub.extPort"))) {
       wc.externalPort = app.configManager.get("hub.extPort");
+    } elseIf (TS.notEmpty(wc.externalPort)) {
+      app.configManager.put("hub.extPort", wc.externalPort);
     }
     log.log("starting wc update");
     //fwd was here

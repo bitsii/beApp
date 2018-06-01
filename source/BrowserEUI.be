@@ -259,6 +259,24 @@ class HE {
     return(res);
   }
   
+  styleSet(String val) self {
+    emit(js) {
+    """
+    this.bevi_element.style = beva_val.bems_toJsString();
+    """
+    }
+  }
+  
+  styleGet() String {
+    String res;
+    emit(js) {
+    """
+    bevl_res = new be_$class/Text:String$().bems_new(this.bevi_element.style);
+    """
+    }
+    return(res);
+  }
+  
   hrefSet(String val) self {
     emit(js) {
     """
