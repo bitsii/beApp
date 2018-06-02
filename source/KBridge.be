@@ -104,6 +104,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())), CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")))));
    }
    
+   setCamPortsRequest(request) Map {
+      String camPort = app.configManager.get("webApp.Cam.web.port");
+      if (TS.notEmpty(camPort)) {
+        return(CallBackUI.setElementsValuesResponse(Maps.from("fpPort", camPort, "fpExPort", camPort)));
+      }
+      return(CallBackUI.informResponse("Please enable IU Cam from the Apps menu before setting up"));
+   }
+   
    routerLinkRequest(String account, String pass, request) Map {
     log.log("in router link request");
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
@@ -248,6 +256,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
       Web:Client client = Web:Client.new();
       String payload = Json:Marshaller.marshall(argOut);
+      log.log("payload " + payload);
       client.outputHeaders.put("referer", destUrl);
       client.url = destUrl;
       client.openOutput().write(payload);
@@ -677,6 +686,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       String extBase = "";
       wc.updateExternal(homePage, extBase, doUpnpForward, onPublicNet);
+      String dnsen = app.configManager.get("app.Dns");
+      if (TS.notEmpty(dnsen) && dnsen == "enabled") {
+        log.log("!!!SETTING DOING DNS TRUE");
+        wc.doingDns = true;
+      } else {
+      log.log("!!!SETTING DOING DNS FALSE");
+        wc.doingDns = false;
+      }
       try {
         forwardPorts(wc, ssh, rforwarded);
       } catch (any fpe) {
@@ -723,6 +740,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       any dpf = app.paths.dataPath.addStep("authedUrls");
       if (dpf.file.exists) { dpf.file.delete(); }
       dpf.file.writer.open().writeStringClose(Json:Marshaller.marshall(au));
+      
       return(success);
   }
   

@@ -2172,7 +2172,7 @@ class WebApp {
         }
         intPort = self.configManager.get(self.configPrefix + "web.port");
         if (TS.isEmpty(intPort)) {
-          Int intPorti = System:Random.getIntMax(6000);
+          Int intPorti = System:Random.getIntMax(30000);
           intPorti += 3000;
           intPort = intPorti.toString();
           self.configManager.put(self.configPrefix + "web.port", intPort);

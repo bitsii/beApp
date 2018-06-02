@@ -788,10 +788,11 @@ use class IUHub:Eui {
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox on GitHub</a>";
       } elseIf (forService.begins("IU WebCam")) {
         HD.getElementById("fpName").value = "IU WebCam - webcam with motion";
-        HD.getElementById("fpPort").value = "6416";
+        HD.getElementById("fpPort").value = "";
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ IU WebCam</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/ioturl/ioturl/wikis/home\">IU WebCam on GitLab</a>";
+        HC.callApp(Lists.from("setCamPortsRequest"));
       } elseIf (forService.begins("openHAB")) {
         HD.getElementById("fpName").value = "openHAB - Home Automation";
         HD.getElementById("fpPort").value = "6415";

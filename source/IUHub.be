@@ -121,7 +121,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       if (mode == "saveLocalUrl") {
         log.log("saveLocalUrl");
         
-        Int intPorti = System:Random.getIntMax(6000);
+        Int intPorti = System:Random.getIntMax(30000);
         intPorti += 3000;
         intPort = intPorti.toString();
         app.configManager.put("web.port", intPort);
@@ -234,11 +234,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     wc.deviceId = app.plugin.deviceId;
     wc.deviceName = app.plugin.deviceName; 
-    if (TS.notEmpty(app.configManager.get("hub.extPort"))) {
-      wc.externalPort = app.configManager.get("hub.extPort");
-    } elseIf (TS.notEmpty(wc.externalPort)) {
-      app.configManager.put("hub.extPort", wc.externalPort);
-    }
+    wc.externalPort = webPort;
     log.log("starting wc update");
     //fwd was here
     log.log("setting links");
@@ -887,6 +883,21 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     return(actionLinks);
   }
+  
+  getEadns(Map accountLinks) Map {
+    Map eadn = Map.new();
+    for (auto kv in accountLinks) {
+       WebConnect wc = kv.value;
+       if (def(wc)) {
+         if (def(wc.doingDns) && wc.doingDns && TS.notEmpty(wc.externalAddress) && TS.notEmpty(wc.gateway)) {
+          eadn.put(wc.externalAddress, wc);
+         }
+       }
+    }
+    return(eadn);
+    
+    //if (TS.notEmpty(wc.gateway) && TS.notEmpty(mywc.gateway) && TS.notEmpty(wc.externalAddress) && //TS.notEmpty(mywc.externalAddress) && wc.gateway == mywc.gateway && wc.externalAddress == mywc.externalAddress) {}
+  }
    
   getDevLinks(Account a, Map arg, request) String {
     String outerLinks = String.new();
@@ -896,6 +907,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
        outerLinks += "<p>No device links found.";
      }
      outerLinks += "<p>Use Konnect on device to add it to your Konnectii account.";
+     Map eadns = getEadns(accountLinks);
      for (auto kv in accountLinks) {
        Pair links = Pair.new();
        WebConnect wc = kv.value;
@@ -915,7 +927,16 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          //ahead of time find any of those, for any device here
          //check to see if it has same internet address as something that
          //says it's handling dns
-         if (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink)) {
+         
+         if (TS.notEmpty(wc.externalAddress)) {
+          WebConnect dnwc = eadns.get(wc.externalAddress);
+         } else {
+          dnwc = null;
+         }
+         if (def(dnwc) && TS.notEmpty(wc.gateway) && dnwc.gateway == wc.gateway) {
+           dlUse = devLinks;
+           outerLinks += "<p>" += wc.konnLink += "</p>";
+         } elseIf (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink)) {
            String dlUse = devLinks;
            outerLinks += "<p>" += wc.konnLink += "</p>";
          } else {

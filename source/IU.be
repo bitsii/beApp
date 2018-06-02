@@ -39,6 +39,7 @@ class IU:WebConnect {
       String konnName;
       String homePage;
       Bool onPublicNet = false;
+      Bool doingDns = false;
       
       String certificatePrint = "";
       List internalMacAddresses = List.new();
@@ -72,7 +73,7 @@ class IU:WebConnect {
   }
   
   getAPort() String {
-    Int externalPorti = System:Random.getIntMax(6000);
+    Int externalPorti = System:Random.getIntMax(30000);
     externalPorti += 3000;
     return(externalPorti.toString());
   }
@@ -112,13 +113,7 @@ class IU:WebConnect {
     
     extNameBase = _extNameBase;
     
-    if (TS.isEmpty(externalPort)) {
-      if (onPublicNet) {
-        externalPort = internalPort;
-      } else {
-        externalPort = getAPort();
-      }
-    }
+    externalPort = internalPort;
     
     try {
         if (doUpnp) {
