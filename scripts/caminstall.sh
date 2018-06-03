@@ -37,6 +37,12 @@ chmod +x *.sh
 
 cd $INSDIR
 
+if [ "$OSTYPE" == "Linux" ]; then
+  #chown
+  chown -R $INSUSER apprun
+  chown -R $INSUSER tmp
+fi
+
 echo ""
 
 ./apprun/App/IUCam/startiuc.sh
