@@ -885,11 +885,13 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   }
   
   getEadns(Map accountLinks) Map {
+    log.log("getting eadns");
     Map eadn = Map.new();
     for (auto kv in accountLinks) {
        WebConnect wc = kv.value;
        if (def(wc)) {
          if (def(wc.doingDns) && wc.doingDns && TS.notEmpty(wc.externalAddress) && TS.notEmpty(wc.gateway)) {
+          log.log("got an eadn");
           eadn.put(wc.externalAddress, wc);
          }
        }
@@ -994,8 +996,22 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       if (def(wc)) {
         Map svcs = wc.getServices();
         if (def(svcs)) {
+        
+             log.log("checking eadns in svcs");
+           Map accountLinks = getLinks(null);
+          Map eadns = getEadns(accountLinks);
           for (any kv in svcs) {
-            if (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink"))) {
+            if (TS.notEmpty(wc.externalAddress)) {
+              WebConnect dnwc = eadns.get(wc.externalAddress);
+             } else {
+              dnwc = null;
+             }
+             if (def(dnwc) && TS.notEmpty(wc.gateway) && dnwc.gateway == wc.gateway) {
+               log.log("doing dnwc");
+               dlUse = innerLinks;
+              outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+             }
+            elseIf (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink"))) {
               String dlUse = innerLinks;
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
             } else {
