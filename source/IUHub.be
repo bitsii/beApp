@@ -887,7 +887,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   getEadns(Map accountLinks) Map {
     log.log("getting eadns");
     Map eadn = Map.new();
-    for (auto kv in accountLinks) {
+    /*for (auto kv in accountLinks) {
        WebConnect wc = kv.value;
        if (def(wc)) {
          if (def(wc.doingDns) && wc.doingDns && TS.notEmpty(wc.externalAddress) && TS.notEmpty(wc.gateway)) {
@@ -895,7 +895,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           eadn.put(wc.externalAddress, wc);
          }
        }
-    }
+    }*/
     return(eadn);
     
     //if (TS.notEmpty(wc.gateway) && TS.notEmpty(mywc.gateway) && TS.notEmpty(wc.externalAddress) && //TS.notEmpty(mywc.externalAddress) && wc.gateway == mywc.gateway && wc.externalAddress == mywc.externalAddress) {}
@@ -938,7 +938,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          if (def(dnwc) && TS.notEmpty(wc.gateway) && dnwc.gateway == wc.gateway) {
            dlUse = devLinks;
            outerLinks += "<p>" += wc.konnLink += "</p>";
-         } elseIf (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink)) {
+         } elseIf (wc.manualForward || (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink))) {
            String dlUse = devLinks;
            outerLinks += "<p>" += wc.konnLink += "</p>";
          } else {
@@ -1011,7 +1011,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
                dlUse = innerLinks;
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
              }
-            elseIf (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink"))) {
+            elseIf (wc.manualForward || (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink")))) {
               String dlUse = innerLinks;
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
             } else {

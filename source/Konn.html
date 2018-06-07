@@ -41,10 +41,10 @@
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
                 <li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Konnect</a></li>
-                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');callApp('getOnPublicNetRequest');return false;">Remote Access</a></li>
-                <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">Remote Services</a></li>
+                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');callApp('getOnPublicNetRequest');return false;">External Access</a></li>
+                <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a></li>
                 <li class="pure-menu-item" id="browseDevicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Browse Devices</a></li>
-                <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Show Services</a></li>
+                <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Service Links</a></li>
                 <li class="pure-menu-item" id="fileManagerME"><a href="#" class="pure-menu-link" onclick="callUI('localBrowseRequest');return false;">Browse Files</a></li>
                 <li class="pure-menu-item" id="restartME"><a href="#" class="pure-menu-link" onclick="callUI('restart');return false;">Restart Bridge</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');return false;">Change Password</a></li>
@@ -52,7 +52,7 @@
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
                 <li class="pure-menu-item" id="setDevicenameME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'dnamechangediv');return false;">Set Devicename</a></li>
                 </div>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'appsDiv');callApp('getAppsStatesRequest');return false;">Apps</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'appsDiv');callApp('getAppsStatesRequest');return false;">Install Apps</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'aboutDiv');return false;">About</a></li>
             </ul>
         </div>
@@ -193,10 +193,10 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-control-group">
             <label for="upsp"></label>
             <input id="upsp" type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Expose to the internet via upnp port forward</span>
+            <span class="pure-form-message-inline">Expose to the internet via port forward</span>
         </div>
         <div class="pure-control-group">
-         <label for="enableUpnp" class="pure-checkbox">Enable UPnP</label>
+         <label for="enableUpnp" class="pure-checkbox">Enable UPnP (uncheck for Manual Forwarding)</label>
             <input id="enableUpnp" type="checkbox">
         </div>
         <div class="pure-controls">
@@ -258,7 +258,12 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 </div>
     </fieldset>
 </form>
+<div class="pure-g">
+    <div class="pure-u-1-24"></div>
+    <div class="pure-u-23-24">
 <div id="forwardPortsListDiv"></div>
+</div>
+</div>
 </div>
 
 <div id="setupDiv">
@@ -412,7 +417,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <div class="pure-g">
     <div class="pure-u-1-24"></div>
     <div class="pure-u-23-24">
-    <p>Local DNS - for seamless access to services by dns name <span style="color:green"><a style="display: none;" id="DnsAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="DnsAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Dns');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Dns');return false;">Disable</a></p>
+    <!--<p>Local DNS - for seamless access to services by dns name <span style="color:green"><a style="display: none;" id="DnsAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="DnsAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Dns');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Dns');return false;">Disable</a></p>-->
     </div>
     </div>
     </div>

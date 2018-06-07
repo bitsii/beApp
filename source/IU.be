@@ -39,6 +39,7 @@ class IU:WebConnect {
       String konnName;
       String homePage;
       Bool onPublicNet = false;
+      Bool doingUpnp = true;
       Bool doingDns = false;
       
       String certificatePrint = "";
@@ -55,6 +56,14 @@ class IU:WebConnect {
       String extNameBase;
       
     }
+  }
+  
+  manualForwardGet() Bool {
+    Bool mf = false;
+    if (def(doingUpnp) && doingUpnp! && TS.isEmpty(hostedAddress)) {
+      mf = true;
+    }
+    return(mf);
   }
   
   webProtoSet(String proto) {
@@ -107,6 +116,7 @@ class IU:WebConnect {
   updateExternal(String _homePage, String _extNameBase, Bool doUpnp, Bool _onPublicNet) self {
     homePage = _homePage;
     onPublicNet = _onPublicNet;
+    doingUpnp = doUpnp;
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;
@@ -887,13 +897,13 @@ class Upnp {
       res = System:Command.new(cmd).open().output.readStringClose();
       log.log("forwardPort result " + res);
       
-      if (external != internal) {
+      /*if (external != internal) {
         log.log("doing socat");
         //socat tcp-listen:2022,reuseaddr,fork tcp:localhost:22
         cmd = "socat tcp-listen:" + external + ",reuseaddr,fork tcp:localhost:" + internal;
         System:Command.new(cmd).run();
         log.log("local portfwd (socat) started for " + external + " to " + internal);
-      }
+      }*/
       
       return(true);
       

@@ -453,13 +453,21 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    getForwardPortsList() String {
      String fpl = String.new();
+     String rps = String.new();
      WebConnect wc = wcol.o;
        if (def(wc)) {
-       for (any kv in wc.getServices()) {
-        fpl += "<p><a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a></p>";
-       }
+         if (wc.manualForward) {
+          rps += "<p>Configured for Manual forwarding.  Please do the following on your router:</p><p>Set mac address " += wc.internalMacAddresses.get(0) += " to static dhcp ip address " += wc.internalAddress += "</p>";
+          rps += "<p>Forward external port " += wc.externalPort += " to internal ip:port " += wc.internalAddress += ":" += wc.internalPort += "</p>";
+         }
+         for (any kv in wc.getServices()) {
+          fpl += "<p><a href=\"#\" onclick=\"callApp('loadForwardPortRequest','" += kv.key += "');return false;\">Load config for " += kv.value.get("name") += "</a></p>";
+          if (wc.manualForward) {
+            rps += "<p>Forward external port " += kv.value.get("intPort") += " to internal ip:port " += wc.internalAddress += ":" += kv.key += "</p>";
+          }
+         }
      }
-     return(fpl);
+     return(fpl + rps);
    }
    
    loadForwardPortRequest(String port, request) Map {
@@ -518,7 +526,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    loggedIn(Account a, Map res, Map arg, request) Map {
     res = super.loggedIn(a, res, arg, request);
-    res["devLinksList"] = getDevLinks(null, arg, request);
+    //res["devLinksList"] = getDevLinks(null, arg, request);
+    res["devLinksList"] = "";
     String dnso = app.configManager.get("deviceNameSetOnce");
     if (TS.isEmpty(dnso) || dnso != "true") {
       //res["deviceNameSetOnce"] = "false";
