@@ -63,7 +63,7 @@ use class App:RemoteWebApp(WebApp) {
     
     startWeb() {
       any e;
-      String ports = self.webPort;
+      String ports = self.appPort;
       Int port = Int.new(ports);
       //portL.o = port;
       
@@ -71,9 +71,9 @@ use class App:RemoteWebApp(WebApp) {
       
       //vwL.o = vw;
       vw.port = port;
-      vw.ssl = self.doSsl;
-      ("doSsl = " + vw.ssl).print();
-      if (self.doSsl) {
+      vw.ssl = self.appSsl;
+      ("appSsl = " + vw.ssl).print();
+      if (self.appSsl) {
         vw.sslPath = assureCert(port);
       } elseIf(TS.notEmpty(self.httpBindAddress)) {
         vw.httpBindAddress = self.httpBindAddress;

@@ -105,7 +105,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
    
    setCamPortsRequest(request) Map {
-      String camPort = app.configManager.get("webApp.Cam.web.port");
+      String camPort = app.configManager.get("webApp.Cam.app.port");
       if (TS.notEmpty(camPort)) {
         return(CallBackUI.setElementsValuesResponse(Maps.from("fpPort", camPort, "fpExPort", camPort)));
       }

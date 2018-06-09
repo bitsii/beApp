@@ -2067,8 +2067,22 @@ class WebApp {
     }
   }
   
+  webPortGet() String {
+    String cval = params.getFirst(self.configPrefix + "web.port");
+    if (TS.isEmpty(cval)) {
+      cval = self.configManager.get(self.configPrefix + "web.port");
+    }
+    if (TS.notEmpty(cval)) { return(cval); }
+    return(self.appPort);
+  }
+  
   webProtoGet() String {
-    if (self.doSsl) {
+    String cval = params.getFirst(self.configPrefix + "web.proto");
+    if (TS.isEmpty(cval)) {
+      cval = self.configManager.get(self.configPrefix + "web.proto");
+    }
+    if (TS.notEmpty(cval)) { return(cval); }
+    if (self.appSsl) {
       return("https");
     }
     return("http");
@@ -2098,25 +2112,25 @@ class WebApp {
     return(an);
   }
   
-   doSslGet() Bool {
+   appSslGet() Bool {
       fields {
-        Bool doSsl;
+        Bool appSsl;
       }
-      if (undef(doSsl)) {
-        doSsls = params.getFirst(self.configPrefix + "web.ssl");
-        if (TS.isEmpty(doSsls)) {
-          String doSsls = self.configManager.get(self.configPrefix + "web.ssl");
-          if (TS.isEmpty(doSsls)) {
-            doSsls = "true";
+      if (undef(appSsl)) {
+        appSsls = params.getFirst(self.configPrefix + "app.ssl");
+        if (TS.isEmpty(appSsls)) {
+          String appSsls = self.configManager.get(self.configPrefix + "app.ssl");
+          if (TS.isEmpty(appSsls)) {
+            appSsls = "true";
             ifEmit(cs) {
-              doSsls = "false";
+              appSsls = "false";
             }
-            self.configManager.put(self.configPrefix + "web.ssl", doSsls);
+            self.configManager.put(self.configPrefix + "app.ssl", appSsls);
           }
         }
-        doSsl = Logic:Bools.fromString(doSsls);
+        appSsl = Logic:Bools.fromString(appSsls);
       }
-      return(doSsl);
+      return(appSsl);
     }
 
   pluginsSet(_plugins) {
@@ -2162,20 +2176,20 @@ class WebApp {
     }
   }
   
-  webPortGet() String {
+  appPortGet() String {
       fields {
         String intPort;
       }
       if (TS.isEmpty(intPort)) {
-        if (def(params) && def(params.getFirst(self.configPrefix + "web.port"))) {
-          return(params.getFirst(self.configPrefix + "web.port"));
+        if (def(params) && def(params.getFirst(self.configPrefix + "app.port"))) {
+          return(params.getFirst(self.configPrefix + "app.port"));
         }
-        intPort = self.configManager.get(self.configPrefix + "web.port");
+        intPort = self.configManager.get(self.configPrefix + "app.port");
         if (TS.isEmpty(intPort)) {
           Int intPorti = System:Random.getIntMax(30000);
           intPorti += 3000;
           intPort = intPorti.toString();
-          self.configManager.put(self.configPrefix + "web.port", intPort);
+          self.configManager.put(self.configPrefix + "app.port", intPort);
         }
       }
       return(intPort);

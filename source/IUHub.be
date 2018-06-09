@@ -103,7 +103,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       if (mode == "initialSetup") {
         log.log("initialSetup");
         
-        String intPort = app.configManager.get("web.port");
+        String intPort = app.configManager.get("app.port");
         
         Int toksz = System:Random.getIntMax(16);
         String token = System:Random.getString(toksz + 16);
@@ -124,7 +124,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         Int intPorti = System:Random.getIntMax(30000);
         intPorti += 3000;
         intPort = intPorti.toString();
-        app.configManager.put("web.port", intPort);
+        app.configManager.put("app.port", intPort);
         
         String defadd = Net:Gateway.defaultAddress;
         Net:Interface ni = Net:Interface.new();
