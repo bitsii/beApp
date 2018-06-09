@@ -2103,7 +2103,7 @@ class WebApp {
         Bool doSsl;
       }
       if (undef(doSsl)) {
-        doSsls = params.getFirst("webDoSsl");
+        doSsls = params.getFirst(self.configPrefix + "web.ssl");
         if (TS.isEmpty(doSsls)) {
           String doSsls = self.configManager.get(self.configPrefix + "web.ssl");
           if (TS.isEmpty(doSsls)) {
@@ -2167,8 +2167,8 @@ class WebApp {
         String intPort;
       }
       if (TS.isEmpty(intPort)) {
-        if (def(params) && def(params.getFirst("webPort"))) {
-          return(params.getFirst("webPort"));
+        if (def(params) && def(params.getFirst(self.configPrefix + "web.port"))) {
+          return(params.getFirst(self.configPrefix + "web.port"));
         }
         intPort = self.configManager.get(self.configPrefix + "web.port");
         if (TS.isEmpty(intPort)) {

@@ -219,6 +219,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <label for="fpfid">Select Service</label>
 <select name=fpFillin onchange='fpChange(this.form.fpFillin);return false;'>
 <option >(Manual Configuration)</option>
+<option>Let's Encrypt Setup</option>
 <option>IU WebCam motion detect webcam</option>
 <option>openHAB home automation</option>
 <option>Secure Shell remote command line (ssh)</option>
@@ -266,7 +267,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 </div>
 </div>
 
-<div id="setupDiv">
+<div id="setupDiv" style="display: none;">
 <form class="pure-form pure-form-aligned">
     <fieldset>
         <div class="pure-control-group">

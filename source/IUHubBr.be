@@ -780,6 +780,12 @@ use class IUHub:Eui {
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "$type$ SSH: ssh -p $port$ $ip$";
         HD.getElementById("fpDitty").innerHTML = "<p>ssh - <a href=\"https://duckduckgo.com/?q=ssh\">About Secure Shell</a>";
+      } elseIf (forService.begins("Let's Encrypt")) {
+        HD.getElementById("fpName").value = "Enable Let's Encrypt certificate generation";
+        HD.getElementById("fpPort").value = "80";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "<a href=\"http://$ip$:$port$/\" target=\"_blank\">$type$ Let's Encrypt</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://letsencrypt.org\">Let's Encrypt</a>";
       } elseIf (forService.begins("Shellinabox")) {
         HD.getElementById("fpName").value = "Shellinabox - remote command line in browser";
         HD.getElementById("fpPort").value = "4200";
