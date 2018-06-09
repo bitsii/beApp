@@ -69,7 +69,7 @@ use class Web:Server {
   init() {
     fields {
       Int port = 8080;
-      String httpBindAddress;
+      String appBindAddress;
       any app;
       Bool ssl = false;
       String sslPath;
@@ -132,8 +132,8 @@ use class Web:Server {
     }
     
     String locaddr;
-    if (TS.notEmpty(httpBindAddress)) {
-      locaddr = httpBindAddress;
+    if (TS.notEmpty(appBindAddress)) {
+      locaddr = appBindAddress;
     }
     
     emit(jv) {

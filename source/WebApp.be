@@ -75,9 +75,9 @@ use class App:RemoteWebApp(WebApp) {
       ("appSsl = " + vw.ssl).print();
       if (self.appSsl) {
         vw.sslPath = assureCert(port);
-      } elseIf(TS.notEmpty(self.httpBindAddress)) {
-        vw.httpBindAddress = self.httpBindAddress;
-        log.log("set httpBindAddress " + vw.httpBindAddress);
+      } elseIf(TS.notEmpty(self.appBindAddress)) {
+        vw.appBindAddress = self.appBindAddress;
+        log.log("set appBindAddress " + vw.appBindAddress);
       }
       vw.app = self;
       vw.gzipOutput = true;

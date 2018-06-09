@@ -2195,17 +2195,17 @@ class WebApp {
       return(intPort);
     }
     
-  httpBindAddressGet() String {
+  appBindAddressGet() String {
       fields {
-        String httpBindAddress;
+        String appBindAddress;
       }
-      if (TS.isEmpty(httpBindAddress)) {
-        if (def(params) && def(params.getFirst("httpBindAddress"))) {
-          return(params.getFirst("httpBindAddress"));
+      if (TS.isEmpty(appBindAddress)) {
+        if (def(params) && def(params.getFirst(self.configPrefix + "app.bindAddress"))) {
+          return(params.getFirst(self.configPrefix + "app.bindAddress"));
         }
-        httpBindAddress = self.configManager.get(self.configPrefix + "web.httpBindAddress");
+        appBindAddress = self.configManager.get(self.configPrefix + "app.bindAddress");
       }
-      return(httpBindAddress);
+      return(appBindAddress);
     }
   
   pathsGet() App:Paths {
