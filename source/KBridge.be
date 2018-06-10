@@ -359,8 +359,54 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       return(true);
     }
+    
+    prepRProxy() {
+      //--app.ssl false --app.port 2018 --web.proto https --web.port 2019 --app.bindAddress 127.0.0.1
+      app.configManager.put("app.ssl", "false");
+      app.configManager.put("web.proto", "https");
+      app.configManager.put("app.bindAddress", "127.0.0.1");
+      
+      String ap = app.configManager.get("app.port");
+      String wp = app.configManager.get("web.port");
+      
+      Int portI;
+      
+      if (TS.isEmpty(ap)) {
+        portI = System:Random.getIntMax(30000);
+        portI += 3000;
+        ap = portI.toString();
+        app.configManager.put("app.port", ap);
+      }
+      
+      if (TS.isEmpty(wp)) {
+        portI = System:Random.getIntMax(30000);
+        portI += 3000;
+        wp = portI.toString();
+        app.configManager.put("web.port", wp);
+      }
+      
+      Path adp = app.paths.dataPath.addStep("haproxy");
+      if (adp.file.exists!) {
+        adp.file.makeDirs();
+      }
+      
+      Path apa = app.paths.appPath;
+      Path hpt = apa.copy().addStep("haproxy.cfg");
+      String hpts = hpt.file.reader.open().readStringClose();
+      hpts = hpts.swap("WPORT", wp);
+      hpts = hpts.swap("APORT", ap);
+      
+      Path hpc = adp.copy().addStep("haproxy.cfg");
+      if (hpc.file.exists) { hpc.file.delete(); }
+      hpc.file.writer.open().writeStringClose(hpts);
+      
+      String hcmd = "App/KBridge/starthap.sh";
+      System:Command.new(hcmd).run();
+      
+    }
    
    start() {
+      prepRProxy();
       super.start();
       app.pluginsByName.get("Auth").nonAuthedRequests.put("initialSetupRequest");
       

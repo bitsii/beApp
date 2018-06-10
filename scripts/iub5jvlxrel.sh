@@ -68,6 +68,8 @@ cp scripts/upgrade.bat ../apprun/App/KBridge
 cp scripts/mpg123loop.sh ../apprun/App/KBridge
 cp scripts/stopmpg123loop.sh ../apprun/App/KBridge
 cp source/Konn.html ../apprun/App/KBridge
+cp source/haproxy.cfg ../apprun/App/KBridge
+cp scripts/starthap.sh ../apprun/App/KBridge
 cp extlibs/KBridge/* ../apprun/App/KBridge
 cp icons/* ../apprun/App/KBridge
 cp licenses/* ../apprun/App/KBridge
