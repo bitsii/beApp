@@ -95,6 +95,13 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
        return(name);
      }
      
+     restart() {
+       log.log("hub doing restart/exit appstop");
+       app.stop();
+       log.log("exit");
+       System:Process.exit(3);
+     }
+     
      handleCmd(Parameters params) Bool {
       String mode = params.getFirst("hubCmd");
       if (TS.isEmpty(mode)) {
@@ -145,7 +152,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   loadWcInner() {
     String wcs = app.configManager.get("hub.webConnect");
     if (TS.notEmpty(wcs)) {
-      log.log("deserializing wcs");
+      log.log("deserializing wcs " + wcs);
       WebConnect wc = WebConnect.new();
       wc.fromMap(Json:Unmarshaller.unmarshall(wcs));
       //log.log("after load ext port " + wc.externalPort);
@@ -160,7 +167,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
        internal = true;
      } else {
        if (def(wc)) {
-        internal = onSameNet(request.remoteAddress, wc.internalAddress);
+        internal = onSameNet(request.inputAddress, wc.internalAddress);
        } else {
         internal = false;
        }
@@ -763,7 +770,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
        internal = true;
      } else {
        if (def(wc)) {
-        internal = onSameNet(request.remoteAddress, wc.internalAddress);
+        internal = onSameNet(request.inputAddress, wc.internalAddress);
        } else {
         internal = false;
        }
@@ -1013,7 +1020,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
              }
             elseIf (wc.manualForward || (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink")))) {
               String dlUse = innerLinks;
-              outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+              if (TS.notEmpty(kv.value.get("konnLink"))) {
+                outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+              }
             } else {
               dlUse = outerLinks;
               if (internal) {

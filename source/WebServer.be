@@ -274,6 +274,14 @@ use class Web:ScriptRequest {
    }
    
    inputAddressGet() String {
+   
+     //("in inputaddress").print();
+     // for (String k in self.inputHeaderKeys) {
+     // ("Header key " + k).print();
+     //}
+     //X-Forwarded-For
+     //String xff = request.getInputHeader("X-Forwarded-For");
+   
      String addr = getInputHeader("X-Forwarded-For");
       if (TS.isEmpty(addr) || addr.lower() == "unknown") {
           addr = getInputHeader("WL-Proxy-Client-IP");
@@ -290,6 +298,9 @@ use class Web:ScriptRequest {
       if (TS.isEmpty(addr) || addr.lower() == "unknown") {  
           addr = self.remoteAddress;
       }
+      //if (TS.notEmpty(addr)) {
+      //  ("returning addr " + addr).print();
+      //}
       return(addr);
    }
    

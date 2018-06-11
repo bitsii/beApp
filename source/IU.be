@@ -9,6 +9,12 @@ use IO:File;
 use System:Random;
 local use IU:WebConnect;
 
+emit(jv) {
+"""
+import java.net.InetAddress;
+"""
+}
+
 class IU:WebConnect {
 
   new() self {
@@ -939,7 +945,17 @@ class Upnp {
       
       return(false);
     }
-            
+   
+    addressForName(String name) String {
+       String address;
+       emit(jv) {
+       """
+       InetAddress address = InetAddress.getByName(beva_name.bems_toJvString()); 
+       bevl_address = new $class/Text:String$(address.getHostAddress().getBytes("UTF-8"));
+       """
+       }
+       return(address);
+    }
     
 
 }

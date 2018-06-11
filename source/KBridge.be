@@ -278,6 +278,110 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     return(resMap);
   }
+  
+  startLes() Map {
+    Json:Unmarshaller unmar = Json:Unmarshaller.new();
+    Map lss = app.configManager.getMap("LinkSession.");
+    for (auto kv in lss) {
+       Map ds = unmar.unmarshall(kv.value);
+       Map res = startLe(ds);
+     }
+     return(res);
+     
+  }
+  
+  stopLes() Map {
+    Json:Unmarshaller unmar = Json:Unmarshaller.new();
+    Map lss = app.configManager.getMap("LinkSession.");
+    for (auto kv in lss) {
+       Map ds = unmar.unmarshall(kv.value);
+       Map res = stopLe(ds);
+     }
+     return(res);
+     
+  }
+  
+  startLe(Map ds) Map {
+     loadWc();
+     WebConnect wc = app.plugin.wcol.o;
+     Json:Unmarshaller unmar = Json:Unmarshaller.new();
+     Json:Marshaller mar = Json:Marshaller.new();
+    try {
+      String destUrl = ds["destUrl"];
+      log.log("starting le to " + destUrl);
+      Map argOut = Map.new();
+      argOut["action"] = "startLeRequest";
+      argOut["pageToken"] = ds["pageToken"];
+      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+      argOut["konnName"] = wc.konnName;
+      Web:Client:CertificateManager.validateHosts = false;
+      Web:Client:CertificateManager.validateCertificates = false;
+      //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
+      Web:Client client = Web:Client.new();
+      String payload = Json:Marshaller.marshall(argOut);
+      log.log("payload " + payload);
+      client.outputHeaders.put("referer", destUrl);
+      client.url = destUrl;
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      client.close();
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        log.log("!!! got res from startle  " + res);
+      }
+      //resetCertMan(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
+    } catch (any e) {
+      //resetCertMan(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
+      log.log("got exception during startle");
+      log.log(e.toString());
+    }
+    return(resMap);
+  }
+  
+  stopLe(Map ds) Map {
+     loadWc();
+     WebConnect wc = app.plugin.wcol.o;
+     Json:Unmarshaller unmar = Json:Unmarshaller.new();
+     Json:Marshaller mar = Json:Marshaller.new();
+    try {
+      String destUrl = ds["destUrl"];
+      log.log("stop le to " + destUrl);
+      Map argOut = Map.new();
+      argOut["action"] = "stopLeRequest";
+      argOut["pageToken"] = ds["pageToken"];
+      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+      argOut["konnName"] = wc.konnName;
+      Web:Client:CertificateManager.validateHosts = false;
+      Web:Client:CertificateManager.validateCertificates = false;
+      //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
+      Web:Client client = Web:Client.new();
+      String payload = Json:Marshaller.marshall(argOut);
+      log.log("payload " + payload);
+      client.outputHeaders.put("referer", destUrl);
+      client.url = destUrl;
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      client.close();
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        log.log("!!! got res from startle  " + res);
+      }
+      //resetCertMan(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
+    } catch (any e) {
+      //resetCertMan(ds["certificatePrint"]);
+      Web:Client:CertificateManager.validateHosts = true;
+      Web:Client:CertificateManager.validateCertificates = true;
+      log.log("got exception during startle");
+      log.log(e.toString());
+    }
+    return(resMap);
+  }
    
    checkUpgrade() {
     log.log("in checkupgrade");
@@ -334,6 +438,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String mode = params.getFirst("bridgeCmd");
       if (TS.isEmpty(mode)) {
         return(super.handleCmd(params));
+      }
+      if (mode == "startLe") {
+        startLes();
+      }
+      if (mode == "stopLe") {
+        stopLes();
       }
       if (mode == "routerLink") {
         routerLink(params.getFirst("konUrl"), params.getFirst("auser"), params.getFirst("konUser"), params.getFirst("konPass"));
@@ -771,10 +881,17 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("upnp doForward done");
       
       List au = List.new();
+      if (TS.notEmpty(wc.internalUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.internalUrl);
+        auto parts = wc.internalUrl.split(":");
+        String fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs; 
+      }
       if (TS.notEmpty(wc.externalUrl)) {
         app.pluginsByName.get("Auth").authedUrls.put(wc.externalUrl);
-        auto parts = wc.externalUrl.split(":");
-        String fs = parts[0] + ":" + parts[1];
+        parts = wc.externalUrl.split(":");
+        fs = parts[0] + ":" + parts[1];
         log.log("fs " + fs);
         au += fs;
       }

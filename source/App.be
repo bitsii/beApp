@@ -817,7 +817,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       log.log("putting embeddedLogin");
       app.configManager.put("auth.embeddedLogin", arg["accountName"]);
     }
-    request.putSession("ip", request.remoteAddress);
+    request.putSession("ip", request.inputAddress);
     if (TS.notEmpty(arg["sessionName"])) {
       request.putSession("session.name", arg["sessionName"]);
     }
@@ -939,7 +939,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     String ref = request.getInputHeader("referer");
     String uri = request.uri;
     String la = request.localAddress;
-    String ra = request.remoteAddress;
+    String ra = request.inputAddress;
     if (true) {
       if (def(org)) {
         log.log("orgin " + org);
@@ -962,7 +962,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         return(true);
     }
     
-    String ip = request.remoteAddress;
+    String ip = request.inputAddress;
     String sip = request.getSession("ip");
     
     Int ns = Time:Interval.now().seconds;
@@ -1112,7 +1112,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
             if (a.checkPass(lp)) {
               log.log("svc login ok");
               request.putSession("account.name", ln);
-              request.putSession("ip", request.remoteAddress);
+              request.putSession("ip", request.inputAddress);
               goodLogin(request);
               accountName = ln;
             } else {
@@ -2170,6 +2170,7 @@ class WebApp {
         pl.stop();
       }
     }
+    closeKvDbs();
     if (def(appDb)) {
       appDb.close();
       kvDbs = Map.new();
@@ -2251,6 +2252,23 @@ class WebApp {
       appDb.open();
     }
     return(appDb);
+  }
+  
+  closeKvDbs() {
+    log.log("closing kvdbs");
+    try {
+      lock.lock();
+      //KvDb kdb = kvDbs.get(name);
+      for (any kv in kvDbs) {
+        kv.value.close();
+      }
+      kvDbs = Map.new();
+      lock.unlock();
+    } catch (any e) {
+      lock.unlock();
+      log.log("exception during closeKvDbs");
+      if (def(e)) { log.log("ex " + e); }
+    }
   }
   
   getKvDb(String name) KvDb {
