@@ -175,8 +175,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("sldss " + dss);
         app.configManager.put("LinkSession." + auser + "!" + destUrl, dss);
         updateMyLink(app.plugin.wcol.o, ds);
+        updateMyLinks();
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
         doForward(); //includes an update
+        
+        WebConnect wc = app.plugin.wcol.o;
+        app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+        app.plugin.wcol.o = wc;
+        oapp.plugin.wcol.o = wc;
+        doForward();
+        
       }
       //resetCertMan(ds["certificatePrint"]);
     } catch(any e) {
