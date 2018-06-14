@@ -314,7 +314,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      loadWc();
      WebConnect wc = app.plugin.wcol.o;
      //getCert or renewCert domain email
-     String cmd = "./App/KBridge/getLE.sh getCert " + wc.konnAddress.lower() + " " + app.configManager.get("router.accountName");
+     String cmd = "./App/KBridge/getLE.sh getCert " + app.configManager.get("router.accountName") + " " + wc.konnAddress.lower();
      log.log("running " + cmd);
      String res = System:Command.new(cmd).open().output.readStringClose();
      log.log("res " + res);

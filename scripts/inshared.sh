@@ -94,10 +94,10 @@ if [ "$OSTYPE" == "Linux" ]; then
 
   echo "Installing required additional system software"
   apt -qq --assume-yes install openjdk-8-jdk
-  apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen
+  apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
 
   apt -qq --assume-yes install openjdk-8-jdk
-  apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen
+  apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
 
   #apt install oracle-java8-jdk 
   #update-java-alternatives -s jdk-8-oracle-arm32-vfp-hflt
