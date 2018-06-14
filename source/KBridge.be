@@ -183,6 +183,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
         app.plugin.wcol.o = wc;
         oapp.plugin.wcol.o = wc;
+        app.configManager.put("router.accountName", account);
         doForward();
         
       }
@@ -307,6 +308,17 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      }
      return(res);
      
+  }
+  
+  setupLe() Map {
+     loadWc();
+     WebConnect wc = app.plugin.wcol.o;
+     //getCert or renewCert domain email
+     String cmd = "./App/KBridge/getLE.sh getCert " + wc.konnAddress.lower() + " " + app.configManager.get("router.accountName");
+     log.log("running " + cmd);
+     String res = System:Command.new(cmd).open().output.readStringClose();
+     log.log("res " + res);
+     return(null);
   }
   
   startLe(Map ds) Map {
@@ -446,6 +458,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String mode = params.getFirst("bridgeCmd");
       if (TS.isEmpty(mode)) {
         return(super.handleCmd(params));
+      }
+      if (mode == "setupLe") {
+        //email, 
+        setupLe();
       }
       if (mode == "startLe") {
         startLes();

@@ -99,6 +99,9 @@ cp source/MOCAM.conf ../apprun/App/KBridge
 #apps
 cp scripts/DnsEnable.sh ../apprun/App/KBridge
 cp scripts/DnsDisable.sh ../apprun/App/KBridge
+cp scripts/LEEnable.sh ../apprun/App/KBridge
+cp scripts/LEDisable.sh ../apprun/App/KBridge
+cp scripts/getLE.sh ../apprun/App/KBridge
 cp scripts/startiubn.sh ../apprun/App/KBridge
 cp scripts/iubncmdrs.sh ../apprun/App/KBridge
 

@@ -90,7 +90,7 @@ if [ "$OSTYPE" == "Linux" ]; then
 
   echo "Installing required additional system software"
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
-  apt -qq --assume-yes install mpg123 shellinabox socat haproxy
+  apt -qq --assume-yes install mpg123 shellinabox haproxy certbot
 
   echo "Installing required additional system software"
   apt -qq --assume-yes install openjdk-8-jdk
