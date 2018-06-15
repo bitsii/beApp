@@ -676,6 +676,19 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        return(null);
    }
    
+   assureLeFwd() {
+     WebConnect wc = app.plugin.wcol.o;
+     if (wc.getServices().has("80") || TS.notEmpty(app.configManager.get("le.assuredOnce"))) {
+      log.log("has / has had le fwd");
+     } else {
+       wc.putService("Enable Let's Encrypt certificate generation", "80", "", "<a href=\"http://$ip$:$port$/\" target=\"_blank\">$type$ Let's Encrypt</a>");
+       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+       app.plugin.wcol.o = wc;
+       oapp.plugin.wcol.o = wc;
+       app.configManager.put("le.assuredOnce", "true")
+     }
+   }
+   
    updateForwardRequest(String fpName, String port, String exPort, String urlPat, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        WebConnect wc = app.plugin.wcol.o;
@@ -837,6 +850,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     
      doForwardInner() Bool {
+      assureLeFwd();
       Bool success = true;
       Bool doUpnpForward = self.upnpEnabled;
       Bool onPublicNet = self.onPublicNet;
