@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd apprun
-
 export MYPWD=`pwd`
 
 export MYHN=`hostname`

@@ -73,7 +73,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
 
      new() self {
        fields {
-          any app;
           any oapp;
           String homePage = "/App/" + self.name + "/Konn.html";
           OLocker wcol = OLocker.new();

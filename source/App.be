@@ -2076,6 +2076,10 @@ class WebApp {
     return(self.appPort);
   }
   
+  webPortSet(String _webPort) this {
+    self.configManager.put(self.configPrefix + "web.port", _webPort);
+  }
+  
   webProtoGet() String {
     String cval = params.getFirst(self.configPrefix + "web.proto");
     if (TS.isEmpty(cval)) {
@@ -2086,6 +2090,10 @@ class WebApp {
       return("https");
     }
     return("http");
+  }
+  
+  webProtoSet(String _webProto) this {
+    self.configManager.put(self.configPrefix + "web.proto", _webProto);
   }
   
   appNameGet() String {
@@ -2131,6 +2139,11 @@ class WebApp {
         appSsl = Logic:Bools.fromString(appSsls);
       }
       return(appSsl);
+    }
+    
+    appSslSet(Bool _appSsl) this {
+      appSsl = _appSsl;
+      self.configManager.put(self.configPrefix + "app.ssl", appSsl.toString());
     }
 
   pluginsSet(_plugins) {
@@ -2196,6 +2209,11 @@ class WebApp {
       return(intPort);
     }
     
+  appPortSet(String _intPort) this {
+    intPort = _intPort;
+    self.configManager.put(self.configPrefix + "app.port", intPort);
+    }
+    
   appBindAddressGet() String {
       fields {
         String appBindAddress;
@@ -2208,6 +2226,12 @@ class WebApp {
       }
       return(appBindAddress);
     }
+  
+  appBindAddressSet(String _appBindAddress) this {
+      appBindAddress = _appBindAddress;
+      self.configManager.put(self.configPrefix + "app.bindAddress", appBindAddress);
+    }
+  
   
   pathsGet() App:Paths {
     fields {

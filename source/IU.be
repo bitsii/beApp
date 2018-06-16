@@ -1076,5 +1076,51 @@ use class IU:IUPlugin(App:AjaxPlugin) {
      log.log("doing restart/exit");
      System:Process.exit(3);
    }
+   
+   fielder() {
+    fields {
+      any app;
+    }
+   
+   }
+   
+   prepReverseProxy() {
+      //--app.ssl false --app.port 2018 --web.proto https --web.port 2019 --app.bindAddress 127.0.0.1
+      app.appSsl = false;
+      app.webProto = "https";
+      
+      app.appBindAddress = "127.0.0.1";
+      
+      String ap = app.appPort;
+      String wp = app.webPort;
+      
+      Int portI;
+      
+      if (wp == ap) { //need to differ for proxy
+        portI = System:Random.getIntMax(30000);
+        portI += 3000;
+        wp = portI.toString();
+        app.webPort = wp;
+      }
+      
+      Path adp = app.paths.dataPath.addStep(app.configPrefix + "haproxy");
+      if (adp.file.exists!) {
+        adp.file.makeDirs();
+      }
+      
+      Path apa = app.paths.appPath;
+      Path hpt = apa.copy().addStep("haproxy.cfg");
+      String hpts = hpt.file.reader.open().readStringClose();
+      hpts = hpts.swap("WPORT", wp);
+      hpts = hpts.swap("APORT", ap);
+      
+      Path hpc = adp.copy().addStep("haproxy.cfg");
+      if (hpc.file.exists) { hpc.file.delete(); }
+      hpc.file.writer.open().writeStringClose(hpts);
+      
+      String hcmd = "App/KBridge/starthap.sh " + adp.toString();
+      System:Command.new(hcmd).run();
+      
+    }
 
 }

@@ -799,12 +799,6 @@ use class IUHub:Eui {
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ IU WebCam</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/ioturl/ioturl/wikis/home\">IU WebCam on GitLab</a>";
         HC.callApp(Lists.from("setCamPortsRequest"));
-      } elseIf (forService.begins("openHAB")) {
-        HD.getElementById("fpName").value = "openHAB - Home Automation";
-        HD.getElementById("fpPort").value = "6415";
-        HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ openHab</a>";
-        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"http://www.openhab.org/\">openHAB Site</a>";
       } elseIf (forService.begins("MS Remote")) {
         HD.getElementById("fpName").value = "MS Remote Desktop";
         HD.getElementById("fpPort").value = "3389";

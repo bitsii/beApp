@@ -220,8 +220,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <select name=fpFillin onchange='fpChange(this.form.fpFillin);return false;'>
 <option >(Manual Configuration)</option>
 <option>Let's Encrypt Setup</option>
-<option>IU WebCam motion detect webcam</option>
-<option>openHAB home automation</option>
+<option>IU WebCam motion detecting webcam</option>
 <option>Secure Shell remote command line (ssh)</option>
 <option>Shellinabox command line over web</option>
 <option>MS Remote Desktop (rdp)</option>
@@ -420,6 +419,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <div class="pure-u-23-24">
     <!--<p>Local DNS - for seamless access to services by dns name <span style="color:green"><a style="display: none;" id="DnsAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="DnsAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Dns');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Dns');return false;">Disable</a></p>-->
     <p>Let's Encrypt - get a free encryption certificate accepted by browsers and applications <span style="color:green"><a style="display: none;" id="LEAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="LEAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'LE');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'LE');return false;">Disable</a></p>
+    <p>IU WebCam - motion detecting webcam <span style="color:green"><a style="display: none;" id="CamAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="CamAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Cam');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Cam');return false;">Disable</a></p>
     </div>
     </div>
     </div>

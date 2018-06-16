@@ -59,9 +59,9 @@ cp scripts/upgrade.sh ../apprun/App/KBridge
 cp scripts/upgrade2.sh ../apprun/App/KBridge
 cp scripts/postupgrade.sh ../apprun/App/KBridge
 cp scripts/startiuh.sh ../apprun/App/KBridge
-cp scripts/startiubc.sh ../apprun/App/KBridge
-cp scripts/startiuboh.sh ../apprun/App/KBridge
-cp scripts/iuhrun.sh ../apprun/App/KBridge
+cp scripts/startball.sh ../apprun/App/KBridge
+cp scripts/startcam.sh ../apprun/App/KBridge
+cp scripts/startbridge.sh ../apprun/App/KBridge
 cp scripts/iuhcmdrs.sh ../apprun/App/KBridge
 cp scripts/iuhcmd.sh ../apprun/App/KBridge
 cp scripts/upgrade.bat ../apprun/App/KBridge
@@ -73,13 +73,6 @@ cp scripts/starthap.sh ../apprun/App/KBridge
 cp extlibs/KBridge/* ../apprun/App/KBridge
 cp icons/* ../apprun/App/KBridge
 cp licenses/* ../apprun/App/KBridge
-
-#oh
-cp scripts/iupohcmdrs.sh ../apprun/App/KBridge
-cp scripts/iupohcmd.sh ../apprun/App/KBridge
-cp scripts/startoh.sh ../apprun/App/KBridge
-cp scripts/startohinner.sh ../apprun/App/KBridge
-cp scripts/startiupoh.sh ../apprun/App/KBridge
 
 #pure 
 mkdir -p ../apprun/App/KBridge/css/layouts
@@ -101,15 +94,11 @@ cp scripts/DnsEnable.sh ../apprun/App/KBridge
 cp scripts/DnsDisable.sh ../apprun/App/KBridge
 cp scripts/LEEnable.sh ../apprun/App/KBridge
 cp scripts/LEDisable.sh ../apprun/App/KBridge
+cp scripts/CamEnable.sh ../apprun/App/KBridge
+cp scripts/CamDisable.sh ../apprun/App/KBridge
 cp scripts/getLE.sh ../apprun/App/KBridge
-cp scripts/startiubn.sh ../apprun/App/KBridge
-cp scripts/iubncmdrs.sh ../apprun/App/KBridge
 
-#cd ../apprun
-#ikvmc -out:App/KBridge/kb.exe App/KBridge/*.jar -target:exe -main:be.BEX_E
-#cd ../ioturl
-#./scripts/iubikrun.sh $*
-
-./scripts/iub5jvrun.sh $*
+cd ../apprun
+./App/KBridge/iuhcmd.sh --appType server $*
 
 #./scripts/iubrel.sh

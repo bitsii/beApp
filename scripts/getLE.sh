@@ -40,6 +40,6 @@ if [ -e "fullchain.pem" ] && [ -e "privkey.pem" ]; then
   rm -f fullchain.pem
   rm -f privkey.pem
 
-  ./App/KBridge/starthap.sh
+  ./App/KBridge/starthap.sh Data/KBridge/haproxy
 
 fi

@@ -146,6 +146,7 @@ wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/
 chmod +x *.sh
 
 cd $INSDIR
+mkdir apprun/tmp
 
 if [ "$OSTYPE" == "Linux" ]; then
   #chown
@@ -153,17 +154,19 @@ if [ "$OSTYPE" == "Linux" ]; then
   chown -R $INSUSER tmp
 fi
 
-#su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --hubCmd saveLocalUrl --urlFile localUrl.txt"
+cd apprun
+
+#su $INSUSER -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd saveLocalUrl --urlFile localUrl.txt"
 
 if [ "$OSTYPE" == "Linux" ]; then
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --authCmd putAccount --user $INUSR --pass $INPASS --perms admin"
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key deviceName --value $INDNAME"
+  su $INSUSER -c "./App/KBridge/iuhcmd.sh --appType cmd --authCmd putAccount --user $INUSR --pass $INPASS --perms admin"
+  su $INSUSER -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key deviceName --value $INDNAME"
   if [ "$PRIVATENET" != "n" ]; then
-    su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value true"
-    su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value false"
+    su $INSUSER -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value true"
+    su $INSUSER -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value false"
   else
-    su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
-    su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
+    su $INSUSER -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
+    su $INSUSER -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
     cat /etc/ssh/sshd_config  | grep -v "AllowTcpForwarding " | grep -v "GatewayPorts" > tmp/stadd
     echo "AllowTcpForwarding yes" >> tmp/stadd
     echo "GatewayPorts yes" >> tmp/stadd
@@ -171,25 +174,25 @@ if [ "$OSTYPE" == "Linux" ]; then
     service ssh restart
     service sshd restart
   fi
-  su $INSUSER -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.konnectii.com --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
-  su $INSUSER -c "./apprun/App/KBridge/startiuh.sh"
+  su $INSUSER -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.konnectii.com --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
+  su $INSUSER -c "./App/KBridge/startball.sh"
 fi
 
 if [ "$OSTYPE" == "Darwin" ]; then
-  bash -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --authCmd putAccount --user $INUSR --pass $INPASS --perms admin"
-  bash -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key deviceName --value $INDNAME"
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --authCmd putAccount --user $INUSR --pass $INPASS --perms admin"
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key deviceName --value $INDNAME"
   if [ "$PRIVATENET" != "n" ]; then
-    bash -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value true"
-    bash -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value false"
+    bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value true"
+    bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value false"
   else
-    bash -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
-    bash -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
+    bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
+    bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
   fi
-  bash -c "./apprun/App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.konnectii.com --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.konnectii.com --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
   mkdir tmp
   echo "@reboot $INSDIR/apprun/App/KBridge/startiuh.sh" > tmp/stadd
   crontab tmp/stadd
-  bash -c "./apprun/App/KBridge/startiuh.sh"
+  bash -c "./App/KBridge/startball.sh"
 fi
 
 echo "service is starting now, it may take a few moments to come up"

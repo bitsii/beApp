@@ -66,10 +66,10 @@ cp scripts/camclean.sh ../apprun/App/IUCam
 cp scripts/caminstall.sh ../apprun/App/IUCam
 cp scripts/iuccmd.sh ../apprun/App/IUCam
 cp scripts/iuccmdrs.sh ../apprun/App/IUCam
-cp scripts/startiuc.sh ../apprun/App/IUCam
-cp scripts/iucrun.sh ../apprun/App/IUCam
 cp source/MOCAM.conf ../apprun/App/IUCam
+cp source/haproxy.cfg ../apprun/App/IUCam
 
-./scripts/iuc5jvrun.sh $*
+cd ../apprun
+./App/IUCam/iuccmd.sh --appType server $*
 
 #./scripts/iucrel.sh

@@ -207,7 +207,6 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
 
      new() self {
        fields {
-          any app;
           String name = "IUCam";
           String dataName = "KBridge";
           String homePage = "/App/IUCam/IUCam.html";
@@ -232,6 +231,7 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
      }
      
     start() {
+      prepReverseProxy();
       bg.app = app;
       abg.startDelay = Time:Interval.new(10, 0);
       abg.repeatDelay = Time:Interval.new(1000, 0);

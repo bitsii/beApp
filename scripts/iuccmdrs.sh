@@ -2,8 +2,6 @@
 
 killall motion
 
-cd apprun
-
 export MYPWD=`pwd`
 
 export MYHN=`hostname`
