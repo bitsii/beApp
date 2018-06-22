@@ -15,9 +15,31 @@ echo ""
 echo "Welcome to Konnectii installation.  If you make a mistake hit Ctrl-C to halt"
 echo "and then rerun the script to restart"
 echo "" 
+echo "Would you like to complete your setup in your web browser or do you prefer to complete setup" 
+echo "in the terminal / via the text interface?"
+echo "choose b for local browser setup (if you are logged into a graphical user interface on the"
+echo "device you are setting up), n to receive a web address to complete setup using a browser on a different"
+echo "device on the same network, or t to continue with a text/terminal setup."
+echo -n "please enter b, n, or t (followed by enter key): "
+read inbort
+
+if [ "$inbort" == "b" ]; then
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd assurePorts"
+  bash -c "./App/KBridge/startball.sh"
+  sleep 5
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd initialSetup"
+  exit 0
+elif [ "$inbort" == "n" ]; then
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd assurePorts"
+  bash -c "./App/KBridge/startball.sh"
+  sleep 5
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd initialRemoteSetup"
+  exit 0
+fi
+
 echo "Are you installing on a host on a private network (in a home or office) or "
 echo "on a host directly on the internet (vps, cloud, etc)?"
-echo -n "y for private network, n for directly on internet (followed by enter): "
+echo -n "y for private network, n for directly on internet: "
 read inprivatenet
 echo ""
 

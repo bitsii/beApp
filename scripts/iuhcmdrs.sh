@@ -12,6 +12,8 @@ export MYPWD=`pwd`
 
 export MYHN=`hostname`
 
+mkdir -p Data/KBridge
+
 until java -classpath "App/KBridge/*" be.BEX_E --plugin App:PublicReadPlugin --plugin App:AuthPlugin --plugin App:FileManagerPlugin --plugin IUBridge:BridgePlugin --plugin App:ConfigPlugin --appPlugin KBridge --appType server $*; do
     echo "Exited code $?.  Will restart.." >&2
     sleep 1

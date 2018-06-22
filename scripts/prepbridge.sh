@@ -49,7 +49,8 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
   apt -qq --assume-yes install mpg123 shellinabox haproxy certbot
 
-  apt -qq --assume-yes install openjdk-9-jdk-headless
+  #apt -qq --assume-yes install openjdk-9-jdk-headless
+  apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
   
   python3-pip hass
@@ -57,7 +58,8 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
   apt -qq --assume-yes install mpg123 shellinabox haproxy certbot
   
-  apt -qq --assume-yes install openjdk-9-jdk-headless
+  #apt -qq --assume-yes install openjdk-9-jdk-headless
+  apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
   
   python3-pip hass

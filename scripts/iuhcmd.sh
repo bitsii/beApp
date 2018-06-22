@@ -12,5 +12,7 @@ export MYPWD=`pwd`
 
 export MYHN=`hostname`
 
+mkdir -p Data/KBridge
+
 java -classpath "App/KBridge/*" be.BEX_E --plugin App:PublicReadPlugin --plugin App:AuthPlugin --plugin App:FileManagerPlugin --plugin IUBridge:BridgePlugin --plugin App:ConfigPlugin --appPlugin KBridge $*
 

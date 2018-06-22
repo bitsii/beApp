@@ -1055,6 +1055,14 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       return(false);
     }
     
+    pref = "http://";
+    log.log("prefix " + pref);
+    intPort = app.appPort;
+    if (ref.begins(pref + "127.0.0.1:" + intPort) || ref.begins(pref + "localhost:" + intPort)) {
+      //log.log("icc false localhost");
+      return(false);
+    }
+    
 
     //log.log("isCrossSite true not begins " + la + " " + ref);
     return(true);

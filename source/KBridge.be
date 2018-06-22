@@ -56,7 +56,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       App:Background bfw = App:Background.new();
       //App:Background bup = App:Background.new();
       String profile = "bridge";
-      String defaultUpnpF = "true";
+      String defaultUpnpF = "false";
      }
      super.new();
      
@@ -736,6 +736,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("stok passed");
       
       self.deviceName = devName;
+      
+      app.configManager.put("doUpnpForward", "true");
       
       Account a = Account.new();
       a.user = user;
