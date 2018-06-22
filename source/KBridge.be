@@ -631,7 +631,31 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        return(null);
    }
    
-   assureLeFwd() {
+   assureCamPort() {
+     if (TS.isEmpty(app.configManager.get("webApp.Cam.web.port"))) {
+      Int intPorti = System:Random.getIntMax(30000);
+      intPorti += 3000;
+      app.configManager.put("webApp.Cam.web.port", intPorti.toString());
+     }
+     String cport = app.configManager.get("webApp.Cam.web.port");
+     WebConnect wc = app.plugin.wcol.o;
+     if (wc.getServices().has(cport)) {
+      log.log("has / has had cam service");
+     } else {
+       wc.putService("IU WebCam - webcam with motion", cport, cport, "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ IU WebCam</a>");
+       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+       app.plugin.wcol.o = wc;
+       oapp.plugin.wcol.o = wc;
+       doForward();
+     }
+   }
+   
+   assurePorts() {
+     if (TS.isEmpty(app.configManager.get("webApp.Cam.web.port"))) {
+      Int intPorti = System:Random.getIntMax(30000);
+      intPorti += 3000;
+      app.configManager.put("webApp.Cam.web.port", intPorti.toString());
+     }
      WebConnect wc = app.plugin.wcol.o;
      if (wc.getServices().has("80") || TS.notEmpty(app.configManager.get("le.assuredOnce"))) {
       log.log("has / has had le fwd");
@@ -805,7 +829,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     
      doForwardInner() Bool {
-      assureLeFwd();
+      assurePorts();
       Bool success = true;
       Bool doUpnpForward = self.upnpEnabled;
       Bool onPublicNet = self.onPublicNet;
@@ -983,6 +1007,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         throw(Alert.new("Must be administrator"));
       }
       log.log("enabling app");
+      if (appName == "Cam") {
+        assureCamPort();
+      }
       app.configManager.put("app." + appName, "enabled");
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
       System:Command.new(cmdPath).run();

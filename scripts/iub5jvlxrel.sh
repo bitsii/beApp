@@ -52,9 +52,11 @@ find ../abe-pl/system -name "*.class" -exec rm {} \;
 cp ../apprun/App/KBridge/Base/target/js/be/BEX_E.js ../apprun/App/KBridge/IUHub_BEX_E.js
 cp scripts/upgrade.bat ../apprun/App/KBridge
 cp scripts/postupgrade.bat ../apprun/App/KBridge
-cp scripts/inshared.sh ../apprun/App/KBridge
-cp scripts/apinstall.sh ../apprun/App/KBridge
-cp scripts/bridgeinstall.sh ../apprun/App/KBridge
+cp scripts/setupbridge.sh ../apprun/App/KBridge
+cp scripts/prepbridge.sh ../apprun/App/KBridge
+cp scripts/setupbridge2.sh ../apprun/App/KBridge
+cp source/README_INSTALL.txt ../apprun/App/KBridge
+cp scripts/installbridge.sh ../apprun/App/KBridge
 cp scripts/upgrade.sh ../apprun/App/KBridge
 cp scripts/upgrade2.sh ../apprun/App/KBridge
 cp scripts/postupgrade.sh ../apprun/App/KBridge

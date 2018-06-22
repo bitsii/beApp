@@ -717,8 +717,8 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      if (TS.notEmpty(path)) {
        Path dpath = Path.apNew("App/KBridge.zip");
        File dirFile = File.apNew(path);
-       if (path.ends("KBridge.zip")!) {
-        throw(Alert.new("upgrade file must be named KBridge.zip and must be a bridge installer/upgrade zip file"));
+       if (dirFile.path.steps.last.begins("KBridge")!) {
+        throw(Alert.new("upgrade file must be named KBridge*.zip and must be a bridge installer/upgrade zip file"));
        }
        any e;
        try {
@@ -949,7 +949,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
            outerLinks += "<p>" += wc.konnLink += "</p>";
          } else {
            dlUse = outerLinks;
-           outerLinks += "<p>" += links.first += "</p>";
+           if (TS.notEmpty(links.first)) {
+             outerLinks += "<p>" += links.first += "</p>";
+           }
          }
          if (TS.notEmpty(wc.konnLink)) {
            dlUse += "<p>" += wc.konnLink += "</p>";

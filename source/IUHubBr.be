@@ -778,7 +778,7 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "Secure Shell, remote command line";
         HD.getElementById("fpPort").value = "22";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "$type$ SSH: ssh -p $port$ $ip$";
+        HD.getElementById("fpPattern").value = "$type$ SSH: ssh -p $port$ user@$ip$";
         HD.getElementById("fpDitty").innerHTML = "<p>ssh - <a href=\"https://duckduckgo.com/?q=ssh\">About Secure Shell</a>";
       } elseIf (forService.begins("Let's Encrypt")) {
         HD.getElementById("fpName").value = "Enable Let's Encrypt certificate generation";

@@ -63,7 +63,7 @@ cp scripts/getcams.bat ../apprun/App/IUCam
 cp scripts/getcams.sh ../apprun/App/IUCam
 cp scripts/motionrun.sh ../apprun/App/IUCam
 cp scripts/camclean.sh ../apprun/App/IUCam
-cp scripts/caminstall.sh ../apprun/App/IUCam
+cp scripts/installcam.sh ../apprun/App/IUCam
 cp scripts/iuccmd.sh ../apprun/App/IUCam
 cp scripts/iuccmdrs.sh ../apprun/App/IUCam
 cp source/MOCAM.conf ../apprun/App/IUCam

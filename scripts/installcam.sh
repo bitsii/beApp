@@ -1,15 +1,11 @@
 #!/bin/bash
 
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root, try running the command 'sudo $0'"
+if [ "$EUID" -eq 0 ]
+  then echo "Please don't run as root run as user who the app will run as"
   exit
 fi
 
-if [ -n "$SUDO_USER" ]; then
-  export INSUSER="$SUDO_USER"
-else
-  export INSUSER="$USER"
-fi
+export INSUSER="$USER"
 
 export INSDIR=`echo $(getent passwd $INSUSER )| cut -d : -f 6`
 export IZDIR=`dirname $0`
@@ -35,11 +31,5 @@ wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/eclipse/j
 chmod +x *.sh
 
 cd $INSDIR
-
-if [ "$OSTYPE" == "Linux" ]; then
-  #chown
-  chown -R $INSUSER apprun
-  chown -R $INSUSER tmp
-fi
 
 echo ""
