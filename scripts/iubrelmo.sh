@@ -29,4 +29,4 @@ cd KBridge
 
 mv -f ../KBridgeMO.zip ../../..
 
-cd ../../../ioturl
+cd ../../../edgii

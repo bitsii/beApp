@@ -29,4 +29,4 @@ cd IUCam
 
 mv -f ../IUCam.zip ../../..
 
-cd ../../../ioturl
+cd ../../../edgii

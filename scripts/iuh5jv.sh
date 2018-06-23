@@ -11,34 +11,34 @@ mkdir -p ../apprun/App/IUHub
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abe-pl/target5/*;extlibs/IUHub/*"
+    export CLASSPATH="../abelii/target5/*;extlibs/IUHub/*"
     ;;
   *)
-    export CLASSPATH="../abe-pl/target5/*:extlibs/IUHub/*"
+    export CLASSPATH="../abelii/target5/*:extlibs/IUHub/*"
     ;;
 esac
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitFlag iuDebug --emitLang jv -mainClass=IUHub:HubStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/App.be
+java be.BEX_E ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitFlag iuDebug --emitLang jv -mainClass=IUHub:HubStart ../abelii/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-javac ../abe-pl/system/jv/be/*.java ../apprun/App/IUHub/Base/target/jv/be/*.java
+javac ../abelii/system/jv/be/*.java ../apprun/App/IUHub/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+java be.BEX_E ../abelii/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abelii/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 cd ../apprun/App/IUHub/Base/target/jv
 jar -cf ../../../BEX_E_lui_jv.jar .
-cd ../../../../../../ioturl
+cd ../../../../../../edgii
 
-cd ../abe-pl/system/jv
+cd ../abelii/system/jv
 jar -cf ../../../apprun/App/IUHub/BEX_E_lib_jv.jar .
-cd ../../../ioturl
+cd ../../../edgii
 
-find ../abe-pl/system -name "*.class" -exec rm {} \;
+find ../abelii/system -name "*.class" -exec rm {} \;
 
 #hub
 cp ../apprun/App/IUHub/Base/target/js/be/BEX_E.js ../apprun/App/IUHub/IUHub_BEX_E.js

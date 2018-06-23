@@ -6,20 +6,20 @@ mkdir -p targetAd
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abe-pl/target5/*;extlibs/IUHubAd/*"
+    export CLASSPATH="../abelii/target5/*;extlibs/IUHubAd/*"
     ;;
   *)
-    export CLASSPATH="../abe-pl/target5/*:extlibs/IUHubAd/*"
+    export CLASSPATH="../abelii/target5/*:extlibs/IUHubAd/*"
     ;;
 esac
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/shared.txt --deployPath targetAd/d --buildPath targetAd --emitFlag platDroid --emitFlag iuDebug --emitLang jv --outputPlatform linux -mainClass=IUHub:HubStart ../abe-pl/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvAd.be source/App.be
+java be.BEX_E ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath targetAd/d --buildPath targetAd --emitFlag platDroid --emitFlag iuDebug --emitLang jv --outputPlatform linux -mainClass=IUHub:HubStart ../abelii/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvAd.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 rm -rf android/IUHub/app/src/main/java/be
 mv targetAd/Base/target/jv/be android/IUHub/app/src/main/java/
-cp ../abe-pl/system/jv/be/*java android/IUHub/app/src/main/java/be
+cp ../abelii/system/jv/be/*java android/IUHub/app/src/main/java/be
 
 rm -rf android/IUHub/app/libs/
 mkdir -p android/IUHub/app/libs/
@@ -27,7 +27,7 @@ cp extlibs/IUHubAd/* android/IUHub/app/libs/
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-java be.BEX_E ../abe-pl/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUHub:Eui ../abe-pl/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+java be.BEX_E ../abelii/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitLang js --outputPlatform linux --ownProcess false -mainClass=IUHub:Eui ../abelii/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
