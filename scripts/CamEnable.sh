@@ -10,7 +10,7 @@ if [ ! -e ./App/IUCam/iuccmdrs.sh ]; then
   rm -rf caminst
   mkdir -p caminst
   cd caminst
-  wget --tries=10 --retry-connrefused https://bitbucket.org/edgii/edgii/downloads/IUCam.zip
+  wget --tries=10 --retry-connrefused https://bitbucket.org/abelii/edgii/downloads/IUCam.zip
   unzip IUCam.zip
   chmod +x IUCam/*.sh
   sleep 5

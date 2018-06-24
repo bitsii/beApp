@@ -10,7 +10,7 @@ rm -f KBridge.zip
 
 
 until unzip -o KBridge.zip; do
-  until wget https://bitbucket.org/edgii/edgii/downloads/KBridge.zip; do
+  until wget https://bitbucket.org/abelii/edgii/downloads/KBridge.zip; do
     sleep 10
   done
   sleep 10

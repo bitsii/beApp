@@ -1034,8 +1034,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       app.configManager.put("app." + appName, "enabled");
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
-      System:Command.new(cmdPath).run();
-      log.log("enable done");
+      String enres = System:Command.new(cmdPath).open().output.readStringClose();
+      log.log("enable done, output " + enres);
       return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline")));
       //return(CallBackUI.informResponse("App " + appName + " Enabled"));
     }
@@ -1291,7 +1291,7 @@ class KBridge:KBNamePlugin {
        Map inpar = inresm["parameters"];
        
        String inpqn = inpar.get("qname");
-       if (TS.notEmpty(inpqn) && inpqn.lower().ends("ioturl.net.")) {
+       if (TS.notEmpty(inpqn) && inpqn.lower().ends("edgii.me.")) {
        
         String qresn = inpqn.substring(0, inpqn.size - 1);
         log.log("qresn " + qresn);
@@ -1324,7 +1324,7 @@ class KBridge:KBNamePlugin {
         
         if (qt == "SOA") {
           
-            ansob = Maps.from("qtype", "SOA", "qname", "ioturl.net", "content", mywc.internalAddress + ". 2012080849 7200 3600 1209600 3600", "ttl", 3600, "domain_id", -1);
+            ansob = Maps.from("qtype", "SOA", "qname", "edgii.me", "content", mywc.internalAddress + ". 2012080849 7200 3600 1209600 3600", "ttl", 3600, "domain_id", -1);
           
           
           resl = List.new();
