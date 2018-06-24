@@ -43,7 +43,7 @@ if [ "$OSTYPE" == "Linux" ]; then
     service ssh restart
     service sshd restart
   fi
-  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.konnectii.com --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.edgii.io --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
   bash -c "./App/KBridge/startball.sh"
 fi
 
@@ -57,7 +57,7 @@ if [ "$OSTYPE" == "Darwin" ]; then
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
   fi
-  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.konnectii.com --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.edgii.io --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
   mkdir tmp
   echo "@reboot $INSDIR/apprun/App/KBridge/startiuh.sh" > tmp/stadd
   crontab tmp/stadd

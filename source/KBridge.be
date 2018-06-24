@@ -120,7 +120,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     
     String rtrurl = app.configManager.get("router.Url");
     if (TS.isEmpty(rtrurl)) {
-      rtrurl = "https://www.konnectii.com";
+      rtrurl = "https://www.edgii.io";
     }
     
     Account a = request.context.get("account");
@@ -725,7 +725,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     //(
     log.log("In isr, say hello :-)");
     if (TS.isEmpty(user) || TS.isEmpty(pass) || TS.isEmpty(devName) || TS.isEmpty(konUser) || TS.isEmpty(konPass)) {
-      throw(Alert.new("Account Name, Account Password, Device Name, Konnectii User, and Konnectii Password are all required"));
+      throw(Alert.new("Account Name, Account Password, Device Name, Edgii User, and Edgii Password are all required"));
     }
     
     log.log("" + setupToken + " " + user + " " + pass + " " + devName + " " + konUser + " " + konPass);
@@ -748,7 +748,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.configManager.delete("setupToken");
       String rtrurl = app.configManager.get("router.Url");
       if (TS.isEmpty(rtrurl)) {
-        rtrurl = "https://www.konnectii.com";
+        rtrurl = "https://www.edgii.io";
       }
       routerLink(rtrurl, user, konUser, konPass);
       updateMyLinks();
@@ -1224,7 +1224,7 @@ class KBridge:KBNamePlugin {
     try {
       String rtrurl = app.configManager.get("router.Url");
       if (TS.isEmpty(rtrurl)) {
-        rtrurl = "https://www.konnectii.com";
+        rtrurl = "https://www.edgii.io";
       }
       log.log("in afk rtrurl " + rtrurl);
       String destUrl = rtrurl;
@@ -1304,14 +1304,7 @@ class KBridge:KBNamePlugin {
         
         if (qt == "SOA") {
           
-          //  String soa = "mylocalnetaddr.";
-          //  soa = "konnectii.duckdns.org.";
-          
-         // if (def(wcs)) {
             ansob = Maps.from("qtype", "SOA", "qname", "ioturl.net", "content", mywc.internalAddress + ". 2012080849 7200 3600 1209600 3600", "ttl", 3600, "domain_id", -1);
-          //} else {
-          //  ansob = Maps.from("qtype", "SOA", "qname", "ioturl.net", "content", "konnectii.duckdns.org. 2012080849 7200 3600 1209600 3600", "ttl", 3600, "domain_id", -1);
-          //}
           
           
           resl = List.new();
@@ -1344,9 +1337,6 @@ class KBridge:KBNamePlugin {
           if (TS.notEmpty(ipback)) {
               //check for ipback starting with integer, cname if not
               
-              //ansob = Maps.from("qtype","A", "qname", qn + ".ioturl.net", "content",ipback, "ttl", 60);
-              //ansob = Maps.from("qtype","ALIAS", "qname", qn + ".ioturl.net", "content","konnectii.duckdns.org", "ttl", 60);
-              
               Bool isIp = true;
               
               auto llip = ipback.split(".");
@@ -1365,7 +1355,6 @@ class KBridge:KBNamePlugin {
               if (isIp) {
                 ansob = Maps.from("qtype","A", "qname", qresn, "content",ipback, "ttl", 60);
               } else {
-                //ansob = Maps.from("qtype","ALIAS", "qname", qn + ".ioturl.net", "content",ipback, "ttl", 60);
                 throw(Exception.new("not ip"));
               }
               

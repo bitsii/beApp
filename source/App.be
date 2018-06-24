@@ -1346,7 +1346,7 @@ use class App:WebReverseProxyPlugin {
        String accountName = request.getSession("account.name");
        if (TS.isEmpty(accountName)) {
         log.log("no accountname, halting");
-        request.outputContent = "<html><head><body><p>Logged out<p>Please log back into Konnectii Bridge to continue</body></html>";
+        request.outputContent = "<html><head><body><p>Logged out<p>Please log back into Edgii Bridge to continue</body></html>";
         return(self);
        } else {
         log.log("found account " + accountName);

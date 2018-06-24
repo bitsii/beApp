@@ -35,7 +35,7 @@ if [ "$OSTYPE" == "Darwin" ]; then
   brew install miniupnpc
   brew install wget
   
-  echo "Setting Konnectii Bridge to start at boot"
+  echo "Setting Edgii Bridge to start at boot"
 
 fi
 
@@ -106,7 +106,7 @@ if [ "$OSTYPE" == "Linux" ]; then
   chown -R $INSUSER apprun
   chown -R $INSUSER tmp
   
-  echo "Setting Konnectii Bridge to start at boot"
+  echo "Setting Edgii Bridge to start at boot"
   echo "#!/bin/sh -e" > tmp/stadd
   if [ -e "/etc/rc.local" ]
   then

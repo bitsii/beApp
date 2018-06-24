@@ -114,7 +114,7 @@ class IU:WebConnect {
       if (TS.notEmpty(internalAddress)) {
         internalBase = protocol + internalAddress + intPort;
         internalUrl = internalBase + homePage;
-        internalLink = "<a href=\"" + internalUrl + "\" target=\"_blank\">Internal " + deviceName + " Konnectii Bridge</a> - use on device's network.";
+        internalLink = "<a href=\"" + internalUrl + "\" target=\"_blank\">Internal " + deviceName + " Edgii Bridge</a> - use on device's network.";
         log.log("Internal url " + internalUrl);
       }
   }
@@ -156,7 +156,7 @@ class IU:WebConnect {
           externalBase = protocol + externalAddress + extPort;  
         }
         externalUrl = externalBase + homePage;
-        externalLink = "<a href=\"" + externalUrl + "\" target=\"_blank\">External " + deviceName + " Konnectii Bridge</a> - use outside device's network.";
+        externalLink = "<a href=\"" + externalUrl + "\" target=\"_blank\">External " + deviceName + " Edgii Bridge</a> - use outside device's network.";
         log.log("External url " + externalUrl);
       }
       if (onPublicNet) {
@@ -179,7 +179,7 @@ class IU:WebConnect {
     if (TS.notEmpty(hostedAddress)) {
       hostedBase = protocol + hostedAddress + extPort;          
       hostedUrl = hostedBase + homePage;
-      hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
+      hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Edgii Bridge</a> - use wherever there's internet.";
       log.log("Hosted url use wherever there's internet." + hostedUrl);
     } else {
       hostedBase = "";
@@ -198,7 +198,7 @@ class IU:WebConnect {
         konnAddress = konnName + ".ioturl.net";
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
-        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">Virtual DNS for " + deviceName + " Konnectii Bridge</a> - use wherever there's internet.";
+        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">Virtual DNS for " + deviceName + " Edgii Bridge</a> - use wherever there's internet.";
         log.log("Virtual DNS url use wherever there's internet." + konnUrl);
       } else {
         konnAddress = "";

@@ -952,7 +952,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      if (accountLinks.isEmpty) {
        outerLinks += "<p>No device links found.";
      }
-     outerLinks += "<p>Use Konnect on device to add it to your Konnectii account.";
+     outerLinks += "<p>Use Link to Edgii on device to add it to your Edgii account.";
      Map eadns = getEadns(accountLinks);
      for (auto kv in accountLinks) {
        Pair links = Pair.new();
@@ -1122,7 +1122,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
    }
    
    aboutRequest(request) Map {
-     String about = "<p>Konnectii Bridge Version " + self.version + "<p>";
+     String about = "<p>Edgii Bridge Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    
