@@ -195,7 +195,7 @@ class IU:WebConnect {
       extPort = "";
     }
     if (TS.notEmpty(konnName)) {
-        konnAddress = konnName + ".ioturl.net";
+        konnAddress = konnName + ".edgii.me";
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
         konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">Virtual DNS for " + deviceName + " Edgii Bridge</a> - use wherever there's internet.";

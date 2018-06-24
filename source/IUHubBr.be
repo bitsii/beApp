@@ -244,19 +244,6 @@ use class IUHub:Eui {
    }
    
    showImapResponse(Map arg) {
-     if (arg.has("imapEndpoint")) {
-      HD.getElementById("imapEndpoint").value = arg["imapEndpoint"];
-     }
-     if (arg.has("imapAccount")) {
-      HD.getElementById("imapAccount").value = arg["imapAccount"];
-     }
-     if (arg.has("imapFolder")) {
-      HD.getElementById("imapFolder").value = arg["imapFolder"];
-     }
-     if (TS.isEmpty(arg["imapFolder"])) {
-      HD.getElementById("imapFolder").value = "IotUrls";
-     }
-     HD.getElementById("imapSettingsDiv").display = "block";
    }
    
    hideImapResponse(Map arg) {
@@ -797,7 +784,7 @@ use class IUHub:Eui {
         HD.getElementById("fpPort").value = "";
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ IU WebCam</a>";
-        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/ioturl/ioturl/wikis/home\">IU WebCam on GitLab</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/abelii/edgii/wikis/home\">IU WebCam on GitLab</a>";
         HC.callApp(Lists.from("setCamPortsRequest"));
       } elseIf (forService.begins("MS Remote")) {
         HD.getElementById("fpName").value = "MS Remote Desktop";

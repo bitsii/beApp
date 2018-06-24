@@ -53,6 +53,9 @@ cp ../apprun/App/KBridge/Base/target/js/be/BEX_E.js ../apprun/App/KBridge/IUHub_
 cp scripts/upgrade.bat ../apprun/App/KBridge
 cp scripts/postupgrade.bat ../apprun/App/KBridge
 cp scripts/setupbridge.sh ../apprun/App/KBridge
+cp scripts/lilprepbridge.sh ../apprun/App/KBridge
+cp scripts/userinstallbridge.sh ../apprun/App/KBridge
+cp scripts/updateRouter.sh ../apprun/App/KBridge
 cp scripts/prepbridge.sh ../apprun/App/KBridge
 cp scripts/setupbridge2.sh ../apprun/App/KBridge
 cp source/README_INSTALL.txt ../apprun/App/KBridge

@@ -462,11 +462,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
             prot = "imaps";
           }
           String subf = app.configManager.get("imap.subFolder");
-          if (undef(subf)) {
-            subf = "IotUrls";
-          } elseIf (TS.isEmpty(subf)) {
             subf = null;
-          }
           Json:Unmarshaller unmar = Json:Unmarshaller.new();
           //msg += "<p><input type=\"hidden\" value=\"" += Encode:Hex.encode(json) += "\"/></p>\n";
           String subjPref = "DeviceLinks ";
@@ -657,21 +653,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         throw(Alert.new("Must be administrator"));
       }
       Map res = Map.new();
-      res["action"] = "showImapResponse";
-      String user = app.configManager.get("imap.user");
-      if (TS.notEmpty(user)) {
-        res["imapAccount"] = user;
-      }
-      String ep = app.configManager.get("imap.endpoint");
-      if (TS.notEmpty(ep)) {
-        res["imapEndpoint"] = ep;
-      }
-      String sf = app.configManager.get("imap.subFolder");
-      if (TS.notEmpty(sf)) {
-        res["imapFolder"] = sf;
-      } else {
-        res["imapFolder"] = "IotUrls";
-      }
       return(res);
    }
    

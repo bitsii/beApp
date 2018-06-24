@@ -82,6 +82,7 @@ echo "Preparing application area"
 rm -rf $INSDIR/apprun/App/KBridge
 mkdir -p $INSDIR/apprun/App/KBridge
 mkdir -p $INSDIR/apprun/Data/KBridge
+mkdir -p $INSDIR/apprun/logs
 #copy
 cp -r $IZDIR/* $INSDIR/apprun/App/KBridge
 
@@ -105,16 +106,6 @@ if [ "$OSTYPE" == "Linux" ]; then
   #chown
   chown -R $INSUSER apprun
   chown -R $INSUSER tmp
-  
-  echo "Setting Edgii Bridge to start at boot"
-  echo "#!/bin/sh -e" > tmp/stadd
-  if [ -e "/etc/rc.local" ]
-  then
-  cat /etc/rc.local | grep -v "exit " | grep -v "startiuh.sh" | grep -v "#\!/bin" >> tmp/stadd
-  fi
-  echo "su $INSUSER -c \"$INSDIR/apprun/App/KBridge/startiuh.sh\"" >> tmp/stadd
-  echo "exit 0" >> tmp/stadd
-  cat tmp/stadd > /etc/rc.local
   
   cat /etc/ssh/sshd_config  | grep -v "AllowTcpForwarding " | grep -v "GatewayPorts" > tmp/stadd
   echo "AllowTcpForwarding yes" >> tmp/stadd

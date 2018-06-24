@@ -36,14 +36,11 @@ if [ "$OSTYPE" == "Linux" ]; then
   else
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
-    cat /etc/ssh/sshd_config  | grep -v "AllowTcpForwarding " | grep -v "GatewayPorts" > tmp/stadd
-    echo "AllowTcpForwarding yes" >> tmp/stadd
-    echo "GatewayPorts yes" >> tmp/stadd
-    cat tmp/stadd > /etc/ssh/sshd_config
-    service ssh restart
-    service sshd restart
   fi
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.edgii.io --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
+  mkdir tmp
+  echo "@reboot $INSDIR/apprun/App/KBridge/startiuh.sh" > tmp/stadd
+  crontab tmp/stadd
   bash -c "./App/KBridge/startball.sh"
 fi
 

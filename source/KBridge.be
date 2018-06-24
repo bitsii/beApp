@@ -194,6 +194,23 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(CallBackUI.informResponse("Device Link Successful"));
    }
    
+   routerUpdate() {
+   
+    log.log("doing routerUpdate");
+    loadWc();
+    log.log("get the devicename deviceid going");
+    String dn = self.deviceName;
+    String did = self.deviceId;
+    
+    log.log("first do update");
+    doUpdate();
+    
+    updateMyLinks();
+    doForward(); //includes an update
+    updateMyLinks();
+        
+   }
+   
    unlinkAllRequest(request) {
      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
@@ -411,7 +428,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(null);
     }
     Web:Client client = Web:Client.new();
-    client.url = "https://bitbucket.org/ioturl/ioturl/downloads/latestVersion.json";
+    client.url = "https://bitbucket.org/abelii/edgii/downloads/latestVersion.json";
     String res = client.openInput().readString();
     log.log("in checkupgrade response is " + res);
     client.close();
@@ -471,6 +488,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       if (mode == "routerLink") {
         routerLink(params.getFirst("konUrl"), params.getFirst("auser"), params.getFirst("konUser"), params.getFirst("konPass"));
+      }
+      if (mode == "routerUpdate") {
+        routerUpdate();
       }
       if (mode == "sftpFile") {
         log.log("sftpFile");
