@@ -681,10 +681,11 @@ use class UI:ExternalBrowser {
     ifNotEmit(platDroid) {
     emit(jv) {
     """
-    java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-    desktop.browse(new java.net.URI(beva_url.bems_toJvString()));
+    //java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+    //desktop.browse(new java.net.URI(beva_url.bems_toJvString()));
     """
     }
+    System:Command.new("xdg-open " + url).run();
     }
     
     ifEmit(platDroid) {

@@ -9,6 +9,8 @@ if [ "$OSTYPE" == "Linux" ]; then
     then echo "Please do not run setup as root, run as the user the service will run as."
     exit
   fi
+  export INSUSER="$USER"
+  export INSDIR=`echo $(getent passwd $INSUSER )| cut -d : -f 6`
 fi
 
 echo ""
@@ -24,13 +26,25 @@ echo -n "please enter b, n, or t (followed by enter key): "
 read inbort
 
 if [ "$inbort" == "b" ]; then
+  cd $INSDIR
+  mkdir -p apprun/tmp
+  cd apprun
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd assurePorts"
+  mkdir tmp
+  echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
+  crontab tmp/stadd
   bash -c "./App/KBridge/startball.sh"
   sleep 5
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd initialSetup"
   exit 0
 elif [ "$inbort" == "n" ]; then
+  cd $INSDIR
+  mkdir -p apprun/tmp
+  cd apprun
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd assurePorts"
+  mkdir tmp
+  echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
+  crontab tmp/stadd
   bash -c "./App/KBridge/startball.sh"
   sleep 5
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd initialRemoteSetup"

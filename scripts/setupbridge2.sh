@@ -24,7 +24,6 @@ fi
 
 cd $INSDIR
 mkdir -p apprun/tmp
-
 cd apprun
 
 if [ "$OSTYPE" == "Linux" ]; then

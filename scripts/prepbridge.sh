@@ -47,22 +47,30 @@ if [ "$OSTYPE" == "Linux" ]; then
 
   echo "Installing required additional system software"
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
-  apt -qq --assume-yes install mpg123 shellinabox haproxy certbot
+  apt -qq --assume-yes install mpg123 haproxy certbot
+  #apt -qq --assume-yes shellinabox
 
   #apt -qq --assume-yes install openjdk-9-jdk-headless
   apt -qq --assume-yes install openjdk-9-jdk
+  apt -qq --assume-yes xdg-utils
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
   
-  python3-pip hass
+  apt -qq --assume-yes install python3 python3-venv python3-pip
+  python3 -m pip install wheel
+  #pip3 install homeassistant
 
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
-  apt -qq --assume-yes install mpg123 shellinabox haproxy certbot
+  apt -qq --assume-yes install mpg123 haproxy certbot
+  #apt -qq --assume-yes shellinabox
   
   #apt -qq --assume-yes install openjdk-9-jdk-headless
   apt -qq --assume-yes install openjdk-9-jdk
+  apt -qq --assume-yes xdg-utils
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
   
-  python3-pip hass
+  apt -qq --assume-yes install python3 python3-venv python3-pip
+  python3 -m pip install wheel
+  #pip3 install homeassistant
 
   #apt install oracle-java8-jdk 
   #update-java-alternatives -s jdk-8-oracle-arm32-vfp-hflt

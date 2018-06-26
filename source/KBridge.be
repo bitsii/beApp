@@ -795,7 +795,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           i = 5;
         } else {
           closeSsh();
+          Time:Sleep.sleepSeconds(5);
         }
+      }
+      unless (res) {
+          log.log("keep failing doforward exiting / restarting");
+          System:Process.exit(3);
       }
     }
     
