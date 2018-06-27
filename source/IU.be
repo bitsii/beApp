@@ -1118,7 +1118,8 @@ use class IU:IUPlugin(App:AjaxPlugin) {
       if (hpc.file.exists) { hpc.file.delete(); }
       hpc.file.writer.open().writeStringClose(hpts);
       
-      String hcmd = "./App/KBridge/starthap.sh " + adp.toString();
+      String hcmd = "App/KBridge/starthap.sh " + adp.toString();
+      log.log("starting proxy " + hcmd);
       System:Command.new(hcmd).run();
       
     }

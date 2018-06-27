@@ -66,6 +66,7 @@ cp scripts/postupgrade.sh ../apprun/App/KBridge
 cp scripts/startiuh.sh ../apprun/App/KBridge
 cp scripts/startball.sh ../apprun/App/KBridge
 cp scripts/startcam.sh ../apprun/App/KBridge
+cp scripts/starthass.sh ../apprun/App/KBridge
 cp scripts/startbridge.sh ../apprun/App/KBridge
 cp scripts/iuhcmdrs.sh ../apprun/App/KBridge
 cp scripts/iuhcmd.sh ../apprun/App/KBridge
@@ -101,6 +102,8 @@ cp scripts/LEEnable.sh ../apprun/App/KBridge
 cp scripts/LEDisable.sh ../apprun/App/KBridge
 cp scripts/CamEnable.sh ../apprun/App/KBridge
 cp scripts/CamDisable.sh ../apprun/App/KBridge
+cp scripts/HassEnable.sh ../apprun/App/KBridge
+cp scripts/HassDisable.sh ../apprun/App/KBridge
 cp scripts/getLE.sh ../apprun/App/KBridge
 
 cd ../apprun

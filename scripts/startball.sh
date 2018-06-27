@@ -3,3 +3,5 @@ export PATH=$PATH:.
 ./App/KBridge/startbridge.sh
 sleep 5
 ./App/KBridge/startcam.sh
+sleep 5
+./App/KBridge/starthass.sh
