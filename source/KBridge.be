@@ -1031,12 +1031,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
               log.log("setting " + appName + " enabled");
               displays.put(appName + "AppEnabled", "inline");
               displays.put(appName + "AppDisabled", "none");
-              displays.put(appName + "AppInfo", "block");
             } else {
               log.log("setting " + appName + " disabled");
               displays.put(appName + "AppEnabled", "none");
               displays.put(appName + "AppDisabled", "inline");
-              displays.put(appName + "AppInfo", "none");
             }
           }
         }
@@ -1057,7 +1055,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
       String enres = System:Command.new(cmdPath).open().output.readStringClose();
       log.log("enable done, output " + enres);
-      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline", appName + "AppInfo", "block")));
+      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline")));
       //return(CallBackUI.informResponse("App " + appName + " Enabled"));
     }
     
@@ -1071,7 +1069,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String cmdPath = "./App/KBridge/" + appName + "Disable.sh";
       System:Command.new(cmdPath).run();    
       log.log("disable done");
-      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "inline", appName + "AppEnabled", "none", appName + "AppInfo", "none")));
+      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "inline", appName + "AppEnabled", "none")));
       //return(CallBackUI.informResponse("App " + appName + " Disabled"));
     }
      

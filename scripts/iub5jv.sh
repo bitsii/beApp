@@ -99,6 +99,10 @@ cp source/MOCAM.conf ../apprun/App/KBridge
 #apps
 cp scripts/DnsEnable.sh ../apprun/App/KBridge
 cp scripts/DnsDisable.sh ../apprun/App/KBridge
+cp scripts/SSHEnable.sh ../apprun/App/KBridge
+cp scripts/SSHDisable.sh ../apprun/App/KBridge
+cp scripts/SBoxEnable.sh ../apprun/App/KBridge
+cp scripts/SBoxDisable.sh ../apprun/App/KBridge
 cp scripts/LEEnable.sh ../apprun/App/KBridge
 cp scripts/LEDisable.sh ../apprun/App/KBridge
 cp scripts/CamEnable.sh ../apprun/App/KBridge
