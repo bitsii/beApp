@@ -352,6 +352,12 @@ use class IUHub:Eui {
       handleCallOut(arg);
    }
    
+   showPiPass() {
+    if (def(perms) && perms.has("admin")) {
+      HD.getElementById("changePiPass").display = "block";
+    }
+   }
+   
    hideNShowOneResponse(String val) {
     hideNShowResponse(Set.new().put(val));
    }
@@ -786,6 +792,12 @@ use class IUHub:Eui {
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ IU WebCam</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/abelii/edgii/wikis/home\">IU WebCam on GitLab</a>";
         HC.callApp(Lists.from("setCamPortsRequest"));
+      } elseIf (forService.begins("Homeassistant")) {
+        HD.getElementById("fpName").value = "Homeassistant home automation";
+        HD.getElementById("fpPort").value = "8123";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Homeassistant</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.home-assistant.io/\">Homeassistant</a>";
       } elseIf (forService.begins("MS Remote")) {
         HD.getElementById("fpName").value = "MS Remote Desktop";
         HD.getElementById("fpPort").value = "3389";

@@ -47,7 +47,7 @@
                 <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Service Links</a></li>
                 <li class="pure-menu-item" id="fileManagerME"><a href="#" class="pure-menu-link" onclick="callUI('localBrowseRequest');return false;">Browse Files</a></li>
                 <li class="pure-menu-item" id="restartME"><a href="#" class="pure-menu-link" onclick="callUI('restart');return false;">Restart Bridge</a></li>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');return false;">Change Password</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');callUI('showPiPass');return false;">Change Password</a></li>
                 <li class="pure-menu-item" id="manageAccountsME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'accountdiv');callApp('showAccountsRequest');return false;">Manage Accounts</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
                 <li class="pure-menu-item" id="setDevicenameME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'dnamechangediv');return false;">Set Devicename</a></li>
@@ -87,6 +87,28 @@
         
         </fieldset>
     </form>
+    <div id="changePiPass" style="display: none;">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="piUser">SSH Login</label>
+            <input id="piUser" type="text" placeholder="SSH Login">
+        </div>
+        <div class="pure-control-group">
+            <label for="piPassNew">New SSH Password</label>
+            <input id="piPassNew" type="password" placeholder="Password">
+        </div>
+        <div class="pure-control-group">
+            <label for="piPassNew2">Repeat SSH Password</label>
+            <input id="piPassNew2" type="password" placeholder="Password">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('changePiPassRequest', document.getElementById('piUser').value, document.getElementById('piPassNew').value, document.getElementById('piPassNew2').value);return false;">Change Password for Secure Shell/Device Login account</button>
+        </div>
+        
+        </fieldset>
+    </form>
+    </div>
     </div>
     
     <div id="dnamechangediv" style="display: none;">
@@ -221,12 +243,13 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <option >(Manual Configuration)</option>
 <option>Let's Encrypt Setup</option>
 <option>IU WebCam motion detecting webcam</option>
-<option>Secure Shell remote command line (ssh)</option>
+<!--<option>Homeassistant home automation</option>
 <option>Shellinabox command line over web</option>
+<option>Secure Shell remote command line (ssh)</option>
+<option>VNC Remote Desktop</option>
 <option>MS Remote Desktop (rdp)</option>
 <option>NoMachine Remote Desktop</option>
-<option>VNC Remote Desktop</option>
-<option>Apple Remote Desktop (ard)</option>
+<option>Apple Remote Desktop (ard)</option>-->
 </select>
 </div>
 <div class="pure-control-group">
@@ -418,9 +441,11 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <div class="pure-u-1-24"></div>
     <div class="pure-u-23-24">
     <!--<p>Local DNS - for seamless access to services by dns name <span style="color:green"><a style="display: none;" id="DnsAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="DnsAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Dns');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Dns');return false;">Disable</a></p>-->
-    <p>Let's Encrypt - get a free browser accepted ssl certificate <span style="color:green"><a style="display: none;" id="LEAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="LEAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'LE');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'LE');return false;">Disable</a></p>
-    <p>IU WebCam - motion detecting webcam <span style="color:green"><a style="display: none;" id="CamAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="CamAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Cam');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Cam');return false;">Disable</a></p>
-    <p>Homeassistant - home automation solution <span style="color:green"><a style="display: none;" id="HassAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="HassAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Hass');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Hass');return false;">Disable</a></p>
+    <p><b>Let's Encrypt</b> - get a free browser accepted ssl certificate <span style="color:green"><a style="display: none;" id="LEAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="LEAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'LE');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'LE');return false;">Disable</a></p>
+    <p style="display: none;" id="LEAppInfo">Utility service to enable Let's Encrypt cert setup and renewal, leave enabled for Let's Encrypt certificate usage.</p><p>More info at <a href="https://letsencrypt.org/" target="_blank">Let's Encrypt</a></p>
+    <p><b>IU WebCam</b> - motion detecting webcam <span style="color:green"><a style="display: none;" id="CamAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="CamAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Cam');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Cam');return false;">Disable</a></p>
+    <p style="display: none;" id="CamAppInfo">Cam is setup for external access on first Enable, see <a href="#" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a> to manage access from internet and <a href="#" onclick="callUI('reloadResponse');return false;">Service Links</a> for links to access the Cam App</p>
+    <!--<p>Homeassistant - home automation solution <span style="color:green"><a style="display: none;" id="HassAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="HassAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Hass');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Hass');return false;">Disable</a></p>-->
     </div>
     </div>
     </div>

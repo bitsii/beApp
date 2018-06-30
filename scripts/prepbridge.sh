@@ -50,26 +50,26 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install mpg123 haproxy certbot
   #apt -qq --assume-yes shellinabox
 
-  #apt -qq --assume-yes install openjdk-9-jdk-headless
-  apt -qq --assume-yes install openjdk-9-jdk
+  apt -qq --assume-yes install openjdk-9-jdk-headless
+  #apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes xdg-utils
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
   
-  apt -qq --assume-yes install python3 python3-venv python3-pip
-  python3 -m pip install wheel
+  #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
+  #python3 -m pip install wheel
   #pip3 install homeassistant
 
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
   apt -qq --assume-yes install mpg123 haproxy certbot
   #apt -qq --assume-yes shellinabox
   
-  #apt -qq --assume-yes install openjdk-9-jdk-headless
-  apt -qq --assume-yes install openjdk-9-jdk
+  apt -qq --assume-yes install openjdk-9-jdk-headless
+  #apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes xdg-utils
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
   
-  apt -qq --assume-yes install python3 python3-venv python3-pip
-  python3 -m pip install wheel
+  #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
+  #python3 -m pip install wheel
   #pip3 install homeassistant
 
   #apt install oracle-java8-jdk 
@@ -85,30 +85,7 @@ if [ "$OSTYPE" == "Linux" ]; then
 
 fi
 
-#mkdir and copy and cd
-echo "Preparing application area"
-rm -rf $INSDIR/apprun/App/KBridge
-mkdir -p $INSDIR/apprun/App/KBridge
-mkdir -p $INSDIR/apprun/Data/KBridge
-mkdir -p $INSDIR/apprun/logs
-#copy
-cp -r $IZDIR/* $INSDIR/apprun/App/KBridge
-
-cd $INSDIR
-
-cd apprun/App/KBridge
-
-echo "Getting required additional application software"
-wget --tries=20 --timeout 20 --retry-connrefused https://www.bouncycastle.org/download/bcprov-jdk15on-155.jar
-wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar
-wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.19.3/sqlite-jdbc-3.19.3.jar
-wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.4.0.M1/jetty-all-9.4.0.M1-uber.jar
-wget --tries=20 --timeout 20 --retry-connrefused https://repo1.maven.org/maven2/com/jcraft/jsch/0.1.54/jsch-0.1.54.jar
-
-chmod +x *.sh
-
-cd $INSDIR
-mkdir -p apprun/tmp
+su $INSUSER -c "$IZDIR/lilprepbridge.sh"
 
 if [ "$OSTYPE" == "Linux" ]; then
   #chown

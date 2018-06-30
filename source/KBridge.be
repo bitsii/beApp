@@ -419,6 +419,20 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     return(resMap);
   }
+  
+  changePiPassRequest(String piUser, String piPass, String piPass2, request) {
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+    }
+    if (TS.isEmpty(piUser)) {
+      return(CallBackUI.informResponse("An SSH Username must be provided."));
+    }
+    if (TS.isEmpty(piPass) || piPass != piPass2) {
+      return(CallBackUI.informResponse("New and Repeat SSH Passwords don't match."));
+    }
+    System:Command.new("./App/KBridge/changePiPass.sh " + piUser + ":" + piPass).run();
+    return(CallBackUI.informResponse("SSH Password Changed for " + piUser));
+  }
    
    checkUpgrade() {
     log.log("in checkupgrade");
@@ -1017,10 +1031,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
               log.log("setting " + appName + " enabled");
               displays.put(appName + "AppEnabled", "inline");
               displays.put(appName + "AppDisabled", "none");
+              displays.put(appName + "AppInfo", "block");
             } else {
               log.log("setting " + appName + " disabled");
               displays.put(appName + "AppEnabled", "none");
               displays.put(appName + "AppDisabled", "inline");
+              displays.put(appName + "AppInfo", "none");
             }
           }
         }
@@ -1041,7 +1057,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
       String enres = System:Command.new(cmdPath).open().output.readStringClose();
       log.log("enable done, output " + enres);
-      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline")));
+      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline", appName + "AppInfo", "block")));
       //return(CallBackUI.informResponse("App " + appName + " Enabled"));
     }
     
@@ -1055,7 +1071,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String cmdPath = "./App/KBridge/" + appName + "Disable.sh";
       System:Command.new(cmdPath).run();    
       log.log("disable done");
-      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "inline", appName + "AppEnabled", "none")));
+      return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "inline", appName + "AppEnabled", "none", appName + "AppInfo", "none")));
       //return(CallBackUI.informResponse("App " + appName + " Disabled"));
     }
      

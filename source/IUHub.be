@@ -195,6 +195,18 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       //log.log("after load ext port " + wc.externalPort);
       app.plugin.wcol.o = wc;
       oapp.plugin.wcol.o = wc;
+      if (TS.notEmpty(wc.internalUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.internalUrl);
+      }
+      if (TS.notEmpty(wc.externalUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.externalUrl);
+      }
+      if (TS.notEmpty(wc.hostedUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.hostedUrl);
+      }
+      if (TS.notEmpty(wc.konnUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
+      }
     }  
   }
   

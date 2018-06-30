@@ -60,6 +60,7 @@ cp scripts/prepbridge.sh ../apprun/App/KBridge
 cp scripts/setupbridge2.sh ../apprun/App/KBridge
 cp source/README_INSTALL.txt ../apprun/App/KBridge
 cp scripts/installbridge.sh ../apprun/App/KBridge
+cp scripts/changePiPass.sh ../apprun/App/KBridge
 cp scripts/upgrade.sh ../apprun/App/KBridge
 cp scripts/upgrade2.sh ../apprun/App/KBridge
 cp scripts/postupgrade.sh ../apprun/App/KBridge
