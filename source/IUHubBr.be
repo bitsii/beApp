@@ -524,6 +524,7 @@ use class IUHub:Eui {
     
     if (TS.notEmpty(arg["internalAddress"])) {
       HD.getElementById("localSBox").href = "https://" + arg["internalAddress"] + ":4200";
+      HD.getElementById("localDomo").href = "https://" + arg["internalAddress"] + ":8443";
       HD.getElementById("localSSH").innerHTML = "ssh user@" + arg["internalAddress"];
     }
     
@@ -790,6 +791,12 @@ use class IUHub:Eui {
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Shellinabox</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox on GitHub</a>";
+      } elseIf (forService.begins("Domoticz")) {
+        HD.getElementById("fpName").value = "Domoticz - home automation system";
+        HD.getElementById("fpPort").value = "8443";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Domoticz</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://domoticz.com\">Domoticz Website</a>";
       } elseIf (forService.begins("IU WebCam")) {
         HD.getElementById("fpName").value = "IU WebCam - webcam with motion";
         HD.getElementById("fpPort").value = "";
