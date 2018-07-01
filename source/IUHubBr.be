@@ -522,6 +522,11 @@ use class IUHub:Eui {
       }
     }
     
+    if (TS.notEmpty(arg["internalAddress"])) {
+      HD.getElementById("localSBox").href = "https://" + arg["internalAddress"] + ":4200";
+      HD.getElementById("localSSH").innerHTML = "ssh user@" + arg["internalAddress"];
+    }
+    
     profile = arg["profile"];
     log.log("profile " + profile);
     if (profile == "bridge") {

@@ -443,6 +443,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       res["deviceName"] = self.deviceName;
       res["loginUri"] = self.getLoginUri(request);
       res["certificatePrint"] = wcol.o.certificatePrint;
+      if (TS.notEmpty(wcol.o.internalAddress)) {
+        res["internalAddress"] = wcol.o.internalAddress;
+      }
       
       String imso = app.configManager.get("imapSetOnce");
       if (TS.isEmpty(imso) || imso != "true") {
