@@ -87,7 +87,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      Map links = getLinks(null);
      for (auto kv in links) {
       WebConnect wc = kv.value;
-      if (TS.notEmpty(wc.deviceName) && TS.notEmpty(wc.hostedAddress)) {
+      if (TS.notEmpty(wc.deviceName) && TS.notEmpty(wc.hostedAddress) && def(wc.onPublicNet) && wc.onPublicNet) {
         hb.put(wc.deviceName, wc.deviceName);
       }
      }
