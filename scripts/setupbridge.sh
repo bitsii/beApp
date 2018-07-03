@@ -20,9 +20,11 @@ echo ""
 echo "Would you like to complete your setup in your web browser or do you prefer to complete setup" 
 echo "in the terminal / via the text interface?"
 echo "choose b for local browser setup (if you are logged into a graphical user interface on the"
-echo "device you are setting up), n to receive a web address to complete setup using a browser on a different"
-echo "device on the same network, or t to continue with a text/terminal setup."
-echo -n "please enter b, n, or t (followed by enter key): "
+echo "device you are setting up) or t to continue with a text/terminal setup."
+#echo "n to receive a web address to complete setup using a browser on a different"
+#echo "device on the same network, or t to continue with a text/terminal setup."
+#echo -n "please enter b, n, or t (followed by enter key): "
+echo -n "please enter b or t (followed by enter key): "
 read inbort
 
 if [ "$inbort" == "b" ]; then
@@ -30,7 +32,7 @@ if [ "$inbort" == "b" ]; then
   mkdir -p apprun/tmp
   cd apprun
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd assurePorts"
-  mkdir tmp
+  mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
   bash -c "./App/KBridge/startball.sh"
@@ -42,7 +44,7 @@ elif [ "$inbort" == "n" ]; then
   mkdir -p apprun/tmp
   cd apprun
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd assurePorts"
-  mkdir tmp
+  mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
   bash -c "./App/KBridge/startball.sh"
@@ -51,13 +53,14 @@ elif [ "$inbort" == "n" ]; then
   exit 0
 fi
 
-echo "Are you installing on a host on a private network (in a home or office) or "
-echo "on a host directly on the internet (vps, cloud, etc)?"
-echo -n "y for private network, n for directly on internet: "
-read inprivatenet
-echo ""
+#echo "Are you installing on a host on a private network (in a home or office) or "
+#echo "on a host directly on the internet (vps, cloud, etc)?"
+#echo -n "y for private network, n for directly on internet: "
+#read inprivatenet
+#echo ""
 
-export PRIVATENET="$inprivatenet"
+#export PRIVATENET="$inprivatenet"
+export PRIVATENET="y"
 
 echo "Please provide desired username and password.  You'll need this to login to"
 echo "Edgii Bridge after install.  This is not yet your Edgii site login," 
@@ -103,7 +106,7 @@ export KONPASS="$konpass"
 $IZDIR/setupbridge2.sh
 
 echo "service is starting now, it may take a few moments to come up"
-echo "On the Konnecti site, https://www.edgii.io, login to your account"
+echo "On the Edgii site, https://www.edgii.io, login to your account"
 echo "and click the link to your new install under the name you provided.  Then you may login"
 echo "using the account you just created during installation"
 

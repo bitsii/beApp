@@ -37,7 +37,7 @@ if [ "$OSTYPE" == "Linux" ]; then
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
   fi
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.edgii.io --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
-  mkdir tmp
+  mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
   bash -c "./App/KBridge/startball.sh"
@@ -54,7 +54,7 @@ if [ "$OSTYPE" == "Darwin" ]; then
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
   fi
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.edgii.io --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
-  mkdir tmp
+  mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
   bash -c "./App/KBridge/startball.sh"
