@@ -94,7 +94,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      hb.put("(None)", "(None)")
      
      
-     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))), CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")), CallBackUI.setOptionsSelectedResponse("hostedBridges",hb, br))));
+     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshPort", app.configManager.get("il.sshPort", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))), CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")), CallBackUI.setOptionsSelectedResponse("hostedBridges",hb, br))));
    }
    
    getRemoteAccessRequest(request) Map {
@@ -184,7 +184,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         app.plugin.wcol.o = wc;
         oapp.plugin.wcol.o = wc;
         app.configManager.put("router.accountName", account);
-        doForward();
+        //doForward();
         
       }
       //resetCertMan(ds["certificatePrint"]);
@@ -512,6 +512,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         String sshHost = getSshHost();
         String sshLogin = app.configManager.get("il.sshLogin");
         String sshPass = app.configManager.get("il.sshPass");
+        String sshPort = app.configManager.get("il.sshPort");
+        if (TS.isEmpty(sshPort)) {
+          sshPort = "22";
+        }
         String dfps = "WebCam/sftpFiles-" + app.plugin.deviceId;
         if (TS.isEmpty(sfps) || TS.isEmpty(sshHost) || TS.isEmpty(sshLogin) || TS.isEmpty(sshPass)) {
           log.log("sourceFile, ssh host, login, or pass empty, not copying file");
@@ -520,7 +524,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         Path sfp = Path.apNew(sfps).makeNonAbsolute();
         Path dfp = Path.apNew(dfps + "/" + sfps);
         log.log("copying " + sfp + " to " + dfp);
-        Ssh ssh = Ssh.new(sshHost, sshLogin, sshPass);
+        Ssh ssh = Ssh.new(sshHost, sshPort, sshLogin, sshPass);
         ssh.open();
         ssh.sftpPut(sfp, dfp);
         ssh.close();
@@ -597,10 +601,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           app.configManager.put("doUpnpForward", "false");
         }
         doForward();
+        return(CallBackUI.informResponse("Upnp configuration successful"));
       }
+      return(self);
    }
    
-   saveInternetListenRequest(String hostedBridge, String host, String login, String pass, request) Map {
+   saveInternetListenRequest(String hostedBridge, String host, String port, String login, String pass, request) Map {
     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       log.log("in sil");
       if (TS.isEmpty(host) && TS.notEmpty(hostedBridge)) {
@@ -614,8 +620,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         app.configManager.put("il.sshBridgedHost", "");
       }
       app.configManager.put("il.sshLogin", login);
-      app.configManager.put("il.sshPass", pass);        
+      app.configManager.put("il.sshPass", pass);
+      app.configManager.put("il.sshPort", port);   
+      closeSsh();     
       doForward();
+      return(CallBackUI.informResponse("SSH Internet Listen setup successful"));
       }
     return(null);
    }
@@ -785,7 +794,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         rtrurl = "https://www.edgii.io";
       }
       routerLink(rtrurl, user, konUser, konPass);
-      updateMyLinks();
+      //updateMyLinks();
       return(CallBackUI.initialSetupResponse());
      }
      
@@ -887,6 +896,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         oapp.plugin.wcol.o = wc;
       }
       String sshHost = getSshHost();
+      String sshPort = app.configManager.get("il.sshPort");
+      if (TS.isEmpty(sshPort)) {
+        sshPort = "22";
+      }
       String sshLogin = app.configManager.get("il.sshLogin");
       String sshPass = app.configManager.get("il.sshPass");
       try {
@@ -894,7 +907,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           wc.hostedAddress = sshHost;
           if (undef(ssh) || ssh.isClosed) {
             log.log("ssh connecting " + sshHost + " " + sshLogin);
-            ssh = Ssh.new(sshHost, sshLogin, sshPass);
+            if (sshLogin == "root") {
+              log.log("is root, going to make sure gateway is enabled");
+              Ssh gwssh = Ssh.new(sshHost, sshPort, sshLogin, sshPass);
+              gwssh.open();
+              String gwcmd = "if grep -q -x \"^GatewayPorts yes\" /etc/ssh/sshd_config; then echo -n \"\"; else cat /etc/ssh/sshd_config | grep -v GatewayPorts > sshd_config; echo \"GatewayPorts yes\" >> sshd_config; cp ./sshd_config /etc/ssh/sshd_config; service ssh restart; service sshd restart; sleep 5; fi";
+              gwssh.execCommand(gwcmd);
+              gwssh.close();
+            }
+            ssh = Ssh.new(sshHost, sshPort, sshLogin, sshPass);
             ssh.open();
             rforwarded = Set.new();
           } else {
@@ -1095,9 +1116,10 @@ local use Net:Ssh {
     }
   }
   
-  new(String _host, String _user, String _pass) this {
+  new(String _host, String _port, String _user, String _pass) this {
     fields {
       String host = _host;
+      String port = _port;
       String user = _user;
       String pass = _pass; 
     }
@@ -1124,10 +1146,11 @@ local use Net:Ssh {
   }
   
   open() this {
+    Int porti = Int.new(port);
     emit(jv) {
     """
     bevi_jsch = new JSch();
-    bevi_session = bevi_jsch.getSession(bevp_user.bems_toJvString(), bevp_host.bems_toJvString(), 22);
+    bevi_session = bevi_jsch.getSession(bevp_user.bems_toJvString(), bevp_host.bems_toJvString(), bevl_porti.bevi_int);
     bevi_session.setPassword(bevp_pass.bems_toJvString());
     bevi_session.setConfig("StrictHostKeyChecking", "no");
     bevi_session.connect();
@@ -1194,6 +1217,26 @@ local use Net:Ssh {
   sftpChannel.exit();
   """
   }
+  }
+  
+  execCommand(String cmd) Int {
+  Int result;
+  Exception e;
+  emit(jv) {
+  """
+   try {
+     ChannelExec channelexe = (ChannelExec) bevi_session.openChannel("exec");
+     channelexe.setCommand(beva_cmd.bems_toJvString());                
+     channelexe.connect();
+     bevl_result = new BEC_2_4_3_MathInt(channelexe.getExitStatus());
+   } catch (Exception e) {
+     System.err.println("exception during execCommand");
+     e.printStackTrace();
+     System.err.println(e.getMessage());
+   }
+  """
+  }
+  return(result);
   }
 
 }

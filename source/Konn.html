@@ -159,12 +159,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-control-group">
             <label for="rlspacer"></label>
             <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline"><i>Either choose a device name which is directly on the internet</i></span>
-        </div>
-        <div class="pure-control-group">
-            <label for="rlspacer"></label>
-            <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline"><i>(Hosted Bridge) or provide a hostname</i></span>
+            <span class="pure-form-message-inline">Please provide either an IP address or a hostname</span>
         </div>
         <div class="pure-control-group" style="display: none;">
         <label for="devDrop">Hosted Bridge</label>
@@ -173,25 +168,29 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         </select>
         </div>
         <div class="pure-control-group">
-            <label for="sshHost">SSH Hostname</label>
-            <input id="sshHost" type="text" placeholder="SSH Hostname">
+            <label for="sshHost">SSH IP Address</label>
+            <input id="sshHost" type="text" placeholder="IP Address">
+        </div>
+        <div class="pure-control-group">
+            <label for="sshPort">SSH Port</label>
+            <input id="sshPort" type="text" placeholder="SSH Port">
         </div>
         <!--<input id="sshHost" type="hidden" value="">-->
         <div class="pure-control-group">
-            <label for="sshLogin">SSH Login</label>
-            <input id="sshLogin" type="text" placeholder="SSH Login">
+            <label for="sshLogin">SSH Username</label>
+            <input id="sshLogin" type="text" placeholder="SSH Username">
         </div>
         <div class="pure-control-group">
             <label for="sshPass">SSH Password</label>
-            <input id="sshPass" type="password" placeholder="SSH Password">
+            <input id="sshPass" type="password" placeholder="Default SSH Password">
         </div>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveInternetListenRequest', document.getElementById('hostedBridges').options[document.getElementById('hostedBridges').selectedIndex].value, document.getElementById('sshHost').value, document.getElementById('sshLogin').value, document.getElementById('sshPass').value);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveInternetListenRequest', document.getElementById('hostedBridges').options[document.getElementById('hostedBridges').selectedIndex].value, document.getElementById('sshHost').value, document.getElementById('sshPort').value, document.getElementById('sshLogin').value, document.getElementById('sshPass').value);return false;">Save</button>
         </div>
         </fieldset>
     </form>
     
-        <form class="pure-form pure-form-aligned">
+        <form class="pure-form pure-form-aligned" style="display: none;">
     <fieldset>
         <div class="pure-control-group">
             <label for="pubi"></label>
