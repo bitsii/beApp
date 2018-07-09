@@ -1072,6 +1072,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (appName == "Cam") {
         assureCamPort();
       }
+      if (appName == "Nxc") {
+        prepReverseProxy("80", "6443", "Nxc.");
+      }
       app.configManager.put("app." + appName, "enabled");
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
       String enres = System:Command.new(cmdPath).open().output.readStringClose();

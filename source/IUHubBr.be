@@ -525,6 +525,7 @@ use class IUHub:Eui {
     if (TS.notEmpty(arg["internalAddress"])) {
       HD.getElementById("localSBox").href = "https://" + arg["internalAddress"] + ":4200";
       HD.getElementById("localDomo").href = "https://" + arg["internalAddress"] + ":8443";
+      HD.getElementById("localNxc").href = "https://" + arg["internalAddress"] + ":6443/nextcloud/";
       HD.getElementById("localSSH").innerHTML = "ssh user@" + arg["internalAddress"];
     }
     
@@ -797,6 +798,12 @@ use class IUHub:Eui {
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Domoticz</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://domoticz.com\">Domoticz Website</a>";
+      } elseIf (forService.begins("Nextcloud")) {
+        HD.getElementById("fpName").value = "Nextcloud - personal file and data syncing";
+        HD.getElementById("fpPort").value = "6443";
+        HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/nextcloud/\" target=\"_blank\">$type$ Nextcloud</a>";
+        HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://nextcloud.com\">Nextcloud Website</a>";
       } elseIf (forService.begins("IU WebCam")) {
         HD.getElementById("fpName").value = "IU WebCam - webcam with motion";
         HD.getElementById("fpPort").value = "";

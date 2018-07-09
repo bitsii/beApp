@@ -106,14 +106,19 @@ cp scripts/SBoxEnable.sh ../apprun/App/KBridge
 cp scripts/SBoxDisable.sh ../apprun/App/KBridge
 cp scripts/LEEnable.sh ../apprun/App/KBridge
 cp scripts/LEDisable.sh ../apprun/App/KBridge
+cp scripts/getLE.sh ../apprun/App/KBridge
 cp scripts/CamEnable.sh ../apprun/App/KBridge
 cp scripts/CamDisable.sh ../apprun/App/KBridge
 cp scripts/HassEnable.sh ../apprun/App/KBridge
 cp scripts/HassDisable.sh ../apprun/App/KBridge
 cp scripts/DomoEnable.sh ../apprun/App/KBridge
 cp scripts/DomoDisable.sh ../apprun/App/KBridge
-cp scripts/getLE.sh ../apprun/App/KBridge
-
+cp scripts/NxcEnable.sh ../apprun/App/KBridge
+cp scripts/NxcDisable.sh ../apprun/App/KBridge
+cp scripts/startnxc.sh ../apprun/App/KBridge
+cp scripts/setupnxc.sh ../apprun/App/KBridge
+cp source/nextcloud-enabled.conf ../apprun/App/KBridge
+cp source/nextcloud-disabled.conf ../apprun/App/KBridge
 
 #cd ../apprun
 #./App/KBridge/iuhcmd.sh --appType server $*

@@ -1085,7 +1085,6 @@ use class IU:IUPlugin(App:AjaxPlugin) {
    }
    
    prepReverseProxy() {
-      //--app.ssl false --app.port 2018 --web.proto https --web.port 2019 --app.bindAddress 127.0.0.1
       app.appSsl = false;
       app.webProto = "https";
       
@@ -1103,7 +1102,13 @@ use class IU:IUPlugin(App:AjaxPlugin) {
         app.webPort = wp;
       }
       
-      Path adp = app.paths.dataPath.addStep(app.configPrefix + "haproxy");
+      prepReverseProxy(ap, wp, app.configPrefix);
+      
+    }
+    
+    prepReverseProxy(String ap, String wp, String appPref) {
+      
+      Path adp = app.paths.dataPath.addStep(appPref + "haproxy");
       if (adp.file.exists!) {
         adp.file.makeDirs();
       }

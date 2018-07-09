@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH=$PATH:.:/sbin:/usr/sbin
+
 mkdir -p Data/KBridge/haproxy
 mkdir -p $1
 

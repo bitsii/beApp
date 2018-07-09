@@ -52,7 +52,9 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install openjdk-9-jdk-headless
   #apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes xdg-utils
-  apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
+  apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen apache2
+  
+  apt -qq --assume-yes install php7.0 php7.0-gd sqlite php7.0-sqlite php7.0-curl php7.0-bz2 php7.0-cli php7.0-fpm php7.0-intl php7.0-json php7.0-mbstring php7.0-mcrypt php7.0-opcache php7.0-sqlite3 php7.0-xml php7.0-zip php-apcu php-pear
   
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
   #python3 -m pip install wheel
@@ -64,7 +66,9 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install openjdk-9-jdk-headless
   #apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes xdg-utils
-  apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen nginx nginx-common
+  apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen apache2
+  
+  apt -qq --assume-yes install php7.0 php7.0-gd sqlite php7.0-sqlite php7.0-curl php7.0-bz2 php7.0-cli php7.0-fpm php7.0-intl php7.0-json php7.0-mbstring php7.0-mcrypt php7.0-opcache php7.0-sqlite3 php7.0-xml php7.0-zip php-apcu php-pear
   
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
   #python3 -m pip install wheel
@@ -73,6 +77,8 @@ if [ "$OSTYPE" == "Linux" ]; then
   #apt install oracle-java8-jdk 
   #update-java-alternatives -s jdk-8-oracle-arm32-vfp-hflt
 
+  service apache2 restart
+  
   mkdir tmp
 
   echo "Disabling ipv6"
