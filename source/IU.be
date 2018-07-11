@@ -198,7 +198,7 @@ class IU:WebConnect {
         konnAddress = konnName + ".edgii.me";
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
-        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">Virtual DNS for " + deviceName + " Edgii Bridge</a> - use wherever there's internet.";
+        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - use wherever there's internet.";
         log.log("Virtual DNS url use wherever there's internet." + konnUrl);
       } else {
         konnAddress = "";
