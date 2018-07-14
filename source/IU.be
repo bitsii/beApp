@@ -135,8 +135,7 @@ class IU:WebConnect {
         if (doUpnp) {
           String ea = upnp.externalIP;
         } else {
-          //but if it's off, empty it
-          externalAddress = null;
+          //externalAddress = null; //use to test bridge updates
         }
         if (TS.notEmpty(ea)) {
           externalAddress = ea;
@@ -188,6 +187,28 @@ class IU:WebConnect {
       hostedBase = "";
       hostedUrl = ""
       hostedLink = "";
+    }
+  }
+  
+  updateExternal() {
+    if (TS.notEmpty(externalPort)) {
+      String extPort = ":" + externalPort;
+    } else {
+      extPort = "";
+    }
+    if (TS.notEmpty(externalAddress)) {
+       if (TS.notEmpty(extNameBase)) {
+          externalBase = protocol + extNameBase + extPort;
+        } else {
+          externalBase = protocol + externalAddress + extPort;  
+        }
+        externalUrl = externalBase + homePage;
+        externalLink = "<a href=\"" + externalUrl + "\" target=\"_blank\">External " + deviceName + " Edgii Bridge</a> - use outside device's network.";
+        log.log("External url " + externalUrl);
+    } else {
+      externalBase = "";
+      externalUrl = ""
+      externalLink = "";
     }
   }
   
@@ -906,7 +927,7 @@ class Upnp {
       res = System:Command.new(cmd).open().output.readStringClose();
       log.log("forwardPort result " + res);
       
-      if (external != internal && false) {
+      if (external != internal) {
         log.log("doing socat");
         //socat tcp-listen:2022,reuseaddr,fork tcp:localhost:22
         cmd = "socat tcp-listen:" + external + ",reuseaddr,fork tcp:localhost:" + internal;
