@@ -927,7 +927,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   getEadns(Map accountLinks) Map {
     log.log("getting eadns");
     Map eadn = Map.new();
-    /*for (auto kv in accountLinks) {
+    for (auto kv in accountLinks) {
        WebConnect wc = kv.value;
        if (def(wc)) {
          if (def(wc.doingDns) && wc.doingDns && TS.notEmpty(wc.externalAddress) && TS.notEmpty(wc.gateway)) {
@@ -935,7 +935,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           eadn.put(wc.externalAddress, wc);
          }
        }
-    }*/
+    }
     return(eadn);
     
     //if (TS.notEmpty(wc.gateway) && TS.notEmpty(mywc.gateway) && TS.notEmpty(wc.externalAddress) && //TS.notEmpty(mywc.externalAddress) && wc.gateway == mywc.gateway && wc.externalAddress == mywc.externalAddress) {}

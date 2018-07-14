@@ -134,6 +134,9 @@ class IU:WebConnect {
     try {
         if (doUpnp) {
           String ea = upnp.externalIP;
+        } else {
+          //but if it's off, empty it
+          externalAddress = null;
         }
         if (TS.notEmpty(ea)) {
           externalAddress = ea;
@@ -903,13 +906,13 @@ class Upnp {
       res = System:Command.new(cmd).open().output.readStringClose();
       log.log("forwardPort result " + res);
       
-      /*if (external != internal) {
+      if (external != internal) {
         log.log("doing socat");
         //socat tcp-listen:2022,reuseaddr,fork tcp:localhost:22
         cmd = "socat tcp-listen:" + external + ",reuseaddr,fork tcp:localhost:" + internal;
         System:Command.new(cmd).run();
         log.log("local portfwd (socat) started for " + external + " to " + internal);
-      }*/
+      }
       
       return(true);
       

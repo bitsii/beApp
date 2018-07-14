@@ -47,7 +47,7 @@ if [ "$OSTYPE" == "Linux" ]; then
 
   echo "Installing required additional system software"
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
-  apt -qq --assume-yes install mpg123 haproxy certbot
+  apt -qq --assume-yes install mpg123 haproxy certbot dnsutils socat
 
   apt -qq --assume-yes install openjdk-9-jdk-headless
   #apt -qq --assume-yes install openjdk-9-jdk
@@ -61,7 +61,7 @@ if [ "$OSTYPE" == "Linux" ]; then
   #pip3 install homeassistant
 
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
-  apt -qq --assume-yes install mpg123 haproxy certbot
+  apt -qq --assume-yes install mpg123 haproxy certbot dnsutils socat
   
   apt -qq --assume-yes install openjdk-9-jdk-headless
   #apt -qq --assume-yes install openjdk-9-jdk

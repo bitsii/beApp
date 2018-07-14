@@ -1063,6 +1063,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(CallBackUI.setElementsDisplaysResponse(displays));
     }
     
+    outRgw() {
+      WebConnect wc = app.plugin.wcol.o;
+      File rgw = Path.apNew("rgw").file;
+      if (rgw.exists) { rgw.delete(); }
+      rgw.writer.open().writeStringClose("recursor=" + wc.gateway + "\n");
+    }
+    
     enableAppRequest(String appName, request) Map {
       log.log("in enableApp");
       unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
@@ -1075,10 +1082,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (appName == "Nxc") {
         prepReverseProxy("80", "6443", "Nxc.");
       }
+      if (appName == "Dns") {
+        outRgw();
+      }
       app.configManager.put("app." + appName, "enabled");
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
       String enres = System:Command.new(cmdPath).open().output.readStringClose();
       log.log("enable done, output " + enres);
+      if (appName == "Dns") {
+        doForward();
+      }
       return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline")));
       //return(CallBackUI.informResponse("App " + appName + " Enabled"));
     }
@@ -1420,7 +1433,7 @@ class KBridge:KBNamePlugin {
             String ipback = getIpBack(mywc, wc);
           }
           if (TS.notEmpty(ipback)) {
-              //check for ipback starting with integer, cname if not
+              //check for ipback starting with integer, lookup if not
               
               Bool isIp = true;
               
@@ -1437,11 +1450,15 @@ class KBridge:KBNamePlugin {
                 }
               }
               
-              if (isIp) {
-                ansob = Maps.from("qtype","A", "qname", qresn, "content",ipback, "ttl", 60);
-              } else {
-                throw(Exception.new("not ip"));
+              unless(isIp) {
+               log.log("ipback not ip, doing address for kname");
+                resmap = addressForKName(mywc.konnName, qn);
+                if (def(resmap)) {
+                  ipback = resmap["ipback"];
+                }              
               }
+              
+              ansob = Maps.from("qtype","A", "qname", qresn, "content",ipback, "ttl", 60);
               
               resl = List.new();
               resl += ansob;
