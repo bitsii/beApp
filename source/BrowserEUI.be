@@ -299,7 +299,11 @@ class HE {
 
 class HC {
 
-  default() self { }
+  default() self {
+    fields {
+      IO:Log log =@ IO:Logs.get(self);
+    }
+  }
 
   new(_callbacks) self {
     fields {
@@ -470,7 +474,7 @@ class HC {
    
    setElementsDisplaysResponse(Map idvals) {
      for (any kv in idvals) {
-      HD.getElementById(kv.key).display = kv.value;
+       HD.getElementById(kv.key).display = kv.value;
      }
    }
    

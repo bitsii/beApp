@@ -173,7 +173,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         ds["certificatePrint"] = resMap["certificatePrint"];
         String dss = Json:Marshaller.marshall(ds);
         log.log("sldss " + dss);
-        app.configManager.put("LinkSession." + auser + "!" + destUrl, dss);
+        app.getKvDb("DEVLINKS").put("LinkSession." + auser + "!" + destUrl, dss);
         updateMyLink(app.plugin.wcol.o, ds);
         updateMyLinks();
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
@@ -215,7 +215,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
-    Map lss = app.configManager.getMap("LinkSession.");
+    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
      for (auto kv in lss) {
        app.configManager.delete(kv.key);
      }
@@ -232,7 +232,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
-    Map lss = app.configManager.getMap("devlink!");
+    Map lss = app.getKvDb("DEVLINKS").getMap("devlink!");
      for (auto kv in lss) {
        app.configManager.delete(kv.key);
      }
@@ -242,7 +242,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      WebConnect wc = app.plugin.wcol.o;
      Json:Unmarshaller unmar = Json:Unmarshaller.new();
      Json:Marshaller mar = Json:Marshaller.new();
-     Map lss = app.configManager.getMap("LinkSession.");
+     Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
      for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
        Map res = updateMyLink(wc, ds);
@@ -253,7 +253,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("putting into links");
         WebConnect awc = WebConnect.new().fromMap(lm);
         String conjs = mar.marshall(lm);
-        app.configManager.put("devlink!" + awc.deviceId, conjs);
+        app.getKvDb("DEVLINKS").put("devlink!" + awc.deviceId, conjs);
         log.log("awc did " + awc.deviceId + " wc did " + wc.deviceId);
         if (awc.deviceId == wc.deviceId) {
           //now with konnUrl et all
@@ -307,7 +307,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   
   startLes() Map {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    Map lss = app.configManager.getMap("LinkSession.");
+    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
     for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
        Map res = startLe(ds);
@@ -318,7 +318,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   
   stopLes() Map {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    Map lss = app.configManager.getMap("LinkSession.");
+    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
     for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
        Map res = stopLe(ds);

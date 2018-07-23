@@ -232,7 +232,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     } else {
       key = "devlink!";
     }
-    for (any kv in app.configManager.getMap(key)) {
+    for (any kv in app.getKvDb("DEVLINKS").getMap(key)) {
       WebConnect wc = WebConnect.new();
       wc.fromMap(unmar.unmarshall(kv.value));
       links.put(wc.deviceId, wc);
@@ -593,7 +593,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
                     WebConnect wc = WebConnect.new().fromMap(lm);
                     links.put(wc.deviceId, wc);
                     dids.put(wc.deviceId);
-                    app.configManager.put("link." + wc.deviceId, conjs);
+                    app.getKvDb("DEVLINKS").put("link." + wc.deviceId, conjs);
                   }
                   //log.log("done with unmar " + lm.get("extAddress"));
                 }
@@ -604,7 +604,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           }
           //app.plugin.linksol.o = links;
           //oapp.plugin.linksol.o = links;
-          for (any kv in app.configManager.getMap("link.")) {
+          for (any kv in app.getKvDb("DEVLINKS").getMap("link.")) {
             String kid = kv.key.substring(5);
             log.log("checking kid " + kid);
             unless (dids.has(kid)) {
