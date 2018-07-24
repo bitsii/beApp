@@ -978,7 +978,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          if (def(dnwc) && TS.notEmpty(wc.gateway) && dnwc.gateway == wc.gateway) {
            dlUse = devLinks;
            outerLinks += "<p>" += wc.konnLink += "</p>";
-         } elseIf (wc.manualForward || (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink))) {
+         } elseIf (wc.manualForward || wc.internalResolve || (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink))) {
            String dlUse = devLinks;
            outerLinks += "<p>" += wc.konnLink += "</p>";
          } else {
@@ -1053,7 +1053,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
                dlUse = innerLinks;
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
              }
-            elseIf (wc.manualForward || (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink")))) {
+            elseIf (wc.manualForward || wc.internalResolve || (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink")))) {
               String dlUse = innerLinks;
               if (TS.notEmpty(kv.value.get("konnLink"))) {
                 outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";

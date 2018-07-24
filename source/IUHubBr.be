@@ -499,8 +499,9 @@ use class IUHub:Eui {
      }
    }
    
-   getUpnpResponse(Bool upnpEnabled) {
+   getUpnpResponse(Bool upnpEnabled, Bool internalResolve) {
       HD.getElementById("enableUpnp").checked = upnpEnabled;
+      HD.getElementById("internalResolve").checked = internalResolve;
    }
    
    getOnPublicNetResponse(Bool upnpEnabled) {

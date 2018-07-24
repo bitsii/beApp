@@ -47,6 +47,7 @@ class IU:WebConnect {
       Bool onPublicNet = false;
       Bool doingUpnp = true;
       Bool doingDns = false;
+      Bool internalResolve = false;
       
       String certificatePrint = "";
       List internalMacAddresses = List.new();
@@ -62,6 +63,13 @@ class IU:WebConnect {
       String extNameBase;
       
     }
+  }
+  
+  internalResolveGet() Bool {
+    if (undef(internalResolve)) {
+      return(false);
+    }
+    return(internalResolve);
   }
   
   manualForwardGet() Bool {
@@ -119,10 +127,11 @@ class IU:WebConnect {
       }
   }
   
-  updateExternal(String _homePage, String _extNameBase, Bool doUpnp, Bool _onPublicNet) self {
+  updateExternal(String _homePage, String _extNameBase, Bool doUpnp, Bool doesIr, Bool _onPublicNet) self {
     homePage = _homePage;
     onPublicNet = _onPublicNet;
     doingUpnp = doUpnp;
+    internalResolve = doesIr;
     Upnp upnp = Upnp.new();
     upnp.netGw = upnp.gatewayAddress;
     gateway = upnp.netGw;

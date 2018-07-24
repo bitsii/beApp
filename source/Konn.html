@@ -220,8 +220,12 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
          <label for="enableUpnp" class="pure-checkbox">Enable UPnP (uncheck for Manual Forwarding)</label>
             <input id="enableUpnp" type="checkbox">
         </div>
+        <div class="pure-control-group">
+         <label for="internalResolve" class="pure-checkbox">Internal Address Resolves</label>
+            <input id="internalResolve" type="checkbox">
+        </div>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveUpnpRequest', document.getElementById('enableUpnp').checked);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveUpnpRequest', document.getElementById('enableUpnp').checked, document.getElementById('internalResolve').checked);return false;">Save</button>
         </div>
         </fieldset>
     </form>

@@ -56,7 +56,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       App:Background bfw = App:Background.new();
       //App:Background bup = App:Background.new();
       String profile = "bridge";
-      String defaultUpnpF = "false";
+      String defaultUpnpF = "true";
+      String defaultInternalResolveF = "false";
      }
      super.new();
      
@@ -559,7 +560,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
    
    getUpnpRequest(request) Map {
-     return(CallBackUI.getUpnpResponse(self.upnpEnabled));
+     return(CallBackUI.getUpnpResponse(self.upnpEnabled, self.internalResolve));
    }
    
    getOnPublicNetRequest(request) Map {
@@ -592,13 +593,18 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
    }
    
-   saveUpnpRequest(Bool enableUpnp, request) {
+   saveUpnpRequest(Bool enableUpnp, Bool internalResolve, request) {
       if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         log.log("in saveupnpr");
         if (enableUpnp) {
           app.configManager.put("doUpnpForward", "true");
         } else {
           app.configManager.put("doUpnpForward", "false");
+        }
+        if (internalResolve) {
+          app.configManager.put("internalResolve", "true");
+        } else {
+          app.configManager.put("internalResolve", "false");
         }
         doForward();
         return(CallBackUI.informResponse("Upnp configuration successful"));
@@ -859,6 +865,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(doUpnpForward);
     }
     
+    internalResolveGet() Bool {
+      String doUpnpForwardS = app.configManager.get("internalResolve");
+      if (TS.isEmpty(doUpnpForwardS)) {
+        doUpnpForwardS = defaultInternalResolveF;
+      }
+      Bool doUpnpForward = Bool.new(doUpnpForwardS);
+      return(doUpnpForward);
+    }
+    
     getSshHost() String {
       String si = app.configManager.get("il.sshHost");
       String br = app.configManager.get("il.sshBridgedHost");
@@ -882,6 +897,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       assurePorts();
       Bool success = true;
       Bool doUpnpForward = self.upnpEnabled;
+      Bool doesInternalResolve = self.internalResolve;
       Bool onPublicNet = self.onPublicNet;
       log.log("wc forwarding ports");
       log.log("getting wc");
@@ -929,7 +945,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("Error during ssh op " + sshe);
       }
       String extBase = "";
-      wc.updateExternal(homePage, extBase, doUpnpForward, onPublicNet);
+      wc.updateExternal(homePage, extBase, doUpnpForward, doesInternalResolve, onPublicNet);
       String dnsen = app.configManager.get("app.Dns");
       if (TS.notEmpty(dnsen) && dnsen == "enabled") {
         log.log("!!!SETTING DOING DNS TRUE");
