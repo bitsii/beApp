@@ -228,7 +228,7 @@ class IU:WebConnect {
       extPort = "";
     }
     if (TS.notEmpty(konnName)) {
-        konnAddress = konnName + ".edgii.me";
+        konnAddress = konnName + ".edgii.io";
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
         konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - use wherever there's internet.";
