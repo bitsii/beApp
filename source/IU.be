@@ -104,7 +104,7 @@ class IU:WebConnect {
   updateInternal(String _homePage) self {
     homePage = _homePage;
     Upnp upnp = Upnp.new();
-    upnp.netGw = upnp.gatewayAddress;
+    upnp.netGw = IP.gatewayIP;
     gateway = upnp.netGw;
     internalAddress = upnp.internalIP;
     Net:Interface ni = Net:Interface.new();
@@ -133,7 +133,7 @@ class IU:WebConnect {
     doingUpnp = doUpnp;
     internalResolve = doesIr;
     Upnp upnp = Upnp.new();
-    upnp.netGw = upnp.gatewayAddress;
+    upnp.netGw = IP.gatewayIP;
     gateway = upnp.netGw;
     
     extNameBase = _extNameBase;
@@ -670,47 +670,6 @@ class Upnp {
     netGw = _netGw;
   }
   
-  gatewayAddressGet() String {
-    
-    System:Command sc = System:Command.new("netstat -rn").open();
-    String res = sc.output.readString();
-    sc.close();
-    
-    //log.log("netstat output " + res);
-    
-    if (System:CurrentPlatform.name == "mswin") {
-      Int fz = res.find("0.0.0.0"); //win
-    } else {
-      fz = 0;
-    }
-    if (def(fz)) {
-      if (System:CurrentPlatform.name == "macos") {
-        fz2 = res.find("default", fz + 1);
-      } else {
-        Int fz2 = res.find("0.0.0.0", fz + 1);
-      }
-      if (def(fz2)) {
-        fz = fz2;
-      }
-      fz += 7;
-      res = res.substring(fz);
-      Bool started = false;
-      String accum = String.new();
-      for (String s in res.biter) {
-        if (s == " ") {
-          if (started) {
-            break;
-          }
-        } else {
-          started = true;
-          accum += s;
-        }
-      }
-    }
-    //log.log("getgw accum " + accum);
-    return(accum);
-  }
-  
   deviceURLGet() String {
     fields {
       String deviceURL;
@@ -978,18 +937,92 @@ class Upnp {
       
       return(false);
     }
-   
-    addressForName(String name) String {
-       String address;
-       emit(jv) {
-       """
-       InetAddress address = InetAddress.getByName(beva_name.bems_toJvString()); 
-       bevl_address = new $class/Text:String$(address.getHostAddress().getBytes("UTF-8"));
-       """
-       }
-       return(address);
-    }
     
+
+}
+
+use Net:IP;
+
+class IP {
+
+  default() self {
+    fields {
+      IO:Log log =@ IO:Logs.get(self);
+    }
+  }
+  
+  isIP(String ipback) Bool {
+    Bool isIp = true;
+    if (TS.isEmpty(ipback)) {
+      return(false);
+    }
+            
+    auto llip = ipback.split(".");
+    log.log("llip sz " + llip.size);
+    if (llip.size != 4) {
+      isIp = false;
+    } else {
+      for (String llipp in llip) {
+        log.log("llipp " + llipp);
+        if (llipp.isInteger()!) {
+          isIp = false;
+        }
+      }
+    }
+    return(isIp);
+  }
+  
+  IPForName(String name) String {
+     String address;
+     emit(jv) {
+     """
+     InetAddress address = InetAddress.getByName(beva_name.bems_toJvString()); 
+     bevl_address = new $class/Text:String$(address.getHostAddress().getBytes("UTF-8"));
+     """
+     }
+     return(address);
+  }
+  
+  gatewayIPGet() String {
+    
+    System:Command sc = System:Command.new("netstat -rn").open();
+    String res = sc.output.readString();
+    sc.close();
+    
+    //log.log("netstat output " + res);
+    
+    if (System:CurrentPlatform.name == "mswin") {
+      Int fz = res.find("0.0.0.0"); //win
+    } else {
+      fz = 0;
+    }
+    if (def(fz)) {
+      if (System:CurrentPlatform.name == "macos") {
+        fz2 = res.find("default", fz + 1);
+      } else {
+        Int fz2 = res.find("0.0.0.0", fz + 1);
+      }
+      if (def(fz2)) {
+        fz = fz2;
+      }
+      fz += 7;
+      res = res.substring(fz);
+      Bool started = false;
+      String accum = String.new();
+      for (String s in res.biter) {
+        if (s == " ") {
+          if (started) {
+            break;
+          }
+        } else {
+          started = true;
+          accum += s;
+        }
+      }
+    }
+    //log.log("getgw accum " + accum);
+    return(accum);
+  }
 
 }
 

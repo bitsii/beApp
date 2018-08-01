@@ -22,6 +22,7 @@ use App:AppStart;
 use App:CallBackUI;
 
 use Net:UPnP as Upnp;
+use Net:IP;
 
 use App:LocalWebApp;
 use App:RemoteWebApp;
@@ -1017,7 +1018,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("Forwarding");
       Int fwdSecs = 7200;//fwd upnp for how long
       Upnp upnp = Upnp.new();
-      upnp.netGw = upnp.gatewayAddress;
+      upnp.netGw = IP.gatewayIP;
       if (doUpnpForward) {
         upnp.forwardPort(fwdSecs, Int.new(wc.externalPort), Int.new(wc.internalPort));
       }
