@@ -42,7 +42,6 @@ class IU:WebConnect {
       String hostedLink;
       String konnLink;
       
-      String konnName;
       String homePage;
       Bool onPublicNet = false;
       Bool doingUpnp = true;
@@ -227,8 +226,7 @@ class IU:WebConnect {
     } else {
       extPort = "";
     }
-    if (TS.notEmpty(konnName)) {
-        konnAddress = konnName + ".edgii.io";
+    if (TS.notEmpty(konnAddress)) {
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
         konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - use wherever there's internet.";
@@ -349,7 +347,7 @@ class IU:WebConnect {
         if (TS.notEmpty(konnUrl) && TS.notEmpty(konnAddress)) {
           konnUrl = konnUrl.swap("$ip$", konnAddress);
           konnUrl = konnUrl.swap("$port$", service.get("intPort"));
-          konnUrl = konnUrl.swap("$type$", "VirtualDNS");
+          konnUrl = konnUrl.swap("$type$ ", "");
           service.put("konnLink", konnUrl + " - use wherever there's internet.");
         }
       }

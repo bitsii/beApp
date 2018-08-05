@@ -176,8 +176,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         String dss = Json:Marshaller.marshall(ds);
         log.log("sldss " + dss);
         app.getKvDb("DEVLINKS").put("LinkSession." + auser + "!" + destUrl, dss);
-        updateMyLink(app.plugin.wcol.o, ds);
-        updateMyLinks();
+        //updateMyLink(app.plugin.wcol.o, ds);
+        //updateMyLinks();
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
         doForward(); //includes an update
         
@@ -207,9 +207,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     log.log("first do update");
     doUpdate();
     
-    updateMyLinks();
+    //updateMyLinks();
     doForward(); //includes an update
-    updateMyLinks();
+    //updateMyLinks();
         
    }
    
@@ -217,17 +217,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
-    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
-     for (auto kv in lss) {
-       app.getKvDb("DEVLINKS").delete(kv.key);
-     }
-     WebConnect wc = app.plugin.wcol.o;
-     if (def(wc)) {
-      log.log("clearing wc konnname");
-      wc.konnName = null;
-     }
-     app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
-     clearAllDevsRequest(request);
+    
    }
    
    clearAllDevsRequest(request) {
@@ -241,33 +231,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
    
    updateMyLinks() {
-     WebConnect wc = app.plugin.wcol.o;
-     Json:Unmarshaller unmar = Json:Unmarshaller.new();
-     Json:Marshaller mar = Json:Marshaller.new();
-     Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
-     for (auto kv in lss) {
-       Map ds = unmar.unmarshall(kv.value);
-       Map res = updateMyLink(wc, ds);
-     }
-     if (def(res) && res.has("links")) {
-      KvDb knwc = app.getKvDb("KNAMEWCS");
-      for (Map lm in res.get("links")) {
-        log.log("putting into links");
-        WebConnect awc = WebConnect.new().fromMap(lm);
-        String conjs = mar.marshall(lm);
-        app.getKvDb("DEVLINKS").put("devlink!" + awc.deviceId, conjs);
-        log.log("awc did " + awc.deviceId + " wc did " + wc.deviceId);
-        if (awc.deviceId == wc.deviceId) {
-          //now with konnUrl et all
-          app.configManager.put("hub.webConnect", conjs);
-          app.plugin.wcol.o = awc;
-          log.log("put awc in for webcon " + conjs);
-        }
-        if (TS.notEmpty(awc.konnName)) {
-          knwc.put(awc.konnName, conjs);
-        }
-      }
-     }
+     
    }
    
    updateMyLink(WebConnect wco, Map ds) Map {
@@ -345,40 +309,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      WebConnect wc = app.plugin.wcol.o;
      Json:Unmarshaller unmar = Json:Unmarshaller.new();
      Json:Marshaller mar = Json:Marshaller.new();
-    try {
-      String destUrl = ds["destUrl"];
-      log.log("starting le to " + destUrl);
-      Map argOut = Map.new();
-      argOut["action"] = "startLeRequest";
-      argOut["pageToken"] = ds["pageToken"];
-      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
-      argOut["konnName"] = wc.konnName;
-      Web:Client:CertificateManager.validateHosts = false;
-      Web:Client:CertificateManager.validateCertificates = false;
-      //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
-      Web:Client client = Web:Client.new();
-      String payload = Json:Marshaller.marshall(argOut);
-      log.log("payload " + payload);
-      client.outputHeaders.put("referer", destUrl);
-      client.url = destUrl;
-      client.openOutput().write(payload);
-      String res = client.openInput().readString();
-      client.close();
-      if (TS.notEmpty(res)) {
-        Map resMap = Json:Unmarshaller.unmarshall(res);
-        log.log("!!! got res from startle  " + res);
-      }
-      //resetCertMan(ds["certificatePrint"]);
-      Web:Client:CertificateManager.validateHosts = true;
-      Web:Client:CertificateManager.validateCertificates = true;
-    } catch (any e) {
-      //resetCertMan(ds["certificatePrint"]);
-      Web:Client:CertificateManager.validateHosts = true;
-      Web:Client:CertificateManager.validateCertificates = true;
-      log.log("got exception during startle");
-      log.log(e.toString());
-    }
-    return(resMap);
+     return(Map.new());
   }
   
   stopLe(Map ds) Map {
@@ -386,40 +317,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      WebConnect wc = app.plugin.wcol.o;
      Json:Unmarshaller unmar = Json:Unmarshaller.new();
      Json:Marshaller mar = Json:Marshaller.new();
-    try {
-      String destUrl = ds["destUrl"];
-      log.log("stop le to " + destUrl);
-      Map argOut = Map.new();
-      argOut["action"] = "stopLeRequest";
-      argOut["pageToken"] = ds["pageToken"];
-      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
-      argOut["konnName"] = wc.konnName;
-      Web:Client:CertificateManager.validateHosts = false;
-      Web:Client:CertificateManager.validateCertificates = false;
-      //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
-      Web:Client client = Web:Client.new();
-      String payload = Json:Marshaller.marshall(argOut);
-      log.log("payload " + payload);
-      client.outputHeaders.put("referer", destUrl);
-      client.url = destUrl;
-      client.openOutput().write(payload);
-      String res = client.openInput().readString();
-      client.close();
-      if (TS.notEmpty(res)) {
-        Map resMap = Json:Unmarshaller.unmarshall(res);
-        log.log("!!! got res from startle  " + res);
-      }
-      //resetCertMan(ds["certificatePrint"]);
-      Web:Client:CertificateManager.validateHosts = true;
-      Web:Client:CertificateManager.validateCertificates = true;
-    } catch (any e) {
-      //resetCertMan(ds["certificatePrint"]);
-      Web:Client:CertificateManager.validateHosts = true;
-      Web:Client:CertificateManager.validateCertificates = true;
-      log.log("got exception during startle");
-      log.log(e.toString());
-    }
-    return(resMap);
+     return(Map.new());
   }
   
   changePiPassRequest(String piUser, String piPass, String piPass2, request) {
@@ -558,6 +456,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    getInternetListenRequest(request) Map {
      //String sshPass = app.configManager.get("il.sshHost", "");
      return(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))));
+   }
+   
+   getDuckRequest(request) Map {
+   
+     String duckDomain = app.configManager.get("duck.domain");
+     if (undef(duckDomain)) { duckDomain = ""; }
+     
+     return(CallBackUI.setElementsValuesResponse(Maps.from("duckDomain", duckDomain)));
    }
    
    getUpnpRequest(request) Map {
@@ -748,7 +654,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    loggedIn(Account a, Map res, Map arg, request) Map {
     res = super.loggedIn(a, res, arg, request);
-    //res["devLinksList"] = getDevLinks(null, arg, request);
     res["devLinksList"] = "";
     String dnso = app.configManager.get("deviceNameSetOnce");
     if (TS.isEmpty(dnso) || dnso != "true") {
@@ -802,6 +707,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       routerLink(rtrurl, user, konUser, konPass);
       //updateMyLinks();
+      updateDuck();
       return(CallBackUI.initialSetupResponse());
      }
      
@@ -963,14 +869,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
-      try {
+      updateDuck();
+      /*try {
         updateMyLinks();
       } catch (fpe) {
         log.log("exception during updateMyLinks ");
         if (def(fpe)) {
           log.log("fpe " + fpe);
         }
-      }
+      }*/
       app.plugin.updateUrls();
       log.log("saving");
       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));

@@ -923,100 +923,53 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     return(actionLinks);
   }
-  
-  getEadns(Map accountLinks) Map {
-    log.log("getting eadns");
-    Map eadn = Map.new();
-    /*for (auto kv in accountLinks) {
-       WebConnect wc = kv.value;
-       if (def(wc)) {
-         if (def(wc.doingDns) && wc.doingDns && TS.notEmpty(wc.externalAddress) && TS.notEmpty(wc.gateway)) {
-          log.log("got an eadn");
-          eadn.put(wc.externalAddress, wc);
-         }
-       }
-    }*/
-    return(eadn);
-    
-    //if (TS.notEmpty(wc.gateway) && TS.notEmpty(mywc.gateway) && TS.notEmpty(wc.externalAddress) && //TS.notEmpty(mywc.externalAddress) && wc.gateway == mywc.gateway && wc.externalAddress == mywc.externalAddress) {}
-  }
    
-  getDevLinks(Account a, Map arg, request) String {
-    String outerLinks = String.new();
-    String devLinks = String.new();
-     Map accountLinks = getLinks(a);
-     if (accountLinks.isEmpty) {
-       outerLinks += "<p>No device links found.";
-     }
-     outerLinks += "<p>Use Link to Edgii on device to add it to your Edgii account.";
-     Map eadns = getEadns(accountLinks);
-     for (auto kv in accountLinks) {
-       Pair links = Pair.new();
-       WebConnect wc = kv.value;
-       if (def(wc)) {
-         Bool internal = fromSameNet(wc, request);
-         //TODO check by pinging links also, possibly in background at login (or from time to time)
-         //remember which last worked, only do occasionally, async, with a refresh
-         //specifically just to filter out external
-         if (internal) {
-          links.first = wc.internalLink;
-          links.second = wc.externalLink;
-         } else {
-          links.second = wc.internalLink;
-          links.first = wc.externalLink;
-         }
-         //add way for bridge to say it is handling dns
-         //ahead of time find any of those, for any device here
-         //check to see if it has same internet address as something that
-         //says it's handling dns
-         
-         if (TS.notEmpty(wc.externalAddress)) {
-          WebConnect dnwc = eadns.get(wc.externalAddress);
-         } else {
-          dnwc = null;
-         }
-         if (def(dnwc) && TS.notEmpty(wc.gateway) && dnwc.gateway == wc.gateway) {
-           dlUse = devLinks;
-           outerLinks += "<p>" += wc.konnLink += "</p>";
-         } elseIf (wc.manualForward || wc.internalResolve || (TS.notEmpty(wc.konnLink) && TS.notEmpty(wc.hostedLink))) {
-           String dlUse = devLinks;
-           outerLinks += "<p>" += wc.konnLink += "</p>";
-         } else {
-           dlUse = outerLinks;
-           if (TS.notEmpty(links.first)) {
-             outerLinks += "<p>" += links.first += "</p>";
-           }
-         }
-         if (TS.notEmpty(wc.konnLink)) {
-           dlUse += "<p>" += wc.konnLink += "</p>";
-         }
-         if (TS.notEmpty(wc.hostedLink)) {
-          dlUse += "<p>" += wc.hostedLink += "</p>";
-         }
-         if (TS.notEmpty(links.first)) {
-          devLinks += "<p>" += links.first += "</p>";
-         }
-         if (TS.notEmpty(links.second)) {
-          dlUse += "<p>" += links.second += "</p>";
-         }
-         if (undef(a)) {
-           devLinks += "<p><a href=\"#\" onclick=\"callApp('wakeDevRequest', '" + wc.deviceId + "');return false;\">Wakeup " += wc.deviceName += "</a> - using Wake on Lan</p>";
-         }
-         if (TS.notEmpty(wc.certificatePrint)) {
-           devLinks += "<p>Certificate Thumbprint for " += wc.deviceName += ": " += wc.certificatePrint += "</p>";
-         }
+  saveDuckRequest(String duckDomain, String duckToken, request) {
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+    }
+    app.configManager.put("duck.domain", duckDomain);
+    app.configManager.put("duck.token", duckToken);
+    loadWc();
+    WebConnect wc = app.plugin.wcol.o;
+    if (TS.notEmpty(duckDomain)) {
+      wc.konnAddress = duckDomain + ".duckdns.org";
+    } else {
+      wc.konnAddress = "";
+    }
+    wc.updateKonnLink();
+    app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+    updateDuck();
+  }
+  
+  updateDuck() this {
+    any fpe;
+    try {
+        updateDuckInner();
+    } catch (fpe) {
+      log.log("exception during updateDuck ");
+      if (def(fpe)) {
+        log.log("fpe " + fpe);
       }
     }
-    String actionLinks = String.new();
-    actionLinks += "<div id=\"outerLinksDiv\">";
-    actionLinks += outerLinks;
-    if (TS.notEmpty(devLinks)) {
-    actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'innerLinksDiv');return false;\">Show/Hide more connection options.</a>";
-    actionLinks += "<div id=\"innerLinksDiv\" style=\"display: none;\">";
-    actionLinks += devLinks;
-    actionLinks += "</div>";
+  }
+  
+  updateDuckInner() this {
+    log.log("in updateduck");
+    String duckDomain = app.configManager.get("duck.domain");
+    String duckToken = app.configManager.get("duck.token");
+    if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
+       log.log("doing duckupdate");
+       String url =  "https://www.duckdns.org/update/" + duckDomain + "/" + duckToken;
+       Web:Client client = Web:Client.new();
+       Web:Client:CertificateManager.validateCertificates = false;
+       client.verb = "GET";
+       client.url = url;
+       String res = client.openInput().readString();
+       client.close();
+       Web:Client:CertificateManager.validateCertificates = true;
+       log.log("duckupdate done");
     }
-    return(actionLinks);
   }
    
   updateActionLinks(String actionLinks, Account a, Map arg, request) String {
@@ -1036,28 +989,50 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       WebConnect wc = wcol.o;
       
       if (def(wc)) {
+      
+      if ((wc.manualForward || wc.internalResolve) && TS.notEmpty(wc.konnLink)) {
+           dlUse = innerLinks;
+           outerLinks += "<p>" += wc.konnLink += "</p>";
+      } elseIf(TS.notEmpty(wc.hostedLink)) {
+        dlUse = innerLinks;
+        outerLinks += "<p>" += wc.hostedLink += "</p>";
+         } else {
+           dlUse = outerLinks;
+           if (internal) {
+                outerLinks += "<p>" += wc.internalLink += "</p>";
+              } else {
+                if (TS.notEmpty(wc.hostedLink)) {
+                  outerLinks += "<p>" += wc.hostedLink += "</p>";
+                } elseIf (TS.notEmpty(wc.externalLink)) {
+                  outerLinks += "<p>" += wc.externalLink += "</p>";
+                } elseIf (TS.notEmpty(wc.internalLink)) {
+                  outerLinks += "<p>" += wc.internalLink += "</p>";
+                }
+              }
+         }
+         if (TS.notEmpty(wc.konnLink)) {
+            dlUse += "<p>" += wc.konnLink += "</p>";
+          }
+          if (TS.notEmpty(wc.internalLink)) {
+            dlUse += "<p>" += wc.internalLink += "</p>";
+          }
+          if (TS.notEmpty(wc.hostedLink)) {
+            innerLinks += "<p>" += wc.hostedLink += "</p>";
+          } 
+          if (TS.notEmpty(wc.externalLink)) {
+            dlUse += "<p>" += wc.externalLink += "</p>";
+          }
+      
         Map svcs = wc.getServices();
         if (def(svcs)) {
-        
-             log.log("checking eadns in svcs");
            Map accountLinks = getLinks(null);
-          Map eadns = getEadns(accountLinks);
           for (any kv in svcs) {
-            if (TS.notEmpty(wc.externalAddress)) {
-              WebConnect dnwc = eadns.get(wc.externalAddress);
-             } else {
-              dnwc = null;
-             }
-             if (def(dnwc) && TS.notEmpty(wc.gateway) && dnwc.gateway == wc.gateway) {
-               log.log("doing dnwc");
-               dlUse = innerLinks;
-              outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
-             }
-            elseIf (wc.manualForward || wc.internalResolve || (TS.notEmpty(kv.value.get("hstLink")) && TS.notEmpty(kv.value.get("konnLink")))) {
+             if ((wc.manualForward || wc.internalResolve) && TS.notEmpty(kv.value.get("konnLink"))) {
               String dlUse = innerLinks;
-              if (TS.notEmpty(kv.value.get("konnLink"))) {
                 outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
-              }
+            } elseIf(TS.notEmpty(kv.value.get("hstLink"))) {
+               dlUse = innerLinks;
+                outerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
             } else {
               dlUse = outerLinks;
               if (internal) {

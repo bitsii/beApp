@@ -539,7 +539,7 @@ use class IUHub:Eui {
       //HD.getElementById("linkDevicesME").display = "none";
       
       if (perms.has("admin")!) {
-        HD.getElementById("linkDevicesME").display = "none";
+        //HD.getElementById("linkDevicesME").display = "none";
         HD.getElementById("remoteListenME").display = "none";
         HD.getElementById("remoteAccessME").display = "none";
         HD.getElementById("restartME").display = "none";
