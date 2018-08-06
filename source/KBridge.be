@@ -390,9 +390,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (TS.isEmpty(mode)) {
         return(super.handleCmd(params));
       }
-      if (mode == "setupLe") {
-        //email, 
-        setupLe();
+      if (mode == "doLego") {
+        doLego();
       }
       if (mode == "startLe") {
         startLes();

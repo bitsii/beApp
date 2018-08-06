@@ -1008,6 +1008,26 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     log.log("ddclient res " + res);
     
   }
+  
+  doLego() {
+    String cfHost = app.configManager.get("cf.host");
+    String cfZone = app.configManager.get("cf.zone");
+    String cfEmail = app.configManager.get("cf.email");
+    String cfToken = app.configManager.get("cf.token");
+    
+    if (TS.isEmpty(cfHost) || TS.isEmpty(cfZone) || TS.isEmpty(cfEmail) || TS.isEmpty(cfToken)) {
+      log.log("one of the params for cf is missing");
+      return(self);
+    }
+    
+    String lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfHost + "." + cfZone;
+    log.log("running lecmd " + lecmd);
+    
+    String res = System:Command.new(lecmd).open().output.readStringClose();
+    
+    log.log("lecmd res " + res);
+    
+  }
    
   saveDuckRequest(String duckDomain, String duckToken, request) {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {

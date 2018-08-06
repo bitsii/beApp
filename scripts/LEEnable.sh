@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd setupLe
+./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd doLego
