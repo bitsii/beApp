@@ -41,7 +41,7 @@
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
                 <!--<li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link to Edgii</a></li>-->
-                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');callApp('getDuckRequest');callApp('getOnPublicNetRequest');return false;">External Access</a></li>
+                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');callApp('getDuckRequest');callApp('getCfRequest');callApp('getOnPublicNetRequest');return false;">External Access</a></li>
                 <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a></li>
                 <li class="pure-menu-item" id="browseDevicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Browse Devices</a></li>
                 <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Service Links</a></li>
@@ -204,10 +204,39 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         </div>
         <div class="pure-control-group">
             <label for="duckToken">Duck Token</label>
-            <input id="duckToken" type="text" placeholder="Duckdns Token">
+            <input id="duckToken" type="password" placeholder="Duckdns Token">
         </div>
         <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDuckRequest', document.getElementById('duckDomain').value, document.getElementById('duckToken').value);return false;">Save</button>
+        </div>
+        </fieldset>
+    </form>
+    
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="rlspacer"></label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Use dynamic dns on a <a href="https://www.cloudflare.com" target="_blank">Cloudflare</a> hosted domainname</span>
+        </div>
+        <div class="pure-control-group">
+            <label for="cfHost">Hostname</label>
+            <input id="cfHost" type="text" placeholder="Hostname for this device">
+        </div>
+        <div class="pure-control-group">
+            <label for="cfZone">Domain name</label>
+            <input id="cfZone" type="text" placeholder="Name of domain (without host)">
+        </div>
+        <div class="pure-control-group">
+            <label for="cfEmail">Cloudflare Login</label>
+            <input id="cfEmail" type="text" placeholder="Email for Cloudflare Account">
+        </div>
+        <div class="pure-control-group">
+            <label for="cfToken">Cloudflare Token</label>
+            <input id="cfToken" type="password" placeholder="Cloudflare API Token">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveCfRequest', document.getElementById('cfHost').value, document.getElementById('cfZone').value, document.getElementById('cfEmail').value, document.getElementById('cfToken').value);return false;">Save</button>
         </div>
         </fieldset>
     </form>

@@ -923,6 +923,91 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     return(actionLinks);
   }
+  
+  prepKonnName() {
+    String duckDomain = app.configManager.get("duck.domain");
+    String cfHost = app.configManager.get("cf.host");
+    String cfZone = app.configManager.get("cf.zone");
+    
+    loadWc();
+    WebConnect wc = app.plugin.wcol.o;
+    if (TS.notEmpty(cfHost) && TS.notEmpty(cfZone)) {
+      wc.konnAddress = cfHost + "." + cfZone;
+    } elseIf (TS.notEmpty(duckDomain)) {
+      wc.konnAddress = duckDomain + ".duckdns.org";
+    } else {
+      wc.konnAddress = "";
+    }
+    wc.updateKonnLink();
+    if (TS.notEmpty(wc.konnUrl)) {
+      app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
+    }
+    app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+    
+  }
+  
+  saveCfRequest(String cfHost, String cfZone, String cfEmail, String cfToken, request) {
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+    }
+    app.configManager.put("cf.host", cfHost);
+    app.configManager.put("cf.zone", cfZone);
+    app.configManager.put("cf.email", cfEmail);
+    app.configManager.put("cf.token", cfToken);
+    updateCf();
+  }
+  
+  updateCf() {
+    any fpe;
+    try {
+        updateCfInner();
+    } catch (fpe) {
+      log.log("exception during updateDuck ");
+      if (def(fpe)) {
+        log.log("fpe " + fpe);
+      }
+    }
+  }
+  
+  updateCfInner() {
+    log.log("in updateCfInner");
+    prepKonnName();
+    String cfHost = app.configManager.get("cf.host");
+    String cfZone = app.configManager.get("cf.zone");
+    String cfEmail = app.configManager.get("cf.email");
+    String cfToken = app.configManager.get("cf.token");
+    
+    if (TS.isEmpty(cfHost) || TS.isEmpty(cfZone) || TS.isEmpty(cfEmail) || TS.isEmpty(cfToken)) {
+      log.log("one of the params for cf is missing");
+      return(self);
+    }
+    
+    Path cfp = app.paths.dataPath.addStep("ddclient");
+    if (cfp.file.exists!) {
+      cfp.file.makeDirs();
+    }
+    cfp = cfp.addStep("ddclient.conf");
+    if (cfp.file.exists) {
+      cfp.file.delete();
+    }
+    
+    String ddconf = String.new();
+    ddconf += "protocol=cloudflare\n";
+    ddconf += "use=web\n";
+    ddconf += "ssl=yes\n";
+    ddconf += "login=" += cfEmail += "\n";
+    ddconf += "password=" += cfToken += "\n";
+    ddconf += "zone=" += cfZone += "\n";
+    ddconf += cfHost += "." += cfZone += "\n";
+    
+    log.log("ddconf " + ddconf);
+
+    cfp.file.writer.open().writeStringClose(ddconf);
+    
+    String res = System:Command.new("./App/KBridge/ddrun.sh").open().output.readStringClose();
+    log.log("ddclient res " + res);
+    
+  }
    
   saveDuckRequest(String duckDomain, String duckToken, request) {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
@@ -930,15 +1015,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     app.configManager.put("duck.domain", duckDomain);
     app.configManager.put("duck.token", duckToken);
-    loadWc();
-    WebConnect wc = app.plugin.wcol.o;
-    if (TS.notEmpty(duckDomain)) {
-      wc.konnAddress = duckDomain + ".duckdns.org";
-    } else {
-      wc.konnAddress = "";
-    }
-    wc.updateKonnLink();
-    app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
     updateDuck();
   }
   
@@ -956,6 +1032,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   
   updateDuckInner() this {
     log.log("in updateduck");
+    prepKonnName();
     String duckDomain = app.configManager.get("duck.domain");
     String duckToken = app.configManager.get("duck.token");
     if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
@@ -989,13 +1066,12 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       WebConnect wc = wcol.o;
       
       if (def(wc)) {
-      
-      if ((wc.manualForward || wc.internalResolve) && TS.notEmpty(wc.konnLink)) {
-           dlUse = innerLinks;
-           outerLinks += "<p>" += wc.konnLink += "</p>";
-      } elseIf(TS.notEmpty(wc.hostedLink)) {
-        dlUse = innerLinks;
-        outerLinks += "<p>" += wc.hostedLink += "</p>";
+        if (TS.notEmpty(wc.hostedLink)) {
+          dlUse = innerLinks;
+          outerLinks += "<p>" += wc.hostedLink += "</p>";
+        } elseIf((wc.manualForward || wc.internalResolve) && TS.notEmpty(wc.konnLink)) {
+          dlUse = innerLinks;
+          outerLinks += "<p>" += wc.konnLink += "</p>";
          } else {
            dlUse = outerLinks;
            if (internal) {
@@ -1027,12 +1103,12 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         if (def(svcs)) {
            Map accountLinks = getLinks(null);
           for (any kv in svcs) {
-             if ((wc.manualForward || wc.internalResolve) && TS.notEmpty(kv.value.get("konnLink"))) {
-              String dlUse = innerLinks;
-                outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
-            } elseIf(TS.notEmpty(kv.value.get("hstLink"))) {
+             if (TS.notEmpty(kv.value.get("hstLink"))) {
                dlUse = innerLinks;
-                outerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
+               outerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
+            } elseIf((wc.manualForward || wc.internalResolve) && TS.notEmpty(kv.value.get("konnLink"))) {
+              String dlUse = innerLinks;
+              outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
             } else {
               dlUse = outerLinks;
               if (internal) {

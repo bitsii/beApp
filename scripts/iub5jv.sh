@@ -105,6 +105,8 @@ cp scripts/SBoxDisable.sh ../apprun/App/KBridge
 cp scripts/LEEnable.sh ../apprun/App/KBridge
 cp scripts/LEDisable.sh ../apprun/App/KBridge
 cp scripts/getLE.sh ../apprun/App/KBridge
+cp scripts/ddclient ../apprun/App/KBridge
+cp scripts/ddrun.sh ../apprun/App/KBridge
 cp scripts/CamEnable.sh ../apprun/App/KBridge
 cp scripts/CamDisable.sh ../apprun/App/KBridge
 cp scripts/HassEnable.sh ../apprun/App/KBridge

@@ -466,6 +466,18 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      return(CallBackUI.setElementsValuesResponse(Maps.from("duckDomain", duckDomain)));
    }
    
+   getCfRequest(request) Map {
+   
+     String cfHost = app.configManager.get("cf.host");
+     if (undef(cfHost)) { cfHost = ""; }
+     
+     String cfZone = app.configManager.get("cf.zone");
+     if (undef(cfZone)) { cfZone = ""; }
+     
+     return(CallBackUI.setElementsValuesResponse(Maps.from("cfHost", cfHost, "cfZone", cfZone)));
+   }
+   
+   
    getUpnpRequest(request) Map {
      return(CallBackUI.getUpnpResponse(self.upnpEnabled, self.internalResolve));
    }
@@ -708,6 +720,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       routerLink(rtrurl, user, konUser, konPass);
       //updateMyLinks();
       updateDuck();
+      updateCf();
       return(CallBackUI.initialSetupResponse());
      }
      
@@ -870,6 +883,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("updating addresses");
       app.plugin.updateNetAddresses();
       updateDuck();
+      updateCf();
       /*try {
         updateMyLinks();
       } catch (fpe) {
