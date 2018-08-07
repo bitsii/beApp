@@ -1015,12 +1015,20 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     String cfEmail = app.configManager.get("cf.email");
     String cfToken = app.configManager.get("cf.token");
     
-    if (TS.isEmpty(cfHost) || TS.isEmpty(cfZone) || TS.isEmpty(cfEmail) || TS.isEmpty(cfToken)) {
-      log.log("one of the params for cf is missing");
+    String duckEmail = app.configManager.get("duck.email");
+    String duckDomain = app.configManager.get("duck.domain");
+    String duckToken = app.configManager.get("duck.token");
+    
+    String lecmd;
+    if (TS.notEmpty(cfHost) && TS.notEmpty(cfZone) && TS.notEmpty(cfEmail) && TS.notEmpty(cfToken)) {
+      lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfHost + "." + cfZone;
+    } elseIf(TS.notEmpty(duckEmail) && TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
+      lecmd = "./App/KBridge/ledd.sh " + duckEmail + " " + duckToken + " " + duckDomain + ".duckdns.org";
+    } else {
+      log.log("did not have doLego configs for any option");
       return(self);
     }
     
-    String lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfHost + "." + cfZone;
     log.log("running lecmd " + lecmd);
     
     String res = System:Command.new(lecmd).open().output.readStringClose();
@@ -1029,11 +1037,12 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
   }
    
-  saveDuckRequest(String duckDomain, String duckToken, request) {
+  saveDuckRequest(String duckDomain, String duckEmail, String duckToken, request) {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
     app.configManager.put("duck.domain", duckDomain);
+    app.configManager.put("duck.email", duckEmail);
     app.configManager.put("duck.token", duckToken);
     updateDuck();
   }

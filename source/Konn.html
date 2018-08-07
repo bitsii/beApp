@@ -203,11 +203,15 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <input id="duckDomain" type="text" placeholder="DuckDNS domain entry">
         </div>
         <div class="pure-control-group">
+            <label for="duckEmail">DuckDns Login</label>
+            <input id="duckEmail" type="text" placeholder="Email for DuckDNS Account">
+        </div>
+        <div class="pure-control-group">
             <label for="duckToken">Duck Token</label>
             <input id="duckToken" type="password" placeholder="Duckdns Token">
         </div>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDuckRequest', document.getElementById('duckDomain').value, document.getElementById('duckToken').value);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDuckRequest', document.getElementById('duckDomain').value, document.getElementById('duckEmail').value, document.getElementById('duckToken').value);return false;">Save</button>
         </div>
         </fieldset>
     </form>

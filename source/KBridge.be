@@ -409,9 +409,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("sftpFile");
         String sfps = params.getFirst("sourceFile");
         String sshHost = getSshHost();
-        String sshLogin = app.configManager.get("il.sshLogin");
-        String sshPass = app.configManager.get("il.sshPass");
-        String sshPort = app.configManager.get("il.sshPort");
+        String sshLogin = app.configManager.get("sftp.sshLogin");
+        String sshPass = app.configManager.get("sftp.sshPass");
+        String sshPort = app.configManager.get("sftp.sshPort");
         if (TS.isEmpty(sshPort)) {
           sshPort = "22";
         }
@@ -460,9 +460,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    getDuckRequest(request) Map {
    
      String duckDomain = app.configManager.get("duck.domain");
+     String duckEmail = app.configManager.get("duck.email");
      if (undef(duckDomain)) { duckDomain = ""; }
+     if (undef(duckEmail)) { duckEmail = ""; }
      
-     return(CallBackUI.setElementsValuesResponse(Maps.from("duckDomain", duckDomain)));
+     return(CallBackUI.setElementsValuesResponse(Maps.from("duckDomain", duckDomain, "duckEmail", duckEmail)));
    }
    
    getCfRequest(request) Map {
