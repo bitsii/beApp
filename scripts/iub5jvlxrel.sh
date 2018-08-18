@@ -33,7 +33,7 @@ mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --bui
 #for rel add 
 # --outputPlatform linux 
 #rm
-# --emitFlag iuDebug 
+# --emitFlag appDebug 
 # and change last line from run to rel
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi

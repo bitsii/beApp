@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang jv --emitFlag iuDebug -mainClass=App:AppStart ../abelii/source/extended/Log.be source/IU.be source/IUCam.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang jv --emitFlag appDebug -mainClass=App:AppStart ../abelii/source/extended/Log.be source/IU.be source/IUCam.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 #--emitFlag iuOwnBackground
 
@@ -33,7 +33,7 @@ mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --bui
 #for rel add 
 # --outputPlatform linux 
 #rm
-# --emitFlag iuDebug 
+# --emitFlag appDebug 
 # and change last line from run to rel
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi

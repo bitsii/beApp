@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang jv --emitFlag iuDebug -mainClass=App:AppStart ../abelii/source/extended/Log.be source/IU.be source/IUHub.be source/KBridge.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang jv --emitFlag appDebug -mainClass=App:AppStart ../abelii/source/extended/Log.be source/IU.be source/IUHub.be source/KBridge.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 #--emitFlag iuOwnBackground
 
@@ -28,12 +28,12 @@ javac ../abelii/system/jv/be/*.java ../apprun/App/KBridge/Base/target/jv/be/*.ja
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang js --emitFlag iuDebug --ownProcess false -mainClass=IUHub:Eui ../abelii/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
+mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/KBridge/d --buildPath ../apprun/App/KBridge --emitLang js --emitFlag appDebug --ownProcess false -mainClass=IUHub:Eui ../abelii/source/extended/Log.be source/IUHubBr.be source/BrowserEUI.be
 
 #for rel add 
 #--outputPlatform linux 
 #rm
-#--emitFlag iuDebug 
+#--emitFlag appDebug 
 # and change last line from run to rel
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi

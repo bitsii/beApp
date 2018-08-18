@@ -83,7 +83,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         }
         super.new();
         log =@ IO:Logs.get(self);
-        //ifEmit(iuDebug) {
+        //ifEmit(appDebug) {
           IO:Logs.turnOnAll();
         //}
         Web:Client:CertificateManager.validateHosts = false;
@@ -330,6 +330,26 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       oapp = _app;
      }
      
+     clearTrackingAndRenew() {
+       try {
+         clearTracking();
+       } catch (e) { 
+         log.log("error background");
+         if (def(e)) { log.log("error " + e); }
+       }
+       try {
+         renewCert();
+       } catch (e) { 
+         log.log("error background");
+         if (def(e)) { log.log("error " + e); }
+       }
+       any e;
+     }
+     
+     renewCert() {
+       doLego("renew");
+     }
+     
      clearTracking() {
       log.log("clearing tracking");
       app.pluginsByName.get("Auth").trackingManager.clear();
@@ -344,7 +364,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      
       trc.repeatDelay = Time:Interval.new(7200, 0);
       trc.minimumDelay = Time:Interval.new(7000, 0);
-      trc.toInvoke = getInvocation("clearTracking", List.new());
+      trc.toInvoke = getInvocation("clearTrackingAndRenew", List.new());
       
       buu.startDelay = Time:Interval.new(10, 0);
       buu.repeatDelay = Time:Interval.new(600, 0);
@@ -1009,7 +1029,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
   }
   
-  doLego() {
+  doLego(String actionType) {
     String cfHost = app.configManager.get("cf.host");
     String cfZone = app.configManager.get("cf.zone");
     String cfEmail = app.configManager.get("cf.email");
@@ -1021,9 +1041,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     String lecmd;
     if (TS.notEmpty(cfHost) && TS.notEmpty(cfZone) && TS.notEmpty(cfEmail) && TS.notEmpty(cfToken)) {
-      lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfHost + "." + cfZone;
+      lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfHost + "." + cfZone + " " + actionType;
     } elseIf(TS.notEmpty(duckEmail) && TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
-      lecmd = "./App/KBridge/ledd.sh " + duckEmail + " " + duckToken + " " + duckDomain + ".duckdns.org";
+      lecmd = "./App/KBridge/ledd.sh " + duckEmail + " " + duckToken + " " + duckDomain + ".duckdns.org" + " " + actionType;
     } else {
       log.log("did not have doLego configs for any option");
       return(self);

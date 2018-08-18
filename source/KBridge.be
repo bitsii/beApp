@@ -372,7 +372,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         pwr.close();
         client.close();
         Bool doUpgrade = true;
-        ifEmit(iuDebug) {
+        ifEmit(appDebug) {
           doUpgrade = false;
         }
         if (doUpgrade) {
@@ -391,7 +391,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         return(super.handleCmd(params));
       }
       if (mode == "doLego") {
-        doLego();
+        doLego("run");
       }
       if (mode == "startLe") {
         startLes();

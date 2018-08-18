@@ -216,7 +216,7 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
         }
         super.new();
         log =@ IO:Logs.get(self);
-        //ifEmit(iuDebug) {
+        //ifEmit(appDebug) {
           IO:Logs.turnOnAll();
         //}
      }

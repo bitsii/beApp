@@ -65,7 +65,7 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
         }
         super.new();
         log =@ IO:Logs.get(self);
-        ifEmit(iuDebug) {
+        ifEmit(appDebug) {
           IO:Logs.turnOnAll();
         }
      }

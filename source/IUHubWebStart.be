@@ -80,7 +80,7 @@ use class IUHub:HubWebStart {
     }
     
     innerMain(List args) {
-      ifEmit(iuDebug) {
+      ifEmit(appDebug) {
         IO:Logs.turnOnAll();
       }
       Web:Client:CertificateManager.validateHosts = false;

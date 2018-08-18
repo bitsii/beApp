@@ -11,7 +11,7 @@ mkdir -p csaweb/csaweb/App/IUHub
 rm -rf targetMc
 mkdir -p targetMc
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath targetMc/d --buildPath targetMc --emitFlag iuDebug --emitLang cs -mainClass=IUHub:HubWebStart ../abelii/source/extended/Log.be source/IU.be source/IUHub.be source/IUHubWebStart.be source/Db.be source/SlDbCs.be source/BrowserUI.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath targetMc/d --buildPath targetMc --emitFlag appDebug --emitLang cs -mainClass=IUHub:HubWebStart ../abelii/source/extended/Log.be source/IU.be source/IUHub.be source/IUHubWebStart.be source/Db.be source/SlDbCs.be source/BrowserUI.be source/WebServer.be source/App.be source/WebApp.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 

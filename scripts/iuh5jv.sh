@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-java be.BEX_E ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitFlag iuDebug --emitLang jv -mainClass=IUHub:HubStart ../abelii/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/App.be
+java be.BEX_E ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUHub/d --buildPath ../apprun/App/IUHub --emitFlag appDebug --emitLang jv -mainClass=IUHub:HubStart ../abelii/source/extended/Log.be source/IU.be source/IUHub.be source/Db.be source/BrowserUI.be source/BrowserJvFx.be source/App.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
