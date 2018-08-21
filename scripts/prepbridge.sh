@@ -66,6 +66,7 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install openjdk-9-jdk-headless
   #apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes xdg-utils
+  apt -qq --assume-yes install libio-socket-ssl-perl libdata-validate-ip-perl
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen apache2
   
   apt -qq --assume-yes install php7.0 php7.0-gd sqlite php7.0-sqlite php7.0-curl php7.0-bz2 php7.0-cli php7.0-intl php7.0-json php7.0-mbstring php7.0-mcrypt php7.0-opcache php7.0-sqlite3 php7.0-xml php7.0-zip php-apcu php-pear

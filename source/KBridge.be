@@ -626,7 +626,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.configManager.put("webApp.Cam.web.port", intPorti.toString());
      }
      WebConnect wc = app.plugin.wcol.o;
-     if (wc.getServices().has("80") || TS.notEmpty(app.configManager.get("le.assuredOnce"))) {
+     if (true || wc.getServices().has("80") || TS.notEmpty(app.configManager.get("le.assuredOnce"))) {
       log.log("has / has had le fwd");
      } else {
        wc.putService("Enable Let's Encrypt certificate generation", "80", "", "<a href=\"http://$ip$:$port$/\" target=\"_blank\">$type$ Let's Encrypt</a>");
