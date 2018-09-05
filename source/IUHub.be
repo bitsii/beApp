@@ -17,6 +17,8 @@ use System:Command as Com;
 use Time:Sleep;
 use Container:Pair;
 
+use Net:Wol;
+
 use App:Alert;
 
 use App:LocalWebApp;
@@ -297,9 +299,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     wc.updateInternal(homePage);
     app.plugin.wcol.o = wc;
     oapp.plugin.wcol.o = wc;
-    log.log("updating addresses");
-    //app.plugin.updateNetAddresses();
-    app.plugin.updateUrls();
     log.log("saving");
     app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
     log.log("upnp doUpdate done");
@@ -542,9 +541,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       //if (TS.isEmpty(lastImSo) || lastImSo != "true") {
       //  return(CallBackUI.reloadResponse());
       //}
-      
-      //app.plugin.updateUrls();
-      System:Thread.new(app.plugin.getInvocation("updateUrls", List.new())).start();
       
       Map res = Map.new();
       res["action"] = "hideImapResponse";

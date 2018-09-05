@@ -659,12 +659,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(actionLinks);
    }
    
-   imapSettingsRequest(Map arg, request) {
-     Map res = super.imapSettingsRequest(arg, request);
-     System:Thread.new(app.plugin.getInvocation("updateNetAddresses", List.new())).start();
-     return(res);
-   }
-   
    loggedIn(Account a, Map res, Map arg, request) Map {
     res = super.loggedIn(a, res, arg, request);
     res["devLinksList"] = "";
@@ -882,7 +876,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("exception during forwardports " + fpe);
       }
       log.log("updating addresses");
-      app.plugin.updateNetAddresses();
       updateDuck();
       updateCf();
       /*try {
@@ -893,7 +886,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           log.log("fpe " + fpe);
         }
       }*/
-      app.plugin.updateUrls();
       log.log("saving");
       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
       log.log("upnp doForward done");
