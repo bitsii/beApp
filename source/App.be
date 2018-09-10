@@ -1645,6 +1645,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           String serviceSessionKey = System:Random.getString(64);
           request.serviceSessionKey = serviceSessionKey;
           request.putSession("pageToken", pageToken);
+          request.putSession("isServiceSession", "true");
           res["serviceSessionKey"] = serviceSessionKey;
           res["pageToken"] = pageToken;
         }
