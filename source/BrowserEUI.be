@@ -249,6 +249,23 @@ class HE {
     }
   }
   
+  existsGet() Bool {
+    
+    emit(js) {
+    """
+      if (this.bevi_element !== null && typeof(this.bevi_element) !== 'undefined') { //}
+    """
+    }
+    return(true);
+    emit(js) {
+    """
+    //{
+    }
+    """
+    }
+    return(false);
+  }
+  
   displayGet() String {
     String res;
     emit(js) {
