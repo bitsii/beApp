@@ -3270,6 +3270,8 @@ class App:AjaxPlugin {
           } else {
             request.continueHandling = true;
           }
+        } else {
+          request.continueHandling = true;
         }
       } catch (any e) {
         log.log("Caught exception handling request");
