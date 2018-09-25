@@ -16,7 +16,7 @@ if [ "$4" == "renew" ]; then
 fi
 
 export DUCKDNS_TOKEN="$2"
-lego -a --email="$1" --domains="$3" --dns duckdns "$4"
+./App/KBridge/lego -a --email="$1" --domains="$3" --dns duckdns "$4"
 
 cd .lego/certificates
 

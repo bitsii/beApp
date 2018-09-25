@@ -17,7 +17,7 @@ fi
 
 export CLOUDFLARE_EMAIL="$1"
 export CLOUDFLARE_API_KEY="$2"
-lego -a --email="$1" --domains="$3" --dns cloudflare "$4"
+./App/KBridge/lego -a --email="$1" --domains="$3" --dns cloudflare "$4"
 
 cd .lego/certificates
 

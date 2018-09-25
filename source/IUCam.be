@@ -203,7 +203,7 @@ use App:WebApp;
 use System:Thread:ObjectLocker as OLocker;
 
 use Crypto:Symmetric as Crypt;
-use class IUCam:CamPlugin(IU:IUPlugin) {
+use class IUCam:CamPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
@@ -213,6 +213,7 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
           Background bg = Background.new();
           App:Background abg = App:Background.new();
           Bool runBackground = true;
+          any app;
         }
         super.new();
         log =@ IO:Logs.get(self);
@@ -224,6 +225,19 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
      runBackgroundTasks() {
       abg.runMyTasks();
     }
+    
+    restartRequest(Map arg, request) Map {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        log.log("Restarting as requested, will have exit code 3 by login " + request.context.get("account").user);
+        restart();
+     }
+     return(null);
+   }
+   
+   restart() {
+     log.log("doing restart/exit");
+     System:Process.exit(3);
+   }
      
      cohostWith(IUCam:CamPlugin ohp) {
        log.log("in cam cohostWith");
@@ -231,7 +245,7 @@ use class IUCam:CamPlugin(IU:IUPlugin) {
      }
      
     start() {
-      prepReverseProxy();
+      //prepReverseProxy();
       bg.app = app;
       abg.startDelay = Time:Interval.new(10, 0);
       abg.repeatDelay = Time:Interval.new(1000, 0);
