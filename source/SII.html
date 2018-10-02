@@ -35,8 +35,9 @@
         <div class="pure-menu">
             <a class="pure-menu-heading" href="#">Edgii</a>
             <ul class="pure-menu-list">
-                <!--setup-->
-                <li class="pure-menu-item" id="secretMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'secretDiv');return false;">Edit Record</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');callUI('toLoginResponse');return false;" id="loginMe" style="display: none;">Login</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;" id="logoutMe" style="display: none;">Logout</a></li>
+                <li class="pure-menu-item" id="secretMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'secretDiv');return false;">Edit Entry</a></li>
             </ul>
         </div>
     </div>
@@ -47,24 +48,37 @@
     <p><a href="#" onclick="callUI('hideInform');return false;">Clear Message</a></p>
     </div>
     
-    <div id="credsDiv" style="display: none;">
-     <form class="pure-form pure-form-aligned">
-     <fieldset>
+    <div id="loginDiv">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
         <div class="pure-control-group">
-            <label for="credName">Name</label>
-            <input id="credName" type="text" placeholder="Name for credential">
+            <label for="spacer">Login</label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Login to Device</span>
         </div>
+        
         <div class="pure-control-group">
-            <label for="credPass">Password</label>
-            <input id="credPass" type="password" placeholder="Password for credential">
+            <label for="name">Account Name</label>
+            <input id="accountName" type="text" placeholder="Name">
         </div>
+        
+        <div class="pure-control-group">
+            <label for="password">Account Password</label>
+            <input id="accountPass" type="password" placeholder="Password">
+        </div>
+        <input type="hidden" id="sessionName" value=""/>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('setCredentialRequest', document.getElementById('credName').value, document.getElementById('credPass').value);return false;">Enable Credential</button>
+        <label for="sessionNeverExpires" class="pure-checkbox">
+            <input id="sessionNeverExpires" type="checkbox"> Remember me.
+        </label>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('login');return false;">Login</button>
+        
         </div>
+        
         </fieldset>
-    </form> 
+    </form>
     </div>
-     
+       
     <div id="secretDiv" style="display: none;">
     <form class="pure-form pure-form-aligned">
     <fieldset>
@@ -81,7 +95,7 @@
             <input id="secPass" type="text" placeholder="Login Password">
         </div>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveSecretRequest', document.getElementById('secName').value, document.getElementById('secAccount').value, document.getElementById('secPass').value, document.getElementById('credName').value, document.getElementById('credPass').value);return false;">Save Record</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('saveSecret');return false;">Save Entry</button>
         </div>
         </fieldset>
     </form>

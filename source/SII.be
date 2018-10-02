@@ -59,6 +59,7 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
         IO:Logs.turnOnAll();
       }
       log.log("in ews start");
+      app.pluginsByName.get("Auth").nonAuthedRequests.put("getCredsRequest");
       fwp.startDelay = Time:Interval.new(1, 0);
       fwp.repeatDelay = Time:Interval.new(2, 0);
       fwp.minimumDelay = Time:Interval.new(3, 0);
@@ -66,7 +67,52 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       //fwp.start();
     }
     
-    saveSecretRequest(String secName, String secAccount, String secPass, , String credName, String credPass, request) {
+    getCredsRequest(Map arg, request) {
+      Map lres = app.pluginsByName.get("Auth").loginRequest(arg, request);
+      if (def(lres) && lres.has("action") && lres["action"] == "loggedInResponse") {
+        log.log("get creds ok");
+        String an = arg["accountName"];
+        String ap = arg["accountPass"];
+        //log.log("ap " + ap + " an " + an);
+        
+        String pass = an + ap;
+        Digest:SHA256 ds = Digest:SHA256.new();
+        for (Int i = 0;i < 2;i++=) {
+          pass = ds.digest(pass);
+        }
+        String passHex = Encode:Hex.encode(pass);
+        String pc = passHex.substring(0, 20);
+        
+        ds = Digest:SHA256.new();
+        for (i = 0;i < 2;i++=) {
+          pass = ds.digest(pass);
+        }
+        passHex = Encode:Hex.encode(pass);
+        String iv = passHex.substring(0, 20);
+        
+        Int ivfe = iv.size / 2;
+        String ivfirst = iv.substring(0, ivfe);
+        String ivsecond = iv.substring(ivfe);
+        Int pcfe = pc.size / 2;
+        String pcfirst = pc.substring(0, pcfe);
+        String pcsecond = pc.substring(pcfe);
+        
+        //log.log("iv " + iv + " ivfirst " + ivfirst + " ivsecond " + ivsecond);
+        //log.log("pc " + pc + " pcfirst " + pcfirst + " pcsecond " + pcsecond);
+        
+        lres["ivfirst"] = ivfirst;
+        lres["pcfirst"] = pcfirst;
+        request.putSession("ivsecond", ivsecond);
+        request.putSession("pcsecond", pcsecond);
+        
+        return(lres);
+      } else {
+        log.log("bad creds");
+        return(lres);
+      }
+    }
+    
+    saveSecretRequest(String secName, String secAccount, String secPass, String ivFirst, String pcFirst, request) {
       log.log("in ssr");
       auto now = Time:Interval.now();
       auto nowSecs = now.seconds.toString();
@@ -76,15 +122,32 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       
       log.log("jsentry " + jsentry);
       
-      //username and password (name is for salt)
-      //  when not known prompt
-      //  re-encrypt all option
-      //  keep last N in history
-      //  offline backup option, only works locally, in case of verybad (maybe  
-      //  only need this), recovers last
+      String ivSecond = request.getSession("ivsecond");
+      String pcSecond = request.getSession("pcsecond");
       
-      //auto seckv = app.getKvDb("MYPASSES");
+      String iv = ivFirst + ivSecond;
+      String pc = pcFirst + pcSecond;
       
+      String passHash = iv + pc;
+      
+      Digest:SHA256 ds = Digest:SHA256.new();
+      for (Int i = 0;i < 3;i++=) {
+        passHash = ds.digest(passHash);
+      }
+      passHash = Encode:Hex.encode(passHash);
+      
+      //log.log("iv " + iv + " pc " + pc);
+      
+      jsentry = Crypt.encryptPassToHex(iv, pc, jsentry);
+      
+      String subject = "Entry " + nowSecs + " " + nowMillis + " " + secName;
+      Map outer = Maps.from("secret", jsentry, "passHash", passHash, "subject", subject);
+      
+      String outers = Json:Marshaller.marshall(outer);
+      
+      auto seckv = app.getKvDb("MYPASSES");
+      
+      seckv.put(secName, outers);
       
       return(CallBackUI.informResponse("Secret Saved"));
     }
@@ -131,6 +194,31 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
    aboutRequest(request) Map {
      String about = "<p>Edgii WifiSender Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
+   }
+   
+   okForPageToken(request) Bool {
+     if (request.embedded) {
+       return(true);
+     }
+     String ref = request.getInputHeader("referer");
+     if (TS.isEmpty(ref)) {
+      return(false);
+     }
+     Int pos = 0;
+     for (Int i = 0;i < 3;i++=) {
+       pos = ref.find("/", pos + 1);
+     }
+     ref = ref.substring(pos);
+     log.log("okForPageToken " + ref);
+     if (ref.has("?")) {
+      ref = ref.substring(0, ref.find("?"));
+     }
+     log.log("okForPageToken second " + ref);
+     String pref = "/App/" + self.name;
+     if (ref == pref + "/SII.html") {
+      return(true);
+     }
+     return(false);
    }
    
 }
