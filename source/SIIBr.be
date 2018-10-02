@@ -121,6 +121,32 @@ use class IUHub:Eui {
      }
    }
    
+   togglePassField(String name) {
+    if (HD.getEle(name).type == "text") {
+      HD.getEle(name).type = "password";
+    } else {
+      HD.getEle(name).type = "text";
+    }
+   }
+   
+   copyField(String name) {
+     emit(js) {
+     """
+     var fld = document.getElementById(beva_name.bems_toJsString());
+     if (fld.type == "password") {
+       var waspass = 1;
+       fld.type = "text";
+     }
+     fld.focus();
+     fld.select();
+     document.execCommand('copy');
+     if (waspass == 1) {
+       fld.type = "password";
+     }
+     """
+     }
+   }
+   
    saveSecret() {
      HC.callApp(Lists.from("saveSecretRequest", HD.getEle("secName").value, HD.getEle("secAccount").value, HD.getEle("secPass").value, ivFirst, pcFirst));
    }

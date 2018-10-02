@@ -42,6 +42,10 @@
         </div>
     </div>
 
+    <br/>
+    <br/>
+    <br/>
+
     <div id="main">
     <div id="informDiv" style="display: none;">
     <div id="informMessageDiv"></div>
@@ -83,16 +87,16 @@
     <form class="pure-form pure-form-aligned">
     <fieldset>
         <div class="pure-control-group">
-            <label for="secName">Title</label>
+            <label for="secName">Title &#x1f513;</label>
             <input id="secName" type="text" placeholder="Friendly name for Record">
         </div>
         <div class="pure-control-group">
-            <label for="secAccount">Account Name</label>
-            <input id="secAccount" type="text" placeholder="Login Id">
+            <label for="secAccount">Account Name &#x1f512;</label>
+            <input id="secAccount" type="password" placeholder="Login Id">&nbsp;<a href="#" onclick="callUI('togglePassField','secAccount');return false;">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secAccount');return false;">&#x1f4cb;</a>
         </div>
         <div class="pure-control-group">
-            <label for="secPass">Password</label>
-            <input id="secPass" type="text" placeholder="Login Password">
+            <label for="secPass">Password &#x1f512;</label>
+            <input id="secPass" type="password" placeholder="Login Password">&nbsp;<a href="#" onclick="callUI('togglePassField','secPass');return false;">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secPass');return false;">&#x1f4cb;</a>
         </div>
         <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary" onclick="callUI('saveSecret');return false;">Save Entry</button>

@@ -204,6 +204,24 @@ class HE {
     return(res);
   }
   
+  typeSet(String val) self {
+    emit(js) {
+    """
+    this.bevi_element.type = beva_val.bems_toJsString();
+    """
+    }
+  }
+  
+  typeGet() String {
+    String res;
+    emit(js) {
+    """
+    bevl_res = new be_$class/Text:String$().bems_new(this.bevi_element.type);
+    """
+    }
+    return(res);
+  }
+  
   checkedSet(Bool val) self {
     emit(js) {
     """
