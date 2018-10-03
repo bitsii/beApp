@@ -168,6 +168,21 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       return(Maps.from("iv", iv, "pc", pc, "ph", passHash));
     }
     
+    deleteSecretRequest(String secName, request) {
+    
+      if (TS.isEmpty(secName)) {
+        return(CallBackUI.informResponse("Title is Requred"));
+      }
+      Account a = request.context.get("account");
+      auto seckv = app.getKvDb("MYPASSES");
+      seckv.delete(a.user + "!" + secName);
+      Map lres = Map.new();
+      lres["action"] = "relistSecretsResponse";
+      lres["accountName"] = a.user;
+      getList(lres, lres);
+      return(lres);
+    }
+    
     saveSecretRequest(String secName, String secAccount, String secPass, String ivFirst, String pcFirst, request) {
       log.log("in ssr");
       if (TS.isEmpty(secName)) {
@@ -200,7 +215,7 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       //return(CallBackUI.informResponse("Secret Saved"));
       
       Map lres = Map.new();
-      lres["action"] = "saveSecretResponse";
+      lres["action"] = "relistSecretsResponse";
       lres["accountName"] = a.user;
       getList(lres, lres);
       return(lres);

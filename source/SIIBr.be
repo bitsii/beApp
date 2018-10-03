@@ -109,6 +109,12 @@ use class IUHub:Eui {
       hideNShowMenuResponse(Sets.from("loginMe"));
    }
    
+   toFind() {
+    hideNShowResponse(Sets.from("findDiv"));
+    HD.getEle("secAccount").type = "password";
+    HD.getEle("secPass").type = "password";
+   }
+   
    loggedInResponse(Map arg) {
      hideNShowResponse(Sets.from("findDiv"));
      hideNShowMenuResponse(Sets.from("logoutMe", "secretMe", "findMe"));
@@ -126,13 +132,20 @@ use class IUHub:Eui {
      showTitles();
    }
    
-   saveSecretResponse(Map arg) {
+   relistSecretsResponse(Map arg) {
      hideNShowResponse(Sets.from("findDiv"));
      titles = arg["titles"];
      showTitles();
    }
    
+   clearSearch() {
+     HD.getEle("secSearch").value = "";
+     showTitles();
+   }
+   
    showTitles() {
+     HD.getEle("secAccount").type = "password";
+     HD.getEle("secPass").type = "password";
      String search = HD.getEle("secSearch").value;
      if (TS.isEmpty(search)) {
        Bool all = true;
@@ -183,6 +196,10 @@ use class IUHub:Eui {
    
    saveSecret() {
      HC.callApp(Lists.from("saveSecretRequest", HD.getEle("secName").value, HD.getEle("secAccount").value, HD.getEle("secPass").value, ivFirst, pcFirst));
+   }
+   
+   deleteSecret() {
+     HC.callApp(Lists.from("deleteSecretRequest", HD.getEle("secName").value));
    }
    
    login() {

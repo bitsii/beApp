@@ -93,14 +93,18 @@
         </div>
         <div class="pure-control-group">
             <label for="secAccount">Username &#x1f512;</label>
-            <input id="secAccount" type="password" placeholder="Account/Login ID used">&nbsp;<a href="#" onclick="callUI('togglePassField','secAccount');return false;">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secAccount');return false;">&#x1f4cb;</a>
+            <input id="secAccount" type="password" placeholder="Account/Login ID used">&nbsp;<a href="#" onclick="callUI('togglePassField','secAccount');return false;" tabindex="-1">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secAccount');return false;" tabindex="-1">&#x1f4cb;</a>
         </div>
         <div class="pure-control-group">
             <label for="secPass">Password &#x1f512;</label>
-            <input id="secPass" type="password" placeholder="Password used">&nbsp;<a href="#" onclick="callUI('togglePassField','secPass');return false;">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secPass');return false;">&#x1f4cb;</a>
+            <input id="secPass" type="password" placeholder="Password used">&nbsp;<a href="#" onclick="callUI('togglePassField','secPass');return false;" tabindex="-1">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secPass');return false;" tabindex="-1">&#x1f4cb;</a>
         </div>
         <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary" onclick="callUI('saveSecret');return false;">Save Entry</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('toFind');return false;">Cancel</button>
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('deleteSecret');return false;">Delete Entry</button>
         </div>
         </fieldset>
     </form>
@@ -113,12 +117,14 @@
         <label for="secSearch">Search Titles</label>
         <input id="secSearch" type="text" placeholder="Title Contains..." onchange="callUI('showTitles');return false;">
         <button type="submit" class="pure-button pure-button-primary" onclick="callUI('showTitles');return false;">Search</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('clearSearch');return false;">Clear</button>
     </div>
     </fieldset>
     </form>
     <div class="pure-g">
     <div class="pure-u-1-5"></div>
         <div class="pure-u-4-5">
+          <button type="submit" class="pure-button pure-button-primary" onclick="callUI('hideNShowOneResponse', 'secretDiv');return false;">New</button>
     <div id="titleDiv"></div>
     </div>
     </div>
