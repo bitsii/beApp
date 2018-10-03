@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Edgii">
-    <title>Edgii</title>
+    <meta name="description" content="Bitsii Passwords">
+    <title>Bitsii Passwords</title>
     
     <link rel="stylesheet" href="css/layouts/pure-min.css">
     
@@ -33,11 +33,12 @@
 
     <div id="menu">
         <div class="pure-menu">
-            <a class="pure-menu-heading" href="#">Edgii</a>
+            <a class="pure-menu-heading" href="#">Bitsii PS</a>
             <ul class="pure-menu-list">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');callUI('toLoginResponse');return false;" id="loginMe" style="display: none;">Login</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;" id="logoutMe" style="display: none;">Logout</a></li>
-                <li class="pure-menu-item" id="secretMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'secretDiv');return false;">Edit Entry</a></li>
+                <li class="pure-menu-item" id="secretMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'secretDiv');return false;">Edit</a></li>
+                <li class="pure-menu-item" id="findMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'findDiv');return false;">Find</a></li>
             </ul>
         </div>
     </div>
@@ -84,19 +85,19 @@
     </div>
        
     <div id="secretDiv" style="display: none;">
-    <form class="pure-form pure-form-aligned">
+    <form class="pure-form pure-form-aligned" autocomplete="off">
     <fieldset>
         <div class="pure-control-group">
             <label for="secName">Title &#x1f513;</label>
-            <input id="secName" type="text" placeholder="Friendly name for Record">
+            <input id="secName" type="text" placeholder="Name for Entry">
         </div>
         <div class="pure-control-group">
-            <label for="secAccount">Account Name &#x1f512;</label>
-            <input id="secAccount" type="password" placeholder="Login Id">&nbsp;<a href="#" onclick="callUI('togglePassField','secAccount');return false;">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secAccount');return false;">&#x1f4cb;</a>
+            <label for="secAccount">Username &#x1f512;</label>
+            <input id="secAccount" type="password" placeholder="Account/Login ID used">&nbsp;<a href="#" onclick="callUI('togglePassField','secAccount');return false;">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secAccount');return false;">&#x1f4cb;</a>
         </div>
         <div class="pure-control-group">
             <label for="secPass">Password &#x1f512;</label>
-            <input id="secPass" type="password" placeholder="Login Password">&nbsp;<a href="#" onclick="callUI('togglePassField','secPass');return false;">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secPass');return false;">&#x1f4cb;</a>
+            <input id="secPass" type="password" placeholder="Password used">&nbsp;<a href="#" onclick="callUI('togglePassField','secPass');return false;">&#x1F441;</a>&nbsp;<a href="#" onclick="callUI('copyField','secPass');return false;">&#x1f4cb;</a>
         </div>
         <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary" onclick="callUI('saveSecret');return false;">Save Entry</button>
@@ -104,6 +105,24 @@
         </fieldset>
     </form>
     </div>
+    
+    <div id="findDiv" style="display: none;">
+    <form class="pure-form pure-form-aligned" autocomplete="off">
+    <fieldset>
+    <div class="pure-control-group">
+        <label for="secSearch">Search Titles</label>
+        <input id="secSearch" type="text" placeholder="Title Contains..." onchange="callUI('showTitles');return false;">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('showTitles');return false;">Search</button>
+    </div>
+    </fieldset>
+    </form>
+    <div class="pure-g">
+    <div class="pure-u-1-5"></div>
+        <div class="pure-u-4-5">
+    <div id="titleDiv"></div>
+    </div>
+    </div>
+    </div> 
      
     <div id="aboutDiv" style="display: none;">
     <div class="pure-g">

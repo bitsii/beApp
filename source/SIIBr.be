@@ -69,7 +69,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("secretDiv", "loginDiv");
+    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -81,7 +81,7 @@ use class IUHub:Eui {
    }
    
    hideNShowMenuResponse(Set toShow) {
-    List allElems =@ Lists.from("secretMe", "loginMe", "logoutMe");
+    List allElems =@ Lists.from("secretMe", "loginMe", "logoutMe", "findMe");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -110,15 +110,49 @@ use class IUHub:Eui {
    }
    
    loggedInResponse(Map arg) {
-     hideNShowResponse(Sets.from("secretDiv"));
-     hideNShowMenuResponse(Sets.from("logoutMe", "secretMe"));
+     hideNShowResponse(Sets.from("findDiv"));
+     hideNShowMenuResponse(Sets.from("logoutMe", "secretMe", "findMe"));
      fields {
        String ivFirst = arg["ivfirst"];
        String pcFirst = arg["pcfirst"];
+       List titles = arg["titles"];
      }
      if (TS.isEmpty(ivFirst) || TS.isEmpty(pcFirst)) {
        logout();
      }
+     if (titles.size < 1) {
+       hideNShowResponse(Sets.from("secretDiv"));
+     }
+     showTitles();
+   }
+   
+   saveSecretResponse(Map arg) {
+     hideNShowResponse(Sets.from("findDiv"));
+     titles = arg["titles"];
+     showTitles();
+   }
+   
+   showTitles() {
+     String search = HD.getEle("secSearch").value;
+     if (TS.isEmpty(search)) {
+       Bool all = true;
+     } else {
+       all = false;
+     }
+     String lh = String.new();
+     for (String title in titles) {
+       if (all || title.has(search)) {
+         lh += "<p><a href=\"#\" onclick=\"callApp('openSecretRequest', '" += title += "', '" += ivFirst += "', '" += pcFirst += "');return false;\">" += title += "</a>";
+       }
+     }
+     HD.getEle("titleDiv").innerHTML = lh;
+   }
+   
+   openSecretResponse(Map mentry) {
+     hideNShowResponse(Sets.from("secretDiv")); 
+     HD.getEle("secName").value = mentry["secName"];
+     HD.getEle("secAccount").value = mentry["secAccount"];
+     HD.getEle("secPass").value = mentry["secPass"];
    }
    
    togglePassField(String name) {

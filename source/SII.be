@@ -105,6 +105,8 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
         request.putSession("ivsecond", ivsecond);
         request.putSession("pcsecond", pcsecond);
         
+        getList(arg, lres);
+        
         return(lres);
       } else {
         log.log("bad creds");
@@ -112,16 +114,44 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       }
     }
     
-    saveSecretRequest(String secName, String secAccount, String secPass, String ivFirst, String pcFirst, request) {
-      log.log("in ssr");
-      auto now = Time:Interval.now();
-      auto nowSecs = now.seconds.toString();
-      auto nowMillis = now.milliseconds.toString();
-      Map mentry = Maps.from("secName", secName, "secAccount", secAccount, "secPass", secPass, "updateSecs", nowSecs, "updateMillis", nowMillis);
-      String jsentry = Json:Marshaller.marshall(mentry);
+    getList(Map arg, Map lres) {
+      String an = arg["accountName"];
+      List titles = List.new();
+      for (auto kv in app.getKvDb("MYPASSES").getMap(an + "!")) {
+        titles += kv.key.split("!").get(1);
+      }
+      lres["titles"] = titles;
+    }
+    
+    openSecretRequest(String secName, String ivFirst, String pcFirst, request) {
+      if (TS.isEmpty(secName)) {
+        return(CallBackUI.informResponse("Title is Requred"));
+      }
+      Account a = request.context.get("account");
+      Map creds = getCreds(ivFirst, pcFirst, request);
       
-      log.log("jsentry " + jsentry);
+      auto seckv = app.getKvDb("MYPASSES");
       
+      String outers = seckv.get(a.user + "!" + secName);
+      
+      if (TS.isEmpty(outers)) {
+        return(CallBackUI.informResponse("Entry not found"));
+      }
+      Map outer = Json:Unmarshaller.unmarshall(outers);
+      
+      if (outer["passHash"] != creds["ph"]) {
+        return(CallBackUI.informResponse("Incorrect Password"));
+      }
+      
+      String jsentry = Crypt.decryptPassFromHex(creds["iv"], creds["pc"], outer["secret"]);
+      
+      Map mentry = Json:Unmarshaller.unmarshall(jsentry);
+      
+      return(CallBackUI.openSecretResponse(mentry));
+      
+    }
+    
+    getCreds(String ivFirst, String pcFirst, request) Map {
       String ivSecond = request.getSession("ivsecond");
       String pcSecond = request.getSession("pcsecond");
       
@@ -135,21 +165,45 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
         passHash = ds.digest(passHash);
       }
       passHash = Encode:Hex.encode(passHash);
+      return(Maps.from("iv", iv, "pc", pc, "ph", passHash));
+    }
+    
+    saveSecretRequest(String secName, String secAccount, String secPass, String ivFirst, String pcFirst, request) {
+      log.log("in ssr");
+      if (TS.isEmpty(secName)) {
+        return(CallBackUI.informResponse("Title is Requred"));
+      }
+      Account a = request.context.get("account");
+      auto now = Time:Interval.now();
+      auto nowSecs = now.seconds.toString();
+      auto nowMillis = now.milliseconds.toString();
+      Map mentry = Maps.from("secName", secName, "secAccount", secAccount, "secPass", secPass, "updateSecs", nowSecs, "updateMillis", nowMillis);
+      String jsentry = Json:Marshaller.marshall(mentry);
+      
+      log.log("jsentry " + jsentry);
+      
+      Map creds = getCreds(ivFirst, pcFirst, request);
       
       //log.log("iv " + iv + " pc " + pc);
       
-      jsentry = Crypt.encryptPassToHex(iv, pc, jsentry);
+      jsentry = Crypt.encryptPassToHex(creds["iv"], creds["pc"], jsentry);
       
       String subject = "Entry " + nowSecs + " " + nowMillis + " " + secName;
-      Map outer = Maps.from("secret", jsentry, "passHash", passHash, "subject", subject);
+      Map outer = Maps.from("secret", jsentry, "passHash", creds["ph"], "subject", subject);
       
       String outers = Json:Marshaller.marshall(outer);
       
       auto seckv = app.getKvDb("MYPASSES");
       
-      seckv.put(secName, outers);
+      seckv.put(a.user + "!" + secName, outers);
       
-      return(CallBackUI.informResponse("Secret Saved"));
+      //return(CallBackUI.informResponse("Secret Saved"));
+      
+      Map lres = Map.new();
+      lres["action"] = "saveSecretResponse";
+      lres["accountName"] = a.user;
+      getList(lres, lres);
+      return(lres);
     }
      
      nameGet() String {
