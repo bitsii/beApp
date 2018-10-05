@@ -69,7 +69,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv");
+    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv", "changePassDiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -81,7 +81,7 @@ use class IUHub:Eui {
    }
    
    hideNShowMenuResponse(Set toShow) {
-    List allElems =@ Lists.from("secretMe", "loginMe", "logoutMe", "findMe");
+    List allElems =@ Lists.from("secretMe", "loginMe", "logoutMe", "findMe", "changePassMe");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -117,7 +117,7 @@ use class IUHub:Eui {
    
    loggedInResponse(Map arg) {
      hideNShowResponse(Sets.from("findDiv"));
-     hideNShowMenuResponse(Sets.from("logoutMe", "secretMe", "findMe"));
+     hideNShowMenuResponse(Sets.from("logoutMe", "secretMe", "findMe", "changePassMe"));
      fields {
        String ivFirst = arg["ivfirst"];
        String pcFirst = arg["pcfirst"];
@@ -130,6 +130,26 @@ use class IUHub:Eui {
        hideNShowResponse(Sets.from("secretDiv"));
      }
      showTitles();
+   }
+   
+   changePassRequest() {
+    String op = HD.getElementById("changePassOld").value;
+    String np = HD.getElementById("changePassNew").value;
+    String np2 = HD.getElementById("changePassNew2").value;
+    HD.getElementById("changePassOld").value = "";
+    HD.getElementById("changePassNew").value = "";
+    HD.getElementById("changePassNew2").value = "";
+    if (np == np2) {
+    Map arg = Map.new();
+    arg["action"] = "changeCredsRequest";
+    arg["oldPass"] = op;
+    arg["newPass"] = np;
+    arg["ivFirst"] = ivFirst;
+    arg["pcFirst"] = pcFirst;
+    handleCallOut(arg);
+    } else {
+      inform("New passwords don't match");
+    }
    }
    
    relistSecretsResponse(Map arg) {

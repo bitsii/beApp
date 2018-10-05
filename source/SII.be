@@ -123,6 +123,26 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       lres["titles"] = titles;
     }
     
+    openSecret(String secName, Map creds, Account a) {
+      auto seckv = app.getKvDb("MYPASSES");
+      
+      String outers = seckv.get(a.user + "!" + secName);
+      
+      if (TS.isEmpty(outers)) {
+        throw(Alert.new("Entry not found"));
+      }
+      Map outer = Json:Unmarshaller.unmarshall(outers);
+      
+      if (outer["passHash"] != creds["ph"]) {
+        throw(Alert.new("Incorrect Password"));
+      }
+      
+      String jsentry = Crypt.decryptPassFromHex(creds["iv"], creds["pc"], outer["secret"]);
+      
+      Map mentry = Json:Unmarshaller.unmarshall(jsentry);
+      return(mentry);
+    }
+    
     openSecretRequest(String secName, String ivFirst, String pcFirst, request) {
       if (TS.isEmpty(secName)) {
         return(CallBackUI.informResponse("Title is Requred"));
@@ -130,22 +150,13 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       Account a = request.context.get("account");
       Map creds = getCreds(ivFirst, pcFirst, request);
       
-      auto seckv = app.getKvDb("MYPASSES");
-      
-      String outers = seckv.get(a.user + "!" + secName);
-      
-      if (TS.isEmpty(outers)) {
-        return(CallBackUI.informResponse("Entry not found"));
+      try {
+        Map mentry = openSecret(secName, creds, a);
+      } catch (any e) {
+        if (def(e) && e.getMessage().has("Incorrect")) {
+          return(CallBackUI.openAltPassResponse(secName));
+        }
       }
-      Map outer = Json:Unmarshaller.unmarshall(outers);
-      
-      if (outer["passHash"] != creds["ph"]) {
-        return(CallBackUI.informResponse("Incorrect Password"));
-      }
-      
-      String jsentry = Crypt.decryptPassFromHex(creds["iv"], creds["pc"], outer["secret"]);
-      
-      Map mentry = Json:Unmarshaller.unmarshall(jsentry);
       
       return(CallBackUI.openSecretResponse(mentry));
       
@@ -154,6 +165,10 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
     getCreds(String ivFirst, String pcFirst, request) Map {
       String ivSecond = request.getSession("ivsecond");
       String pcSecond = request.getSession("pcsecond");
+      return(getCreds(ivFirst, pcFirst, ivSecond, pcSecond));
+    }
+    
+    getCreds(String ivFirst, String pcFirst, String ivSecond, String pcSecond) Map {
       
       String iv = ivFirst + ivSecond;
       String pc = pcFirst + pcSecond;
@@ -183,34 +198,67 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       return(lres);
     }
     
+    changeCredsRequest(Map arg, request) {
+      
+      Map oldCreds = getCreds(arg["ivFirst"], arg["pcFirst"], request.getSession("ivsecond"), request.getSession("pcsecond"));
+      
+      //excepts on fail
+      app.pluginsByName.get("Auth").changePassRequest(arg, request);
+      
+      String newpass = arg["newPass"];
+      Account a = request.context.get("account");
+      
+      Map lr = Maps.from("accountName", a.user, "accountPass", newpass);
+      Map toRet = getCredsRequest(lr, request);
+      
+      Map newCreds = getCreds(toRet["ivfirst"], toRet["pcfirst"], request.getSession("ivsecond"), request.getSession("pcsecond"));
+      
+      for (auto kv in app.getKvDb("MYPASSES").getMap(a.user + "!")) {
+        String title = kv.key.split("!").get(1);
+        try {
+          Map sec = openSecret(title, oldCreds, a);
+          saveSecret(sec["secName"], sec["secAccount"], sec["secPass"], newCreds, a);
+        } catch (any e) {
+          log.log("open /save failed during change, probly wrong password");
+        }
+      }
+      
+      return(toRet);
+   }
+   
+   saveSecret(String secName, String secAccount, String secPass, Map creds, Account a) {
+    auto now = Time:Interval.now();
+    auto nowSecs = now.seconds.toString();
+    auto nowMillis = now.milliseconds.toString();
+    Map mentry = Maps.from("secName", secName, "secAccount", secAccount, "secPass", secPass, "updateSecs", nowSecs, "updateMillis", nowMillis);
+    String jsentry = Json:Marshaller.marshall(mentry);
+    
+    log.log("jsentry " + jsentry);
+    
+    //log.log("iv " + iv + " pc " + pc);
+    
+    jsentry = Crypt.encryptPassToHex(creds["iv"], creds["pc"], jsentry);
+    
+    String subject = "Entry " + nowSecs + " " + nowMillis + " " + secName;
+    Map outer = Maps.from("secret", jsentry, "passHash", creds["ph"], "subject", subject);
+    
+    String outers = Json:Marshaller.marshall(outer);
+    
+    auto seckv = app.getKvDb("MYPASSES");
+    
+    seckv.put(a.user + "!" + secName, outers);
+   }
+    
     saveSecretRequest(String secName, String secAccount, String secPass, String ivFirst, String pcFirst, request) {
       log.log("in ssr");
       if (TS.isEmpty(secName)) {
         return(CallBackUI.informResponse("Title is Requred"));
       }
       Account a = request.context.get("account");
-      auto now = Time:Interval.now();
-      auto nowSecs = now.seconds.toString();
-      auto nowMillis = now.milliseconds.toString();
-      Map mentry = Maps.from("secName", secName, "secAccount", secAccount, "secPass", secPass, "updateSecs", nowSecs, "updateMillis", nowMillis);
-      String jsentry = Json:Marshaller.marshall(mentry);
-      
-      log.log("jsentry " + jsentry);
       
       Map creds = getCreds(ivFirst, pcFirst, request);
       
-      //log.log("iv " + iv + " pc " + pc);
-      
-      jsentry = Crypt.encryptPassToHex(creds["iv"], creds["pc"], jsentry);
-      
-      String subject = "Entry " + nowSecs + " " + nowMillis + " " + secName;
-      Map outer = Maps.from("secret", jsentry, "passHash", creds["ph"], "subject", subject);
-      
-      String outers = Json:Marshaller.marshall(outer);
-      
-      auto seckv = app.getKvDb("MYPASSES");
-      
-      seckv.put(a.user + "!" + secName, outers);
+      saveSecret(secName, secAccount, secPass, creds, a);
       
       //return(CallBackUI.informResponse("Secret Saved"));
       
