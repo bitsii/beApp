@@ -154,6 +154,30 @@
     </form>
     </div>
     
+     <div id="altPassDiv" style="display: none;">
+        <div class="pure-g">
+    <div class="pure-u-1-5"></div>
+        <div class="pure-u-3-5"><span class="pure-form-message-inline">This entry appears to have a differnt password from your login.  If you changed your password on another device, then <a href="#" onclick="callUI('hideNShowOneResponse', 'changePassDiv');return false;">Change Your Password</a>(All synced devices must have the same password).  Otherwise, enter the credentials used when the entry was saved to update it to your current one.</span></div><div class="pure-u-1-5"></div></div>
+        <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="altAccount">Account Name</label>
+            <input id="altAccount" type="text" placeholder="">
+        </div>
+        <div class="pure-control-group">
+            <label for="altPass">Account Password</label>
+            <input id="altPass" type="password" placeholder="">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('altPassRequest');return false;">Update Password for Entry</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('toFind');return false;">Cancel</button>
+        </div>
+        </div>
+        
+    </fieldset>
+    </form>
+    </div>
+    
     <div id="aboutDiv" style="display: none;">
     <div class="pure-g">
     <div class="pure-u-1-24"></div>

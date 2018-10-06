@@ -67,43 +67,47 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       //fwp.start();
     }
     
+    genCreds(String an, String ap) {
+      
+      //log.log("ap " + ap + " an " + an);
+      
+      String pass = an + ap;
+      Digest:SHA256 ds = Digest:SHA256.new();
+      for (Int i = 0;i < 2;i++=) {
+        pass = ds.digest(pass);
+      }
+      String passHex = Encode:Hex.encode(pass);
+      String pc = passHex.substring(0, 20);
+      
+      ds = Digest:SHA256.new();
+      for (i = 0;i < 2;i++=) {
+        pass = ds.digest(pass);
+      }
+      passHex = Encode:Hex.encode(pass);
+      String iv = passHex.substring(0, 20);
+      
+      Int ivfe = iv.size / 2;
+      String ivfirst = iv.substring(0, ivfe);
+      String ivsecond = iv.substring(ivfe);
+      Int pcfe = pc.size / 2;
+      String pcfirst = pc.substring(0, pcfe);
+      String pcsecond = pc.substring(pcfe);
+      return(Maps.from("ivFirst", ivfirst, "pcFirst", pcfirst, "ivSecond", ivsecond, "pcSecond", pcsecond));
+    }
+    
     getCredsRequest(Map arg, request) {
       Map lres = app.pluginsByName.get("Auth").loginRequest(arg, request);
       if (def(lres) && lres.has("action") && lres["action"] == "loggedInResponse") {
         log.log("get creds ok");
         String an = arg["accountName"];
         String ap = arg["accountPass"];
-        //log.log("ap " + ap + " an " + an);
         
-        String pass = an + ap;
-        Digest:SHA256 ds = Digest:SHA256.new();
-        for (Int i = 0;i < 2;i++=) {
-          pass = ds.digest(pass);
-        }
-        String passHex = Encode:Hex.encode(pass);
-        String pc = passHex.substring(0, 20);
+        Map cr = genCreds(an, ap);
         
-        ds = Digest:SHA256.new();
-        for (i = 0;i < 2;i++=) {
-          pass = ds.digest(pass);
-        }
-        passHex = Encode:Hex.encode(pass);
-        String iv = passHex.substring(0, 20);
-        
-        Int ivfe = iv.size / 2;
-        String ivfirst = iv.substring(0, ivfe);
-        String ivsecond = iv.substring(ivfe);
-        Int pcfe = pc.size / 2;
-        String pcfirst = pc.substring(0, pcfe);
-        String pcsecond = pc.substring(pcfe);
-        
-        //log.log("iv " + iv + " ivfirst " + ivfirst + " ivsecond " + ivsecond);
-        //log.log("pc " + pc + " pcfirst " + pcfirst + " pcsecond " + pcsecond);
-        
-        lres["ivfirst"] = ivfirst;
-        lres["pcfirst"] = pcfirst;
-        request.putSession("ivsecond", ivsecond);
-        request.putSession("pcsecond", pcsecond);
+        lres["ivfirst"] = cr["ivFirst"];
+        lres["pcfirst"] = cr["pcFirst"];
+        request.putSession("ivsecond", cr["ivSecond"]);
+        request.putSession("pcsecond", cr["pcSecond"]);
         
         getList(arg, lres);
         
@@ -143,7 +147,24 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       return(mentry);
     }
     
+    altPassRequest(String secName, String ivFirst, String pcFirst, String altAccount, String altPass, request) {
+      log.log("in altPassReq " + secName + " " + altAccount + " " + altPass);
+      
+      Account a = request.context.get("account");
+      Map nc = genCreds(altAccount, altPass);
+      Map cr = getCreds(nc["ivFirst"], nc["pcFirst"], nc["ivSecond"], nc["pcSecond"]);
+      
+      Map sec = openSecret(secName, cr, a);
+      Map newCreds = getCreds(ivFirst, pcFirst, request);
+      saveSecret(sec["secName"], sec["secAccount"], sec["secPass"], newCreds, a);
+      
+      return(CallBackUI.informResponse("Entry updated, click <a href=\"#\" onclick=\"callUI('hideInform');callUI('toFind');return false;\">Find</a> to continue"));
+    }
+    
     openSecretRequest(String secName, String ivFirst, String pcFirst, request) {
+      
+      //if (true) { return(CallBackUI.openAltPassResponse(secName)); }
+      
       if (TS.isEmpty(secName)) {
         return(CallBackUI.informResponse("Title is Requred"));
       }
@@ -153,7 +174,7 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       try {
         Map mentry = openSecret(secName, creds, a);
       } catch (any e) {
-        if (def(e) && e.getMessage().has("Incorrect")) {
+        if (def(e) && e.description.has("Incorrect")) {
           return(CallBackUI.openAltPassResponse(secName));
         }
       }

@@ -69,7 +69,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv", "changePassDiv");
+    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv", "changePassDiv", "altPassDiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -150,6 +150,22 @@ use class IUHub:Eui {
     } else {
       inform("New passwords don't match");
     }
+   }
+   
+   openAltPassResponse(String secName) {
+    hideNShowResponse(Sets.from("altPassDiv"));
+    fields {
+      String altSecName = secName;
+    }
+   }
+   
+   altPassRequest() {
+    String altAccount = HD.getEle("altAccount").value;
+    String altPass = HD.getEle("altPass").value;
+    HD.getEle("altAccount").value = "";
+    HD.getEle("altPass").value = "";
+    
+    HC.callApp(Lists.from("altPassRequest", altSecName, ivFirst, pcFirst, altAccount, altPass));
    }
    
    relistSecretsResponse(Map arg) {
