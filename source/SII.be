@@ -60,11 +60,38 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       }
       log.log("in ews start");
       app.pluginsByName.get("Auth").nonAuthedRequests.put("getCredsRequest");
+      app.pluginsByName.get("Auth").nonAuthedRequests.put("checkAccountsRequest");
+      app.pluginsByName.get("Auth").nonAuthedRequests.put("createCredsRequest");
       fwp.startDelay = Time:Interval.new(1, 0);
       fwp.repeatDelay = Time:Interval.new(2, 0);
       fwp.minimumDelay = Time:Interval.new(3, 0);
       //fwp.toInvoke = getInvocation("", List.new());
       //fwp.start();
+    }
+    
+    checkAccountsRequest(request) {
+      if (app.pluginsByName.get("Auth").accountManager.getLogins().size < 1) {
+        return(CallBackUI.toCreateAccountResponse());
+      }
+      return(null);
+    }
+    
+    createCredsRequest(String user, String pass, request) {
+      if (app.pluginsByName.get("Auth").accountManager.getLogins().size < 1) {
+        Account ac = Account.new();
+        ac.user = user;
+        ac.pass = pass;
+        app.pluginsByName.get("Auth").accountManager.putAccount(ac);
+        
+        Map arg = Map.new();
+        arg["action"] = "getCredsRequest";
+        arg["accountName"] = user;
+        arg["accountPass"] = pass;
+        arg["sessionName"] = "";
+        arg["sessionLength"] = "60";
+        return(getCredsRequest(arg, request));
+      }
+      return(null);
     }
     
     genCreds(String an, String ap) {

@@ -69,7 +69,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv", "changePassDiv", "altPassDiv");
+    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv", "changePassDiv", "altPassDiv", "createAccountDiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -107,6 +107,29 @@ use class IUHub:Eui {
    toLoginResponse() {
       hideNShowResponse(Sets.from("loginDiv"));
       hideNShowMenuResponse(Sets.from("loginMe"));
+      HC.callApp(Lists.from("checkAccountsRequest"));
+   }
+   
+   toCreateAccountResponse() {
+      hideNShowResponse(Sets.from("createAccountDiv"));
+   }
+   
+   createCredsRequest() {
+    String na = HD.getElementById("newAccount").value;
+    String np = HD.getElementById("newPass").value;
+    String np2 = HD.getElementById("newPass2").value;
+    HD.getElementById("newAccount").value = "";
+    HD.getElementById("newPass").value = "";
+    HD.getElementById("newPass2").value = "";
+    if (TS.isEmpty(na) || TS.isEmpty(np)) {
+      inform("Account and password required");
+    } else {
+      if (np == np2) {
+        HC.callApp(Lists.from("createCredsRequest", na, np));
+      } else {
+        inform("Passwords don't match");
+      }
+    }
    }
    
    toFind() {
@@ -139,16 +162,20 @@ use class IUHub:Eui {
     HD.getElementById("changePassOld").value = "";
     HD.getElementById("changePassNew").value = "";
     HD.getElementById("changePassNew2").value = "";
-    if (np == np2) {
-    Map arg = Map.new();
-    arg["action"] = "changeCredsRequest";
-    arg["oldPass"] = op;
-    arg["newPass"] = np;
-    arg["ivFirst"] = ivFirst;
-    arg["pcFirst"] = pcFirst;
-    handleCallOut(arg);
+    if (TS.isEmpty(np)) {
+     inform("Please provide a password");
     } else {
-      inform("New passwords don't match");
+      if (np == np2) {
+      Map arg = Map.new();
+      arg["action"] = "changeCredsRequest";
+      arg["oldPass"] = op;
+      arg["newPass"] = np;
+      arg["ivFirst"] = ivFirst;
+      arg["pcFirst"] = pcFirst;
+      handleCallOut(arg);
+      } else {
+        inform("New passwords don't match");
+      }
     }
    }
    
