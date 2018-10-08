@@ -101,7 +101,7 @@ use class IUHub:Eui {
    }
    
    logoutResponse() {
-    HD.reload();
+    //HD.reload();
    }
    
    toLoginResponse() {
@@ -147,7 +147,7 @@ use class IUHub:Eui {
        List titles = arg["titles"];
      }
      if (TS.isEmpty(ivFirst) || TS.isEmpty(pcFirst)) {
-       logout();
+       toLoginResponse();
      }
      if (titles.size < 1) {
        hideNShowResponse(Sets.from("secretDiv"));
