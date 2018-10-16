@@ -119,7 +119,9 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       Int pcfe = pc.size / 2;
       String pcfirst = pc.substring(0, pcfe);
       String pcsecond = pc.substring(pcfe);
-      return(Maps.from("ivFirst", ivfirst, "pcFirst", pcfirst, "ivSecond", ivsecond, "pcSecond", pcsecond));
+      
+      
+      return(Maps.from("iv", iv, "pc", pc, "ivFirst", ivfirst, "pcFirst", pcfirst, "ivSecond", ivsecond, "pcSecond", pcsecond));
     }
     
     getCredsRequest(Map arg, request) {
@@ -288,13 +290,92 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
     jsentry = Crypt.encryptPassToHex(creds["iv"], creds["pc"], jsentry);
     
     String subject = "Entry " + nowSecs + " " + nowMillis + " " + secName;
-    Map outer = Maps.from("secret", jsentry, "passHash", creds["ph"], "subject", subject);
+    Map outer = Maps.from("secret", jsentry, "passHash", creds["ph"], "subject", subject, "secName", secName, "updateSecs", nowSecs, "updateMillis", nowMillis);
     
     String outers = Json:Marshaller.marshall(outer);
-    
+     
     auto seckv = app.getKvDb("MYPASSES");
     
     seckv.put(a.user + "!" + secName, outers);
+    
+    auto sechis = app.getKvDb("PASSHIST");
+    
+    sechis.put(a.user + "!" + secName + "!" + nowSecs, outers);
+    
+    shrinkHist(a, secName);
+    
+   }
+   
+   showHistoryRequest(request) {
+     Account a = request.context.get("account");
+     auto sechis = app.getKvDb("PASSHIST");
+     String hl = String.new();
+     Set seen = Set.new();
+     for (auto kv in sechis.getMap(a.user + "!")) {
+       Map outer = Json:Unmarshaller.unmarshall(kv.value);
+       String subject = outer["secName"];
+       unless (seen.has(subject)) {
+       hl += "<p><a href=\"#\" onclick=\"callApp('showHistoryEntryRequest', '" += subject += "');return false;\">" += subject += "</a></p>";
+       seen.put(subject);
+       }
+     }
+     
+     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("histEntriesDiv", hl)));
+   }
+   
+   showHistoryEntryRequest(String secName, request) {
+     Account a = request.context.get("account");
+     auto sechis = app.getKvDb("PASSHIST");
+     String hl = String.new();
+     List secopts = List.new();
+     for (auto kv in sechis.getMap(a.user + "!" + secName + "!")) {
+       Map outer = Json:Unmarshaller.unmarshall(kv.value);
+       String subject = outer["secName"];
+       Int nows = Int.new(outer["updateSecs"]);
+       secopts += nows;
+     }
+     secopts = secopts.sort();
+     hl += "<p>Available backups for " += secName += ", oldests to newest:</p>";
+     Int j = secopts.size.copy();
+     for (Int i in secopts) {
+      hl += "<p><a href=\"#\" onclick=\"callApp('restoreHistoryEntryRequest', '" += secName += "', " += i += ");return false;\">" += j += ". " += secName += "</a></p>";
+      j--=;
+     }
+     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("histEntriesDiv", hl)));
+   }
+   
+   restoreHistoryEntryRequest(String secName, Int secs, request) {
+     Account a = request.context.get("account");
+     auto sechis = app.getKvDb("PASSHIST");
+     String outers = sechis.get(a.user + "!" + secName + "!" + secs);
+     auto seckv = app.getKvDb("MYPASSES");
+     seckv.put(a.user + "!" + secName, outers);
+     return(CallBackUI.toFindResponse());
+   }
+   
+   shrinkHist(Account a, String secName) {
+     
+     auto sechis = app.getKvDb("PASSHIST");
+     List hl = List.new();
+     
+     for (auto kv in sechis.getMap(a.user + "!" + secName + "!")) {
+       auto tl = kv.key.split("!");
+       String secs = tl.get(tl.size - 1);
+       hl += Int.new(secs);
+     }
+     hl = hl.sort();
+     
+     if (hl.size > 3) {
+       Int todel = hl.size - 3;
+       for (Int j = 0; j < todel;j++=) {
+         String delt = a.user + "!" + secName + "!" + hl.get(j).toString();
+         sechis.delete(delt);
+         log.log("deleted " + delt);
+       }
+     }
+     for (Int i in hl) {
+       log.log("in sh i " + i);
+     }
    }
     
     saveSecretRequest(String secName, String secAccount, String secPass, String ivFirst, String pcFirst, request) {

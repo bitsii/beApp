@@ -39,6 +39,7 @@
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;" id="logoutMe" style="display: none;">Logout</a></li>
                 <li class="pure-menu-item" id="secretMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'secretDiv');return false;">Edit</a></li>
                 <li class="pure-menu-item" id="findMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'findDiv');return false;">Find</a></li>
+                <li class="pure-menu-item"  id="histMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'histDiv');callApp('showHistoryRequest');return false;">Backups</a></li>
                 <li class="pure-menu-item"  id="changePassMe" style="display: none;"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'changePassDiv');return false;">Credentials</a></li>
             </ul>
         </div>
@@ -112,7 +113,10 @@
     </div>
     
     <div id="findDiv" style="display: none;">
-    <form class="pure-form pure-form-aligned" autocomplete="off">
+    <div class="pure-g">
+    <div class="pure-u-1-24"></div>
+    <div class="pure-u-23-24">
+    <form class="pure-form" autocomplete="off">
     <fieldset>
     <div class="pure-control-group">
         <label for="secSearch">Search Titles</label>
@@ -122,10 +126,7 @@
     </div>
     </fieldset>
     </form>
-    <div class="pure-g">
-    <div class="pure-u-1-5"></div>
-        <div class="pure-u-4-5">
-          <button type="submit" class="pure-button pure-button-primary" onclick="callUI('hideNShowOneResponse', 'secretDiv');return false;">New</button>
+          <button type="submit" class="pure-button pure-button-primary" onclick="callUI('clearSecrets');callUI('hideNShowOneResponse', 'secretDiv');return false;">New</button>
     <div id="titleDiv"></div>
     </div>
     </div>
@@ -156,8 +157,8 @@
     
      <div id="altPassDiv" style="display: none;">
         <div class="pure-g">
-    <div class="pure-u-1-5"></div>
-        <div class="pure-u-3-5"><span class="pure-form-message-inline">This entry appears to have a differnt password from your login.  If you changed your password on another device, then <a href="#" onclick="callUI('hideNShowOneResponse', 'changePassDiv');return false;">Change Your Password</a>(All synced devices must have the same password).  Otherwise, enter the credentials used when the entry was saved to update it to your current one.</span></div><div class="pure-u-1-5"></div></div>
+    <div class="pure-u-1-24"></div>
+        <div class="pure-u-23-24"><span class="pure-form-message-inline">This entry appears to have a differnt password from your login.  If you changed your password on another device, then <a href="#" onclick="callUI('hideNShowOneResponse', 'changePassDiv');return false;">Change Your Password</a>(All synced devices must have the same password).  Otherwise, enter the credentials used when the entry was saved to update it to your current one.</span>
         <form class="pure-form pure-form-aligned">
     <fieldset>
         <div class="pure-control-group">
@@ -172,10 +173,11 @@
         <button type="submit" class="pure-button pure-button-primary" onclick="callUI('altPassRequest');return false;">Update Password for Entry</button>
         <button type="submit" class="pure-button pure-button-primary" onclick="callUI('toFind');return false;">Cancel</button>
         </div>
-        </div>
         
     </fieldset>
     </form>
+    </div>
+    </div>
     </div>
     
     <div id="createAccountDiv" style="display: none;">
@@ -200,8 +202,16 @@
     </fieldset>
     </form>
             <div class="pure-g">
-    <div class="pure-u-1-5"></div>
-        <div class="pure-u-3-5"><span class="pure-form-message-inline">Time to setup your credentials - *you should use the same account and password on all your devices, so if you have already setup a device use the name ones here.</span></div><div class="pure-u-1-5"></div></div>
+    <div class="pure-u-1-24"></div>
+        <div class="pure-u-23-24"><span class="pure-form-message-inline">Time to setup your credentials - *you should use the same account and password on all your devices, so if you have already setup a device use the name ones here.</span></div></div>
+    </div>
+    
+    <div class="pure-g" id="histDiv">
+    <div class="pure-u-1-24"></div>
+        <div class="pure-u-23-24">
+          <span class="pure-form-message-inline">Backed up entries available for restore appear below.  Note, if you restore an entry it will overwrite the current value - if you want to keep the current value please rename the existing entry before restore.</span>
+    <div id="histEntriesDiv"><p>an entry</p></div>
+    </div>
     </div>
     
     <div id="aboutDiv" style="display: none;">

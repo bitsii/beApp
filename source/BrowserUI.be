@@ -631,6 +631,7 @@ use class Web:SessionManager {
       request.setOutputCookie(keyName, sk, "/", true, true);
       //request.setOutputHeader(keyName, sk);
     }
+    request.context.put("rawSessionKey", sk);
     String sko = hashKey(sk);
     //("sko for sk " + sko + " " + sk).print();
     return(sko);

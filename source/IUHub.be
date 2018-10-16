@@ -18,6 +18,7 @@ use Time:Sleep;
 use Container:Pair;
 
 use Net:Wol;
+use Net:IP;
 
 use App:Alert;
 
@@ -917,9 +918,19 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     prepKonnName();
     String duckDomain = app.configManager.get("duck.domain");
     String duckToken = app.configManager.get("duck.token");
+    String hip = app.configManager.get("il.sshHost");
+    if (TS.notEmpty(hip)) {
+      unless (IP.isIP(hip)) {
+        hip = IP.IPForName(hip);
+      }
+    }
     if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
        log.log("doing duckupdate");
        String url =  "https://www.duckdns.org/update/" + duckDomain + "/" + duckToken;
+       if (TS.notEmpty(hip)) {
+         url += "/" += hip;
+       }
+       log.log("duck update url " + url);
        Web:Client client = Web:Client.new();
        Web:Client:CertificateManager.validateCertificates = false;
        client.verb = "GET";
@@ -950,7 +961,11 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       if (def(wc)) {
         if (TS.notEmpty(wc.hostedLink)) {
           dlUse = innerLinks;
-          outerLinks += "<p>" += wc.hostedLink += "</p>";
+          if (TS.isEmpty(app.configManager.get("duck.domain")) && TS.isEmpty(app.configManager.get("cf.host"))) {
+            outerLinks += "<p>" += wc.hostedLink += "</p>";
+          } else {
+            outerLinks += "<p>" += wc.konnLink += "</p>";
+          }
         } elseIf((wc.manualForward || wc.internalResolve) && TS.notEmpty(wc.konnLink)) {
           dlUse = innerLinks;
           outerLinks += "<p>" += wc.konnLink += "</p>";

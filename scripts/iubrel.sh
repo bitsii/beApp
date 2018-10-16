@@ -9,6 +9,13 @@ then
   mv ../apprun/App/KBridge/IUHub_BEX_E.js.1 ../apprun/App/KBridge/IUHub_BEX_E.js
 fi
 
+if [ -e /usr/local/bin/uglifyjs ]
+then
+  /usr/local/bin/uglifyjs ../apprun/App/KBridge/IUHub_BEX_E.js > ../apprun/App/KBridge/IUHub_BEX_E.js.1
+  rm -f ../apprun/App/KBridge/IUHub_BEX_E.js
+  mv ../apprun/App/KBridge/IUHub_BEX_E.js.1 ../apprun/App/KBridge/IUHub_BEX_E.js
+fi
+
 cd ../apprun/App/KBridge
 
 mv BEX_E_lib_jv.jar BEX_E_lib_jv.ja

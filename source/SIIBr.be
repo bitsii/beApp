@@ -69,7 +69,7 @@ use class IUHub:Eui {
    }
     
    hideNShowResponse(Set toShow) {
-    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv", "changePassDiv", "altPassDiv", "createAccountDiv");
+    List allElems =@ Lists.from("secretDiv", "loginDiv", "findDiv", "changePassDiv", "altPassDiv", "createAccountDiv", "histDiv");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -81,7 +81,7 @@ use class IUHub:Eui {
    }
    
    hideNShowMenuResponse(Set toShow) {
-    List allElems =@ Lists.from("secretMe", "loginMe", "logoutMe", "findMe", "changePassMe");
+    List allElems =@ Lists.from("secretMe", "loginMe", "logoutMe", "findMe", "changePassMe", "histMe");
     for (String el in allElems) {
       if (toShow.has(el)) {
         HD.getElementById(el).display = "block";
@@ -94,10 +94,11 @@ use class IUHub:Eui {
    
    pageTokenResponse(Map arg) {
       hc.pageToken = arg["pageToken"];
-      Map carg = Map.new();
-      carg["action"] = "checkLoggedInRequest";
+      //Map carg = Map.new();
+      //carg["action"] = "checkLoggedInRequest";
       //log.log("href at startup " + HD.href);
-      handleCallOut(carg);
+      //handleCallOut(carg);
+      toLoginResponse();
    }
    
    logoutResponse() {
@@ -138,9 +139,19 @@ use class IUHub:Eui {
     HD.getEle("secPass").type = "password";
    }
    
+   toFindResponse() {
+     toFind();
+   }
+   
+   clearSecrets() {
+     HD.getElementById("secName").value = "";
+     HD.getElementById("secAccount").value = "";
+     HD.getElementById("secPass").value = "";
+   }
+   
    loggedInResponse(Map arg) {
      hideNShowResponse(Sets.from("findDiv"));
-     hideNShowMenuResponse(Sets.from("logoutMe", "secretMe", "findMe", "changePassMe"));
+     hideNShowMenuResponse(Sets.from("logoutMe", "secretMe", "findMe", "changePassMe", "histMe"));
      fields {
        String ivFirst = arg["ivfirst"];
        String pcFirst = arg["pcfirst"];
