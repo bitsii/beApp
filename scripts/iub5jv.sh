@@ -110,6 +110,7 @@ cp scripts/ledd.sh ../apprun/App/KBridge
 cp scripts/distcert.sh ../apprun/App/KBridge
 cp scripts/ddclient ../apprun/App/KBridge
 cp scripts/ddrun.sh ../apprun/App/KBridge
+cp scripts/ddclip.sh ../apprun/App/KBridge
 cp scripts/CamEnable.sh ../apprun/App/KBridge
 cp scripts/CamDisable.sh ../apprun/App/KBridge
 cp scripts/HassEnable.sh ../apprun/App/KBridge

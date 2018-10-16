@@ -831,6 +831,13 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     String cfEmail = app.configManager.get("cf.email");
     String cfToken = app.configManager.get("cf.token");
     
+    String hip = app.configManager.get("il.sshHost");
+    if (TS.notEmpty(hip)) {
+      unless (IP.isIP(hip)) {
+        hip = IP.IPForName(hip);
+      }
+    }
+    
     if (TS.isEmpty(cfHost) || TS.isEmpty(cfZone) || TS.isEmpty(cfEmail) || TS.isEmpty(cfToken)) {
       log.log("one of the params for cf is missing");
       return(self);
@@ -846,8 +853,15 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     }
     
     String ddconf = String.new();
+    if (TS.notEmpty(hip)) {
+      ddconf += "use=cmd, cmd=App/KBridge/ddclip.sh\n";
+      Path dip = Path.apNew("Data/KBridge/ddclient/ddip");
+      if (dip.file.exists) { dip.file.delete(); }
+      dip.file.writer.open().writeStringClose(hip + "\n");
+    } else {
+      ddconf += "use=web\n";
+    }
     ddconf += "protocol=cloudflare\n";
-    ddconf += "use=web\n";
     ddconf += "ssl=yes\n";
     ddconf += "login=" += cfEmail += "\n";
     ddconf += "password=" += cfToken += "\n";
