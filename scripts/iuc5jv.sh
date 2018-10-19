@@ -4,6 +4,7 @@ mkdir -p ../apprun
 mkdir -p ../apprun/App
 mkdir -p ../apprun/Data
 mkdir -p ../apprun/Data/IUCam
+mkdir -p ../apprun/Data/KBridge
 
 rm -rf ../apprun/App/IUCam
 mkdir -p ../apprun/App/IUCam

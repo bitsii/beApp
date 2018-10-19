@@ -2908,7 +2908,7 @@ class WebApp {
         if (TS.isEmpty(appSsls)) {
           String appSsls = self.configManager.get(self.configPrefix + "app.ssl");
           if (TS.isEmpty(appSsls)) {
-            appSsls = "true";
+            appSsls = "false";
             ifEmit(cs) {
               appSsls = "false";
             }

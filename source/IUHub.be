@@ -109,23 +109,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       if (TS.isEmpty(mode)) {
         return(false);
       }
-      if (mode == "assurePorts") {
-        log.log("assurePorts");
-        intPort = app.configManager.get("app.port");
-        if (TS.isEmpty(intPort)) {
-          intPorti = System:Random.getIntMax(30000);
-          intPorti += 3000;
-          String intPort = intPorti.toString();
-          app.configManager.put("app.port", intPort);
-        }
-        intPort = app.configManager.get("web.port");
-        if (TS.isEmpty(intPort)) {
-          intPorti = System:Random.getIntMax(30000);
-          intPorti += 3000;
-          intPort = intPorti.toString();
-          app.configManager.put("web.port", intPort);
-        }
-      }
       if (mode == "onetimeSetup") {
         Bool doSetup = true;
         for (String login in app.pluginsByName.get("Auth").accountManager.getLogins()) {
@@ -151,7 +134,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         if (TS.isEmpty(defadd)) { log.log(" No addr "); }
         
         if (mode == "initialRemoteSetup") {
-          intPort = app.configManager.get("web.port");
+          String intPort = app.configManager.get("web.port");
           String iurl = "https://" + defadd + ":" += intPort += "/App/KBridge/Konn.html?setupToken=" + token;
           log.log("Please navigate to this address in your browser on a device on the same network as this device to complete the setup - " + iurl);
         } else {

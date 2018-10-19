@@ -31,7 +31,7 @@ if [ "$inbort" == "b" ]; then
   cd $INSDIR
   mkdir -p apprun/tmp
   cd apprun
-  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd assurePorts"
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd assurePorts"
   mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
@@ -43,7 +43,7 @@ elif [ "$inbort" == "n" ]; then
   cd $INSDIR
   mkdir -p apprun/tmp
   cd apprun
-  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd assurePorts"
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd assurePorts"
   mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd

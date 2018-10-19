@@ -432,7 +432,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     
    start() {
+      assurePorts();
       prepReverseProxy();
+      if (TS.notEmpty(app.configManager.get("app.Cam")) && app.configManager.get("app.Cam") == "enabled") {
+        prepCamReverseProxy();
+      }
       super.start();
       app.pluginsByName.get("Auth").nonAuthedRequests.put("initialSetupRequest");
       
@@ -600,40 +604,36 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        return(null);
    }
    
-   assureCamPort() {
-     if (TS.isEmpty(app.configManager.get("webApp.Cam.web.port"))) {
-      Int intPorti = System:Random.getIntMax(30000);
-      intPorti += 3000;
-      app.configManager.put("webApp.Cam.web.port", intPorti.toString());
-     }
-     String cport = app.configManager.get("webApp.Cam.web.port");
-     WebConnect wc = app.plugin.wcol.o;
-     if (wc.getServices().has(cport)) {
-      log.log("has / has had cam service");
-     } else {
-       wc.putService("IU WebCam - webcam with motion", cport, cport, "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ IU WebCam</a>");
-       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
-       app.plugin.wcol.o = wc;
-       oapp.plugin.wcol.o = wc;
-       doForward();
-     }
-   }
-   
    assurePorts() {
+      log.log("assurePorts");
+      intPort = app.configManager.get("app.port");
+      if (TS.isEmpty(intPort)) {
+        intPorti = System:Random.getIntMax(30000);
+        intPorti += 3000;
+        String intPort = intPorti.toString();
+        app.configManager.put("app.port", intPort);
+      }
+      intPort = app.configManager.get("web.port");
+      if (TS.isEmpty(intPort)) {
+        intPorti = System:Random.getIntMax(30000);
+        intPorti += 3000;
+        intPort = intPorti.toString();
+        app.configManager.put("web.port", intPort);
+      }
      if (TS.isEmpty(app.configManager.get("webApp.Cam.web.port"))) {
       Int intPorti = System:Random.getIntMax(30000);
       intPorti += 3000;
       app.configManager.put("webApp.Cam.web.port", intPorti.toString());
      }
-     WebConnect wc = app.plugin.wcol.o;
-     if (true || wc.getServices().has("80") || TS.notEmpty(app.configManager.get("le.assuredOnce"))) {
-      log.log("has / has had le fwd");
-     } else {
-       wc.putService("Enable Let's Encrypt certificate generation", "80", "", "<a href=\"http://$ip$:$port$/\" target=\"_blank\">$type$ Let's Encrypt</a>");
-       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
-       app.plugin.wcol.o = wc;
-       oapp.plugin.wcol.o = wc;
-       app.configManager.put("le.assuredOnce", "true")
+     if (TS.isEmpty(app.configManager.get("webApp.Cam.int.web.port"))) {
+      intPorti = System:Random.getIntMax(30000);
+      intPorti += 3000;
+      app.configManager.put("webApp.Cam.int.web.port", intPorti.toString());
+     }
+     if (TS.isEmpty(app.configManager.get("webApp.Cam.app.port"))) {
+      intPorti = System:Random.getIntMax(30000);
+      intPorti += 3000;
+      app.configManager.put("webApp.Cam.app.port", intPorti.toString());
      }
    }
    
@@ -809,7 +809,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     
      doForwardInner() Bool {
-      assurePorts();
       Bool success = true;
       Bool doUpnpForward = self.upnpEnabled;
       Bool doesInternalResolve = self.internalResolve;
@@ -1008,7 +1007,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       log.log("enabling app");
       if (appName == "Cam") {
-        assureCamPort();
+        prepCamReverseProxy();
       }
       if (appName == "Nxc") {
         prepReverseProxy("80", "6443", "Nxc.", "cert.pem");

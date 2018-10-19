@@ -245,7 +245,6 @@ use class IUCam:CamPlugin(App:AjaxPlugin) {
      }
      
     start() {
-      //prepReverseProxy();
       bg.app = app;
       abg.startDelay = Time:Interval.new(10, 0);
       abg.repeatDelay = Time:Interval.new(1000, 0);

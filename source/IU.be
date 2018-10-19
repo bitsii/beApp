@@ -382,6 +382,16 @@ use class IU:IUPlugin(App:AjaxPlugin) {
    
    }
    
+   prepCamReverseProxy() {
+     String ecpr = "webApp.Cam";
+     String icpr = "webApp.Cam.int";
+     String ecp = app.configManager.get("webApp.Cam.web.port");
+     String icp = app.configManager.get("webApp.Cam.int.web.port");
+     String acp = app.configManager.get("webApp.Cam.app.port");
+     prepReverseProxy(acp, ecp, ecpr, "cert.pem");
+     prepReverseProxy(acp, icp, icpr, "certi.pem");
+   }
+   
    prepReverseProxy() {
       app.appSsl = false;
       app.webProto = "https";
