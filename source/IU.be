@@ -400,11 +400,23 @@ use class IU:IUPlugin(App:AjaxPlugin) {
         app.webPort = wp;
       }
       
-      prepReverseProxy(ap, wp, app.configPrefix);
+      prepReverseProxy(ap, wp, app.configPrefix, "cert.pem");
+      
+      String icp = app.configPrefix + "int.";
+      String portikey = icp + "web.port";
+      String wporti = app.configManager.get(portikey);
+      if (TS.isEmpty(wporti)) {
+        portI = System:Random.getIntMax(30000);
+        portI += 3000;
+        wporti = portI.toString();
+        app.configManager.put(portikey, wporti);
+      }
+      
+      prepReverseProxy(ap, wporti, icp, "certi.pem");
       
     }
     
-    prepReverseProxy(String ap, String wp, String appPref) {
+    prepReverseProxy(String ap, String wp, String appPref, String certname) {
       
       Path adp = app.paths.dataPath.addStep(appPref + "haproxy");
       if (adp.file.exists!) {
@@ -416,12 +428,13 @@ use class IU:IUPlugin(App:AjaxPlugin) {
       String hpts = hpt.file.reader.open().readStringClose();
       hpts = hpts.swap("WPORT", wp);
       hpts = hpts.swap("APORT", ap);
+      hpts = hpts.swap("CERTNAME", certname);
       
       Path hpc = adp.copy().addStep("haproxy.cfg");
       if (hpc.file.exists) { hpc.file.delete(); }
       hpc.file.writer.open().writeStringClose(hpts);
       
-      String hcmd = "App/KBridge/starthap.sh " + adp.toString();
+      String hcmd = "App/KBridge/starthap.sh " + adp.toString() + " " + certname;
       log.log("starting proxy " + hcmd);
       System:Command.new(hcmd).run();
       

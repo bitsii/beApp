@@ -160,7 +160,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-control-group">
             <label for="rlspacer"></label>
             <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Please provide either an IP address or a hostname</span>
+            <span class="pure-form-message-inline">Please provide either an IP address or a full hostname</span>
         </div>
         <div class="pure-control-group" style="display: none;">
         <label for="devDrop">Hosted Bridge</label>
@@ -169,7 +169,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         </select>
         </div>
         <div class="pure-control-group">
-            <label for="sshHost">SSH IP Address</label>
+            <label for="sshHost">SSH Host Address</label>
             <input id="sshHost" type="text" placeholder="IP Address">
         </div>
         <div class="pure-control-group">
@@ -199,8 +199,17 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <span class="pure-form-message-inline">Link device to <a href="https://www.duckdns.org" target="_blank">DuckDNS</a> Domainname</span>
         </div>
         <div class="pure-control-group">
-            <label for="duckDomain">Duck Domain</label>
-            <input id="duckDomain" type="text" placeholder="DuckDNS domain entry">
+            <label for="duckDomain">External Duck Domain</label>
+            <input id="duckDomain" type="text" placeholder="External (Internet) Name">
+        </div>
+        <div class="pure-control-group">
+            <label for="duckiDomain">Internal Duck Domain</label>
+            <input id="duckiDomain" type="text" placeholder="Internal (Local Network) Name">
+        </div>
+        <div class="pure-control-group">
+            <label for="rlspacer"></label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Leave Internal Domain unset if external (Internet) name will also work on device's own network</span>
         </div>
         <div class="pure-control-group">
             <label for="duckEmail">DuckDns Login</label>
@@ -211,7 +220,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <input id="duckToken" type="password" placeholder="Duckdns Token">
         </div>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDuckRequest', document.getElementById('duckDomain').value, document.getElementById('duckEmail').value, document.getElementById('duckToken').value);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDuckRequest', document.getElementById('duckDomain').value, document.getElementById('duckiDomain').value, document.getElementById('duckEmail').value, document.getElementById('duckToken').value);return false;">Save</button>
         </div>
         </fieldset>
     </form>
@@ -219,13 +228,22 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <form class="pure-form pure-form-aligned">
     <fieldset>
         <div class="pure-control-group">
-            <label for="rlspacer"></label>
-            <input type="hidden" placeholder="Space">
+            <label for="spcf1"></label>
+            <input id="spcf1" type="hidden" placeholder="Space">
             <span class="pure-form-message-inline">Use dynamic dns on a <a href="https://www.cloudflare.com" target="_blank">Cloudflare</a> hosted domainname</span>
         </div>
         <div class="pure-control-group">
-            <label for="cfHost">Hostname</label>
-            <input id="cfHost" type="text" placeholder="Hostname for this device">
+            <label for="cfHost">External Hostname</label>
+            <input id="cfHost" type="text" placeholder="External (Internet) Name">
+        </div>
+        <div class="pure-control-group">
+            <label for="cfiHost">Internal Hostname</label>
+            <input id="cfiHost" type="text" placeholder="Internal (Local Network) Name">
+        </div>
+        <div class="pure-control-group">
+            <label for="spcf2"></label>
+            <input id="spcf2" type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Leave Internal Name unset if external (Internet) name will also work on device's own network</span>
         </div>
         <div class="pure-control-group">
             <label for="cfZone">Domain name</label>
@@ -240,7 +258,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <input id="cfToken" type="password" placeholder="Cloudflare API Token">
         </div>
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveCfRequest', document.getElementById('cfHost').value, document.getElementById('cfZone').value, document.getElementById('cfEmail').value, document.getElementById('cfToken').value);return false;">Save</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveCfRequest', document.getElementById('cfHost').value, document.getElementById('cfiHost').value, document.getElementById('cfZone').value, document.getElementById('cfEmail').value, document.getElementById('cfToken').value);return false;">Save</button>
         </div>
         </fieldset>
     </form>

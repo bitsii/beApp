@@ -1,15 +1,15 @@
 #!/bin/bash
 
 if [ -e "./Data/KBridge/haproxy/haproxy.cfg" ]; then
-  ./App/KBridge/starthap.sh ./Data/KBridge/haproxy
+  ./App/KBridge/starthap.sh ./Data/KBridge/haproxy cert.pem
 fi
 
 if [ -e "./Data/KBridge/Nxc.haproxy/haproxy.cfg" ]; then
-  ./App/KBridge/starthap.sh Data/KBridge/Nxc.haproxy
+  ./App/KBridge/starthap.sh Data/KBridge/Nxc.haproxy cert.pem
 fi
 
 if [ -e "./Data/KBridge/webApp.Cam.haproxy/haproxy.cfg" ]; then
-  ./App/KBridge/starthap.sh Data/KBridge/webApp.Cam.haproxy
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Cam.haproxy cert.pem
 fi
 
 if [ -e "./Opt/Domo/server_cert.pem" ]; then

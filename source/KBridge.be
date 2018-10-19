@@ -1011,7 +1011,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         assureCamPort();
       }
       if (appName == "Nxc") {
-        prepReverseProxy("80", "6443", "Nxc.");
+        prepReverseProxy("80", "6443", "Nxc.", "cert.pem");
       }
       if (appName == "Dns") {
         outRgw();

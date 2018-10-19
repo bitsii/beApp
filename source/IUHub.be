@@ -800,11 +800,12 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
   }
   
-  saveCfRequest(String cfHost, String cfZone, String cfEmail, String cfToken, request) {
+  saveCfRequest(String cfHost, String cfiHost, String cfZone, String cfEmail, String cfToken, request) {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
     app.configManager.put("cf.host", cfHost);
+    app.configManager.put("cf.ihost", cfiHost);
     app.configManager.put("cf.zone", cfZone);
     app.configManager.put("cf.email", cfEmail);
     app.configManager.put("cf.token", cfToken);
@@ -827,6 +828,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     log.log("in updateCfInner");
     prepKonnName();
     String cfHost = app.configManager.get("cf.host");
+    String cfiHost = app.configManager.get("cf.ihost");
     String cfZone = app.configManager.get("cf.zone");
     String cfEmail = app.configManager.get("cf.email");
     String cfToken = app.configManager.get("cf.token");
@@ -835,6 +837,13 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     if (TS.notEmpty(hip)) {
       unless (IP.isIP(hip)) {
         hip = IP.IPForName(hip);
+      }
+    }
+    
+    if (TS.notEmpty(cfiHost)) {
+      WebConnect wc = app.plugin.wcol.o;
+      if (def(wc) && TS.notEmpty(wc.internalAddress)) {
+        String iaddr = wc.internalAddress;
       }
     }
     
@@ -875,6 +884,39 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     String res = System:Command.new("./App/KBridge/ddrun.sh").open().output.readStringClose();
     log.log("ddclient res " + res);
     
+    if (TS.notEmpty(cfiHost) && TS.notEmpty(iaddr)) {
+      
+      cfp = app.paths.dataPath.addStep("ddclient");
+      if (cfp.file.exists!) {
+        cfp.file.makeDirs();
+      }
+      cfp = cfp.addStep("ddclienti.conf");
+      if (cfp.file.exists) {
+        cfp.file.delete();
+      }
+      
+      ddconf = String.new();
+      ddconf += "use=cmd, cmd=App/KBridge/ddclipi.sh\n";
+      dip = Path.apNew("Data/KBridge/ddclient/ddipi");
+      if (dip.file.exists) { dip.file.delete(); }
+      dip.file.writer.open().writeStringClose(iaddr + "\n");
+      ddconf += "protocol=cloudflare\n";
+      ddconf += "ssl=yes\n";
+      ddconf += "login=" += cfEmail += "\n";
+      ddconf += "password=" += cfToken += "\n";
+      ddconf += "zone=" += cfZone += "\n";
+      ddconf += cfiHost += "." += cfZone += "\n";
+      
+      log.log("ddconfi " + ddconf);
+
+      cfp.file.writer.open().writeStringClose(ddconf);
+      
+      res = System:Command.new("./App/KBridge/ddruni.sh").open().output.readStringClose();
+      log.log("ddclient resi " + res);
+    
+    }
+    
+    
   }
   
   doLego(String actionType) {
@@ -905,11 +947,12 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
   }
    
-  saveDuckRequest(String duckDomain, String duckEmail, String duckToken, request) {
+  saveDuckRequest(String duckDomain, String duckiDomain, String duckEmail, String duckToken, request) {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
     app.configManager.put("duck.domain", duckDomain);
+    app.configManager.put("duck.idomain", duckiDomain);
     app.configManager.put("duck.email", duckEmail);
     app.configManager.put("duck.token", duckToken);
     updateDuck();
@@ -931,6 +974,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     log.log("in updateduck");
     prepKonnName();
     String duckDomain = app.configManager.get("duck.domain");
+    String duckiDomain = app.configManager.get("duck.idomain");
     String duckToken = app.configManager.get("duck.token");
     String hip = app.configManager.get("il.sshHost");
     if (TS.notEmpty(hip)) {
@@ -938,8 +982,15 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         hip = IP.IPForName(hip);
       }
     }
+    if (TS.notEmpty(duckiDomain)) {
+      WebConnect wc = app.plugin.wcol.o;
+      if (def(wc) && TS.notEmpty(wc.internalAddress)) {
+        String iaddr = wc.internalAddress;
+      }
+    }
     if (TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
        log.log("doing duckupdate");
+       
        String url =  "https://www.duckdns.org/update/" + duckDomain + "/" + duckToken;
        if (TS.notEmpty(hip)) {
          url += "/" += hip;
@@ -951,6 +1002,20 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
        client.url = url;
        String res = client.openInput().readString();
        client.close();
+       
+       if (TS.notEmpty(duckiDomain) && TS.notEmpty(iaddr)) {
+         log.log("doing duckiupdate");
+         url =  "https://www.duckdns.org/update/" + duckiDomain + "/" + duckToken;
+         url += "/" += iaddr;
+         log.log("duck update url " + url);
+         client = Web:Client.new();
+         Web:Client:CertificateManager.validateCertificates = false;
+         client.verb = "GET";
+         client.url = url;
+         res = client.openInput().readString();
+         client.close();
+       }
+       
        Web:Client:CertificateManager.validateCertificates = true;
        log.log("duckupdate done");
     }
