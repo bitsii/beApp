@@ -45,7 +45,7 @@ cd .lego/certificates
 
 if [ -e "$3.crt" ] && [ -e "$3.key" ]; then
   cat "$3.crt" "$3.key" > all.pem
-  mv all.pem ../../Data/KBridge/haproxy/cert.pem
+  mv all.pem ../../Data/KBridge/haproxy/$5
 fi
 
 cd ../..

@@ -904,19 +904,21 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   
   doLego(String actionType) {
     String cfHost = app.configManager.get("cf.host");
+    String cfiHost = app.configManager.get("cf.ihost");
     String cfZone = app.configManager.get("cf.zone");
     String cfEmail = app.configManager.get("cf.email");
     String cfToken = app.configManager.get("cf.token");
     
     String duckEmail = app.configManager.get("duck.email");
     String duckDomain = app.configManager.get("duck.domain");
+    String duckiDomain = app.configManager.get("duck.idomain");
     String duckToken = app.configManager.get("duck.token");
     
     String lecmd;
     if (TS.notEmpty(cfHost) && TS.notEmpty(cfZone) && TS.notEmpty(cfEmail) && TS.notEmpty(cfToken)) {
-      lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfHost + "." + cfZone + " " + actionType;
+      lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfHost + "." + cfZone + " " + actionType + " " + "cert.pem";
     } elseIf(TS.notEmpty(duckEmail) && TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
-      lecmd = "./App/KBridge/ledd.sh " + duckEmail + " " + duckToken + " " + duckDomain + ".duckdns.org" + " " + actionType;
+      lecmd = "./App/KBridge/ledd.sh " + duckEmail + " " + duckToken + " " + duckDomain + ".duckdns.org" + " " + actionType + " " + "cert.pem";
     } else {
       log.log("did not have doLego configs for any option");
       return(self);
@@ -927,6 +929,21 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     String res = System:Command.new(lecmd).open().output.readStringClose();
     
     log.log("lecmd res " + res);
+    
+    if (TS.notEmpty(cfiHost) && TS.notEmpty(cfZone) && TS.notEmpty(cfEmail) && TS.notEmpty(cfToken)) {
+      lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfiHost + "." + cfZone + " " + actionType + " " + "certi.pem";
+    } elseIf(TS.notEmpty(duckEmail) && TS.notEmpty(duckiDomain) && TS.notEmpty(duckToken)) {
+      lecmd = "./App/KBridge/ledd.sh " + duckEmail + " " + duckToken + " " + duckiDomain + ".duckdns.org" + " " + actionType + " " + "certi.pem";
+    } else {
+      log.log("did not have doLego configs for any optioni");
+      return(self);
+    }
+    
+    log.log("running lecmdi " + lecmd);
+    
+    res = System:Command.new(lecmd).open().output.readStringClose();
+    
+    log.log("lecmdi res " + res);
     
   }
    
