@@ -918,6 +918,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("fs " + fs);
         au += fs;
       }
+      if (TS.notEmpty(wc.konniUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.konniUrl);
+        parts = wc.konniUrl.split(":");
+        fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs;
+      }
       any dpf = app.paths.dataPath.addStep("authedUrls");
       if (dpf.file.exists) { dpf.file.delete(); }
       dpf.file.writer.open().writeStringClose(Json:Marshaller.marshall(au));

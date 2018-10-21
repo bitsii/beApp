@@ -5,10 +5,18 @@ if [ "$EUID" -eq 0 ]
   exit
 fi
 
+export USER=`whoami`
+export PATH=$PATH:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
+
 export INSUSER="$USER"
 
 export INSDIR=`echo $(getent passwd $INSUSER )| cut -d : -f 6`
 export IZDIR=`dirname $0`
+
+echo ""
+echo "INSUSER $INSUSER"
+echo "INSDIR $INSDIR"
+echo "IZDIR $IZDIR"
 
 #mkdir and copy and cd
 echo "Preparing application area"
@@ -28,8 +36,12 @@ wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/javax/servlet
 wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.19.3/sqlite-jdbc-3.19.3.jar
 wget --tries=10 --retry-connrefused https://repo1.maven.org/maven2/org/eclipse/jetty/aggregate/jetty-all/9.4.0.M1/jetty-all-9.4.0.M1-uber.jar
 
+echo "Done getting software"
+
 chmod +x *.sh
 
-cd $INSDIR
+cd $INSDIR/apprun
+
+echo "Done with installcam"
 
 echo ""

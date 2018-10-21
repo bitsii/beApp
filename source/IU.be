@@ -30,21 +30,26 @@ class IU:WebConnect {
       String externalAddress;
       String hostedAddress;
       String konnAddress;
+      String konniAddress;
       String internalPort = "";
+      String internaliPort = "";
       String externalPort = "";
       String protocol = "https://";
       String internalBase;
       String externalBase;
       String hostedBase;
       String konnBase;
+      String konniBase;
       String internalUrl;
       String externalUrl;
       String hostedUrl;
       String konnUrl;
+      String konniUrl;
       String internalLink;
       String externalLink;
       String hostedLink;
       String konnLink;
+      String konniLink;
       
       String homePage;
       Bool onPublicNet = false;
@@ -182,6 +187,7 @@ class IU:WebConnect {
       }
       updateHosted();
       updateKonnLink();
+      updateKonniLink();
   }
   
   updateHosted() {
@@ -240,6 +246,25 @@ class IU:WebConnect {
         konnBase = "";
         konnUrl = ""
         konnLink = "";
+      }
+  }
+  
+  updateKonniLink() {
+    if (TS.notEmpty(internaliPort)) {
+      String extPort = ":" + internaliPort;
+    } else {
+      extPort = "";
+    }
+    if (TS.notEmpty(konniAddress)) {
+        konniBase = protocol + konniAddress + extPort;
+        konniUrl = konniBase + homePage;
+        konniLink = "<a href=\"" + konniUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - use on device's network.";
+        log.log("Internal DNS url." + konniUrl);
+      } else {
+        konniAddress = "";
+        konniBase = "";
+        konniUrl = ""
+        konniLink = "";
       }
   }
   
@@ -383,8 +408,8 @@ use class IU:IUPlugin(App:AjaxPlugin) {
    }
    
    prepCamReverseProxy() {
-     String ecpr = "webApp.Cam";
-     String icpr = "webApp.Cam.int";
+     String ecpr = "webApp.Cam.";
+     String icpr = "webApp.Cam.int.";
      String ecp = app.configManager.get("webApp.Cam.web.port");
      String icp = app.configManager.get("webApp.Cam.int.web.port");
      String acp = app.configManager.get("webApp.Cam.app.port");
@@ -411,7 +436,7 @@ use class IU:IUPlugin(App:AjaxPlugin) {
       }
       
       prepReverseProxy(ap, wp, app.configPrefix, "cert.pem");
-      
+      //app.configPrefix + "int." + "web.port";
       String icp = app.configPrefix + "int.";
       String portikey = icp + "web.port";
       String wporti = app.configManager.get(portikey);

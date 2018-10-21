@@ -6,7 +6,7 @@
 ARCHINFO="$(uname -a)"
 if echo "$ARCHINFO" | grep -q "armv7"; then
     echo "MATCH ARM"
-    lcmd="./App/KBridge/lego_armv7"
+    lcmd="./App/KBridge/lego_arm7"
 fi
 if echo "$ARCHINFO" | grep -q "x86_64"; then
     echo "MATCH x86"

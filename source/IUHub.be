@@ -193,6 +193,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       if (TS.notEmpty(wc.konnUrl)) {
         app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
       }
+      if (TS.notEmpty(wc.konniUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.konniUrl);
+      }
     }  
   }
   
@@ -277,6 +280,10 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     wc.deviceId = app.plugin.deviceId;
     wc.deviceName = app.plugin.deviceName; 
     wc.externalPort = webPort;
+    String webiPort = app.configManager.get(app.configPrefix + "int." + "web.port");
+    if (TS.notEmpty(webiPort)) {
+     wc.internaliPort = webiPort;
+    }
     log.log("starting wc update");
     //fwd was here
     log.log("setting links");
@@ -766,6 +773,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     String cfHost = app.configManager.get("cf.host");
     String cfZone = app.configManager.get("cf.zone");
     
+    String cfiHost = app.configManager.get("cf.ihost");
+    String duckiDomain = app.configManager.get("duck.idomain");
+    
     loadWc();
     WebConnect wc = app.plugin.wcol.o;
     if (TS.notEmpty(cfHost) && TS.notEmpty(cfZone)) {
@@ -775,9 +785,22 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     } else {
       wc.konnAddress = "";
     }
+    
+    if (TS.notEmpty(cfiHost) && TS.notEmpty(cfZone)) {
+      wc.konniAddress = cfiHost + "." + cfZone;
+    } elseIf (TS.notEmpty(duckiDomain)) {
+      wc.konniAddress = duckiDomain + ".duckdns.org";
+    } else {
+      wc.konniAddress = "";
+    }
+    
     wc.updateKonnLink();
     if (TS.notEmpty(wc.konnUrl)) {
       app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
+    }
+    wc.updateKonniLink();
+    if (TS.notEmpty(wc.konniUrl)) {
+      app.pluginsByName.get("Auth").authedUrls.put(wc.konniUrl);
     }
     app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
     
@@ -1051,12 +1074,18 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          } else {
            dlUse = outerLinks;
            if (internal) {
-                outerLinks += "<p>" += wc.internalLink += "</p>";
+                if (TS.notEmpty(wc.konniLink)) {
+                  outerLinks += "<p>" += wc.konniLink += "</p>";
+                } else {
+                  outerLinks += "<p>" += wc.internalLink += "</p>";
+                }
               } else {
                 if (TS.notEmpty(wc.hostedLink)) {
                   outerLinks += "<p>" += wc.hostedLink += "</p>";
                 } elseIf (TS.notEmpty(wc.externalLink)) {
                   outerLinks += "<p>" += wc.externalLink += "</p>";
+                } elseIf (TS.notEmpty(wc.konniLink)) {
+                  outerLinks += "<p>" += wc.konniLink += "</p>";
                 } elseIf (TS.notEmpty(wc.internalLink)) {
                   outerLinks += "<p>" += wc.internalLink += "</p>";
                 }
@@ -1064,6 +1093,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          }
          if (TS.notEmpty(wc.konnLink)) {
             dlUse += "<p>" += wc.konnLink += "</p>";
+          }
+          if (TS.notEmpty(wc.konniLink)) {
+            dlUse += "<p>" += wc.konniLink += "</p>";
           }
           if (TS.notEmpty(wc.internalLink)) {
             dlUse += "<p>" += wc.internalLink += "</p>";
