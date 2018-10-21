@@ -1,8 +1,10 @@
 #!/bin/bash
 
+export USER=`whoami`
+export PATH=$PATH:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
+
 killall -w -u $USER domoticz
 
-mkdir -p Data/KBridge/Apps
 touch Data/KBridge/domoEnabled.txt
 
 if [ ! -e ./Opt/Domo ]; then
@@ -13,7 +15,7 @@ if [ ! -e ./Opt/Domo ]; then
     tar -xzvf ../../domoticz_linux_armv7l.tgz
     rm -f ../../domoticz_linux_armv7l.tgz
     cd ../..
-    cp Data/KBridge/haproxy/cert.pem Opt/Domo/server_cert.pem
+    #cp Data/KBridge/haproxy/cert.pem Opt/Domo/server_cert.pem
   fi
 fi
 

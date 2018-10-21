@@ -6,7 +6,6 @@ export PATH=$PATH:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 killall -w -u $USER iuccmdrs.sh
 kill `ps ax | grep java | grep -v grep | grep CamPlugin | awk '{$1=$1}1' | cut -d " " -f 1`
 
-mkdir -p Data/KBridge/Apps
 touch Data/KBridge/camEnabled.txt
 
 if [ ! -e ./App/IUCam/iuccmdrs.sh ]; then
@@ -24,7 +23,4 @@ if [ ! -e ./App/IUCam/iuccmdrs.sh ]; then
   rm -f IUCam.zip
 fi
 
-(./App/IUCam/iuccmdrs.sh --appType server 2>&1 | split -b 10485760 - /tmp/capp$$.log) &
-
-echo ""
-
+./App/KBridge/startcam.sh

@@ -119,6 +119,19 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(CallBackUI.informResponse("Please enable IU Cam from the Apps menu before setting up"));
    }
    
+   setDomoPortsRequest(request) Map {
+      String camPort = app.configManager.get("webApp.Domo.web.port");
+      if (TS.notEmpty(camPort)) {
+        Map pset = Maps.from("fpPort", camPort, "fpExPort", camPort);
+        String camiPort = app.configManager.get("webApp.Domo.int.web.port");
+        if (TS.notEmpty(camiPort)) {
+          pset["fpiPort"] = camiPort;
+        }
+        return(CallBackUI.setElementsValuesResponse(pset));
+      }
+      return(CallBackUI.informResponse("Please enable Domo from the Apps menu before setting up"));
+   }
+   
    routerLinkRequest(String account, String pass, request) Map {
     log.log("in router link request");
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
@@ -442,6 +455,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (TS.notEmpty(app.configManager.get("app.Cam")) && app.configManager.get("app.Cam") == "enabled") {
         prepCamReverseProxy();
       }
+      if (TS.notEmpty(app.configManager.get("app.Domo")) && app.configManager.get("app.Domo") == "enabled") {
+        prepDomoReverseProxy();
+      }
       super.start();
       app.pluginsByName.get("Auth").nonAuthedRequests.put("initialSetupRequest");
       
@@ -588,6 +604,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      WebConnect wc = wcol.o;
      Map fp = wc.getServices().get(port);
      for (any kv in fp) {
+      if (undef(kv.value)) { kv.value = ""; }
       log.log("fp " + kv.key + " " + kv.value);
      }
      log.log("urlPat " + fp.get("urlPat"));
@@ -639,6 +656,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       intPorti = System:Random.getIntMax(30000);
       intPorti += 3000;
       app.configManager.put("webApp.Cam.app.port", intPorti.toString());
+     }
+     if (TS.isEmpty(app.configManager.get("webApp.Domo.web.port"))) {
+      intPorti = System:Random.getIntMax(30000);
+      intPorti += 3000;
+      app.configManager.put("webApp.Domo.web.port", intPorti.toString());
+     }
+     if (TS.isEmpty(app.configManager.get("webApp.Domo.int.web.port"))) {
+      intPorti = System:Random.getIntMax(30000);
+      intPorti += 3000;
+      app.configManager.put("webApp.Domo.int.web.port", intPorti.toString());
      }
    }
    
@@ -1020,6 +1047,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("enabling app");
       if (appName == "Cam") {
         prepCamReverseProxy();
+      }
+      if (appName == "Domo") {
+        prepDomoReverseProxy();
       }
       if (appName == "Nxc") {
         prepReverseProxy("80", "6443", "Nxc.", "cert.pem");

@@ -20,8 +20,10 @@ if [ -e "./Data/KBridge/webApp.Cam.int.haproxy/haproxy.cfg" ]; then
   ./App/KBridge/starthap.sh Data/KBridge/webApp.Cam.int.haproxy certi.pem
 fi
 
-if [ -e "./Opt/Domo/server_cert.pem" ]; then
-  killall -w -u $USER domoticz
-  cp ./Data/KBridge/haproxy/cert.pem ./Opt/Domo/server_cert.pem
-  ./App/KBridge/startdomo.sh
+if [ -e "./Data/KBridge/webApp.Domo.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Domo.haproxy cert.pem
+fi
+
+if [ -e "./Data/KBridge/webApp.Domo.int.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Domo.int.haproxy certi.pem
 fi

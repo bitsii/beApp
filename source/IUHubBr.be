@@ -525,9 +525,9 @@ use class IUHub:Eui {
     
     if (TS.notEmpty(arg["internalAddress"])) {
       HD.getElementById("localSBox").href = "https://" + arg["internalAddress"] + ":4200";
-      HD.getElementById("localDomo").href = "https://" + arg["internalAddress"] + ":8443";
+      HD.getElementById("localDomo").href = "http://" + arg["internalAddress"] + ":10010";
       HD.getElementById("localNxc").href = "https://" + arg["internalAddress"] + ":6443/nextcloud/";
-      HD.getElementById("localSSH").innerHTML = "ssh user@" + arg["internalAddress"];
+      HD.getElementById("localSSH").innerHTML = "ssh pi@" + arg["internalAddress"];
     }
     
     profile = arg["profile"];
@@ -779,7 +779,7 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "Secure Shell, remote command line";
         HD.getElementById("fpPort").value = "22";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpPattern").value = "$type$ SSH: ssh -p $port$ user@$ip$";
+        HD.getElementById("fpPattern").value = "$type$ SSH: ssh -p $port$ pi@$ip$";
         HD.getElementById("fpDitty").innerHTML = "<p>ssh - <a href=\"https://duckduckgo.com/?q=ssh\">About Secure Shell</a>";
       } elseIf (forService.begins("Let's Encrypt")) {
         HD.getElementById("fpName").value = "Enable Let's Encrypt certificate generation";
@@ -799,6 +799,7 @@ use class IUHub:Eui {
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Domoticz</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://domoticz.com\">Domoticz Website</a>";
+        HC.callApp(Lists.from("setDomoPortsRequest"));
       } elseIf (forService.begins("Nextcloud")) {
         HD.getElementById("fpName").value = "Nextcloud - personal file and data syncing";
         HD.getElementById("fpPort").value = "6443";

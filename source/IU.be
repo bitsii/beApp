@@ -381,7 +381,7 @@ class IU:WebConnect {
           service.put("konnLink", konnUrl + " - use wherever there's internet.");
         }
         String konniUrl = conf.get("urlPat").copy();
-        if (TS.notEmpty(konniUrl) && TS.notEmpty(konniAddress)) {
+        if (TS.notEmpty(konniUrl) && TS.notEmpty(konniAddress) && TS.notEmpty(service.get("iport"))) {
           konniUrl = konniUrl.swap("$ip$", konniAddress);
           konniUrl = konniUrl.swap("$port$", service.get("iport"));
           konniUrl = konniUrl.swap("$type$ ", "");
@@ -421,6 +421,16 @@ use class IU:IUPlugin(App:AjaxPlugin) {
      String ecp = app.configManager.get("webApp.Cam.web.port");
      String icp = app.configManager.get("webApp.Cam.int.web.port");
      String acp = app.configManager.get("webApp.Cam.app.port");
+     prepReverseProxy(acp, ecp, ecpr, "cert.pem");
+     prepReverseProxy(acp, icp, icpr, "certi.pem");
+   }
+   
+   prepDomoReverseProxy() {
+     String ecpr = "webApp.Domo.";
+     String icpr = "webApp.Domo.int.";
+     String ecp = app.configManager.get("webApp.Domo.web.port");
+     String icp = app.configManager.get("webApp.Domo.int.web.port");
+     String acp = "10010";
      prepReverseProxy(acp, ecp, ecpr, "cert.pem");
      prepReverseProxy(acp, icp, icpr, "certi.pem");
    }
