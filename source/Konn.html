@@ -338,6 +338,10 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <input id="fpPort" type="text" placeholder="Port">
 </div>
 <div class="pure-control-group">
+    <label for="fpiPort">Internal Port</label>
+    <input id="fpiPort" type="text" placeholder="Internal Port">
+</div>
+<div class="pure-control-group">
     <label for="fpPort">External Port</label>
     <input id="fpExPort" type="text" placeholder="External Port">
 </div>
@@ -353,7 +357,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <span class="pure-form-message-inline" id="fpDitty"></span>
 </div>
 <div class="pure-controls">
-<button type="submit" class="pure-button pure-button-primary" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);return false;">Save Service</button>
+<button type="submit" class="pure-button pure-button-primary" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpiPort').value, document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);return false;">Save Service</button>
 <button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteForwardRequest', document.getElementById('fpPort').value);return false;">Delete Service</button>
 </div>
     </fieldset>

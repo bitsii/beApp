@@ -1134,6 +1134,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
             if (TS.notEmpty(kv.value.get("konnLink"))) {
               dlUse += "<p>" += kv.value.get("konnLink") += "</p>";
             }
+            if (TS.notEmpty(kv.value.get("konniLink"))) {
+              dlUse += "<p>" += kv.value.get("konniLink") += "</p>";
+            }
             if (TS.notEmpty(kv.value.get("intLink"))) {
               dlUse += "<p>" += kv.value.get("intLink") += "</p>";
             }

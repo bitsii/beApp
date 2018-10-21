@@ -109,7 +109,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    setCamPortsRequest(request) Map {
       String camPort = app.configManager.get("webApp.Cam.web.port");
       if (TS.notEmpty(camPort)) {
-        return(CallBackUI.setElementsValuesResponse(Maps.from("fpPort", camPort, "fpExPort", camPort)));
+        Map pset = Maps.from("fpPort", camPort, "fpExPort", camPort);
+        String camiPort = app.configManager.get("webApp.Cam.int.web.port");
+        if (TS.notEmpty(camiPort)) {
+          pset["fpiPort"] = camiPort;
+        }
+        return(CallBackUI.setElementsValuesResponse(pset));
       }
       return(CallBackUI.informResponse("Please enable IU Cam from the Apps menu before setting up"));
    }
@@ -586,7 +591,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("fp " + kv.key + " " + kv.value);
      }
      log.log("urlPat " + fp.get("urlPat"));
-    return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpExPort", wc.extraPortMap.get(port), "fpPattern", fp.get("urlPat"))));
+    return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpiPort", fp.get("iport"), "fpExPort", wc.extraPortMap.get(port), "fpPattern", fp.get("urlPat"))));
    }
    
    deleteForwardRequest(String port, request) Map {
@@ -637,11 +642,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      }
    }
    
-   updateForwardRequest(String fpName, String port, String exPort, String urlPat, request) Map {
+   updateForwardRequest(String fpName, String port, String iport, String exPort, String urlPat, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        WebConnect wc = app.plugin.wcol.o;
        //now fpname and urlpat tied to port
-       wc.putService(fpName, port, exPort, urlPat);
+       wc.putService(fpName, port, iport, exPort, urlPat);
        app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;

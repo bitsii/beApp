@@ -268,7 +268,7 @@ class IU:WebConnect {
       }
   }
   
-    putService(String name, String port, String exPort, String urlPat) {
+    putService(String name, String port, String iport, String exPort, String urlPat) {
       log.log("adding service");
       String extPort = self.extraPorts;
       if (TS.notEmpty(port)) {
@@ -303,7 +303,7 @@ class IU:WebConnect {
          }
        }
        log.log("urlPat " + urlPat);
-       Map epConf = Maps.from("name", name, "urlPat", urlPat);
+       Map epConf = Maps.from("name", name, "urlPat", urlPat, "iport", iport);
        if (undef(servicesConf)) {
         servicesConf = Map.new();
        }
@@ -346,6 +346,7 @@ class IU:WebConnect {
         service.put("intPort", extraPortMap.get(intPort));
         service.put("name", conf.get("name"));
         service.put("urlPat", conf.get("urlPat"));
+        service.put("iport", conf.get("iport"));
         String intUrl = conf.get("urlPat").copy();
         log.log("intUrl " + intUrl);
         if (TS.notEmpty(intUrl) && TS.notEmpty(internalAddress)) {
@@ -378,6 +379,13 @@ class IU:WebConnect {
           konnUrl = konnUrl.swap("$port$", service.get("intPort"));
           konnUrl = konnUrl.swap("$type$ ", "");
           service.put("konnLink", konnUrl + " - use wherever there's internet.");
+        }
+        String konniUrl = conf.get("urlPat").copy();
+        if (TS.notEmpty(konniUrl) && TS.notEmpty(konniAddress)) {
+          konniUrl = konniUrl.swap("$ip$", konniAddress);
+          konniUrl = konniUrl.swap("$port$", service.get("iport"));
+          konniUrl = konniUrl.swap("$type$ ", "");
+          service.put("konniLink", konniUrl + " - use on device's network.");
         }
       }
       return(services);
