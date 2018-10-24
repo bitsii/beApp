@@ -12,6 +12,10 @@ if [ -e "./Data/KBridge/Nxc.haproxy/haproxy.cfg" ]; then
   ./App/KBridge/starthap.sh Data/KBridge/Nxc.haproxy cert.pem
 fi
 
+if [ -e "./Data/KBridge/webApp.Nxc.int.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Nxc.int.haproxy certi.pem
+fi
+
 if [ -e "./Data/KBridge/webApp.Cam.haproxy/haproxy.cfg" ]; then
   ./App/KBridge/starthap.sh Data/KBridge/webApp.Cam.haproxy cert.pem
 fi

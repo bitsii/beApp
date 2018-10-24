@@ -435,6 +435,16 @@ use class IU:IUPlugin(App:AjaxPlugin) {
      prepReverseProxy(acp, icp, icpr, "certi.pem");
    }
    
+   prepNxcReverseProxy() {
+     String ecpr = "webApp.Nxc.";
+     String icpr = "webApp.Nxc.int.";
+     String ecp = app.configManager.get("webApp.Nxc.web.port");
+     String icp = app.configManager.get("webApp.Nxc.int.web.port");
+     String acp = "80";
+     prepReverseProxy(acp, ecp, ecpr, "cert.pem");
+     prepReverseProxy(acp, icp, icpr, "certi.pem");
+   }
+   
    prepReverseProxy() {
       app.appSsl = false;
       app.webProto = "https";

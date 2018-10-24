@@ -806,6 +806,7 @@ use class IUHub:Eui {
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/nextcloud/\" target=\"_blank\">$type$ Nextcloud</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://nextcloud.com\">Nextcloud Website</a>";
+        HC.callApp(Lists.from("setDomoPortsRequest"));
       } elseIf (forService.begins("IU WebCam")) {
         HD.getElementById("fpName").value = "IU WebCam - webcam with motion";
         HD.getElementById("fpPort").value = "";

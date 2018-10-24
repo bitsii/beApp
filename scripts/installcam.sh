@@ -1,12 +1,12 @@
 #!/bin/bash
 
+export USER=`whoami`
+export PATH=$PATH:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin:.
+
 if [ "$EUID" -eq 0 ]
   then echo "Please don't run as root run as user who the app will run as"
   exit
 fi
-
-export USER=`whoami`
-export PATH=$PATH:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
 export INSUSER="$USER"
 

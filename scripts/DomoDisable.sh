@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export USER=`whoami`
-export PATH=$PATH:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
+export PATH=$PATH:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin:.
 
 rm -f Data/KBridge/domoEnabled.txt
 
