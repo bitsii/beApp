@@ -239,8 +239,8 @@ class IU:WebConnect {
     if (TS.notEmpty(konnAddress)) {
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
-        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - use wherever there's internet.";
-        log.log("Virtual DNS url use wherever there's internet." + konnUrl);
+        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - use on internet.";
+        log.log("Virtual DNS url use on internet." + konnUrl);
       } else {
         konnAddress = "";
         konnBase = "";
@@ -378,7 +378,7 @@ class IU:WebConnect {
           konnUrl = konnUrl.swap("$ip$", konnAddress);
           konnUrl = konnUrl.swap("$port$", service.get("intPort"));
           konnUrl = konnUrl.swap("$type$ ", "");
-          service.put("konnLink", konnUrl + " - use wherever there's internet.");
+          service.put("konnLink", konnUrl + " - use on internet.");
         }
         String konniUrl = conf.get("urlPat").copy();
         if (TS.notEmpty(konniUrl) && TS.notEmpty(konniAddress) && TS.notEmpty(service.get("iport"))) {

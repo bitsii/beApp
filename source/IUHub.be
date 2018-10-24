@@ -455,6 +455,12 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       res["certificatePrint"] = wcol.o.certificatePrint;
       if (TS.notEmpty(wcol.o.internalAddress)) {
         res["internalAddress"] = wcol.o.internalAddress;
+        String inx = app.configManager.get("webApp.Nxc.int.web.port");
+        String ido = app.configManager.get("webApp.Domo.int.web.port");
+        if (undef(inx)) { inx = ""; }
+        if (undef(ido)) { ido = ""; }
+        res["inx"] = inx;
+        res["ido"] = ido;
       }
       
       String imso = app.configManager.get("imapSetOnce");
