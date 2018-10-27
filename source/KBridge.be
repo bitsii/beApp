@@ -101,9 +101,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    getRemoteAccessRequest(request) Map {
    
-     //return(CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")));
-     
      return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())), CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")))));
+   }
+   
+   getRemoteAccessRequest(String loadPort, request) Map {
+   
+     //return(CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")));
+     if (TS.isEmpty(loadPort)) {
+      return(getRemoteAccessRequest(request));
+     }
+     return(CallBackUI.multiResponse(Lists.from(loadForwardPortRequest(loadPort, request), CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())), CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")))));
    }
    
    setCamPortsRequest(request) Map {
@@ -462,8 +469,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       return(true);
     }
     
-   start() {
-      assurePorts();
+    preprs() {
       prepReverseProxy();
       if (TS.notEmpty(app.configManager.get("app.Cam")) && app.configManager.get("app.Cam") == "enabled") {
         prepCamReverseProxy();
@@ -474,6 +480,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       if (TS.notEmpty(app.configManager.get("app.Nxc")) && app.configManager.get("app.Nxc") == "enabled") {
         prepNxcReverseProxy();
       }
+    }
+    
+   start() {
+      assurePorts();
+      reforward();
       super.start();
       app.pluginsByName.get("Auth").nonAuthedRequests.put("initialSetupRequest");
       
@@ -589,11 +600,20 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.configManager.put("il.sshLogin", login);
       app.configManager.put("il.sshPass", pass);
       app.configManager.put("il.sshPort", port);   
-      closeSsh();     
-      doForward();
       return(CallBackUI.informResponse("SSH Internet Listen setup successful"));
       }
     return(null);
+   }
+   
+   reforward() {
+      //kill haproxies
+      System:Command.new("./App/KBridge/stophaps.sh").run();
+      //kill socats
+      System:Command.new("./App/KBridge/stopsocats.sh").run();
+      preprs();
+      System:Command.new("./App/KBridge/restarthaps.sh").run();
+      closeSsh();
+      doForward();
    }
    
    getForwardPortsList() String {
@@ -619,12 +639,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      String fpl = String.new();
      WebConnect wc = wcol.o;
      Map fp = wc.getServices().get(port);
-     for (any kv in fp) {
-      if (undef(kv.value)) { kv.value = ""; }
-      log.log("fp " + kv.key + " " + kv.value);
+     if(def(fp)) {
+       for (any kv in fp) {
+        if (undef(kv.value)) { kv.value = ""; }
+        log.log("fp " + kv.key + " " + kv.value);
+       }
+       log.log("urlPat " + fp.get("urlPat"));
+      return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpiPort", fp.get("iport"), "fpExPort", wc.extraPortMap.get(port), "fpPattern", fp.get("urlPat"))));
      }
-     log.log("urlPat " + fp.get("urlPat"));
-    return(CallBackUI.setElementsValuesResponse(Maps.from("fpName", fp.get("name"), "fpPort", port, "fpiPort", fp.get("iport"), "fpExPort", wc.extraPortMap.get(port), "fpPattern", fp.get("urlPat"))));
+     return(null);
    }
    
    deleteForwardRequest(String port, request) Map {
@@ -635,11 +658,18 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
-       closeSsh();
-       doForward();
+       //reforward();
        return(getRemoteAccessRequest(request));
        }
        return(null);
+   }
+   
+   reforwardRequest(request) Map {
+     if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+       log.log("let's reforward");
+       reforward();
+     }
+     return(null);
    }
    
    assurePorts() {
@@ -704,7 +734,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
        //TODO update imap wc
-       doForward();
+       //reforward();
        //return(CallBackUI.informResponse("Service Saved"));
        return(getRemoteAccessRequest(request));
        }
@@ -796,7 +826,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         if (res) {
           i = 5;
         } else {
-          closeSsh();
+          //reforward();
           Time:Sleep.sleepSeconds(5);
         }
       }
@@ -1071,26 +1101,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         throw(Alert.new("Must be administrator"));
       }
       log.log("enabling app");
-      if (appName == "Cam") {
-        prepCamReverseProxy();
-      }
-      if (appName == "Domo") {
-        prepDomoReverseProxy();
-      }
-      if (appName == "Nxc") {
-        prepNxcReverseProxy();
-        //prepReverseProxy("80", "6443", "Nxc.", "cert.pem");
-      }
-      if (appName == "Dns") {
-        outRgw();
-      }
       app.configManager.put("app." + appName, "enabled");
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
       String enres = System:Command.new(cmdPath).open().output.readStringClose();
       log.log("enable done, output " + enres);
-      if (appName == "Dns") {
-        doForward();
-      }
       return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline")));
       //return(CallBackUI.informResponse("App " + appName + " Enabled"));
     }

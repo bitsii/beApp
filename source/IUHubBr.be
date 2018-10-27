@@ -779,24 +779,28 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "Secure Shell, remote command line";
         HD.getElementById("fpPort").value = "22";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "$type$ SSH: ssh -p $port$ pi@$ip$";
         HD.getElementById("fpDitty").innerHTML = "<p>ssh - <a href=\"https://duckduckgo.com/?q=ssh\">About Secure Shell</a>";
       } elseIf (forService.begins("Let's Encrypt")) {
         HD.getElementById("fpName").value = "Enable Let's Encrypt certificate generation";
         HD.getElementById("fpPort").value = "80";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"http://$ip$:$port$/\" target=\"_blank\">$type$ Let's Encrypt</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://letsencrypt.org\">Let's Encrypt</a>";
       } elseIf (forService.begins("Shellinabox")) {
         HD.getElementById("fpName").value = "Shellinabox - remote command line in browser";
         HD.getElementById("fpPort").value = "4200";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Shellinabox</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox on GitHub</a>";
       } elseIf (forService.begins("Domoticz")) {
         HD.getElementById("fpName").value = "Domoticz - home automation system";
         HD.getElementById("fpPort").value = "8443";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Domoticz</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://domoticz.com\">Domoticz Website</a>";
         HC.callApp(Lists.from("setDomoPortsRequest"));
@@ -804,6 +808,7 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "Nextcloud - personal file and data syncing";
         HD.getElementById("fpPort").value = "6443";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/nextcloud/\" target=\"_blank\">$type$ Nextcloud</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://nextcloud.com\">Nextcloud Website</a>";
         HC.callApp(Lists.from("setNxcPortsRequest"));
@@ -811,6 +816,7 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "IU WebCam - webcam with motion";
         HD.getElementById("fpPort").value = "";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ IU WebCam</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://gitlab.com/abelii/edgii/wikis/home\">IU WebCam on GitLab</a>";
         HC.callApp(Lists.from("setCamPortsRequest"));
@@ -818,39 +824,50 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "Homeassistant home automation";
         HD.getElementById("fpPort").value = "8123";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Homeassistant</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.home-assistant.io/\">Homeassistant</a>";
       } elseIf (forService.begins("MS Remote")) {
         HD.getElementById("fpName").value = "MS Remote Desktop";
         HD.getElementById("fpPort").value = "3389";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "$type$ RDP:  $ip$:$port$";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://support.microsoft.com/en-us/help/17463/windows-7-connect-to-another-computer-remote-desktop-connection\">MS Remote Desktop</a>";
       } elseIf (forService.begins("NoMachine")) {
         HD.getElementById("fpName").value = "NoMachine Remote Desktop";
         HD.getElementById("fpPort").value = "4000";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "$type$ NoMachine:  $ip$:$port$";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.nomachine.com/\">NoMachine, free cross platform remote desktop</a>";
       } elseIf (forService.begins("VNC")) {
         HD.getElementById("fpName").value = "VNC Remote Desktop";
         HD.getElementById("fpPort").value = "5900";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "$type$ VNC:  $ip$:$port$";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://en.wikipedia.org/wiki/Virtual_Network_Computing\">Virtual Network Computing - open source remote desktop (unencrypted)</a>";
       } elseIf (forService.ends("(ard)")) {
         HD.getElementById("fpName").value = "Apple Remote Desktop";
         HD.getElementById("fpPort").value = "5988";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "$type$ Apple Remote Desktop:  $ip$:$port$";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.apple.com/remotedesktop/\">Apple Remote Desktop</a>";
       } else {
         HD.getElementById("fpName").value = "";
         HD.getElementById("fpPort").value = "";
         HD.getElementById("fpExPort").value = "";
+        HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "";
         HD.getElementById("fpDitty").innerHTML = "";
       }
+      if (TS.notEmpty(HD.getElementById("fpPort").value)) {
+        HC.callApp(Lists.from("loadForwardPortsRequest", HD.getElementById("fpPort").value));
+      }
+      //unless (forService.begins("Manual") || TS.isEmpty(forService)) {
+      //}
    }
    
    fillImap(String forService) {

@@ -927,8 +927,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       log.log("ddclient resi " + res);
     
     }
-    
-    
   }
   
   doLego(String actionType) {

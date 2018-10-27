@@ -303,6 +303,9 @@ class IU:WebConnect {
          }
        }
        log.log("urlPat " + urlPat);
+       if (TS.isEmpty(iport)) {
+        iport = getAPort();
+      }
        Map epConf = Maps.from("name", name, "urlPat", urlPat, "iport", iport);
        if (undef(servicesConf)) {
         servicesConf = Map.new();

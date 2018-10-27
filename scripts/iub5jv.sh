@@ -107,7 +107,9 @@ cp scripts/LEDisable.sh ../apprun/App/KBridge
 cp scripts/getLE.sh ../apprun/App/KBridge
 cp scripts/lecf.sh ../apprun/App/KBridge
 cp scripts/ledd.sh ../apprun/App/KBridge
-cp scripts/distcert.sh ../apprun/App/KBridge
+cp scripts/restarthaps.sh ../apprun/App/KBridge
+cp scripts/stophaps.sh ../apprun/App/KBridge
+cp scripts/stopsocats.sh ../apprun/App/KBridge
 cp scripts/ddclient ../apprun/App/KBridge
 cp scripts/ddrun.sh ../apprun/App/KBridge
 cp scripts/ddclip.sh ../apprun/App/KBridge
@@ -127,6 +129,7 @@ cp source/nextcloud-enabled.conf ../apprun/App/KBridge
 cp source/nextcloud-disabled.conf ../apprun/App/KBridge
 
 cd ../apprun
+
 ./App/KBridge/iuhcmd.sh --appType server $*
 
 #./scripts/iubrel.sh

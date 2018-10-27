@@ -39,4 +39,4 @@ fi
 
 cd ../..
 
-./App/KBridge/distcert.sh
+./App/KBridge/restarthaps.sh

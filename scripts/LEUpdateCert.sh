@@ -26,4 +26,3 @@ mv all.pem Data/KBridge/haproxy/cert.pem
 rm -f fullchain.pem
 rm -f privkey.pem
 
-./App/KBridge/starthap.sh ./Data/KBridge/haproxy cert.pem
