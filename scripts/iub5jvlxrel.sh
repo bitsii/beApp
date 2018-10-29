@@ -109,6 +109,7 @@ cp scripts/lecf.sh ../apprun/App/KBridge
 cp scripts/ledd.sh ../apprun/App/KBridge
 cp scripts/restarthaps.sh ../apprun/App/KBridge
 cp scripts/stophaps.sh ../apprun/App/KBridge
+cp scripts/cpnx.sh ../apprun/App/KBridge
 cp scripts/stopsocats.sh ../apprun/App/KBridge
 cp scripts/ddclient ../apprun/App/KBridge
 cp scripts/ddrun.sh ../apprun/App/KBridge

@@ -812,6 +812,88 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
   }
   
+  updateNames() {
+    try { updateNamesInner(); } catch (any e) { log.log("error updatenames"); } if (def(e)) { log.log("" + e); }
+  }
+  
+  updateNamesInner() {
+    updateNamesNxc();
+  }
+  
+  updateNamesNxc() {
+    //if file exists
+    //get it
+    System:Command.new("./App/KBridge/cpnx.sh get").open().output.readStringClose();
+    Path nc = Path.apNew("config.php");
+    if (nc.file.exists) {
+      String cont = nc.file.reader.open().readStringClose();
+      log.log("have confphp");
+      if (TS.notEmpty(cont)) { log.log("confphp " + cont); }
+      //change authed stuff
+      Int fpb = cont.find("'trusted_domains'");
+      if (undef(fpb)) {
+        log.log("no td");
+        //(
+        fpb = cont.find(");");
+        cont1 = cont.substring(0, fpb);
+        //(
+        cont2 = "\n);\n";
+      } else {
+        log.log("has td");
+        //(
+        Int fpe = cont.find("),", fpb) + 2;
+        String cont1 = cont.substring(0, fpb);
+        String cont2 = cont.substring(fpe);
+      }
+      log.log("cont1 " + cont1 + "cont2 " + cont2);
+      
+      String iport = app.configManager.get("webApp.Nxc.int.web.port");
+      String eport = app.configManager.get("webApp.Nxc.web.port");
+      WebConnect wc = app.plugin.wcol.o;
+      if (def(wc)) {
+        String iip = wc.internalAddress;
+        String eip = wc.externalAddress;
+        String kiad = wc.konniAddress;
+        String kead = wc.konnAddress;
+      }
+      
+      String authnx = String.new();
+      Int i = 0;
+      if (TS.notEmpty(iport)) {
+        if (TS.notEmpty(iip)) {
+          authnx += i += " => " += "'" += iip += ":" += iport += "',\n";
+          i++=;
+        }
+        if (TS.notEmpty(kiad)) {
+          authnx += i += " => " += "'" += kiad += ":" += iport += "',\n";
+          i++=;
+        }
+      }
+      if (TS.notEmpty(eport)) {
+        if (TS.notEmpty(eip)) {
+          authnx += i += " => " += "'" += eip += ":" += eport += "',\n";
+          i++=;
+        }
+        if (TS.notEmpty(kead)) {
+          authnx += i += " => " += "'" += kead += ":" += eport += "',\n";
+          i++=;
+        }
+      }
+      if (TS.notEmpty(cont1) && TS.notEmpty(cont2) && TS.notEmpty(authnx)) {
+        String contf = cont1 + "'trusted_domains' =>\n array (\n" + authnx + ")," + cont2;
+        log.log("contf " + contf);
+        nc.file.delete();
+        nc.file.writer.open().writeStringClose(contf);
+      }
+      //put it back
+      System:Command.new("./App/KBridge/cpnx.sh put").open().output.readStringClose();
+    } else {
+      log.log("no confphp");
+    }
+    
+  
+  }
+  
   saveCfRequest(String cfHost, String cfiHost, String cfZone, String cfEmail, String cfToken, request) {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
@@ -822,6 +904,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     app.configManager.put("cf.email", cfEmail);
     app.configManager.put("cf.token", cfToken);
     updateCf();
+    updateNames();
   }
   
   updateCf() {
@@ -983,6 +1066,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     app.configManager.put("duck.email", duckEmail);
     app.configManager.put("duck.token", duckToken);
     updateDuck();
+    updateNames();
   }
   
   updateDuck() this {

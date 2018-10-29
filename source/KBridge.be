@@ -1105,6 +1105,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String cmdPath = "./App/KBridge/" + appName + "Enable.sh";
       String enres = System:Command.new(cmdPath).open().output.readStringClose();
       log.log("enable done, output " + enres);
+      updateNames();
       return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline")));
       //return(CallBackUI.informResponse("App " + appName + " Enabled"));
     }
