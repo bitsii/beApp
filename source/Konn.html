@@ -42,17 +42,16 @@
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
                 <!--<li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link to Edgii</a></li>-->
                 <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');callApp('getDuckRequest');callApp('getCfRequest');callApp('getOnPublicNetRequest');return false;">External Access</a></li>
-                <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a></li>
+                <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');callUI('hideNShowResponse', 'appsDiv', 'forwardPortsDiv');callApp('getAppsStatesRequest');return false;">Manage Apps</a></li>
+                <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">App Links</a></li>
                 <li class="pure-menu-item" id="browseDevicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Browse Devices</a></li>
-                <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Service Links</a></li>
                 <li class="pure-menu-item" id="fileManagerME"><a href="#" class="pure-menu-link" onclick="callUI('localBrowseRequest');return false;">Browse Files</a></li>
-                <li class="pure-menu-item" id="restartME"><a href="#" class="pure-menu-link" onclick="callUI('restart');return false;">Restart Bridge</a></li>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');callUI('showPiPass');return false;">Change Password</a></li>
-                <li class="pure-menu-item" id="manageAccountsME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'accountdiv');callApp('showAccountsRequest');return false;">Manage Accounts</a></li>
+                <li class="pure-menu-item" id="restartME"><a href="#" class="pure-menu-link" onclick="callUI('restart');return false;">Restart</a></li>
+                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'passchangediv');return false;">Change Password</a></li>
+                <li class="pure-menu-item" id="manageAccountsME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'accountdiv');callApp('showAccountsRequest');callUI('showPiPass');return false;">Manage Accounts</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'sessionsDiv');callUI('showSessionsRequest');return false;">Active Sessions</a></li>
                 <li class="pure-menu-item" id="setDevicenameME"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'dnamechangediv');return false;">Set Devicename</a></li>
                 </div>
-                <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'appsDiv');callApp('getAppsStatesRequest');return false;">Manage Apps</a></li>
                 <li class="pure-menu-item"><a href="https://gitlab.com/abelii/edgii/wikis/list-of-howtos" class="pure-menu-link" target="_blank">Help</a></li>
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('hideNShowOneResponse', 'aboutDiv');return false;">About</a></li>
             </ul>
@@ -87,28 +86,6 @@
         
         </fieldset>
     </form>
-    <div id="changePiPass" style="display: none;">
-    <form class="pure-form pure-form-aligned">
-    <fieldset>
-        <div class="pure-control-group">
-            <label for="piUser">SSH Login</label>
-            <input id="piUser" type="text" placeholder="SSH Login">
-        </div>
-        <div class="pure-control-group">
-            <label for="piPassNew">New SSH Password</label>
-            <input id="piPassNew" type="password" placeholder="Password">
-        </div>
-        <div class="pure-control-group">
-            <label for="piPassNew2">Repeat SSH Password</label>
-            <input id="piPassNew2" type="password" placeholder="Password">
-        </div>
-        <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('changePiPassRequest', document.getElementById('piUser').value, document.getElementById('piPassNew').value, document.getElementById('piPassNew2').value);return false;">Change Password for Secure Shell - SSH/Device Login</button>
-        </div>
-        
-        </fieldset>
-    </form>
-    </div>
     </div>
     
     <div id="dnamechangediv" style="display: none;">
@@ -310,18 +287,19 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
   <div class="pure-control-group">
       <label for="spacer"></label>
       <input type="hidden" placeholder="Space">
-      <span class="pure-form-message-inline">Expose services to the internet</span>
+      <span class="pure-form-message-inline">Access Apps from the Internet</span>
   </div>
 <div class="pure-control-group">
-<label for="fpfid">Select Service</label>
+<label for="fpfid">Select App</label>
 <select name=fpFillin onchange='fpChange(this.form.fpFillin);return false;'>
-<option >(Manual Configuration)</option>
+<option ></option>
 <option>Let's Encrypt Setup</option>
 <option>IU WebCam motion detecting webcam</option>
 <option>Domoticz home automation system</option>
 <option>Nextcloud personal file and data syncing</option>
 <option>Shellinabox command line over web</option>
 <option>Secure Shell remote command line (ssh)</option>
+<option >(Manual Configuration)</option>
 <!--<option>Homeassistant home automation</option>
 <option>VNC Remote Desktop</option>
 <option>MS Remote Desktop (rdp)</option>
@@ -329,6 +307,13 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <option>Apple Remote Desktop (ard)</option>-->
 </select>
 </div>
+<div class="pure-control-group">
+    <label for="spacer"></label>
+    <input type="hidden" placeholder="Space">
+    <span class="pure-form-message-inline"><a href="#" onclick="callUI('toggleDisplay', 'appPortsDiv');return false;">Advanced Configuration</a>
+</span>
+</div>
+<div id="appPortsDiv" style="display:none;">
 <div class="pure-control-group">
     <label for="fpName">Service Name</label>
     <input id="fpName" type="text" placeholder="Service Name">
@@ -350,15 +335,15 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <label for="fpPattern">Url Pattern</label>
     <input id="fpPattern" type="text" placeholder="Url Pattern">
 </div>
-
+</div>
 <div class="pure-control-group">
     <label for="spacer"></label>
     <input type="hidden" placeholder="Space">
     <span class="pure-form-message-inline" id="fpDitty"></span>
 </div>
 <div class="pure-controls">
-<button type="submit" class="pure-button pure-button-primary" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpiPort').value, document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);callApp('reforwardRequest');return false;">Save Service</button>
-<button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteForwardRequest', document.getElementById('fpPort').value);callApp('reforwardRequest');return false;">Delete Service</button>
+<button type="submit" class="pure-button pure-button-primary" onclick="callApp('updateForwardRequest', document.getElementById('fpName').value, document.getElementById('fpPort').value,document.getElementById('fpiPort').value, document.getElementById('fpExPort').value, document.getElementById('fpPattern').value);callApp('reforwardRequest');return false;">Enable Access</button>
+<button type="submit" class="pure-button pure-button-primary" onclick="callApp('deleteForwardRequest', document.getElementById('fpPort').value);callApp('reforwardRequest');return false;">Disable Access</button>
 </div>
     </fieldset>
 </form>
@@ -501,7 +486,33 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     </div>
     </div>
     </div>
-    
+    <div id="changePiPass" style="display: none;">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="spacer">SSH Password</label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Change SSH/Shell Password</span>
+        </div>
+        <div class="pure-control-group">
+            <label for="piUser">SSH Login</label>
+            <input id="piUser" type="text" placeholder="SSH Login">
+        </div>
+        <div class="pure-control-group">
+            <label for="piPassNew">New SSH Password</label>
+            <input id="piPassNew" type="password" placeholder="Password">
+        </div>
+        <div class="pure-control-group">
+            <label for="piPassNew2">Repeat SSH Password</label>
+            <input id="piPassNew2" type="password" placeholder="Password">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('changePiPassRequest', document.getElementById('piUser').value, document.getElementById('piPassNew').value, document.getElementById('piPassNew2').value);return false;">Change Password for Secure Shell - SSH/Device Login</button>
+        </div>
+        
+        </fieldset>
+    </form>
+    </div>
     </div>
     
     <div id="aboutDiv" style="display: none;">

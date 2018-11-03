@@ -511,6 +511,7 @@ use class IUHub:Eui {
    updateResponse(Map arg) {
      fields {
        Set perms = Set.new();
+       String plat;
      }
      //profile - security - menu setup
     
@@ -522,6 +523,14 @@ use class IUHub:Eui {
         }
       }
     }
+    
+    if (arg.has("plat")) {
+      plat = arg["plat"];
+    } elseIf (undef(plat)) {
+      plat = "";
+    }
+    
+    log.log("plat " + plat);
     
     if (TS.notEmpty(arg["internalAddress"])) {
       HD.getElementById("localSBox").href = "https://" + arg["internalAddress"] + ":4200";
@@ -862,6 +871,9 @@ use class IUHub:Eui {
         HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "";
         HD.getElementById("fpDitty").innerHTML = "";
+        if (forService.begins("(Manual Configuration)")) {
+          HC.toggleDisplay("appPortsDiv");
+        }
       }
       if (TS.notEmpty(HD.getElementById("fpPort").value)) {
         HC.callApp(Lists.from("loadForwardPortsRequest", HD.getElementById("fpPort").value));

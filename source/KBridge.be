@@ -101,7 +101,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    getRemoteAccessRequest(request) Map {
    
-     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())), CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")))));
+     return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())));
    }
    
    getRemoteAccessRequest(String loadPort, request) Map {
@@ -110,7 +110,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      if (TS.isEmpty(loadPort)) {
       return(getRemoteAccessRequest(request));
      }
-     return(CallBackUI.multiResponse(Lists.from(loadForwardPortRequest(loadPort, request), CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())), CallBackUI.hideNShowListResponse(Lists.from("forwardPortsDiv")))));
+     return(CallBackUI.multiResponse(Lists.from(loadForwardPortRequest(loadPort, request), CallBackUI.setElementsInnerHTMLResponse(Maps.from("forwardPortsListDiv", getForwardPortsList())))));
    }
    
    setCamPortsRequest(request) Map {
@@ -484,11 +484,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     
    start() {
       assurePorts();
-      reforward();
       super.start();
       app.pluginsByName.get("Auth").nonAuthedRequests.put("initialSetupRequest");
       
-      bfw.startDelay = Time:Interval.new(20, 0);
+      bfw.startDelay = Time:Interval.new(1, 0);
       bfw.repeatDelay = Time:Interval.new(300, 0);//was 60
       bfw.minimumDelay = Time:Interval.new(120, 0);//was 30
       bfw.toInvoke = getInvocation("doForward", List.new());
@@ -512,11 +511,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    getDuckRequest(request) Map {
    
      String duckDomain = app.configManager.get("duck.domain");
+     String duckiDomain = app.configManager.get("duck.idomain");
      String duckEmail = app.configManager.get("duck.email");
      if (undef(duckDomain)) { duckDomain = ""; }
+     if (undef(duckiDomain)) { duckiDomain = ""; }
      if (undef(duckEmail)) { duckEmail = ""; }
      
-     return(CallBackUI.setElementsValuesResponse(Maps.from("duckDomain", duckDomain, "duckEmail", duckEmail)));
+     return(CallBackUI.setElementsValuesResponse(Maps.from("duckDomain", duckDomain, "duckiDomain", duckiDomain, "duckEmail", duckEmail)));
    }
    
    getCfRequest(request) Map {
@@ -524,10 +525,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      String cfHost = app.configManager.get("cf.host");
      if (undef(cfHost)) { cfHost = ""; }
      
+     String cfiHost = app.configManager.get("cf.ihost");
+     if (undef(cfiHost)) { cfiHost = ""; }
+     
      String cfZone = app.configManager.get("cf.zone");
      if (undef(cfZone)) { cfZone = ""; }
      
-     return(CallBackUI.setElementsValuesResponse(Maps.from("cfHost", cfHost, "cfZone", cfZone)));
+     return(CallBackUI.setElementsValuesResponse(Maps.from("cfHost", cfHost, "cfiHost", cfiHost, "cfZone", cfZone)));
    }
    
    
@@ -812,6 +816,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   }
     
     doForward() {
+      fields {
+        Bool firstStart;
+      }
+      if (undef(firstStart)) {
+        firstStart = true;
+      }
+      if (firstStart) {
+        firstStart = false;
+        reforward();
+      }
       doUpdate();
       for (Int i = 0;i < 5;i++=) {
         Bool res = false;

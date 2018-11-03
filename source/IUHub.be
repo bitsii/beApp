@@ -349,6 +349,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       if (Logic:Bools.fromString(app.configManager.get("logs.turnOnAll"))) {
         IO:Logs.turnOnAll();
       }
+      fields {
+        String plat = System:Process.platform.name;
+      }
       log.log("in hubplugin start");
       app.pluginsByName.get("Auth").nonAuthedRequests.put("pingRequest");
      
@@ -446,6 +449,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   loggedIn(Account a, Map res, Map arg, request) Map {
       res["action"] = "updateResponse";
       res["profile"] = self.profile;
+      res["plat"] = plat;
       res["justLoggedIn"] = true;
       res["permsString"] = a.permsString;
       res["actionLinks"] = getActionLinks(a, arg, request);
