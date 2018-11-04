@@ -41,7 +41,7 @@
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
                 <!--<li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link to Edgii</a></li>-->
-                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');callApp('getDuckRequest');callApp('getCfRequest');callApp('getOnPublicNetRequest');return false;">External Access</a></li>
+                <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');callApp('getDuckRequest');callApp('getCfRequest');callApp('getOnPublicNetRequest');return false;">Remote Access</a></li>
                 <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');callUI('hideNShowResponse', 'appsDiv', 'forwardPortsDiv');callApp('getAppsStatesRequest');return false;">Manage Apps</a></li>
                 <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">App Links</a></li>
                 <li class="pure-menu-item" id="browseDevicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">Browse Devices</a></li>
@@ -125,8 +125,57 @@
 document.getElementById('files').addEventListener('change', handleFileSelect, false);
 </script>
 <!--Files-->
-    
+
     <div id="remoteaccessdiv" style="display: none;">
+    <form class="pure-form pure-form-aligned">
+    <fieldset>
+        <div class="pure-control-group">
+            <label for="rlspacer"></label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline"><b>Enable remote access from the Internet</b></span>
+        </div>
+        <div class="pure-control-group">
+            <label for="rlspacer"></label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Use <a href="https://www.duckdns.org" target="_blank">DuckDNS</a> Domainnames to access</span>
+        </div>
+        <div class="pure-control-group">
+            <label for="rlspacer"></label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">the device locally and remotely</span>
+        </div>
+        <div class="pure-control-group">
+            <label for="duckDomain">External Duck Domain</label>
+            <input id="duckDomain" type="text" placeholder="External (Internet) Name">
+        </div>
+        <div class="pure-control-group">
+            <label for="duckiDomain">Internal Duck Domain</label>
+            <input id="duckiDomain" type="text" placeholder="Internal (Local Network) Name">
+        </div>
+        <div class="pure-control-group" style="display: none;">
+            <label for="rlspacer"></label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Leave Internal Domain unset if external (Internet) name will also work on device's own network</span>
+        </div>
+        <div class="pure-control-group">
+            <label for="duckEmail">DuckDns Login</label>
+            <input id="duckEmail" type="text" placeholder="Email for DuckDNS Account">
+        </div>
+        <div class="pure-control-group">
+            <label for="duckToken">Duck Token</label>
+            <input id="duckToken" type="password" placeholder="Duckdns Token">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDuckRequest', document.getElementById('duckDomain').value, document.getElementById('duckiDomain').value, document.getElementById('duckEmail').value, document.getElementById('duckToken').value);return false;">Save</button>
+        </div>
+        <div class="pure-control-group">
+            <span class="pure-form-message-inline"><a href="#" onclick="callUI('toggleDisplay', 'advancedInetDiv');return false;">Advanced Options</a></span>
+        </div>
+        </fieldset>
+    </form>
+    
+    <div id="advancedInetDiv" style="display: none;">
+    
     <form class="pure-form pure-form-aligned">
     <fieldset>
         <div class="pure-control-group">
@@ -168,41 +217,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         </fieldset>
     </form>
     
-    <form class="pure-form pure-form-aligned">
-    <fieldset>
-        <div class="pure-control-group">
-            <label for="rlspacer"></label>
-            <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Link device to <a href="https://www.duckdns.org" target="_blank">DuckDNS</a> Domainname</span>
-        </div>
-        <div class="pure-control-group">
-            <label for="duckDomain">External Duck Domain</label>
-            <input id="duckDomain" type="text" placeholder="External (Internet) Name">
-        </div>
-        <div class="pure-control-group">
-            <label for="duckiDomain">Internal Duck Domain</label>
-            <input id="duckiDomain" type="text" placeholder="Internal (Local Network) Name">
-        </div>
-        <div class="pure-control-group">
-            <label for="rlspacer"></label>
-            <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Leave Internal Domain unset if external (Internet) name will also work on device's own network</span>
-        </div>
-        <div class="pure-control-group">
-            <label for="duckEmail">DuckDns Login</label>
-            <input id="duckEmail" type="text" placeholder="Email for DuckDNS Account">
-        </div>
-        <div class="pure-control-group">
-            <label for="duckToken">Duck Token</label>
-            <input id="duckToken" type="password" placeholder="Duckdns Token">
-        </div>
-        <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('saveDuckRequest', document.getElementById('duckDomain').value, document.getElementById('duckiDomain').value, document.getElementById('duckEmail').value, document.getElementById('duckToken').value);return false;">Save</button>
-        </div>
-        </fieldset>
-    </form>
-    
-    <form class="pure-form pure-form-aligned">
+    <form class="pure-form pure-form-aligned" id="cfForm" style="display: none;">
     <fieldset>
         <div class="pure-control-group">
             <label for="spcf1"></label>
@@ -217,7 +232,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <label for="cfiHost">Internal Hostname</label>
             <input id="cfiHost" type="text" placeholder="Internal (Local Network) Name">
         </div>
-        <div class="pure-control-group">
+        <div class="pure-control-group" style="display: none;">
             <label for="spcf2"></label>
             <input id="spcf2" type="hidden" placeholder="Space">
             <span class="pure-form-message-inline">Leave Internal Name unset if external (Internet) name will also work on device's own network</span>
@@ -278,7 +293,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         </div>
         </fieldset>
     </form>
-    
+    </div>
     </div>
     
 <div id="forwardPortsDiv" style="display: none;">
@@ -287,7 +302,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
   <div class="pure-control-group">
       <label for="spacer"></label>
       <input type="hidden" placeholder="Space">
-      <span class="pure-form-message-inline">Access Apps from the Internet</span>
+      <span class="pure-form-message-inline"><b>Remotely access Apps via the Internet</b></span>
   </div>
 <div class="pure-control-group">
 <label for="fpfid">Select App</label>
@@ -538,21 +553,23 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <div class="pure-g">
     <div class="pure-u-1-24"></div>
     <div class="pure-u-23-24">
+    <p><b>Enable and Disable Apps</b></p>
     <!--<p><b>Local DNS</b> - seamless access to Edgii services by name <span style="color:green"><a style="display: none;" id="DnsAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="DnsAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Dns');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Dns');return false;">Disable</a></p>
     <p style="display: block;" id="DnsAppInfo">Paired with Upnp and one time router settings provides seamless internal and external access to Edgii hosted services using their dns name. Only one device needs to have the app enabled.</p>-->
     <p><b>Let's Encrypt</b> - get a free browser accepted ssl certificate <span style="color:green"><a style="display: none;" id="LEAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="LEAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'LE');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'LE');return false;">Disable</a></p>
-    <p style="display: block;" id="LEAppInfo">Utility service to enable Let's Encrypt cert setup and renewal, leave enabled for Let's Encrypt certificate usage.</p><p>More info at <a href="https://letsencrypt.org/" target="_blank">Let's Encrypt</a></p>
-    <p><b>IU WebCam</b> - motion detecting webcam <span style="color:green"><a style="display: none;" id="CamAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="CamAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Cam');callApp('reforwardRequest');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Cam');return false;">Disable</a></p>
-    <p style="display: block;" id="CamAppInfo">See <a href="#" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a> to setup access from internet and <a href="#" onclick="callUI('reloadResponse');return false;">Service Links</a> for links after setup.</p>
-    <p><b>Domoticz</b> - home automation system <span style="color:green"><a style="display: none;" id="DomoAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="DomoAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Domo');callApp('reforwardRequest');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Domo');return false;">Disable</a></p>
-    <p style="display: block;" id="DomoAppInfo"><a href="https://domoticz.com/">Domoticz Website</a> See <a href="#" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a> to setup access from internet after enabling and <a href="#" onclick="callUI('reloadResponse');return false;">Service Links</a> for links after setup. You <b>should definately</b> set a password on the Domoticz UI right after enabling (<b>certainly</b> before exposing to internet) - in Domoticz app navigate to Setup / Settings / Website Protection to do this.  After enabling, this link will provide access on the device's network <a href="#" target="_blank" id="localDomo">Local net access to Domoticz</a></p>
+    <p style="display: block;" id="LEAppInfo">Utility service to enable Let's Encrypt cert setup and renewal, enable for Let's Encrypt certificate usage.</p><p>More info at <a href="https://letsencrypt.org/" target="_blank">Let's Encrypt</a></p>
     <p><b>Nextcloud</b> - personal file and data syncing <span style="color:green"><a style="display: none;" id="NxcAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="NxcAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Nxc');callApp('reforwardRequest');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Nxc');return false;">Disable</a></p>
-    <p style="display: block;" id="NxcAppInfo"><a href="https://nextcloud.com/">Nextcloud Site</a> See <a href="#" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a> to setup access from internet after enabling <a href="#" onclick="callUI('reloadResponse');return false;">Service Links</a> for links after setup. You <b>should definately</b> create the initial admin account in the Nextcloud UI right after enabling (<b>certainly</b> before exposing to internet) - You will be prompted at first login.  After enabling, this link will provide access on the device's network <a href="#" target="_blank" id="localNxc">Local net access to Nextcloud</a></p>
+    <p style="display: block;" id="NxcAppInfo"><a href="https://nextcloud.com/">Nextcloud Site</a> Create the initial admin account in the Nextcloud UI as soon as you enable the application (before enabling remote access) - After enabling the app, this link will provide access on the device's network <a href="#" target="_blank" id="localNxc">Local net access to Nextcloud</a></p>
+    <div id="lapps" style="display: none;">
+    <p><b>IU WebCam</b> - motion detecting webcam <span style="color:green"><a style="display: none;" id="CamAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="CamAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Cam');callApp('reforwardRequest');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Cam');return false;">Disable</a></p>
+    <p><b>Domoticz</b> - home automation system <span style="color:green"><a style="display: none;" id="DomoAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="DomoAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Domo');callApp('reforwardRequest');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Domo');return false;">Disable</a></p>
+    <p style="display: block;" id="DomoAppInfo"><a href="https://domoticz.com/">Domoticz Website</a> Set a password on the Domoticz UI right after enabling (before enabling remote access from the internet) - in Domoticz app navigate to Setup / Settings / Website Protection and set the password.  After enabling the app, this link will provide access on the device's network <a href="#" target="_blank" id="localDomo">Local net access to Domoticz</a></p>
     <p><b>Shellinabox</b> - remote command line access in a browser <span style="color:green"><a style="display: none;" id="SBoxAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="SBoxAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'SBox');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'SBox');return false;">Disable</a></p>
-    <p style="display: block;" id="SBoxAppInfo"><a href="https://github.com/shellinabox/shellinabox">Shellinabox on GitHub</a> Shellinabox is not automatically enabled for external access. See <a href="#" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a> to manage access from internet and <a href="#" onclick="callUI('reloadResponse');return false;">Service Links</a> for links after setup. You <b>should definately</b> change the pi SSH/Device Login password before you enable, <a href="#" onclick="callUI('hideNShowOneResponse', 'passchangediv');callUI('showPiPass');return false;">Change Password</a> After enabling, this link will provide access on the device's network <a href="#" target="_blank" id="localSBox">Local net access to Shellinabox</a></p>
+    <p style="display: block;" id="SBoxAppInfo"><a href="https://github.com/shellinabox/shellinabox">Shellinabox on GitHub</a> Change the pi SSH/Device Login password before you enable, <a href="#" onclick="callUI('hideNShowOneResponse', 'accountdiv');callApp('showAccountsRequest');callUI('showPiPass');return false;">Change Password</a> After enabling the app, this link will provide access on the device's network <a href="#" target="_blank" id="localSBox">Local net access to Shellinabox</a></p>
     <p><b>Secure Shell (SSH)</b> - remote command line access <span style="color:green"><a style="display: none;" id="SSHAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="SSHAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'SSH');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'SSH');return false;">Disable</a></p>
-    <p style="display: block;" id="SSHAppInfo"><a href="https://duckduckgo.com/?q=ssh">About Secure Shell</a> <a href="https://www.raspberrypi.org/documentation/remote-access/ssh/">SSH on the Pi</a> SSH is not automatically enabled for external access. See <a href="#" onclick="callApp('getRemoteAccessRequest');return false;">Service Setup</a> to manage access from internet and <a href="#" onclick="callUI('reloadResponse');return false;">Service Links</a> for commands to access SSH.  You <b>should definately</b> change the pi SSH/Device Login password before you enable, <a href="#" onclick="callUI('hideNShowOneResponse', 'passchangediv');callUI('showPiPass');return false;">Change Password</a> After enabling, use an ssh client to connect, <span id="localSSH"></span></p>
+    <p style="display: block;" id="SSHAppInfo"><a href="https://duckduckgo.com/?q=ssh">About Secure Shell</a> <a href="https://www.raspberrypi.org/documentation/remote-access/ssh/">SSH on the Pi</a>  Change the pi SSH/Device Login password before you enable, <a href="#" onclick="callUI('hideNShowOneResponse', 'accountdiv');callApp('showAccountsRequest');callUI('showPiPass');return false;">Change Password</a> After enabling, use an ssh client to connect, <span id="localSSH"></span></p>
     <!--<p>Homeassistant - home automation solution <span style="color:green"><a style="display: none;" id="HassAppEnabled"> Enabled </a></span> <span style="color:red"><a style="display: inline;" id="HassAppDisabled"> Disabled </a></span> <a href="#" onclick="callApp('enableAppRequest', 'Hass');return false;">Enable</a>&nbsp;<a href="#" onclick="callApp('disableAppRequest', 'Hass');return false;">Disable</a></p>-->
+    </div>
     </div>
     </div>
     </div>

@@ -353,7 +353,7 @@ use class IUHub:Eui {
    }
    
    showPiPass() {
-    if (def(perms) && perms.has("admin")) {
+    if (def(perms) && perms.has("admin") && plat == "linux") {
       HD.getElementById("changePiPass").display = "block";
     }
    }
@@ -526,11 +526,17 @@ use class IUHub:Eui {
     
     if (arg.has("plat")) {
       plat = arg["plat"];
+      //plat = arg["plat"] + "x";
     } elseIf (undef(plat)) {
       plat = "";
     }
     
     log.log("plat " + plat);
+    
+    if (plat == "linux") {
+      HD.getElementById("lapps").display = "block";
+      HD.getElementById("cfForm").display = "block";
+    }
     
     if (TS.notEmpty(arg["internalAddress"])) {
       HD.getElementById("localSBox").href = "https://" + arg["internalAddress"] + ":4200";
@@ -815,7 +821,7 @@ use class IUHub:Eui {
         HC.callApp(Lists.from("setDomoPortsRequest"));
       } elseIf (forService.begins("Nextcloud")) {
         HD.getElementById("fpName").value = "Nextcloud - personal file and data syncing";
-        HD.getElementById("fpPort").value = "6443";
+        HD.getElementById("fpPort").value = "";
         HD.getElementById("fpExPort").value = "";
         HD.getElementById("fpiPort").value = "";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/nextcloud/\" target=\"_blank\">$type$ Nextcloud</a>";

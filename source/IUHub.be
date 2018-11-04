@@ -804,13 +804,13 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       wc.konniAddress = "";
     }
     
-    wc.updateKonnLink();
-    if (TS.notEmpty(wc.konnUrl)) {
-      app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
-    }
     wc.updateKonniLink();
     if (TS.notEmpty(wc.konniUrl)) {
       app.pluginsByName.get("Auth").authedUrls.put(wc.konniUrl);
+    }
+    wc.updateKonnLink();
+    if (TS.notEmpty(wc.konnUrl)) {
+      app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
     }
     app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
     
@@ -1163,6 +1163,10 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         } elseIf((wc.manualForward || wc.internalResolve) && TS.notEmpty(wc.konnLink)) {
           dlUse = innerLinks;
           outerLinks += "<p>" += wc.konnLink += "</p>";
+        } elseIf(TS.notEmpty(wc.konniLink) && TS.notEmpty(wc.konnLink)) {
+          dlUse = innerLinks;
+          outerLinks += "<p>" += wc.konniLink += "</p>";
+          outerLinks += "<p>" += wc.konnLink += "</p>";
          } else {
            dlUse = outerLinks;
            if (internal) {
@@ -1208,6 +1212,10 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
                outerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
             } elseIf((wc.manualForward || wc.internalResolve) && TS.notEmpty(kv.value.get("konnLink"))) {
               String dlUse = innerLinks;
+              outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+            } elseIf(TS.notEmpty(wc.konniLink) && TS.notEmpty(wc.konnLink) && TS.notEmpty(kv.value.get("konniLink")) && TS.notEmpty(kv.value.get("konnLink"))) {
+              dlUse = innerLinks;
+              outerLinks += "<p>" += kv.value.get("konniLink") += "</p>";
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
             } else {
               dlUse = outerLinks;

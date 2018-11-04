@@ -186,8 +186,8 @@ class IU:WebConnect {
         //hostedAddress = internalAddress;
       }
       updateHosted();
-      updateKonnLink();
       updateKonniLink();
+      updateKonnLink();
   }
   
   updateHosted() {
@@ -237,9 +237,14 @@ class IU:WebConnect {
       extPort = "";
     }
     if (TS.notEmpty(konnAddress)) {
+        if (TS.notEmpty(konniAddress)) {
+          String ua = "use outside device's network.";
+        } else {
+          ua = "use on internet.";
+        }
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
-        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - use on internet.";
+        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - " + ua;
         log.log("Virtual DNS url use on internet." + konnUrl);
       } else {
         konnAddress = "";
@@ -381,7 +386,11 @@ class IU:WebConnect {
           konnUrl = konnUrl.swap("$ip$", konnAddress);
           konnUrl = konnUrl.swap("$port$", service.get("intPort"));
           konnUrl = konnUrl.swap("$type$ ", "");
-          service.put("konnLink", konnUrl + " - use on internet.");
+          if (TS.notEmpty(konniAddress)) {
+            service.put("konnLink", konnUrl + " - use outside device's network.");
+          } else {
+            service.put("konnLink", konnUrl + " - use on internet.");
+          }
         }
         String konniUrl = conf.get("urlPat").copy();
         if (TS.notEmpty(konniUrl) && TS.notEmpty(konniAddress) && TS.notEmpty(service.get("iport"))) {
