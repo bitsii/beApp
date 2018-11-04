@@ -517,7 +517,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      if (undef(duckiDomain)) { duckiDomain = ""; }
      if (undef(duckEmail)) { duckEmail = ""; }
      
-     return(CallBackUI.setElementsValuesResponse(Maps.from("duckDomain", duckDomain, "duckiDomain", duckiDomain, "duckEmail", duckEmail)));
+     return(CallBackUI.setElementsValuesResponse(Maps.from("duckDomain", duckDomain, "duckiDomain", duckiDomain, "duckEmail", duckEmail, "duckToken", "")));
    }
    
    getCfRequest(request) Map {
@@ -775,14 +775,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(profile);
   }
   
-  initialSetupRequest(String setupToken, String user, String pass, String devName, String konUser, String konPass, request) {
+  initialSetupRequest(String setupToken, String user, String pass, String devName, String duckDomain, String duckiDomain, String duckEmail, String duckToken, request) {
     //(
     log.log("In isr, say hello :-)");
-    if (TS.isEmpty(user) || TS.isEmpty(pass) || TS.isEmpty(devName) || TS.isEmpty(konUser) || TS.isEmpty(konPass)) {
-      throw(Alert.new("Account Name, Account Password, Device Name, Edgii User, and Edgii Password are all required"));
+    if (TS.isEmpty(user) || TS.isEmpty(pass) || TS.isEmpty(devName) || TS.isEmpty(duckDomain) || TS.isEmpty(duckiDomain) || TS.isEmpty(duckEmail) || TS.isEmpty(duckToken)) {
+      throw(Alert.new("Account Name, Account Password, Device Name, Duck interntal/external domains, email, and token are all required"));
     }
     
-    log.log("" + setupToken + " " + user + " " + pass + " " + devName + " " + konUser + " " + konPass);
+    log.log("" + setupToken);
     
     String stok = app.configManager.get("setupToken");
     //log.log("stok " + stok + " setuptoken " + setupToken);
@@ -799,15 +799,19 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       a.perms.put("admin");
       app.pluginsByName.get("Auth").accountManager.putAccount(a);
       app.pluginsByName.get("Auth").setupSession(Maps.from("accountName", user), request);
+      request.context.put("account", a);
       app.configManager.delete("setupToken");
-      String rtrurl = app.configManager.get("router.Url");
-      if (TS.isEmpty(rtrurl)) {
-        rtrurl = "https://www.edgii.io";
-      }
-      routerLink(rtrurl, user, konUser, konPass);
+      //String rtrurl = app.configManager.get("router.Url");
+      //if (TS.isEmpty(rtrurl)) {
+      //  rtrurl = "https://www.edgii.io";
+      //}
+      //routerLink(rtrurl, user, konUser, konPass);
       //updateMyLinks();
-      updateDuck();
-      updateCf();
+      
+      saveDuckRequest(duckDomain, duckiDomain, duckEmail, duckToken, request);
+      
+      //updateDuck();
+      //updateCf();
       return(CallBackUI.initialSetupResponse());
      }
      

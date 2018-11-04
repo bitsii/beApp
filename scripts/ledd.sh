@@ -12,6 +12,10 @@ if echo "$ARCHINFO" | grep -q "x86_64"; then
     echo "MATCH x86"
     lcmd="./App/KBridge/lego_x86"
 fi
+if echo "$ARCHINFO" | grep -q "i686"; then
+    echo "MATCH x86"
+    lcmd="./App/KBridge/lego_x86"
+fi
 
 export certf=".lego/certificates/$3.crt"
 found="no"

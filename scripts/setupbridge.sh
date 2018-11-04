@@ -16,6 +16,8 @@ if [ "$OSTYPE" == "Linux" ]; then
   export INSDIR=`echo $(getent passwd $INSUSER )| cut -d : -f 6`
 fi
 
+if [ "$inbort" == "" ]; then
+
 echo ""
 echo "Welcome to Edgii installation.  If you make a mistake hit Ctrl-C to halt"
 echo "and then rerun the script to restart"
@@ -30,6 +32,8 @@ echo "device you are setting up) or t to continue with a text/terminal setup."
 echo -n "please enter b or t (followed by enter key): "
 read inbort
 
+fi
+
 if [ "$inbort" == "b" ]; then
   cd $INSDIR
   mkdir -p apprun/tmp
@@ -39,6 +43,7 @@ if [ "$inbort" == "b" ]; then
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
   bash -c "./App/KBridge/startball.sh"
+  # ? wait for start somehow ? wget? or have initialsetup command wait
   sleep 5
   bash -c "./App/KBridge/iuhcmd.sh --appType cmd --hubCmd initialSetup"
   exit 0

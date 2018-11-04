@@ -20,7 +20,9 @@ export IZDIR=`dirname $0`
 echo "First we'll install some prerequisite packages and then ask for" 
 echo "initial setup information.  This may take awhile" 
 echo "depending on the speed of your internet connection."
-sleep 5
+sleep 2
+
+export inbort="b"
 
 $IZDIR/lilprepbridge.sh
 $IZDIR/setupbridge.sh

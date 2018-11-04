@@ -383,7 +383,7 @@ use class IUHub:Eui {
      if (TS.isEmpty(HD.getElementById("setupAccountPass").value) || TS.isEmpty(HD.getElementById("setupAccountPass2").value) || HD.getElementById("setupAccountPass").value != HD.getElementById("setupAccountPass2").value) {
       inform("Account password required, Account Password and Repeat Password must match");
      }
-     HC.callApp(Lists.from("initialSetupRequest", setupToken, HD.getElementById("setupAccountName").value, HD.getElementById("setupAccountPass").value, HD.getElementById("setupDeviceName").value, HD.getElementById("setupKonnLogin").value, HD.getElementById("setupKonnPass").value));
+     HC.callApp(Lists.from("initialSetupRequest", setupToken, HD.getElementById("setupAccountName").value, HD.getElementById("setupAccountPass").value, HD.getElementById("setupDeviceName").value, HD.getElementById("setupDuckDomain").value, HD.getElementById("setupDuckiDomain").value, HD.getElementById("setupDuckEmail").value, HD.getElementById("setupDuckToken").value));
      
      
    }

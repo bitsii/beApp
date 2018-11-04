@@ -18,6 +18,13 @@ if [ "$OSTYPE" == "Linux" ]; then
   fi
 
   export INSDIR=`echo $(getent passwd $INSUSER )| cut -d : -f 6`
+  
+  sunpp="/etc/sudoers.d/010_${INSUSER}-nopasswd"
+  if [ ! -e "$sunpp" ]; then
+    echo "${INSUSER} ALL=(ALL) NOPASSWD: ALL" > "$sunpp"
+    chown root:root "$sunpp"
+    chmod 440 "$sunpp"
+  fi
 
 fi
 

@@ -7,7 +7,9 @@ export OSTYPE=`uname`
 
 if [ "$OSTYPE" == "Linux" ]; then
   if [ "$EUID" -ne 0 ]
-    then echo "Please run as root, try running the command 'sudo $0'"
+    then echo "Must be run as root (administrator), may be prompted for account 
+password"
+    sudo $0
     exit
   fi
   
@@ -24,7 +26,9 @@ export IZDIR=`dirname $0`
 echo "First we'll install some prerequisite packages and then ask for" 
 echo "initial setup information.  This may take awhile" 
 echo "depending on the speed of your internet connection."
-sleep 5
+sleep 2
+
+export inbort="b"
 
 $IZDIR/prepbridge.sh
 su $INSUSER -c "$IZDIR/setupbridge.sh"

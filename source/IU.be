@@ -511,6 +511,7 @@ use class IU:IUPlugin(App:AjaxPlugin) {
       
       String hcmd = "App/KBridge/starthap.sh " + adp.toString() + " " + certname;
       log.log("starting proxy " + hcmd);
+      log.log("target localhost url http://127.0.0.1:" + ap);
       System:Command.new(hcmd).run();
       
     }

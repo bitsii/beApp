@@ -1071,6 +1071,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     app.configManager.put("duck.token", duckToken);
     updateDuck();
     updateNames();
+    return(CallBackUI.informResponse("Duckdns configuration complete"));
   }
   
   updateDuck() this {
