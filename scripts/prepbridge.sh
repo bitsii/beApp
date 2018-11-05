@@ -53,8 +53,10 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes update
 
   echo "Installing required additional system software"
+  apt -qq --assume-yes install curl
+  apt -qq --assume-yes install build-essential dkms
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
-  apt -qq --assume-yes install mpg123 haproxy certbot dnsutils socat
+  apt -qq --assume-yes install mpg123 haproxy dnsutils socat
 
   apt -qq --assume-yes install openjdk-9-jdk-headless
   #apt -qq --assume-yes install openjdk-9-jdk
@@ -63,12 +65,16 @@ if [ "$OSTYPE" == "Linux" ]; then
   
   apt -qq --assume-yes install php7.0 php7.0-gd sqlite php7.0-sqlite php7.0-curl php7.0-bz2 php7.0-cli php7.0-intl php7.0-json php7.0-mbstring php7.0-mcrypt php7.0-opcache php7.0-sqlite3 php7.0-xml php7.0-zip php-apcu php-pear
   
+  apt -qq --assume-yes remove php7.0-fpm
+  
+  apt -qq --assume-yes install ssh
+
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
   #python3 -m pip install wheel
   #pip3 install homeassistant
 
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
-  apt -qq --assume-yes install mpg123 haproxy certbot dnsutils socat
+  apt -qq --assume-yes install mpg123 haproxy dnsutils socat
   
   apt -qq --assume-yes install openjdk-9-jdk-headless
   #apt -qq --assume-yes install openjdk-9-jdk
@@ -77,6 +83,10 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen apache2
   
   apt -qq --assume-yes install php7.0 php7.0-gd sqlite php7.0-sqlite php7.0-curl php7.0-bz2 php7.0-cli php7.0-intl php7.0-json php7.0-mbstring php7.0-mcrypt php7.0-opcache php7.0-sqlite3 php7.0-xml php7.0-zip php-apcu php-pear
+  
+  apt -qq --assume-yes remove php7.0-fpm
+  
+  apt -qq --assume-yes install ssh
   
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
   #python3 -m pip install wheel
@@ -94,6 +104,7 @@ if [ "$OSTYPE" == "Linux" ]; then
   echo "net.ipv6.conf.default.disable_ipv6 = 1" >> tmp/scadd
   echo "net.ipv6.conf.lo.disable_ipv6 = 1" >> tmp/scadd
   cat tmp/scadd >> /etc/sysctl.conf
+  sysctl -p
 
 fi
 

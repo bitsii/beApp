@@ -542,6 +542,7 @@ use class IUHub:Eui {
       HD.getElementById("localSBox").href = "https://" + arg["internalAddress"] + ":4200";
       HD.getElementById("localDomo").href = "https://" + arg["internalAddress"] + ":" + arg["ido"];
       HD.getElementById("localNxc").href = "https://" + arg["internalAddress"] + ":" + arg["inx"] + "/nextcloud/";
+      HD.getElementById("localCam").href = "https://" + arg["internalAddress"] + ":" + arg["ica"];
       HD.getElementById("localSSH").innerHTML = "ssh pi@" + arg["internalAddress"];
     }
     
