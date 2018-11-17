@@ -52,6 +52,7 @@ class IU:WebConnect {
       String konniLink;
       
       String konnName;
+      String konniName;
       String homePage;
       Bool onPublicNet = false;
       Bool doingUpnp = true;
@@ -232,6 +233,9 @@ class IU:WebConnect {
   }
   
   updateKonnLink() {
+    if (TS.isEmpty(konnAddress) && TS.notEmpty(konnName)) {
+      konnAddress = konnName + ".edgii.me";
+    }
     if (TS.notEmpty(externalPort)) {
       String extPort = ":" + externalPort;
     } else {
@@ -256,6 +260,9 @@ class IU:WebConnect {
   }
   
   updateKonniLink() {
+    if (TS.isEmpty(konniAddress) && TS.notEmpty(konniName)) {
+      konniAddress = konniName + ".edgii.me";
+    }
     if (TS.notEmpty(internaliPort)) {
       String extPort = ":" + internaliPort;
     } else {

@@ -157,7 +157,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
-    
+    unlinkAllRequest(request);
     String rtrurl = app.configManager.get("router.Url");
     if (TS.isEmpty(rtrurl)) {
       rtrurl = "https://www.edgii.io";
@@ -259,6 +259,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      if (def(wc)) {
       log.log("clearing wc konnname");
       wc.konnName = null;
+      wc.konniName = null;
+      if (wc.konnAddress.ends("edgii.me")) {
+        wc.konnAddress = null;
+      }
+      if (wc.konniAddress.ends("edgii.me")) {
+        wc.konniAddress = null;
+      }
      }
      app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
      clearAllDevsRequest(request);
@@ -292,9 +299,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         app.getKvDb("DEVLINKS").put("devlink!" + awc.deviceId, conjs);
         log.log("awc did " + awc.deviceId + " wc did " + wc.deviceId);
         if (awc.deviceId == wc.deviceId) {
-          //now with konnUrl et all
-          app.configManager.put("hub.webConnect", conjs);
+          //now with konnName et all
           app.plugin.wcol.o = awc;
+          app.configManager.put("hub.webConnect", conjs);
+          //update authedurls
           log.log("put awc in for webcon " + conjs);
         }
         if (TS.notEmpty(awc.konnName)) {
