@@ -89,7 +89,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         //ifEmit(appDebug) {
           IO:Logs.turnOnAll();
         //}
-        Web:Client:CertificateManager.validateHosts = false;
+        //Web:Client:CertificateManager.validateHosts = false;
      }
      
      nameGet() String {
@@ -681,7 +681,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     System:Thread cuh = System:Thread.new(getInvocation("pingUrl", Lists.from(wco.hostedUrl, 100)));
     List pingers = Lists.from(cui, cue, cuh);
     try {
-      Web:Client:CertificateManager.validateHosts = false;
+      //Web:Client:CertificateManager.validateHosts = false;
       //Web:Client:CertificateManager.validateCertificates = false;
       Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
       
@@ -1116,7 +1116,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
        }
        log.log("duck update url " + url);
        Web:Client client = Web:Client.new();
-       Web:Client:CertificateManager.validateCertificates = false;
+       Web:Client:CertificateManager.validateCertificates = false; //duck
        client.verb = "GET";
        client.url = url;
        String res = client.openInput().readString();
@@ -1128,14 +1128,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          url += "/" += iaddr;
          log.log("duck update url " + url);
          client = Web:Client.new();
-         Web:Client:CertificateManager.validateCertificates = false;
+         Web:Client:CertificateManager.validateCertificates = false; //duck
          client.verb = "GET";
          client.url = url;
          res = client.openInput().readString();
          client.close();
        }
        
-       Web:Client:CertificateManager.validateCertificates = true;
+       Web:Client:CertificateManager.validateCertificates = true; //duck
        log.log("duckupdate done");
     }
   }

@@ -8,6 +8,11 @@ if [ "$OSTYPE" == "Darwin" ]; then
 
 fi
 
+if [[ $OSTYPE == *"MINGW"* ]]; then
+  echo "Is Mingw"
+  export OSTYPE="Mingw"
+fi
+
 export MYPWD=`pwd`
 
 export MYHN=`hostname`

@@ -83,7 +83,7 @@ use class IUHub:HubWebStart {
       ifEmit(appDebug) {
         IO:Logs.turnOnAll();
       }
-      Web:Client:CertificateManager.validateHosts = false;
+      //Web:Client:CertificateManager.validateHosts = false;
       if (args.length > 0) {
         String mode = args[0]; //lui, wui, both, [absent]
         log.log("mode " + mode);

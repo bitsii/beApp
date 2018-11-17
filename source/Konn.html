@@ -40,7 +40,7 @@
                 </div>
                 <div id="loggedinmenudiv" style="display: none;">
                 <li class="pure-menu-item"><a href="#" class="pure-menu-link" onclick="callUI('logout');return false;">Logout</a></li>
-                <!--<li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link to Edgii</a></li>-->
+                <li class="pure-menu-item" id="linkDevicesME"><a href="#" class="pure-menu-link" onclick="callApp('startLinkRequest');return false;">Link to Edgii</a></li>
                 <li class="pure-menu-item" id="remoteListenME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteListenRequest');callApp('getUpnpRequest');callApp('getDuckRequest');callApp('getCfRequest');callApp('getOnPublicNetRequest');return false;">Remote Access</a></li>
                 <li class="pure-menu-item" id="remoteAccessME"><a href="#" class="pure-menu-link" onclick="callApp('getRemoteAccessRequest');callUI('hideNShowResponse', 'appsDiv', 'forwardPortsDiv');callApp('getAppsStatesRequest');return false;">Manage Apps</a></li>
                 <li class="pure-menu-item" id="showServicesME"><a href="#" class="pure-menu-link" onclick="callUI('reloadResponse');return false;">App Links</a></li>
@@ -316,10 +316,10 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
 <option>Secure Shell remote command line (ssh)</option>
 <option >(Manual Configuration)</option>
 <!--<option>Homeassistant home automation</option>
-<option>VNC Remote Desktop</option>
+<option>VNC Remote Desktop</option>-->
 <option>MS Remote Desktop (rdp)</option>
 <option>NoMachine Remote Desktop</option>
-<option>Apple Remote Desktop (ard)</option>-->
+<option>Apple Remote Desktop (ard)</option>
 </select>
 </div>
 <div class="pure-control-group">
@@ -560,6 +560,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
     <div class="pure-g">
     <div class="pure-u-1-24"></div>
     <div class="pure-u-23-24">
+    <p>Edgii Bridge</a>
     <p>Licensed under the Mozilla Public License Version 2.0. See <a href="LICENSE-MPL.txt">LICENSE-MPL.txt</a> for full license information.</p>
     <p>3rd party components may be licensed under other terms, see licenses in the software distribution for more details.</p>
     <p>May include the following:</p>
