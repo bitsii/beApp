@@ -1252,6 +1252,16 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           log.log("Account login " + login);
         }
       }
+      if (mode == "getAccount") {
+        user = params.getFirst("user");
+        log.log("Getting Account " + user);
+        ac = self.accountManager.getAccount(user);
+        if (def(ac)) {
+          log.log(Json:Marshaller.new().marshall(ac.toMap()));
+        } else {
+          log.log("no such account");
+        }
+      }
       if (mode == "putAccount") {
         String user = params.getFirst("user");
         String pass = params.getFirst("pass");
@@ -2117,7 +2127,7 @@ use class App:WebReverseProxyPlugin {
        String accountName = request.getSession("account.name");
        if (TS.isEmpty(accountName)) {
         log.log("no accountname, halting");
-        request.outputContent = "<html><head><body><p>Logged out<p>Please log back into Edgii Bridge to continue</body></html>";
+        request.outputContent = "<html><head><body><p>Logged out<p>Please log back into Bridge to continue</body></html>";
         return(self);
        } else {
         log.log("found account " + accountName);

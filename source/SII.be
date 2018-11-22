@@ -438,7 +438,7 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
   }
   
    aboutRequest(request) Map {
-     String about = "<p>Edgii WifiSender Version " + self.version + "<p>";
+     String about = "<p>Abelii WifiSender Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    

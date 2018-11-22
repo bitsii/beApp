@@ -160,7 +160,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     unlinkAllRequest(request);
     String rtrurl = app.configManager.get("router.Url");
     if (TS.isEmpty(rtrurl)) {
-      rtrurl = "https://www.edgii.io";
+      rtrurl = "https://www.abelii.net";
     }
     
     Account a = request.context.get("account");
@@ -251,19 +251,27 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
+    
+    Json:Unmarshaller unmar = Json:Unmarshaller.new();
+    Json:Marshaller mar = Json:Marshaller.new();
+    WebConnect wc = app.plugin.wcol.o;
+    
     Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
      for (auto kv in lss) {
+       Map ds = unmar.unmarshall(kv.value);
+       if (def(wc)) {
+        removeMyLink(wc, ds);
+       }
        app.getKvDb("DEVLINKS").delete(kv.key);
      }
-     WebConnect wc = app.plugin.wcol.o;
      if (def(wc)) {
       log.log("clearing wc konnname");
       wc.konnName = null;
       wc.konniName = null;
-      if (wc.konnAddress.ends("edgii.me")) {
+      if (TS.notEmpty(wc.konnAddress) && wc.konnAddress.ends("abelii.net")) {
         wc.konnAddress = null;
       }
-      if (wc.konniAddress.ends("edgii.me")) {
+      if (TS.notEmpty(wc.konniAddress) && wc.konniAddress.ends("abelii.net")) {
         wc.konniAddress = null;
       }
      }
@@ -350,6 +358,102 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         Web:Client:CertificateManager.validateCertificates = true; //appDebug
       }
       log.log("got exception during updatemylink");
+      log.log(e.toString());
+    }
+    return(resMap);
+  }
+  
+  getCertLeab(String domain, String action) {
+    loadWc();
+    WebConnect wc = app.plugin.wcol.o;
+     Json:Unmarshaller unmar = Json:Unmarshaller.new();
+     Json:Marshaller mar = Json:Marshaller.new();
+     Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
+     for (auto kv in lss) {
+       Map ds = unmar.unmarshall(kv.value);
+       Map res = getCertLeab(wc, ds, domain, action);
+     }
+  }
+  
+  getCertLeab(WebConnect wco, Map ds, String domain, String action) Map {
+    try {
+      String destUrl = ds["destUrl"];
+      log.log("getting cert for " + destUrl);
+      Map argOut = Map.new();
+      argOut["action"] = "leabRequest";
+      argOut["pageToken"] = ds["pageToken"];
+      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+      argOut["args"] = Lists.from(wco.deviceId, domain, action);
+      ifEmit(appDebug) {
+        Web:Client:CertificateManager.validateHosts = false; //appDebug
+        Web:Client:CertificateManager.validateCertificates = false; //appDebug
+      }
+      Web:Client client = Web:Client.new();
+      String payload = Json:Marshaller.marshall(argOut);
+      log.log("payload " + payload);
+      client.outputHeaders.put("referer", destUrl);
+      client.url = destUrl;
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      client.close();
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        log.log("!!! got res from leab  " + res);
+      }
+      //resetCertMan(ds["certificatePrint"]);
+      ifEmit(appDebug) {
+        Web:Client:CertificateManager.validateHosts = true; //appDebug
+        Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      }
+    } catch (any e) {
+      //resetCertMan(ds["certificatePrint"]);
+      ifEmit(appDebug) {
+        Web:Client:CertificateManager.validateHosts = true; //appDebug
+        Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      }
+      log.log("got exception during leab");
+      log.log(e.toString());
+    }
+    return(resMap);
+  }
+  
+  removeMyLink(WebConnect wco, Map ds) Map {
+    try {
+      String destUrl = ds["destUrl"];
+      log.log("unlinking from " + destUrl);
+      Map argOut = Map.new();
+      argOut["action"] = "removeLinkRequest";
+      argOut["pageToken"] = ds["pageToken"];
+      argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+      argOut["args"] = Lists.from(wco.deviceId);
+      ifEmit(appDebug) {
+        Web:Client:CertificateManager.validateHosts = false; //appDebug
+        Web:Client:CertificateManager.validateCertificates = false; //appDebug
+      }
+      Web:Client client = Web:Client.new();
+      String payload = Json:Marshaller.marshall(argOut);
+      log.log("payload " + payload);
+      client.outputHeaders.put("referer", destUrl);
+      client.url = destUrl;
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      client.close();
+      if (TS.notEmpty(res)) {
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        log.log("!!! got res from removeLink  " + res);
+      }
+      //resetCertMan(ds["certificatePrint"]);
+      ifEmit(appDebug) {
+        Web:Client:CertificateManager.validateHosts = true; //appDebug
+        Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      }
+    } catch (any e) {
+      //resetCertMan(ds["certificatePrint"]);
+      ifEmit(appDebug) {
+        Web:Client:CertificateManager.validateHosts = true; //appDebug
+        Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      }
+      log.log("got exception during removeLink");
       log.log(e.toString());
     }
     return(resMap);
@@ -473,6 +577,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String mode = params.getFirst("bridgeCmd");
       if (TS.isEmpty(mode)) {
         return(super.handleCmd(params));
+      }
+      if (mode == "leab") {
+        log.log("!!!!in leab!!!!");
+        String domain = params.getFirst("domain");
+        String action = params.getFirst("action");
+        log.log("leab domain " + domain + " action " + action);
+        getCertLeab(domain, action);
       }
       if (mode == "doLego") {
         doLego("run");
@@ -852,7 +963,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.configManager.delete("setupToken");
       //String rtrurl = app.configManager.get("router.Url");
       //if (TS.isEmpty(rtrurl)) {
-      //  rtrurl = "https://www.edgii.io";
+      //  rtrurl = "https://www.abelii.net";
       //}
       //routerLink(rtrurl, user, konUser, konPass); //includes doForward
       

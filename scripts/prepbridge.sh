@@ -42,7 +42,7 @@ if [ "$OSTYPE" == "Darwin" ]; then
   brew install miniupnpc
   brew install wget
   
-  echo "Setting Edgii Bridge to start at boot"
+  echo "Setting Bridge to start at boot"
 
 fi
 

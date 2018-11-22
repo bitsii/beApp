@@ -1031,11 +1031,23 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     String duckiDomain = app.configManager.get("duck.idomain");
     String duckToken = app.configManager.get("duck.token");
     
+    loadWc();
+    WebConnect wc = app.plugin.wcol.o;
+    if (undef(wc)) {
+      log.log("wc undef");
+    }
+    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
+    for (auto kv in lss) {
+      Map ds = Json:Unmarshaller.unmarshall(kv.value);
+    }
+    
     String lecmd;
     if (TS.notEmpty(cfHost) && TS.notEmpty(cfZone) && TS.notEmpty(cfEmail) && TS.notEmpty(cfToken)) {
       lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfHost + "." + cfZone + " " + actionType + " " + "cert.pem";
     } elseIf(TS.notEmpty(duckEmail) && TS.notEmpty(duckDomain) && TS.notEmpty(duckToken)) {
       lecmd = "./App/KBridge/ledd.sh " + duckEmail + " " + duckToken + " " + duckDomain + ".duckdns.org" + " " + actionType + " " + "cert.pem";
+    } elseIf(TS.notEmpty(wc.konnName) && def(ds)) {
+      lecmd = "./App/KBridge/leab.sh email token " + wc.konnName + " " + actionType + " " + "cert.pem";
     } else {
       log.log("did not have doLego configs for any option");
       return(self);
@@ -1051,6 +1063,8 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       lecmd = "./App/KBridge/lecf.sh " + cfEmail + " " + cfToken + " " + cfiHost + "." + cfZone + " " + actionType + " " + "certi.pem";
     } elseIf(TS.notEmpty(duckEmail) && TS.notEmpty(duckiDomain) && TS.notEmpty(duckToken)) {
       lecmd = "./App/KBridge/ledd.sh " + duckEmail + " " + duckToken + " " + duckiDomain + ".duckdns.org" + " " + actionType + " " + "certi.pem";
+    } elseIf(TS.notEmpty(wc.konniName) && def(ds)) {
+      lecmd = "./App/KBridge/leab.sh email token " + wc.konniName + " " + actionType + " " + "certi.pem";
     } else {
       log.log("did not have doLego configs for any optioni");
       return(self);
@@ -1284,7 +1298,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
    }
    
    aboutRequest(request) Map {
-     String about = "<p>Edgii Bridge Version " + self.version + "<p>";
+     String about = "<p>Abelii Bridge Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    

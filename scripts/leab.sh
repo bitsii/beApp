@@ -3,20 +3,6 @@
 #is 60 days renewcheck -mmin works for mins, -mtime for days, +N
 #-mtime +60 -mmin +10
 
-ARCHINFO="$(uname -a)"
-if echo "$ARCHINFO" | grep -q "armv7"; then
-    echo "MATCH ARM"
-    lcmd="./App/KBridge/lego_arm7"
-fi
-if echo "$ARCHINFO" | grep -q "x86_64"; then
-    echo "MATCH x86"
-    lcmd="./App/KBridge/lego_x86"
-fi
-if echo "$ARCHINFO" | grep -q "i686"; then
-    echo "MATCH x86"
-    lcmd="./App/KBridge/lego_x86"
-fi
-
 export certf=".lego/certificates/$3.crt"
 found="no"
 if [ "$4" == "renew" ]; then
@@ -29,9 +15,11 @@ if [ "$4" == "renew" ]; then
   fi
 fi
 
-export DUCKDNS_TOKEN="$2"
-$lcmd -a --email="$1" --domains="$3" --dns duckdns "$4"
+#export DUCKDNS_TOKEN="$2"
+#$lcmd -a --email="$1" --domains="$3" --dns duckdns "$4"
 #./App/KBridge/lego
+
+./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd leab --domain "$3" --action "$4"
 
 cd .lego/certificates
 

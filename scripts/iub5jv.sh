@@ -107,6 +107,7 @@ cp scripts/LEDisable.sh ../apprun/App/KBridge
 cp scripts/getLE.sh ../apprun/App/KBridge
 cp scripts/lecf.sh ../apprun/App/KBridge
 cp scripts/ledd.sh ../apprun/App/KBridge
+cp scripts/leab.sh ../apprun/App/KBridge
 cp scripts/restarthaps.sh ../apprun/App/KBridge
 cp scripts/stophaps.sh ../apprun/App/KBridge
 cp scripts/cpnx.sh ../apprun/App/KBridge
