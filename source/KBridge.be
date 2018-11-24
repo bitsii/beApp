@@ -268,10 +268,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("clearing wc konnname");
       wc.konnName = null;
       wc.konniName = null;
-      if (TS.notEmpty(wc.konnAddress) && wc.konnAddress.ends("abelii.net")) {
+      if (TS.notEmpty(wc.konnAddress) && wc.konnAddress.ends("edgii.io")) {
         wc.konnAddress = null;
       }
-      if (TS.notEmpty(wc.konniAddress) && wc.konniAddress.ends("abelii.net")) {
+      if (TS.notEmpty(wc.konniAddress) && wc.konniAddress.ends("edgii.io")) {
         wc.konniAddress = null;
       }
      }
@@ -405,6 +405,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         Web:Client:CertificateManager.validateHosts = true; //appDebug
         Web:Client:CertificateManager.validateCertificates = true; //appDebug
       }
+      
     } catch (any e) {
       //resetCertMan(ds["certificatePrint"]);
       ifEmit(appDebug) {

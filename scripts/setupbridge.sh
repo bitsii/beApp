@@ -71,7 +71,7 @@ fi
 export PRIVATENET="y"
 
 echo "Please provide desired username and password.  You'll need this to login to"
-echo "Abelii Bridge after install.  This is not yet your Abelii site login," 
+echo "Edgii Bridge after install.  This is not yet your Edgii site login," 
 echo "this is the one you want to use to login on this device"
 echo -n "Username: "
 read inusername

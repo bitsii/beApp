@@ -549,7 +549,7 @@ use class IUHub:Eui {
     profile = arg["profile"];
     log.log("profile " + profile);
     if (profile == "bridge") {
-      HD.title = "Abelii Bridge";
+      HD.title = "Edgii Bridge";
       
       HD.getElementById("browseDevicesME").display = "none";
       //HD.getElementById("linkDevicesME").display = "none";

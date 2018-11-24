@@ -201,7 +201,7 @@ class IU:WebConnect {
     if (TS.notEmpty(hostedAddress)) {
       hostedBase = protocol + hostedAddress + extPort;          
       hostedUrl = hostedBase + homePage;
-      hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Abelii Bridge</a> - use wherever there's internet.";
+      hostedLink = "<a href=\"" + hostedUrl + "\" target=\"_blank\">Hosted " + deviceName + " Edgii Bridge</a> - use wherever there's internet.";
       log.log("Hosted url use wherever there's internet." + hostedUrl);
     } else {
       hostedBase = "";
@@ -223,7 +223,7 @@ class IU:WebConnect {
           externalBase = protocol + externalAddress + extPort;  
         }
         externalUrl = externalBase + homePage;
-        externalLink = "<a href=\"" + externalUrl + "\" target=\"_blank\">External " + deviceName + " Abelii Bridge</a> - use outside device's network.";
+        externalLink = "<a href=\"" + externalUrl + "\" target=\"_blank\">External " + deviceName + " Edgii Bridge</a> - use outside device's network.";
         log.log("External url " + externalUrl);
     } else {
       externalBase = "";
@@ -249,7 +249,7 @@ class IU:WebConnect {
         }
         konnBase = protocol + konnAddress + extPort;
         konnUrl = konnBase + homePage;
-        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Abelii Bridge</a> - " + ua;
+        konnLink = "<a href=\"" + konnUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - " + ua;
         log.log("Virtual DNS url use on internet." + konnUrl);
       } else {
         konnAddress = "";
@@ -271,7 +271,7 @@ class IU:WebConnect {
     if (TS.notEmpty(konniAddress)) {
         konniBase = protocol + konniAddress + extPort;
         konniUrl = konniBase + homePage;
-        konniLink = "<a href=\"" + konniUrl + "\" target=\"_blank\">" + deviceName + " Abelii Bridge</a> - use on device's network.";
+        konniLink = "<a href=\"" + konniUrl + "\" target=\"_blank\">" + deviceName + " Edgii Bridge</a> - use on device's network.";
         log.log("Internal DNS url." + konniUrl);
       } else {
         konniAddress = "";
