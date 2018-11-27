@@ -333,7 +333,59 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          log.log("error background");
          if (def(e)) { log.log("error " + e); }
        }
+       try {
+         doBackup();
+       } catch (e) { 
+         log.log("error background");
+         if (def(e)) { log.log("error " + e); }
+       }
        any e;
+     }
+     
+     doBackup() {
+       log.log("in dobackup");
+       String lb = app.configManager.get("gsb.lastRun");
+       if (def(lb)) {
+         Int lbs = Int.new(lb);
+       } else {
+         lbs = 0;
+       }
+       Int now = Time:Interval.now().seconds;
+       if (now - lbs > 86400) {
+         app.configManager.put("gsb.lastRun", now.toString());
+         log.log("try for backup");
+         auto cm = app.configManager;
+        String gsbKey = cm.get("gsb.key");
+        String gsbSecret = cm.get("gsb.secret");
+        String gsbBucket = cm.get("gsb.bucket");
+        String gsbPass = cm.get("gsb.pass");
+        String gsbRetain = cm.get("gsb.retain");
+        String gsbFull = cm.get("gsb.full");
+        
+        if (TS.isEmpty(gsbKey) || TS.isEmpty(gsbSecret) || TS.isEmpty(gsbBucket) || TS.isEmpty(gsbPass) || TS.isEmpty(gsbRetain)) {
+          log.log("no backup Key Secret, Bucket, Pass, and Retention required");
+          return(self);
+        }
+        
+        // bkup args action password gskey gssecret fullbkuptimeD gspathwbucket removebkuptimeD srcpath
+        
+        String action = "echo";
+        
+        String deviceName = app.plugin.deviceName;
+        String deviceId = app.plugin.deviceId;
+        
+        String outpathbase = "gs://" + gsbBucket + "/" + deviceName + "/" + deviceId + "/";
+        
+        String cmd = "./App/KBridge/dupgs.sh " + action + " " + gsbPass + " " + gsbKey + " " + gsbSecret + " " + gsbFull + "D " + outpathbase + " " + gsbRetain + "D";
+        
+        log.log("bkup cmd " + cmd);
+        
+        String res = System:Command.new(cmd).open().output.readStringClose();
+        log.log("bkup res " + res);
+         
+       } else {
+        log.log("no backup, not been a day");
+       }
      }
      
      renewCert() {
@@ -1298,7 +1350,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
    }
    
    aboutRequest(request) Map {
-     String about = "<p>Edgii Bridge Version " + self.version + "<p>";
+     String about = "<p>Abelii Bridge Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    

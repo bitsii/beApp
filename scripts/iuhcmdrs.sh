@@ -12,6 +12,10 @@ export MYPWD=`pwd`
 
 export MYHN=`hostname`
 
+export MYHOME=`echo $HOME`
+
+export MYUSER=`whoami`
+
 mkdir -p Data/KBridge
 
 mkdir -p logs

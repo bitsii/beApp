@@ -48,6 +48,8 @@ fi
 
 if [ "$OSTYPE" == "Linux" ]; then
 
+  usermod -a -G www-data $INSUSER
+
   echo "Updating software lists"
   dpkg --configure -a
   apt -qq --assume-yes update
@@ -68,6 +70,12 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes remove php7.0-fpm
   
   apt -qq --assume-yes install ssh
+  
+  apt -qq --assume-yes install p7zip p7zip-full
+
+  apt -qq --assume-yes install ntp ntpdate
+  apt -qq --assume-yes install duplicity
+  pip install boto
 
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
   #python3 -m pip install wheel
@@ -87,6 +95,12 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes remove php7.0-fpm
   
   apt -qq --assume-yes install ssh
+  
+  apt -qq --assume-yes install p7zip p7zip-full
+
+  apt -qq --assume-yes install ntp ntpdate
+  apt -qq --assume-yes install duplicity
+  pip install boto
   
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
   #python3 -m pip install wheel

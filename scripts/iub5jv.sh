@@ -108,6 +108,9 @@ cp scripts/getLE.sh ../apprun/App/KBridge
 cp scripts/lecf.sh ../apprun/App/KBridge
 cp scripts/ledd.sh ../apprun/App/KBridge
 cp scripts/leab.sh ../apprun/App/KBridge
+cp scripts/dupgs.sh ../apprun/App/KBridge
+cp scripts/dupgsbk.sh ../apprun/App/KBridge
+cp scripts/dupgsrun.sh ../apprun/App/KBridge
 cp scripts/restarthaps.sh ../apprun/App/KBridge
 cp scripts/stophaps.sh ../apprun/App/KBridge
 cp scripts/cpnx.sh ../apprun/App/KBridge

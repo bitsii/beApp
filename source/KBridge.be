@@ -1012,6 +1012,29 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
     }
     
+    gsbSaveRequest(String gsbKey, String gsbSecret, gsbBucket, String gsbPass, String gsbRetain, request) {
+    
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      if (TS.isEmpty(gsbKey) || TS.isEmpty(gsbSecret) || TS.isEmpty(gsbBucket) || TS.isEmpty(gsbPass) || TS.isEmpty(gsbRetain)) {
+        throw(Alert.new("Key Secret, Bucket, Pass, and Retention required"));
+      }
+      Int gr = Int.new(gsbRetain);
+      if (gr < 5) {
+        throw(Alert.new("Must keep backups at least 5 days"));
+      }
+      Int full = gr / 2;
+      auto cm = app.configManager;
+      cm.put("gsb.key", gsbKey);
+      cm.put("gsb.secret", gsbSecret);
+      cm.put("gsb.bucket", gsbBucket);
+      cm.put("gsb.pass", gsbPass);
+      cm.put("gsb.retain", gsbRetain.toString());
+      cm.put("gsb.full", full.toString());
+      return(CallBackUI.informResponse("Backup Config Saved"));  
+    }
+    
     closeSsh() {
       if (def(ssh)) {
         try {
