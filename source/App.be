@@ -2611,6 +2611,10 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
         log.log("Deleting config " + key);
         app.getKvDb(kvdb).delete(key);
       }
+      if (mode == "clear") {
+        log.log("clearing kvdb");
+        app.getKvDb(kvdb).clear();
+      }
       if (mode == "saveLocalUrl") {
         log.log("saveLocalUrl");
         

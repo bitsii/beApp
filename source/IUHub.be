@@ -369,12 +369,19 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         
         // bkup args action password gskey gssecret fullbkuptimeD gspathwbucket removebkuptimeD srcpath
         
-        String action = "echo";
+        String action = "backup";
+        
+        ifEmit(iuDebug) {
+          action = "echo";
+        }
         
         String deviceName = app.plugin.deviceName;
         String deviceId = app.plugin.deviceId;
         
-        String outpathbase = "gs://" + gsbBucket + "/" + deviceName + "/" + deviceId + "/";
+        deviceName = deviceName.swap(" ", "_");
+        gsbPass = gsbPass.swap(" ", "_");
+        
+        String outpathbase = "gs://" + gsbBucket + "/" + deviceName + "/" + deviceId;
         
         String cmd = "./App/KBridge/dupgs.sh " + action + " " + gsbPass + " " + gsbKey + " " + gsbSecret + " " + gsbFull + "D " + outpathbase + " " + gsbRetain + "D";
         
@@ -1350,7 +1357,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
    }
    
    aboutRequest(request) Map {
-     String about = "<p>Abelii Bridge Version " + self.version + "<p>";
+     String about = "<p>Edgii Bridge Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    

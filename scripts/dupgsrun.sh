@@ -15,13 +15,13 @@ fi
 
 if [ "$1" == "backup" ]; then
 
-  duplicity --full-if-older-than $5 $8 gs://$6
-  duplicity remove-older-than $7 --force gs://$6
+  duplicity --full-if-older-than $5 $8 $6
+  duplicity remove-older-than $7 --force $6
 
 fi
 
 if [ "$1" == "restore" ]; then
 
-  duplicity --file-to-restore $7 gs://$6 $5
+  duplicity --file-to-restore $7 $6 $5
 
 fi

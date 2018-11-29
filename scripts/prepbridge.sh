@@ -72,9 +72,9 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install ssh
   
   apt -qq --assume-yes install p7zip p7zip-full
-
   apt -qq --assume-yes install ntp ntpdate
   apt -qq --assume-yes install duplicity
+  apt -qq --assume-yes install python-pip
   pip install boto
 
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
@@ -97,9 +97,9 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install ssh
   
   apt -qq --assume-yes install p7zip p7zip-full
-
   apt -qq --assume-yes install ntp ntpdate
   apt -qq --assume-yes install duplicity
+  apt -qq --assume-yes install python-pip
   pip install boto
   
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev

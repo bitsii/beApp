@@ -160,7 +160,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     unlinkAllRequest(request);
     String rtrurl = app.configManager.get("router.Url");
     if (TS.isEmpty(rtrurl)) {
-      rtrurl = "https://www.abelii.net";
+      rtrurl = "https://www.edgii.me";
     }
     
     Account a = request.context.get("account");
@@ -964,7 +964,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.configManager.delete("setupToken");
       //String rtrurl = app.configManager.get("router.Url");
       //if (TS.isEmpty(rtrurl)) {
-      //  rtrurl = "https://www.abelii.net";
+      //  rtrurl = "https://www.edgii.me";
       //}
       //routerLink(rtrurl, user, konUser, konPass); //includes doForward
       
