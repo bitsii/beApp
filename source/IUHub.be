@@ -1357,7 +1357,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
    }
    
    aboutRequest(request) Map {
-     String about = "<p>Edgii Bridge Version " + self.version + "<p>";
+     String about = "<p>Abelii Bridge Version " + self.version + "<p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    

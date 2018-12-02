@@ -19,7 +19,7 @@ fi
 if [ "$inbort" == "" ]; then
 
 echo ""
-echo "Welcome to Edgii installation.  If you make a mistake hit Ctrl-C to halt"
+echo "Welcome to Abelii installation.  If you make a mistake hit Ctrl-C to halt"
 echo "and then rerun the script to restart"
 echo "" 
 echo "Would you like to complete your setup in your web browser or do you prefer to complete setup" 
@@ -71,7 +71,7 @@ fi
 export PRIVATENET="y"
 
 echo "Please provide desired username and password.  You'll need this to login to"
-echo "Edgii Bridge after install.  This is not yet your Abelii site login," 
+echo "Abelii Bridge after install.  This is not yet your Abelii site login," 
 echo "this is the one you want to use to login on this device"
 echo -n "Username: "
 read inusername
@@ -98,13 +98,13 @@ read indname
 echo ""
 export INDNAME="$indname"
 
-echo "Link bridge to Edgii Router to locate and login to bridge on the local network"
-echo "and the Internet from https://www.edgii.me.  Enter the username and password"
+echo "Link bridge to Abelii Router to locate and login to bridge on the local network"
+echo "and the Internet from https://www.abelii.net.  Enter the username and password"
 echo "you registered on the site - if you have not yet registered an account there pls do so now..."
-echo -n "Edgii username: "
+echo -n "Abelii username: "
 read konuser
 echo ""
-echo -n "Edgii Password: "
+echo -n "Abelii Password: "
 read -s konpass
 echo ""
   
@@ -114,7 +114,7 @@ export KONPASS="$konpass"
 $IZDIR/setupbridge2.sh
 
 echo "service is starting now, it may take a few moments to come up"
-echo "On the Edgii site, https://www.edgii.me, login to your account"
+echo "On the Edgii site, https://www.abelii.net, login to your account"
 echo "and click the link to your new install under the name you provided.  Then you may login"
 echo "using the account you just created during installation"
 

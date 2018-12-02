@@ -549,7 +549,7 @@ use class IUHub:Eui {
     profile = arg["profile"];
     log.log("profile " + profile);
     if (profile == "bridge") {
-      HD.title = "Edgii Bridge";
+      HD.title = "Abelii Bridge";
       
       HD.getElementById("browseDevicesME").display = "none";
       //HD.getElementById("linkDevicesME").display = "none";
@@ -564,7 +564,7 @@ use class IUHub:Eui {
       }
       
     } elseIf (profile == "router") {
-      HD.title = "Edgii Router";
+      HD.title = "Abelii Router";
       
       HD.getElementById("setDevicenameME").display = "none";
       HD.getElementById("remoteListenME").display = "none";

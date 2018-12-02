@@ -39,7 +39,7 @@ if [ "$OSTYPE" == "Linux" ]; then
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
   fi
-  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.edgii.me --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.abelii.net --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
   mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
@@ -56,7 +56,7 @@ if [ "$OSTYPE" == "Darwin" ]; then
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key doUpnpForward --value false"
     bash -c "./App/KBridge/iuhcmd.sh --appType cmd --confCmd putConfig --key onPublicNet --value true"
   fi
-  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.edgii.me --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
+  bash -c "./App/KBridge/iuhcmd.sh --appType cmd --bridgeCmd routerLink --konUrl https://www.abelii.net --auser $INUSR --konUser $KONUSER --konPass $KONPASS"  
   mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
