@@ -371,7 +371,25 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
      for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
-       Map res = getCertLeab(wc, ds, domain, action);
+       Int i = 0;
+       Bool done = false;
+       while (i < 3 && done!) {
+         log.log("trying leab");
+         Map res = getCertLeab(wc, ds, domain, action);
+         if (res.has("key") && res.has("crt")) {
+          log.log("got key crt");
+          done = true;
+          auto crt = File.apNew(".lego/certificates/" + domain + ".abelii.net.crt");
+          auto key = File.apNew(".lego/certificates/" + domain + ".abelii.net.key");
+          if (crt.exists) { crt.delete(); }
+          if (key.exists) { key.delete(); }
+          crt.writer.open().writeStringClose(res["crt"]);
+          key.writer.open().writeStringClose(res["key"]);
+          reforward();
+         } else {
+          Time:Sleep.sleepSeconds(1);
+         }
+      }
      }
   }
   

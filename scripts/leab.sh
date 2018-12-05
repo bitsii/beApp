@@ -23,8 +23,8 @@ fi
 
 cd .lego/certificates
 
-if [ -e "$3.crt" ] && [ -e "$3.key" ]; then
-  cat "$3.crt" "$3.key" > all.pem
+if [ -e "$3.abelii.net.crt" ] && [ -e "$3.abelii.net.key" ]; then
+  cat "$3.abelii.net.crt" "$3.abelii.net.key" > all.pem
   mv all.pem ../../Data/KBridge/haproxy/$5
 fi
 

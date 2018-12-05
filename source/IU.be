@@ -53,6 +53,8 @@ class IU:WebConnect {
       
       String konnName;
       String konniName;
+      String konnToken;
+      String konniToken;
       String homePage;
       Bool onPublicNet = false;
       Bool doingUpnp = true;
