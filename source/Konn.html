@@ -184,16 +184,35 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
             <input type="hidden" placeholder="Space">
             <span class="pure-form-message-inline">Expose to the internet via a remote host</span>
         </div>
+        
         <div class="pure-control-group">
-            <label for="rlspacer"></label>
-            <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Please provide either an IP address or a full hostname</span>
+        <label for="sipDrop">Acquire remote host details from previously configured Bridge</label>
+        <select id="sipBridges" name=sipDrop>
+        <option >(None)</option>
+        </select>
         </div>
+        <div class="pure-control-group">
+            <label for="sipLogin">Bridge Login</label>
+            <input id="sipLogin" type="text" placeholder="Admin Account name on other Bridge">
+        </div>
+        <div class="pure-control-group">
+            <label for="sipPass">Bridge Password</label>
+            <input id="sipPass" type="password" placeholder="Admin Account's password on other Bridge">
+        </div>
+        <div class="pure-controls">
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('getSipFromBridgeRequest', document.getElementById('sipBridges').options[document.getElementById('sipBridges').selectedIndex].value, document.getElementById('sipLogin').value, document.getElementById('sipPass').value);callApp('reforwardRequest');return false;">Setup with selected Bridge's configuration</button>
+        </div>
+        <br/>
         <div class="pure-control-group" style="display: none;">
         <label for="devDrop">Hosted Bridge</label>
         <select id="hostedBridges" name=devDrop>
         <option >(None)</option>
         </select>
+        </div>
+        <div class="pure-control-group">
+            <label for="rlspacer"></label>
+            <input type="hidden" placeholder="Space">
+            <span class="pure-form-message-inline">Or, please provide an IP address or a full hostname for remote host</span>
         </div>
         <div class="pure-control-group">
             <label for="sshHost">SSH Host Address</label>

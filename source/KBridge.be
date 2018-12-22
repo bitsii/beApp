@@ -86,17 +86,23 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      }
      
      Map hb = Map.new();
+     Map hsip = Map.new();
      Map links = getLinks(null);
      for (auto kv in links) {
       WebConnect wc = kv.value;
-      if (TS.notEmpty(wc.deviceName) && TS.notEmpty(wc.hostedAddress) && def(wc.onPublicNet) && wc.onPublicNet) {
-        hb.put(wc.deviceName, wc.deviceName);
+      if (TS.notEmpty(wc.deviceName) && TS.notEmpty(wc.hostedAddress)) {
+        if (def(wc.onPublicNet) && wc.onPublicNet) {
+          hb.put(wc.deviceName, wc.deviceName);
+        } else {
+          hsip.put(wc.deviceName, wc.deviceName);
+        }
       }
      }
-     hb.put("(None)", "(None)")
+     hb.put("(None)", "(None)");
+     hsip.put("(None)", "(None)");
      
-     
-     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshPort", app.configManager.get("il.sshPort", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))), CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")), CallBackUI.setOptionsSelectedResponse("hostedBridges",hb, br))));
+     //, CallBackUI.setOptionsResponse("sipBridges", hsip)
+     return(CallBackUI.multiResponse(Lists.from(CallBackUI.setElementsValuesResponse(Maps.from("sshHost", app.configManager.get("il.sshHost", ""), "sshPort", app.configManager.get("il.sshPort", ""), "sshLogin", app.configManager.get("il.sshLogin", ""))), CallBackUI.hideNShowListResponse(Lists.from("remoteaccessdiv")), CallBackUI.setOptionsSelectedResponse("hostedBridges",hb, br), CallBackUI.setOptionsResponse("sipBridges", hsip))));
    }
    
    getRemoteAccessRequest(request) Map {
@@ -150,6 +156,111 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         return(CallBackUI.setElementsValuesResponse(pset));
       }
       return(CallBackUI.informResponse("Please enable Nxc from the Apps menu before setting up"));
+   }
+   
+   getSipRequest(Map args, request) Map {
+     
+     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+     }
+     Map sipi = Map.new();
+     for (String k in Lists.from("il.sshHost", "il.sshLogin", "il.sshPass", "il.sshPort")) {
+      sipi.put(k, app.configManager.get(k));
+     }
+     return(sipi);
+   }
+   
+   getSipFromBridgeRequest(String sipBridge, String sipLogin, String sipPass, request) Map {
+    log.log("getting sip");
+    
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+    }
+    
+    String destUrl;
+    
+    //find the wc and get it
+    //use the hosted one ;-)
+    
+    Map links = getLinks(null);
+     for (auto kv in links) {
+      WebConnect wc = kv.value;
+      if (TS.notEmpty(wc.deviceName) && wc.deviceName == sipBridge) {
+        destUrl = wc.hostedBase;
+      }
+     }
+    
+    log.log("now sip " + destUrl);
+    
+    Map argOut = Map.new();
+    argOut["accountName"] = sipLogin;
+    argOut["accountPass"] = sipPass;
+    argOut["sessionLength"] = "60";
+    argOut["action"] = "loginRequest";
+    argOut["serviceLogin"] = "yup";
+    
+    Web:Client client = Web:Client.new();
+    String payload = Json:Marshaller.marshall(argOut);
+    client.outputHeaders.put("referer", destUrl + "/App/KBridge/Konn.html");
+    client.url = destUrl;
+    
+    try {
+      ifEmit(appDebug) {
+        Web:Client:CertificateManager.validateHosts = false; //appDebug
+        Web:Client:CertificateManager.validateCertificates = false; //appDebug
+      }
+      //Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
+      client.openOutput().write(payload);
+      String res = client.openInput().readString();
+      log.log("GOT SOMETHING BACK!!!");
+      client.close();
+      if (TS.notEmpty(res)) {
+        log.log("res " + res);
+        Map resMap = Json:Unmarshaller.unmarshall(res);
+        //prep next call
+        Map ds = Map.new();
+        ds["serviceSessionKey"] = resMap["serviceSessionKey"];
+        ds["pageToken"] = resMap["pageToken"];
+        ds["destUrl"] = destUrl;
+        ds["certificatePrint"] = resMap["certificatePrint"];
+        
+        String dss = Json:Marshaller.marshall(ds);
+        log.log("login for sip sldss " + dss);
+        
+        //call the api and get creds
+        
+        log.log("calling for sip creds " + destUrl);
+        argOut = Map.new();
+        argOut["action"] = "getSipRequest";
+        argOut["pageToken"] = ds["pageToken"];
+        argOut["serviceSessionKey"] = ds["serviceSessionKey"];
+        ifEmit(appDebug) {
+          Web:Client:CertificateManager.validateHosts = false; //appDebug
+          Web:Client:CertificateManager.validateCertificates = false; //appDebug
+        }
+        //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
+        client = Web:Client.new();
+        payload = Json:Marshaller.marshall(argOut);
+        log.log("payload " + payload);
+        client.outputHeaders.put("referer", destUrl + "/App/KBridge/Konn.html");
+        client.url = destUrl;
+        client.openOutput().write(payload);
+        res = client.openInput().readString();
+        client.close();
+        if (TS.notEmpty(res)) {
+          resMap = Json:Unmarshaller.unmarshall(res);
+          log.log("!!! got res from getSip  " + res);
+          for (String k in Lists.from("il.sshHost", "il.sshLogin", "il.sshPass", "il.sshPort")) {
+            app.configManager.put(k, resMap.get(k));
+          }
+        }
+        
+      }
+      //resetCertMan(ds["certificatePrint"]);
+    } catch(any e) {
+      //resetCertMan(ds["certificatePrint"]);
+    }
+    return(CallBackUI.informResponse("Setup Successful"));
    }
    
    routerLinkRequest(String account, String pass, request) Map {
@@ -268,6 +379,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       log.log("clearing wc konnname");
       wc.konnName = null;
       wc.konniName = null;
+      wc.konnsName = null;
       if (TS.notEmpty(wc.konnAddress) && wc.konnAddress.ends("abelii.net")) {
         wc.konnAddress = null;
       }
@@ -318,6 +430,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         }
       }
      }
+   }
+   
+   checkUpnp() {
+     //hit own endpoint, register if hit on own side
+     //do name lookup for reserved ip
    }
    
    updateMyLink(WebConnect wco, Map ds) Map {

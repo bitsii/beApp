@@ -52,10 +52,18 @@ if [ "$OSTYPE" == "Linux" ]; then
 
   echo "Updating software lists"
   dpkg --configure -a
+  
+  apt -qq --assume-yes update
+  apt -qq --assume-yes install curl
+  apt -qq --assume-yes install curl
+  
+  export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)"
+  echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  
   apt -qq --assume-yes update
 
   echo "Installing required additional system software"
-  apt -qq --assume-yes install curl
   apt -qq --assume-yes install build-essential dkms
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
   apt -qq --assume-yes install mpg123 haproxy dnsutils socat
@@ -76,6 +84,8 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install duplicity
   apt -qq --assume-yes install python-pip
   pip install boto
+  
+  apt -qq --assume-yes install google-cloud-sdk
 
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
   #python3 -m pip install wheel
@@ -101,6 +111,8 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install duplicity
   apt -qq --assume-yes install python-pip
   pip install boto
+  
+  apt -qq --assume-yes install google-cloud-sdk
   
   #apt -qq --assume-yes install python3 python3-venv python3-pip libudev-dev
   #python3 -m pip install wheel
