@@ -263,6 +263,72 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(CallBackUI.informResponse("Setup Successful"));
    }
    
+   gcpLaunchRequest(String jsonCreds, request) Map {
+    log.log("in gcpLaunchRequest");
+    unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+      throw(Alert.new("Must be administrator"));
+    }
+    
+    log.log("unmarshlling jcr");
+    Map jcr = Json:Unmarshaller.unmarshall(jsonCreds);
+    log.log("done unmarshlling jcr");
+    
+    auto cm = app.configManager;
+    
+    String prid = jcr.get("project_id");
+    cm.put("gcp.prid", prid);
+    log.log("prid " + prid);
+    
+    //file, inst, user, pass
+    file = cm.get("gcp.file");
+    if (TS.isEmpty(file)) {
+    Int addLen = System:Random.getIntMax(4);
+    String file = "./" + System:Random.getString(8 + addLen).lower() + ".txt";
+    cm.put("gcp.file", file);
+    }
+    if (File.apNew(file).exists) { File.apNew(file).delete(); }
+    inst = cm.get("gcp.inst");
+    if (TS.isEmpty(inst)) {
+    addLen = System:Random.getIntMax(4);
+    String inst = System:Random.getString(8 + addLen).lower();
+    cm.put("gcp.inst", inst);
+    }
+    user = cm.get("gcp.user");
+    if (TS.isEmpty(user)) {
+    addLen = System:Random.getIntMax(4);
+    String user = System:Random.getString(8 + addLen).lower();
+    cm.put("gcp.user", user);
+    }
+    pass = cm.get("gcp.pass");
+    if (TS.isEmpty(pass)) {
+    addLen = System:Random.getIntMax(4);
+    String pass = System:Random.getString(16 + addLen).lower();
+    cm.put("gcp.pass", pass);
+    }
+    
+    String uinst = user + "@" + inst;
+    
+    log.log("file inst user pass " + file + " " + inst + " " + user + " " + pass);
+    File.apNew(file).writer.open().writeStringClose(jsonCreds);
+    runCmd("gcloud auth activate-service-account --key-file=" + file);
+    runCmd("gcloud config set project " + prid);
+    runCmd("gcloud services enable compute.googleapis.com");
+    runCmd("gcloud compute firewall-rules create allow-all --network default --action allow --direction ingress --rules all --source-ranges 0.0.0.0/0 --priority 1000");
+    runCmd("gcloud compute instances create " + inst + " --image-family debian-9 --image-project debian-cloud --machine-type f1-micro --zone us-west1-a --metadata startup-script-url=https://www.abelii.net/App/KRouter/gcsetup.sh,gcuser=" + user);
+    
+    //setup ilssh with config
+    //redoforward (from web page?)
+    
+    return(CallBackUI.informResponse("Setup Tried"));
+    
+   }
+   
+   runCmd(String cmd) {
+     log.log("run cmd " + cmd);
+     String res = System:Command.new(cmd).open().output.readStringClose();
+     log.log("output " + res);
+   }
+   
    routerLinkRequest(String account, String pass, request) Map {
     log.log("in router link request");
     unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {

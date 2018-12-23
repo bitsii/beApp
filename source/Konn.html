@@ -202,6 +202,13 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary" onclick="callApp('getSipFromBridgeRequest', document.getElementById('sipBridges').options[document.getElementById('sipBridges').selectedIndex].value, document.getElementById('sipLogin').value, document.getElementById('sipPass').value);callApp('reforwardRequest');return false;">Setup with selected Bridge's configuration</button>
         </div>
+        
+        <div class="pure-control-group">
+        <label for="gcpCreds">Setup and use a remote host on Google Compute engine</label>
+        </div>
+        <textarea rows="20" class="pure-input-1" placeholder="Paste GCP Json Api Credentials Here" id="gcpCreds"></textarea>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callApp('gcpLaunchRequest', document.getElementById('gcpCreds').value);return false;">Configure and Use Host</button>
+        
         <br/>
         <div class="pure-control-group" style="display: none;">
         <label for="devDrop">Hosted Bridge</label>
