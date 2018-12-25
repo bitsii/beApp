@@ -308,13 +308,21 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     
     String uinst = user + "@" + inst;
     
+    WebConnect wc = app.plugin.wcol.o;
+    String gcname = wc.konnsName;
+    String gctok = wc.sipTok;
+    
+    if (TS.isEmpty(gcname) || TS.isEmpty(gctok)) {
+      throw(Alert.new("Must link to abelii.net before launching google cloud host."));
+    }
+    
     log.log("file inst user pass " + file + " " + inst + " " + user + " " + pass);
     File.apNew(file).writer.open().writeStringClose(jsonCreds);
     runCmd("gcloud auth activate-service-account --key-file=" + file);
     runCmd("gcloud config set project " + prid);
     runCmd("gcloud services enable compute.googleapis.com");
     runCmd("gcloud compute firewall-rules create allow-all --network default --action allow --direction ingress --rules all --source-ranges 0.0.0.0/0 --priority 1000");
-    runCmd("gcloud compute instances create " + inst + " --image-family debian-9 --image-project debian-cloud --machine-type f1-micro --zone us-west1-a --metadata startup-script-url=https://www.abelii.net/App/KRouter/gcsetup.sh,gcuser=" + user);
+    runCmd("gcloud compute instances create " + inst + " --image-family debian-9 --image-project debian-cloud --machine-type f1-micro --zone us-west1-a --metadata startup-script-url=https://www.abelii.net/App/KRouter/gcsetup.sh,gcuser=" + user + ",gcpass=" + pass + ",gcname=" + gcname + ",gctok=" + gctok); //token and dns
     
     //setup ilssh with config
     //redoforward (from web page?)
