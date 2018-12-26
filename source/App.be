@@ -1799,23 +1799,23 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     String ref = request.getInputHeader("referer");
     String la = request.localAddress;
     if (TS.isEmpty(ref) || TS.isEmpty(la)) {
-      //log.log("isCrossSite true empty");
+      log.log("isCrossSite true empty");
       //if (TS.isEmpty(ref)) { log.log("ref empty"); } else { log.log("la empty"); }
       return(true);
     }
     for (sn in authedUrls) {
-      //log.log("al sn is " + sn);
+      log.log("al sn is " + sn);
       if (ref.lower().begins(sn.lower())) {
         //log.log("ixs false sitelist");
         return(false);
       }
     }
-    //log.log("referer is " + ref);
+    log.log("referer is " + ref);
     String snlist = app.configManager.get("auth.siteNames");
     if (TS.notEmpty(snlist)) {
-      //log.log("siteNames " + snlist);
+      log.log("siteNames " + snlist);
       for (String sn in snlist.split(",")) {
-        //log.log("sn is " + sn);
+        log.log("sn is " + sn);
         if (ref.begins(sn)) {
           //log.log("ixs false sitelist");
           return(false);

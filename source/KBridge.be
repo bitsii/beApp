@@ -325,7 +325,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     runCmd("gcloud compute instances create " + inst + " --image-family debian-9 --image-project debian-cloud --machine-type f1-micro --zone us-west1-a --metadata startup-script-url=https://www.abelii.net/App/KRouter/gcsetup.sh,gcuser=" + user + ",gcpass=" + pass + ",gcname=" + gcname + ",gctok=" + gctok); //token and dns
     
     //setup ilssh with config
+    //il.sshHost, il.sshLogin, il.sshPass, il.sshPort
+    String shname = gcname.lower() + ".abelii.net";
+    app.configManager.put("il.sshHost", shname);
+    app.configManager.put("il.sshLogin", user);
+    app.configManager.put("il.sshPass", pass);
+    app.configManager.put("il.sshPort", "22");
+    
     //redoforward (from web page?)
+    reforward();
     
     return(CallBackUI.informResponse("Setup Tried"));
     
