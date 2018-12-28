@@ -310,7 +310,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-control-group">
             <label for="spacer">Initial Setup</label>
             <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Name the device, create an account, and setup DuckDNS Domains</span>
+            <span class="pure-form-message-inline">Name the device, create an account, and link to Abelii.net</span>
         </div>
         
         <div class="pure-control-group">
@@ -340,18 +340,6 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         </div>
         
         <div class="pure-control-group">
-            <label for="rlspacer"></label>
-            <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">Use <a href="https://www.duckdns.org" target="_blank">DuckDNS</a> Domainnames to access</span>
-        </div>
-        
-        <div class="pure-control-group">
-            <label for="rlspacer"></label>
-            <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline">the device locally and remotely</span>
-        </div>
-        
-        <!--<div class="pure-control-group">
             <label for="setupKonnLogin">Abelii Login</label>
             <input id="setupKonnLogin" type="text" placeholder="Name">
         </div>
@@ -359,31 +347,11 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-control-group">
             <label for="setupKonnPass">Abelii Password</label>
             <input id="setupKonnPass" type="password" placeholder="Password">
-        </div>-->
-        
-        <div class="pure-control-group">
-            <label for="setupDuckDomain">External Duck Domain</label>
-            <input id="setupDuckDomain" type="text" placeholder="Name">
-        </div>
-        
-        <div class="pure-control-group">
-            <label for="setupDuckiDomain">Internal Duck Domain</label>
-            <input id="setupDuckiDomain" type="text" placeholder="Name">
-        </div>
-        
-        <div class="pure-control-group">
-            <label for="setupDuckEmail">DuckDns Login</label>
-            <input id="setupDuckEmail" type="text" placeholder="Name">
-        </div>
-        
-        <div class="pure-control-group">
-            <label for="setupDuckToken">Duck Token</label>
-            <input id="setupDuckToken" type="password" placeholder="Password">
         </div>
         
         <!-- String user, String pass, String devName, String konUser, String konPass -->
         <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('initialSetup');return false;">Complete Setup</button>
+        <button type="submit" class="pure-button pure-button-primary" onclick="callUI('initialSetup');return false;">Complete Initial Setup</button>
         </div>
         
         </fieldset>

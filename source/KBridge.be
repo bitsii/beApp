@@ -1153,11 +1153,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(profile);
   }
   
-  initialSetupRequest(String setupToken, String user, String pass, String devName, String duckDomain, String duckiDomain, String duckEmail, String duckToken, request) {
+  initialSetupRequest(String setupToken, String user, String pass, String devName, String konnLogin, String konnPass, request) {
     //(
     log.log("In isr, say hello :-)");
-    if (TS.isEmpty(user) || TS.isEmpty(pass) || TS.isEmpty(devName) || TS.isEmpty(duckDomain) || TS.isEmpty(duckiDomain) || TS.isEmpty(duckEmail) || TS.isEmpty(duckToken)) {
-      throw(Alert.new("Account Name, Account Password, Device Name, Duck interntal/external domains, email, and token are all required"));
+    if (TS.isEmpty(user) || TS.isEmpty(pass) || TS.isEmpty(devName) || TS.isEmpty(konnLogin) || TS.isEmpty(konnPass)) {
+      throw(Alert.new("Account Name, Account Password, Device Name, and Abelii.net user and password are all required"));
     }
     
     log.log("" + setupToken);
@@ -1179,13 +1179,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       app.pluginsByName.get("Auth").setupSession(Maps.from("accountName", user), request);
       request.context.put("account", a);
       app.configManager.delete("setupToken");
-      //String rtrurl = app.configManager.get("router.Url");
-      //if (TS.isEmpty(rtrurl)) {
-      //  rtrurl = "https://www.abelii.net";
-      //}
-      //routerLink(rtrurl, user, konUser, konPass); //includes doForward
-      
-      saveDuckRequest(duckDomain, duckiDomain, duckEmail, duckToken, request);
+      unlinkAllRequest(request);
+      String rtrurl = app.configManager.get("router.Url");
+      if (TS.isEmpty(rtrurl)) {
+        rtrurl = "https://www.abelii.net";
+      }
+      routerLink(rtrurl, user, konnLogin, konnPass); //includes doForward
       
       return(CallBackUI.initialSetupResponse());
      }
