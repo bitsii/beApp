@@ -539,9 +539,16 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     versionGet() String {
       fields {
-        String version =@ "5.8.1";
+        String version =@ "6.2";
       }
       return(version);
+    }
+    
+    buildGet() Int {
+      fields {
+        Int build =@ 12;
+      }
+      return(build);
     }
    
    checkPublicReadPath(Path pa, request) Bool {
@@ -1357,7 +1364,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
    }
    
    aboutRequest(request) Map {
-     String about = "<p>Abelii Bridge Version " + self.version + "<p>";
+     String about = "<p>Version " + self.version + " build " + self.build + " </p>";
      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("aboutDivMsg", about)))
    }
    

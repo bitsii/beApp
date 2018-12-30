@@ -104,6 +104,8 @@ cp scripts/SBoxEnable.sh ../apprun/App/KBridge
 cp scripts/SBoxDisable.sh ../apprun/App/KBridge
 cp scripts/LEEnable.sh ../apprun/App/KBridge
 cp scripts/LEDisable.sh ../apprun/App/KBridge
+cp scripts/BREnable.sh ../apprun/App/KBridge
+cp scripts/BRDisable.sh ../apprun/App/KBridge
 cp scripts/getLE.sh ../apprun/App/KBridge
 cp scripts/lecf.sh ../apprun/App/KBridge
 cp scripts/ledd.sh ../apprun/App/KBridge

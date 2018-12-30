@@ -55,7 +55,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       Ssh ssh;
       Set rforwarded;
       App:Background bfw = App:Background.new();
-      //App:Background bup = App:Background.new();
+      App:Background bup = App:Background.new();
       String profile = "bridge";
       String defaultUpnpF = "true";
       String defaultInternalResolveF = "false";
@@ -71,7 +71,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    runBackgroundTasks() {
       bfw.runMyTasks();
-      //bup.runMyTasks();
+      bup.runMyTasks();
    }
    
    startLinkRequest(request) Map {
@@ -742,8 +742,12 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    
    checkUpgrade() {
     log.log("in checkupgrade");
-    String autoUp = app.configManager.get("hub.autoUpgrade");
-    unless (TS.isEmpty(autoUp) || autoUp == "true") {
+    String autoUp = app.configManager.get("app.BR");
+    if (TS.isEmpty(autoUp)) {
+      app.configManager.put("app.BR", "enabled"); //assure accurate apps page, default is enable
+      autoUp = "enabled";
+    }
+    unless (autoUp == "enabled") {
       log.log("autoUpgrade disabled");
       return(null);
     }
@@ -755,9 +759,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     if (TS.notEmpty(res)) {
       Map resMap = Json:Unmarshaller.unmarshall(res);
       String ver = resMap.get("latestVersion");
-      log.log("latestVersion is " + ver);
-      if (ver == app.plugin.version) {
-        log.log("already on latest version");
+      Int build = resMap.get("latestBuild");
+      log.log("latestVersion is " + ver + " latestBuild " + build);
+      if (app.plugin.build >= build) {
+        log.log("already on latest (or newer) build, currently on build " + app.plugin.build);
       } else {
         log.log("need to upgrade");
         String latestUrl = resMap.get("latestUrl");
@@ -766,7 +771,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         if (dld.file.exists!) {
           dld.file.makeDirs();
         }
-        dld = dld.addStep("IUBHub.zip");
+        dld = dld.addStep("KBridge.zip");
         if (dld.file.exists) {
           dld.file.delete();
         }
@@ -782,7 +787,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           doUpgrade = false;
         }
         if (doUpgrade) {
-          log.log("doing upgrade to " + ver);
+          log.log("doing upgrade to " + build);
           app.plugin.upgrade(dld.toString());
         } else {
           log.log("not upgrading, is debug");
@@ -870,14 +875,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       bfw.minimumDelay = Time:Interval.new(120, 0);//was 30
       bfw.toInvoke = getInvocation("doForward", List.new());
       
-      //bup.startDelay = Time:Interval.new(30, 0);
-      //bup.repeatDelay = Time:Interval.new(86400, 0);
-      //bup.minimumDelay = Time:Interval.new(43200, 0);
-      //bup.toInvoke = getInvocation("checkUpgrade", List.new());
+      bup.startDelay = Time:Interval.new(120, 0);
+      bup.repeatDelay = Time:Interval.new(86400, 0);
+      bup.minimumDelay = Time:Interval.new(43200, 0);
+      bup.toInvoke = getInvocation("checkUpgrade", List.new());
       
       if (runBackground) {
         bfw.start();
-        //bup.start();
+        bup.start();
       }
    }
    

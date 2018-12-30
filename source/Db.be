@@ -461,10 +461,6 @@ class Db:Derby:Database(DbDb) {
 use System:Thread:ContainerLocker as CLocker;
 use Db:KeyValue as KvDb;
 class KvDb(CLocker) {
-  apNew(Path dbp, String _tableName) self {
-    SqKvDb sdb = SqKvDb.apNew(dbp, _tableName);
-    super.new(sdb);
-  }
   
   new(DbDb _db, String _tableName) self {
     SqKvDb sdb = SqKvDb.new(_db, _tableName);
@@ -486,6 +482,7 @@ class KvDb(CLocker) {
   drop() self {
     container.drop();
   }
+  
 }
 
 use Db:SqlKeyValue as SqKvDb;
@@ -502,21 +499,6 @@ class SqKvDb {
     new();
     db = _db;
     tableName = _tableName;
-  }
-  
-  apNew(Path dbp, String _tableName) self {
-    String dbn = dbp.name;
-    ifEmit(jv) {
-      dbp = dbp.parent.addStep(dbn + "SLJ.db");
-      //db = createInstance("Db:HSQLDb:Database");
-      db = createInstance("Db:SQLite:Database");
-    }
-    ifEmit(cs) {
-      dbp = dbp.parent.addStep(dbn + "SLC.db");
-      db = createInstance("Db:SQLite:Database");
-    }
-    db.pathNew(dbp);
-    new(db, _tableName);
   }
   
   dbFailed() {
