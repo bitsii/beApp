@@ -353,12 +353,8 @@ public ResultSet bevi_res = null;
    nextGet() self {
      if (nextWaiting) {
        nextWaiting = false;
-       return(self);
      }
-     if (self.hasNext) {
-      return(self);
-     }
-     return(null);
+     return(self);
    }
    
    //get col as string for current row
@@ -400,7 +396,12 @@ public ResultSet bevi_res = null;
    close() {
    emit(jv) {
    """
-   bevi_stmt.close();
+   if (bevi_res != null) {
+    bevi_res.close();
+   }
+   if (bevi_stmt != null) {
+     bevi_stmt.close();
+   }
    """
    }
    }
@@ -533,7 +534,7 @@ class SqKvDb {
     try {
     db.begin();
     db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
-      + " constraint " + tableName + "_k primary key (KVKEY) )");
+      + " constraint " + tableName + "_k primary key (KVKEY) )").close();
     db.commit();
     } catch (any e) {
     db.rollback();
@@ -544,7 +545,7 @@ class SqKvDb {
   drop() self {
     try {
     db.begin();
-    db.execute("DROP TABLE " + tableName);
+    db.execute("DROP TABLE " + tableName).close();
     db.commit();
     } catch (any e) {
     db.rollback();
@@ -557,11 +558,12 @@ class SqKvDb {
       Set res = Set.new();
       List qa = List.new(0);
       db.begin();
-      for (DbSt ares in db.executeQuery("SELECT KVKEY FROM " + tableName, qa)) {
+      DbSt ares = db.executeQuery("SELECT KVKEY FROM " + tableName, qa);
+      for (ares in ares) {
         String name = ares.getString(0);
         res.put(name);
       }
-      //ares.close();
+      ares.close();
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -576,12 +578,13 @@ class SqKvDb {
       Map res = Map.new();
       List qa = List.new(0);
       db.begin();
-      for (DbSt ares in db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName, qa)) {
+      DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName, qa);
+      for (ares in ares) {
         String name = ares.getString(0);
         String value = ares.getString(1);
         res.put(name, value);
       }
-      //ares.close();
+      ares.close();
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -597,12 +600,13 @@ class SqKvDb {
       List qa = List.new(1);
       qa.put(0, prefix + "%");
       db.begin();
-      for (DbSt ares in db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName + " WHERE KVKEY LIKE ?", qa)) {
+      DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName + " WHERE KVKEY LIKE ?", qa);
+      for (ares in ares) {
         String name = ares.getString(0);
         String value = ares.getString(1);
         res.put(name, value);
       }
-      //ares.close();
+      ares.close();
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -617,10 +621,11 @@ class SqKvDb {
       List qa = List.new(1);
       qa[0] = name;
       db.begin();
-      for (DbSt ares in db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa)) {
+      DbSt ares = db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa);
+      for (ares in ares) {
         String value = ares.getString(0);
       }
-      //ares.close();
+      ares.close();
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -642,7 +647,7 @@ class SqKvDb {
     try {
       List qa = List.new(2).put(0, name).put(1, value);
       db.begin();
-      db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa);
+      db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa).close();
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -655,7 +660,7 @@ class SqKvDb {
     try {
       List qa = List.new(2).put(0, value).put(1, name);
       db.begin();
-      db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa);
+      db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa).close();
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -670,15 +675,17 @@ class SqKvDb {
       qa[0] = name;
       db.begin();
       Bool exists = false;
-      for (DbSt ares in db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa)) {
+      DbSt ares = db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa);
+      for (ares in ares) {
         exists = true;
       }
+      ares.close();
       if (exists) {
         qa = List.new(2).put(0, value).put(1, name);
-        db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa);
+        db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa).close();
       } else {
         qa = List.new(2).put(0, name).put(1, value);
-        db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa);
+        db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa).close();
       }
       db.commit();
     } catch (any e) {
@@ -693,15 +700,17 @@ class SqKvDb {
     try {
       db.begin();
       List qa = List.new(3).put(0, value).put(1, name).put(2, oldValue);
-      db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=? AND KVVALUE=?", qa);
+      db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=? AND KVVALUE=?", qa).close();
       //db.commit();
       List qc = List.new(1).put(0, name);
-      for (DbSt ares in db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qc)) {
+      DbSt ares = db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qc);
+      for (ares in ares) {
         String currValue = ares.getString(0);
         if (currValue == value) {
           result = true;
         }
       }
+      ares.close();
       //if (true) { throw(Exception.new("fail")); }
       db.commit();
     } catch (any e) {
@@ -716,7 +725,7 @@ class SqKvDb {
     try {
       List qa = List.new(1).put(0, name);
       db.begin();
-      db.execute("DELETE FROM " + tableName + " WHERE KVKEY=?", qa);
+      db.execute("DELETE FROM " + tableName + " WHERE KVKEY=?", qa).close();
       db.commit();
     } catch (any e) {
       db.rollback();
@@ -728,7 +737,7 @@ class SqKvDb {
   clear() {
     try {
       db.begin();
-      db.execute("DELETE FROM " + tableName);
+      db.execute("DELETE FROM " + tableName).close();
       db.commit();
     } catch (any e) {
       db.rollback();

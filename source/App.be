@@ -2855,7 +2855,6 @@ class WebApp {
       Lock lock = Lock.new();
       String certificateThumbprint;
       Map kvDbs = Map.new();
-      Lock dblock = Lock.new();
       Parameters params;
     }
   }
@@ -2977,10 +2976,6 @@ class WebApp {
       }
     }
     closeKvDbs();
-    if (def(appDb)) {
-      appDb.close();
-      kvDbs = Map.new();
-    }
   }
   
   appPortGet() String {
@@ -3038,9 +3033,6 @@ class WebApp {
   
   cohostWith(WebApp other) {
     other.lock = self.lock;
-    other.dblock = self.dblock;
-    other.kvDbs = self.kvDbs;
-    other.appDb = self.appDb;
     
     other.sessionManager = self.sessionManager;
     
@@ -3059,16 +3051,11 @@ class WebApp {
   }
   
   appDbGet() DbDb {
-    fields {
-      DbDb appDb;
-    }
-    unless (def(appDb)) {
       Path appDbPath = self.paths.dataPath.addStep("APPDB");
-      appDb = createInstance("Db:SQLite:Database");
+      DbDb appDb = createInstance("Db:SQLite:Database");
       appDb.pathNew(appDbPath);
       appDb.open();
-    }
-    return(appDb);
+      return(appDb);
   }
   
   closeKvDbs() {
@@ -3094,7 +3081,6 @@ class WebApp {
       KvDb kdb = kvDbs.get(name);
       if (undef(kdb)) {
         kdb = KvDb.new(self.appDb, name);
-        kdb.lock = dblock;
         //kdb.open();
         kdb.create();
         kvDbs.put(name, kdb);
