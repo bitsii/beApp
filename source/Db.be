@@ -46,6 +46,7 @@ public Connection bevi_trans = null;
   pathNew(IO:File:Path _dbp) self {
     fields {
       IO:File:Path dbp = _dbp;
+      //idle timeout, -1 to disable (default)
     }
   }
   
@@ -197,6 +198,16 @@ public Connection bevi_trans = null;
     return(fbstmt.executeQueryParameterized());
   }
 
+}
+
+use Db:Relational:DatabasePool as DbP;
+class DbP {
+  new(DbDb base) {
+    //get and put with lock
+    fields {
+      Lock lock = Lock.new();
+    }
+  }
 }
 
 use Db:Relational:Statement as DbSt;

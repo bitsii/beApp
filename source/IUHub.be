@@ -539,14 +539,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     versionGet() String {
       fields {
-        String version =@ "6.2";
+        String version =@ "6.5";
       }
       return(version);
     }
     
     buildGet() Int {
       fields {
-        Int build =@ 12;
+        Int build =@ 15;
       }
       return(build);
     }
@@ -1196,7 +1196,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
        }
        log.log("duck update url " + url);
        Web:Client client = Web:Client.new();
-       Web:Client:CertificateManager.validateCertificates = false; //duck
+       //Web:Client:CertificateManager.validateCertificates = false; //duck
        client.verb = "GET";
        client.url = url;
        String res = client.openInput().readString();
@@ -1208,14 +1208,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
          url += "/" += iaddr;
          log.log("duck update url " + url);
          client = Web:Client.new();
-         Web:Client:CertificateManager.validateCertificates = false; //duck
+         //Web:Client:CertificateManager.validateCertificates = false; //duck
          client.verb = "GET";
          client.url = url;
          res = client.openInput().readString();
          client.close();
        }
        
-       Web:Client:CertificateManager.validateCertificates = true; //duck
+       //Web:Client:CertificateManager.validateCertificates = true; //duck
        log.log("duckupdate done");
     }
   }

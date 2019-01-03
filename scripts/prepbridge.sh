@@ -48,12 +48,22 @@ fi
 
 if [ "$OSTYPE" == "Linux" ]; then
 
+  ARCHINFO="$(uname -a)"
+  if echo "$ARCHINFO" | grep -q "raspberrypi"; then
+      echo "RASPBIAN"
+      distroinfo="raspbian"
+  else
+      echo "DEBIAN"
+      distroinfo="debian"
+  fi
+  
   usermod -a -G www-data $INSUSER
 
   echo "Updating software lists"
   dpkg --configure -a
   
   apt -qq --assume-yes update
+  #apt -qq --assume-yes upgrade
   apt -qq --assume-yes install curl
   apt -qq --assume-yes install curl
   
@@ -68,7 +78,12 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
   apt -qq --assume-yes install mpg123 haproxy dnsutils socat
 
-  apt -qq --assume-yes install openjdk-9-jdk-headless
+  if [ "$distroinfo" == "raspbian" ]; then
+    apt -qq --assume-yes install oracle-java8-jdk
+  else
+    apt -qq --assume-yes install openjdk-9-jdk-headless
+  fi
+  
   #apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes install xdg-utils
   apt -qq --assume-yes install miniupnpc zip unzip unattended-upgrades screen apache2
@@ -94,7 +109,12 @@ if [ "$OSTYPE" == "Linux" ]; then
   apt -qq --assume-yes install fswebcam alsa-utils motion libav-tools
   apt -qq --assume-yes install mpg123 haproxy dnsutils socat
   
-  apt -qq --assume-yes install openjdk-9-jdk-headless
+  if [ "$distroinfo" == "raspbian" ]; then
+    apt -qq --assume-yes install oracle-java8-jdk
+  else
+    apt -qq --assume-yes install openjdk-9-jdk-headless
+  fi
+  
   #apt -qq --assume-yes install openjdk-9-jdk
   apt -qq --assume-yes xdg-utils
   apt -qq --assume-yes install libio-socket-ssl-perl libdata-validate-ip-perl

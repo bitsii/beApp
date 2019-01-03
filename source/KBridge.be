@@ -205,10 +205,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     client.url = destUrl;
     
     try {
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = false; //appDebug
-        Web:Client:CertificateManager.validateCertificates = false; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = false; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = false; //appDebug
+      //}
       //Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
       client.openOutput().write(payload);
       String res = client.openInput().readString();
@@ -234,10 +234,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         argOut["action"] = "getSipRequest";
         argOut["pageToken"] = ds["pageToken"];
         argOut["serviceSessionKey"] = ds["serviceSessionKey"];
-        ifEmit(appDebug) {
-          Web:Client:CertificateManager.validateHosts = false; //appDebug
-          Web:Client:CertificateManager.validateCertificates = false; //appDebug
-        }
+        //ifEmit(appDebug) {
+          //Web:Client:CertificateManager.validateHosts = false; //appDebug
+          //Web:Client:CertificateManager.validateCertificates = false; //appDebug
+        //}
         //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
         client = Web:Client.new();
         payload = Json:Marshaller.marshall(argOut);
@@ -388,10 +388,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     client.url = destUrl;
     
     try {
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = false; //appDebug
-        Web:Client:CertificateManager.validateCertificates = false; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = false; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = false; //appDebug
+      //}
       //Web:Client:CertificateManager.acceptedThumbprints.put(wco.certificatePrint);
       client.openOutput().write(payload);
       String res = client.openInput().readString();
@@ -422,6 +422,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       //resetCertMan(ds["certificatePrint"]);
     } catch(any e) {
       //resetCertMan(ds["certificatePrint"]);
+      throw(e);
     }
     return(CallBackUI.informResponse("Device Link Successful"));
    }
@@ -528,10 +529,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       argOut["pageToken"] = ds["pageToken"];
       argOut["serviceSessionKey"] = ds["serviceSessionKey"];
       argOut["wc"] = wco.toMap();
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = false; //appDebug
-        Web:Client:CertificateManager.validateCertificates = false; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = false; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = false; //appDebug
+      //}
       //Web:Client:CertificateManager.acceptedThumbprints.put(ds["certificatePrint"]);
       Web:Client client = Web:Client.new();
       String payload = Json:Marshaller.marshall(argOut);
@@ -546,16 +547,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("!!! got res from updatelink  " + res);
       }
       //resetCertMan(ds["certificatePrint"]);
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = true; //appDebug
-        Web:Client:CertificateManager.validateCertificates = true; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = true; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      //}
     } catch (any e) {
       //resetCertMan(ds["certificatePrint"]);
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = true; //appDebug
-        Web:Client:CertificateManager.validateCertificates = true; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = true; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      //}
       log.log("got exception during updatemylink");
       log.log(e.toString());
     }
@@ -601,10 +602,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       argOut["pageToken"] = ds["pageToken"];
       argOut["serviceSessionKey"] = ds["serviceSessionKey"];
       argOut["args"] = Lists.from(wco.deviceId, domain, action);
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = false; //appDebug
-        Web:Client:CertificateManager.validateCertificates = false; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = false; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = false; //appDebug
+      //}
       Web:Client client = Web:Client.new();
       String payload = Json:Marshaller.marshall(argOut);
       log.log("payload " + payload);
@@ -618,17 +619,17 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("!!! got res from leab  " + res);
       }
       //resetCertMan(ds["certificatePrint"]);
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = true; //appDebug
-        Web:Client:CertificateManager.validateCertificates = true; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = true; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      //}
       
     } catch (any e) {
       //resetCertMan(ds["certificatePrint"]);
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = true; //appDebug
-        Web:Client:CertificateManager.validateCertificates = true; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = true; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      //}
       log.log("got exception during leab");
       log.log(e.toString());
     }
@@ -644,10 +645,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       argOut["pageToken"] = ds["pageToken"];
       argOut["serviceSessionKey"] = ds["serviceSessionKey"];
       argOut["args"] = Lists.from(wco.deviceId);
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = false; //appDebug
-        Web:Client:CertificateManager.validateCertificates = false; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = false; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = false; //appDebug
+      //}
       Web:Client client = Web:Client.new();
       String payload = Json:Marshaller.marshall(argOut);
       log.log("payload " + payload);
@@ -661,16 +662,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("!!! got res from removeLink  " + res);
       }
       //resetCertMan(ds["certificatePrint"]);
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = true; //appDebug
-        Web:Client:CertificateManager.validateCertificates = true; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = true; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      //}
     } catch (any e) {
       //resetCertMan(ds["certificatePrint"]);
-      ifEmit(appDebug) {
-        Web:Client:CertificateManager.validateHosts = true; //appDebug
-        Web:Client:CertificateManager.validateCertificates = true; //appDebug
-      }
+      //ifEmit(appDebug) {
+        //Web:Client:CertificateManager.validateHosts = true; //appDebug
+        //Web:Client:CertificateManager.validateCertificates = true; //appDebug
+      //}
       log.log("got exception during removeLink");
       log.log(e.toString());
     }

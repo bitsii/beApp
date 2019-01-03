@@ -560,13 +560,15 @@ use class IUHub:Eui {
         HD.getElementById("remoteAccessME").display = "none";
         HD.getElementById("restartME").display = "none";
         HD.getElementById("manageAccountsME").display = "none";
-        HD.getElementById("setDevicenameME").display = "none";
+        HD.getElementById("backupME").display = "none";
+        HD.getElementById("linkDevicesME").display = "none";
+        //HD.getElementById("setDevicenameME").display = "none";
       }
       
     } elseIf (profile == "router") {
       HD.title = "Abelii Router";
       
-      HD.getElementById("setDevicenameME").display = "none";
+      //HD.getElementById("setDevicenameME").display = "none";
       HD.getElementById("remoteListenME").display = "none";
       HD.getElementById("remoteAccessME").display = "none";
       HD.getElementById("showServicesME").display = "none";

@@ -18,7 +18,7 @@ case "$una" in
     ;;
 esac
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang jv --outputPlatform linux -mainClass=App:AppStart ../abelii/source/extended/Log.be source/IU.be source/IUCam.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/IUCam/d --buildPath ../apprun/App/IUCam --emitLang jv --outputPlatform linux -mainClass=App:AppStart ../abelii/source/extended/Log.be source/IU.be source/IUCam.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/WebServer.be source/App.be source/WebApp.be
 
 #--emitFlag iuOwnBackground
 

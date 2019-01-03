@@ -3081,7 +3081,6 @@ class WebApp {
       KvDb kdb = kvDbs.get(name);
       if (undef(kdb)) {
         kdb = KvDb.new(self.appDb, name);
-        //kdb.open();
         kdb.create();
         kvDbs.put(name, kdb);
       }
