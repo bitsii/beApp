@@ -539,14 +539,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     versionGet() String {
       fields {
-        String version =@ "6.5";
+        String version =@ "6.6";
       }
       return(version);
     }
     
     buildGet() Int {
       fields {
-        Int build =@ 15;
+        Int build =@ 16;
       }
       return(build);
     }
@@ -1291,16 +1291,16 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         if (def(svcs)) {
            Map accountLinks = getLinks(null);
           for (any kv in svcs) {
-             if (TS.notEmpty(kv.value.get("hstLink"))) {
-               dlUse = innerLinks;
-               outerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
-            } elseIf((wc.manualForward || wc.internalResolve) && TS.notEmpty(kv.value.get("konnLink"))) {
+            if((wc.manualForward || wc.internalResolve) && TS.notEmpty(kv.value.get("konnLink"))) {
               String dlUse = innerLinks;
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
             } elseIf(TS.notEmpty(wc.konniLink) && TS.notEmpty(wc.konnLink) && TS.notEmpty(kv.value.get("konniLink")) && TS.notEmpty(kv.value.get("konnLink"))) {
               dlUse = innerLinks;
               outerLinks += "<p>" += kv.value.get("konniLink") += "</p>";
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+            } elseIf (TS.notEmpty(kv.value.get("hstLink"))) {
+               dlUse = innerLinks;
+               outerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
             } else {
               dlUse = outerLinks;
               if (internal) {
