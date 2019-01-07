@@ -248,6 +248,8 @@ use class IUCam:Eui {
       HD.getElementById("accountPass").value = "";
       //log.log("href at startup " + HD.href);
       handleCallOut(arg);
+      arg["action"] = "updateAuRequest";
+      handleCallOut(arg);
    }
    
    pageTokenResponse(Map arg) {

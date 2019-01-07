@@ -638,7 +638,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         String piccmd = "App/KBridge/upgrade.sh";
         System:Command.new(piccmd).run();
         log.log("waiting for upgradeDone");
-        for (Int i = 0;i < 200;i++=) {
+        for (Int i = 0;i < 2000;i++=) {
           if (upd.file.exists) {
             log.log("upd exists exit");
             System:Process.exit(4);

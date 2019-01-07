@@ -174,16 +174,7 @@ use class IUCam:Background {
   runTasks() {
     //log.log("Running tasks");
     
-    any dpf = app.paths.dataPath.parent.addStep("KBridge").addStep("authedUrls");
-    if (dpf.file.exists) { 
-      log.log("got dpf");
-      String au = dpf.file.reader.open().readStringClose();
-      List aul = Json:Unmarshaller.unmarshall(au);
-      for (String aule in aul) {
-         log.log("putting aule " + aule);
-         app.pluginsByName.get("Auth").authedUrls.put(aule);
-      }
-    }
+    app.plugin.updateAu();
     
     runMyTasks();
     mu.updateOnInterval();
@@ -226,6 +217,36 @@ use class IUCam:CamPlugin(App:AjaxPlugin) {
       abg.runMyTasks();
     }
     
+    updateAu() {
+    fields {
+      Time:Interval lastLoad;
+    }
+    log.log("updateAu");
+    any dpf = app.paths.dataPath.parent.addStep("KBridge").addStep("authedUrls");
+    if (dpf.file.exists) { 
+      log.log("got dpf");
+      
+      if (undef(lastLoad) || dpf.file.lastUpdated > lastLoad) {
+        lastLoad = dpf.file.lastUpdated;
+        log.log("au time to update");
+      
+        String au = dpf.file.reader.open().readStringClose();
+        List aul = Json:Unmarshaller.unmarshall(au);
+        for (String aule in aul) {
+           log.log("putting aule " + aule);
+           app.pluginsByName.get("Auth").authedUrls.put(aule);
+        }
+      } else {
+        log.log("au no update");
+      }
+    }
+  }
+  
+  updateAuRequest(Map args, request) {
+    log.log("update au req");
+    updateAu();
+  }
+    
     restartRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         log.log("Restarting as requested, will have exit code 3 by login " + request.context.get("account").user);
@@ -245,6 +266,8 @@ use class IUCam:CamPlugin(App:AjaxPlugin) {
      }
      
     start() {
+      log.log("in cam start");
+      app.pluginsByName.get("Auth").nonAuthedRequests.put("updateAuRequest");
       bg.app = app;
       abg.startDelay = Time:Interval.new(10, 0);
       abg.repeatDelay = Time:Interval.new(1000, 0);
