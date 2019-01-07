@@ -238,63 +238,6 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     return(null);
   }
   
-  doUpdate() {
-    try {
-      wcl.lock();
-      doUpdateInner();
-      wcl.unlock();
-    } catch(any e) {
-      wcl.unlock();
-    }
-  }
-  
-  doUpdateInner() {
-    any e;
-    log.log("In upnp doUpdate");
-    log.log("getting wc");
-    loadWc();
-    WebConnect wc = app.plugin.wcol.o;
-    if (def(wc)) {
-      log.log("wc from wcol");
-    } else {
-      log.log("new wc");
-      wc = WebConnect.new();
-      app.plugin.wcol.o = wc;
-      oapp.plugin.wcol.o = wc;
-    }
-    log.log("after wc init");
-    wc.webProto = app.webProto;
-    if (TS.isEmpty(webPort)) {
-      webPort = app.webPort;
-    }
-    wc.internalPort = webPort;
-    if (TS.isEmpty(certificateThumbprint)) {
-      certificateThumbprint = app.certificateThumbprint; 
-    }
-    if (TS.notEmpty(certificateThumbprint)) {
-      wc.certificatePrint = certificateThumbprint;
-      log.log("CERT PRINT IS " + certificateThumbprint);
-    } else {
-      log.log("CERT PRINT EMPTY");
-    }
-    wc.deviceId = app.plugin.deviceId;
-    wc.deviceName = app.plugin.deviceName; 
-    wc.externalPort = webPort;
-    String webiPort = app.configManager.get(app.configPrefix + "int." + "web.port");
-    if (TS.notEmpty(webiPort)) {
-     wc.internaliPort = webiPort;
-    }
-    log.log("starting wc update");
-    //fwd was here
-    log.log("setting links");
-    wc.updateInternal(homePage);
-    app.plugin.wcol.o = wc;
-    oapp.plugin.wcol.o = wc;
-    log.log("saving");
-    app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
-    log.log("upnp doUpdate done");
-  }
-  
   initLinks() {
     fields {
       String webPort;
@@ -539,14 +482,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     versionGet() String {
       fields {
-        String version =@ "6.6";
+        String version =@ "6.8";
       }
       return(version);
     }
     
     buildGet() Int {
       fields {
-        Int build =@ 16;
+        Int build =@ 18;
       }
       return(build);
     }

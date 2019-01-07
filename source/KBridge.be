@@ -367,9 +367,6 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     String dn = self.deviceName;
     String did = self.deviceId;
     
-    log.log("first do update");
-    doUpdate();
-    
     String destUrl = url;
     
     
@@ -410,13 +407,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("sldss " + dss);
         app.getKvDb("DEVLINKS").put("LinkSession." + auser + "!" + destUrl, dss);
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
-        doForward(); //includes an update
         
-        WebConnect wc = app.plugin.wcol.o;
-        app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
-        app.plugin.wcol.o = wc;
-        oapp.plugin.wcol.o = wc;
         app.configManager.put("router.accountName", account);
+        doUpdate();
+        updateNames();
         
       }
       //resetCertMan(ds["certificatePrint"]);
@@ -871,7 +865,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       super.start();
       app.pluginsByName.get("Auth").nonAuthedRequests.put("initialSetupRequest");
       
-      bfw.startDelay = Time:Interval.new(5, 0);
+      bfw.startDelay = Time:Interval.new(60, 0);
       bfw.repeatDelay = Time:Interval.new(300, 0);//was 60
       bfw.minimumDelay = Time:Interval.new(120, 0);//was 30
       bfw.toInvoke = getInvocation("doForward", List.new());
@@ -885,6 +879,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         bfw.start();
         bup.start();
       }
+      reforward();
    }
    
    getInternetListenRequest(request) Map {
@@ -993,15 +988,19 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(null);
    }
    
-   reforward() {
+   unforward() {
       //kill haproxies
       System:Command.new("./App/KBridge/stophaps.sh").run();
       //kill socats
       System:Command.new("./App/KBridge/stopsocats.sh").run();
-      preprs();
-      System:Command.new("./App/KBridge/restarthaps.sh").run();
       closeSsh();
-      doForward();
+   }
+   
+   reforward() {
+     unforward();
+     preprs();
+     System:Command.new("./App/KBridge/restarthaps.sh").run();
+     doForward();
    }
    
    getForwardPortsList() String {
@@ -1198,20 +1197,143 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      return(null);
     
   }
+  
+  doUpdate() {
+    try {
+      wcl.lock();
+      doUpdateInner();
+      wcl.unlock();
+    } catch(any e) {
+      wcl.unlock();
+    }
+  }
+  
+  doUpdateInner() {
+    any e;
+    log.log("In upnp doUpdate");
+    log.log("getting wc");
+    loadWc();
+    WebConnect wc = app.plugin.wcol.o;
+    if (def(wc)) {
+      log.log("wc from wcol");
+    } else {
+      log.log("new wc");
+      wc = WebConnect.new();
+      app.plugin.wcol.o = wc;
+      oapp.plugin.wcol.o = wc;
+    }
+    log.log("after wc init");
+    wc.webProto = app.webProto;
+    if (TS.isEmpty(webPort)) {
+      webPort = app.webPort;
+    }
+    wc.internalPort = webPort;
+    if (TS.isEmpty(certificateThumbprint)) {
+      certificateThumbprint = app.certificateThumbprint; 
+    }
+    if (TS.notEmpty(certificateThumbprint)) {
+      wc.certificatePrint = certificateThumbprint;
+      log.log("CERT PRINT IS " + certificateThumbprint);
+    } else {
+      log.log("CERT PRINT EMPTY");
+    }
+    wc.deviceId = app.plugin.deviceId;
+    wc.deviceName = app.plugin.deviceName; 
+    wc.externalPort = webPort;
+    String webiPort = app.configManager.get(app.configPrefix + "int." + "web.port");
+    if (TS.notEmpty(webiPort)) {
+     wc.internaliPort = webiPort;
+    }
+    log.log("starting wc update");
+    //fwd was here
+    
+    app.plugin.wcol.o = wc;
+    oapp.plugin.wcol.o = wc;
+    log.log("saving");
+    app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
+    
+    any fpe;
+    log.log("updating addresses");
+      updateDuck();
+      updateCf();
+      try {
+        updateMyLinks();
+      } catch (fpe) {
+        log.log("exception during updateMyLinks ");
+        if (def(fpe)) {
+          log.log("fpe " + fpe);
+        }
+      }
+      
+      wc = app.plugin.wcol.o;
+    log.log("setting links");
+    wc.updateInternal(homePage);
+    
+      Bool doUpnpForward = self.upnpEnabled;
+      Bool doesInternalResolve = self.internalResolve;
+      Bool onPublicNet = self.onPublicNet;
+      String extBase = "";
+      wc.updateExternal(homePage, extBase, doUpnpForward, doesInternalResolve, onPublicNet);
+      String dnsen = app.configManager.get("app.Dns");
+      if (TS.notEmpty(dnsen) && dnsen == "enabled") {
+        log.log("!!!SETTING DOING DNS TRUE");
+        wc.doingDns = true;
+      } else {
+      log.log("!!!SETTING DOING DNS FALSE");
+        wc.doingDns = false;
+      }
+      
+      
+      
+      
+    List au = List.new();
+      if (TS.notEmpty(wc.internalUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.internalUrl);
+        auto parts = wc.internalUrl.split(":");
+        String fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs; 
+      }
+      if (TS.notEmpty(wc.externalUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.externalUrl);
+        parts = wc.externalUrl.split(":");
+        fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs;
+      }
+      if (TS.notEmpty(wc.hostedUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.hostedUrl);
+        parts = wc.hostedUrl.split(":");
+        fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs;
+      }
+      if (TS.notEmpty(wc.konnUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
+        parts = wc.konnUrl.split(":");
+        fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs;
+      }
+      if (TS.notEmpty(wc.konniUrl)) {
+        app.pluginsByName.get("Auth").authedUrls.put(wc.konniUrl);
+        parts = wc.konniUrl.split(":");
+        fs = parts[0] + ":" + parts[1];
+        log.log("fs " + fs);
+        au += fs;
+      }
+      any dpf = app.paths.dataPath.addStep("authedUrls");
+      if (dpf.file.exists) { dpf.file.delete(); }
+      dpf.file.writer.open().writeStringClose(Json:Marshaller.marshall(au));
+      
+    log.log("upnp doUpdate done");
+  }
+  
     
     doForward() {
-      fields {
-        Bool firstStart;
-      }
-      if (undef(firstStart)) {
-        firstStart = true;
-      }
-      if (firstStart) {
-        firstStart = false;
-        reforward();
-      }
       doUpdate();
       for (Int i = 0;i < 5;i++=) {
+        log.log("doForward start");
         Bool res = false;
         try {
           wcl.lock();
@@ -1222,9 +1344,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           log.log("error during doforward " + e);
         }
         if (res) {
+          log.log("doForward done");
           i = 5;
         } else {
-          //reforward();
           Time:Sleep.sleepSeconds(5);
         }
       }
@@ -1367,76 +1489,16 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         success = false;
         log.log("Error during ssh op " + sshe);
       }
-      String extBase = "";
-      wc.updateExternal(homePage, extBase, doUpnpForward, doesInternalResolve, onPublicNet);
-      String dnsen = app.configManager.get("app.Dns");
-      if (TS.notEmpty(dnsen) && dnsen == "enabled") {
-        log.log("!!!SETTING DOING DNS TRUE");
-        wc.doingDns = true;
-      } else {
-      log.log("!!!SETTING DOING DNS FALSE");
-        wc.doingDns = false;
-      }
       try {
         forwardPorts(wc, ssh, rforwarded);
       } catch (any fpe) {
         success = false;
         log.log("exception during forwardports " + fpe);
       }
-      log.log("updating addresses");
-      updateDuck();
-      updateCf();
-      try {
-        updateMyLinks();
-      } catch (fpe) {
-        log.log("exception during updateMyLinks ");
-        if (def(fpe)) {
-          log.log("fpe " + fpe);
-        }
-      }
+      
       log.log("saving");
       app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
       log.log("upnp doForward done");
-      
-      List au = List.new();
-      if (TS.notEmpty(wc.internalUrl)) {
-        app.pluginsByName.get("Auth").authedUrls.put(wc.internalUrl);
-        auto parts = wc.internalUrl.split(":");
-        String fs = parts[0] + ":" + parts[1];
-        log.log("fs " + fs);
-        au += fs; 
-      }
-      if (TS.notEmpty(wc.externalUrl)) {
-        app.pluginsByName.get("Auth").authedUrls.put(wc.externalUrl);
-        parts = wc.externalUrl.split(":");
-        fs = parts[0] + ":" + parts[1];
-        log.log("fs " + fs);
-        au += fs;
-      }
-      if (TS.notEmpty(wc.hostedUrl)) {
-        app.pluginsByName.get("Auth").authedUrls.put(wc.hostedUrl);
-        parts = wc.hostedUrl.split(":");
-        fs = parts[0] + ":" + parts[1];
-        log.log("fs " + fs);
-        au += fs;
-      }
-      if (TS.notEmpty(wc.konnUrl)) {
-        app.pluginsByName.get("Auth").authedUrls.put(wc.konnUrl);
-        parts = wc.konnUrl.split(":");
-        fs = parts[0] + ":" + parts[1];
-        log.log("fs " + fs);
-        au += fs;
-      }
-      if (TS.notEmpty(wc.konniUrl)) {
-        app.pluginsByName.get("Auth").authedUrls.put(wc.konniUrl);
-        parts = wc.konniUrl.split(":");
-        fs = parts[0] + ":" + parts[1];
-        log.log("fs " + fs);
-        au += fs;
-      }
-      any dpf = app.paths.dataPath.addStep("authedUrls");
-      if (dpf.file.exists) { dpf.file.delete(); }
-      dpf.file.writer.open().writeStringClose(Json:Marshaller.marshall(au));
       
       return(success);
   }
