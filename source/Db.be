@@ -50,10 +50,6 @@ public Connection bevi_trans = null;
     }
   }
   
-  existsGet() Bool {
-    return(dbp.file.exists);
-  }
-  
   open() self {
     emit(jv) {
     """
@@ -439,10 +435,6 @@ class HsDb(DbDb) {
   copy() self {
     return(HsDb.pathNew(dbp));
   }
-  
-  existsGet() Bool {
-    return(Path.new(dbp.toString() + ".script").file.exists);
-  }
 
 }
 
@@ -479,10 +471,6 @@ class KvDb(CLocker) {
     super.new(sdb);
   }
   
-  createOpen() self {
-    container.createOpen();
-  }
-  
   create() self {
     container.create();
   }
@@ -504,9 +492,23 @@ class SqKvDb {
     fields {
       DbDb db;
       String tableName;
+      Int lastUsed = Time:Interval.now().seconds;
     }
   }
   
+  dbCheck() {
+    if (self.timeout > -1) {
+      if (Time:Interval.now().seconds - lastUsed > self.timeout) {
+        dbFailed();
+      }
+      lastUsed = Time:Interval.now().seconds;
+    }
+  }
+  
+  timeoutGet() Int {
+    return(-1);
+  }
+    
   new(DbDb _db, String _tableName) self {
     new();
     db = _db;
@@ -531,25 +533,24 @@ class SqKvDb {
     db.close();
   }
   
-  createOpen() self {
-    if (db.exists!) {
-      open();
-      create();
-    } else {
-      open();
-    }
-  }
-  
   create() self {
     //("creating kvdbdb").print();
+    //db.className.print();
     try {
     db.begin();
-    db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
+    if (db.className == "Db:Maria:Database") {
+      //("doing mariadb").print();
+      db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
+      + " constraint " + tableName + "_k primary key (KVKEY(100)) )").close();
+    } else {
+      db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
       + " constraint " + tableName + "_k primary key (KVKEY) )").close();
+    }
     db.commit();
     } catch (any e) {
     db.rollback();
     dbFailed();
+    throw(e);
     }
   }
   
@@ -586,6 +587,7 @@ class SqKvDb {
   
   getMap() Map {
     try {
+      dbCheck();
       Map res = Map.new();
       List qa = List.new(0);
       db.begin();
@@ -607,6 +609,7 @@ class SqKvDb {
   
   getMap(String prefix) Map {
     try {
+      dbCheck();
       Map res = Map.new();
       List qa = List.new(1);
       qa.put(0, prefix + "%");
@@ -629,6 +632,7 @@ class SqKvDb {
 
   get(String name) String {
     try {
+      dbCheck();
       List qa = List.new(1);
       qa[0] = name;
       db.begin();
@@ -656,6 +660,7 @@ class SqKvDb {
   
   insert(String name, String value) {
     try {
+      dbCheck();
       List qa = List.new(2).put(0, name).put(1, value);
       db.begin();
       db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa).close();
@@ -669,6 +674,7 @@ class SqKvDb {
   
   update(String name, String value) {
     try {
+      dbCheck();
       List qa = List.new(2).put(0, value).put(1, name);
       db.begin();
       db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa).close();
@@ -682,6 +688,7 @@ class SqKvDb {
   
   put(String name, String value) {
     try {
+      dbCheck();
       List qa = List.new(1);
       qa[0] = name;
       db.begin();
@@ -734,6 +741,7 @@ class SqKvDb {
   
   delete(String name) {
     try {
+      dbCheck();
       List qa = List.new(1).put(0, name);
       db.begin();
       db.execute("DELETE FROM " + tableName + " WHERE KVKEY=?", qa).close();
@@ -747,6 +755,7 @@ class SqKvDb {
   
   clear() {
     try {
+      dbCheck();
       db.begin();
       db.execute("DELETE FROM " + tableName).close();
       db.commit();

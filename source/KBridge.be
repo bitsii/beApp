@@ -577,6 +577,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           auto key = File.apNew(".lego/certificates/" + domain + ".abelii.net.key");
           if (crt.exists) { crt.delete(); }
           if (key.exists) { key.delete(); }
+          if (crt.path.parent.file.exists!) { crt.path.parent.file.mkdirs(); }
           crt.writer.open().writeStringClose(res["crt"]);
           key.writer.open().writeStringClose(res["key"]);
           reforward();
@@ -1362,7 +1363,14 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         throw(Alert.new("Must be administrator"));
       }
       if (TS.isEmpty(gsbKey) || TS.isEmpty(gsbSecret) || TS.isEmpty(gsbBucket) || TS.isEmpty(gsbPass) || TS.isEmpty(gsbRetain)) {
-        throw(Alert.new("Key Secret, Bucket, Pass, and Retention required"));
+        cm = app.configManager;
+        cm.delete("gsb.key");
+        cm.delete("gsb.secret");
+        cm.delete("gsb.bucket");
+        cm.delete("gsb.pass");
+        cm.delete("gsb.retain");
+        cm.delete("gsb.full");
+        throw(Alert.new("Key Secret, Bucket, Pass, and Retention required - backup is now disabled"));
       }
       Int gr = Int.new(gsbRetain);
       if (gr < 5) {

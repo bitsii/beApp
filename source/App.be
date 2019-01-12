@@ -3051,9 +3051,24 @@ class WebApp {
   }
   
   appDbGet() DbDb {
-      Path appDbPath = self.paths.dataPath.addStep("APPDB");
-      DbDb appDb = createInstance("Db:SQLite:Database");
-      appDb.pathNew(appDbPath);
+      fields {
+        String appDbClass;
+      }
+      String appDbClass = params.getFirst("appDbClass");
+      if (TS.isEmpty(appDbClass)) {
+        appDbClass = "Db:SQLite:Database";
+      }
+      log.log("appDbClass " + appDbClass);
+      DbDb appDb = createInstance(appDbClass);
+      if (appDbClass == "Db:SQLite:Database") {
+        Path appDbPath = self.paths.dataPath.addStep("APPDB");
+        appDb.pathNew(appDbPath);
+      } elseIf(appDbClass == "Db:Maria:Database") {
+        //log.log("doing mariadb");
+        appDb.invoke("paramsNew", Lists.from(params));
+      } else {
+        appDb.new();
+      }
       appDb.open();
       return(appDb);
   }
@@ -3062,7 +3077,6 @@ class WebApp {
     log.log("closing kvdbs");
     try {
       lock.lock();
-      //KvDb kdb = kvDbs.get(name);
       for (any kv in kvDbs) {
         kv.value.close();
       }
@@ -3084,6 +3098,7 @@ class WebApp {
         kdb.create();
         kvDbs.put(name, kdb);
       }
+      //renew here
       lock.unlock();
     } catch (any e) {
       lock.unlock();

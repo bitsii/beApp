@@ -28,9 +28,5 @@ class SlDb(DbDb) {
   copy() self {
     return(SlDb.pathNew(dbp));
   }
-  
-  existsGet() Bool {
-    return(Path.new(dbp.toString()).file.exists);
-  }
 
 }
