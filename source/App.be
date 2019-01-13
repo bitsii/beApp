@@ -16,6 +16,8 @@ use Db:KeyValue as KvDb;
 use Time:Interval;
 use System:Parameters;
 use App:RemoteWebApp;
+use Container:LinkedList;
+use Container:LinkedList:Node;
 
 use class App:Alert(Exception) { }
 
@@ -3058,7 +3060,7 @@ class WebApp {
       if (TS.isEmpty(appDbClass)) {
         appDbClass = "Db:SQLite:Database";
       }
-      log.log("appDbClass " + appDbClass);
+      //log.log("appDbClass " + appDbClass);
       DbDb appDb = createInstance(appDbClass);
       if (appDbClass == "Db:SQLite:Database") {
         Path appDbPath = self.paths.dataPath.addStep("APPDB");
@@ -3077,6 +3079,24 @@ class WebApp {
     log.log("closing kvdbs");
     try {
       lock.lock();
+      for (any kvle in kvDbs) {
+        for (any kv in kvle.value) {
+          kv.close();
+        }
+      }
+      kvDbs = Map.new();
+      lock.unlock();
+    } catch (any e) {
+      lock.unlock();
+      log.log("exception during closeKvDbs");
+      if (def(e)) { log.log("ex " + e); }
+    }
+  }
+  
+  oldcloseKvDbs() {
+    log.log("closing kvdbs");
+    try {
+      lock.lock();
       for (any kv in kvDbs) {
         kv.value.close();
       }
@@ -3090,6 +3110,43 @@ class WebApp {
   }
   
   getKvDb(String name) KvDb {
+    fields {
+      Int appKvPoolSize;
+    }
+    try {
+      lock.lock();
+      if (undef(appKvPoolSize)) {
+        String appKvPoolSizeS = params.getFirst("appKvPoolSize");
+        if (TS.notEmpty(appKvPoolSizeS)) {
+          appKvPoolSize = Int.new(appKvPoolSizeS);
+        } else {
+          appKvPoolSize = 3;
+        }
+      }
+      LinkedList kdbl = kvDbs.get(name);
+      if (undef(kdbl)) {
+        kdbl = LinkedList.new();
+        for (Int i = 0;i < appKvPoolSize;i++=) {
+          KvDb kdb = KvDb.new(self.appDb, name);
+          kdb.create();
+          kdbl.addValueWhole(kdb);
+        }
+        kvDbs.put(name, kdbl);
+      }
+      Node an = kdbl.firstNode;
+      kdbl.deleteNode(an);
+      kdbl.appendNode(an);
+      kdb = an.held;
+      lock.unlock();
+    } catch (any e) {
+      lock.unlock();
+      log.log("exception during getKvDb");
+      if (def(e)) { log.log("ex " + e); }
+    }
+    return(kdb);
+  }
+  
+  oldgetKvDb(String name) KvDb {
     try {
       lock.lock();
       KvDb kdb = kvDbs.get(name);
