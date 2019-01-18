@@ -58,6 +58,11 @@ if [ "$OSTYPE" == "Linux" ]; then
   fi
   
   usermod -a -G www-data $INSUSER
+  
+  killall -w update-notifier
+  killall -w update-manager
+  
+  rm -f /var/lib/dpkg/lock
 
   echo "Updating software lists"
   dpkg --configure -a
@@ -167,5 +172,8 @@ if [ "$OSTYPE" == "Linux" ]; then
   cat tmp/stadd > /etc/ssh/sshd_config
   service ssh restart
   service sshd restart
+  
+  sudo systemctl stop ssh
+  sudo systemctl disable ssh
   
 fi

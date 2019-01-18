@@ -37,3 +37,15 @@ cd KBridge
 mv -f ../KBridge.zip ../../..
 
 cd ../../../edgii
+
+cd ..
+
+rm -rf kinsarch
+rm -f InstallBridgeLinux.exe
+
+mkdir kinsarch
+cp KBridge.zip kinsarch
+cp edgii/scripts/karchrun.sh kinsarch
+chmod +x kinsarch/karchrun.sh
+
+makeself kinsarch InstallBridgeLinux.exe KBridgeInstall ./karchrun.sh

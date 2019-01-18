@@ -482,14 +482,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     versionGet() String {
       fields {
-        String version =@ "6.8";
+        String version =@ "2.2";
       }
       return(version);
     }
     
     buildGet() Int {
       fields {
-        Int build =@ 18;
+        Int build =@ 22;
       }
       return(build);
     }

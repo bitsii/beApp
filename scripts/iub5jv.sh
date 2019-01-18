@@ -69,6 +69,7 @@ cp scripts/startball.sh ../apprun/App/KBridge
 cp scripts/startcam.sh ../apprun/App/KBridge
 cp scripts/starthass.sh ../apprun/App/KBridge
 cp scripts/startdomo.sh ../apprun/App/KBridge
+cp scripts/domors.sh ../apprun/App/KBridge
 cp scripts/startbridge.sh ../apprun/App/KBridge
 cp scripts/iuhcmdrs.sh ../apprun/App/KBridge
 cp scripts/iuhcmd.sh ../apprun/App/KBridge
