@@ -1687,6 +1687,8 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   logoutRequest(Map arg, request) {
     //request.deleteSession();
     request.putSession("account.name", "");
+    request.deleteSession();
+    
     if (request.embedded) {
       app.configManager.delete("auth.embeddedLogin");
     }
