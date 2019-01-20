@@ -104,8 +104,8 @@ use class Web:Server {
     } catch (e) {
       ("got exception " + e).print();
       try {
-        log.log("Caught exception handling request");
-        if (log.will()) { log.log(e.toString()); }
+        log.error("Caught exception handling request");
+        if (def(e)) { log.error(e.toString()); }
       } catch (e) {
       }
     }

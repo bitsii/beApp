@@ -259,6 +259,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       //resetCertMan(ds["certificatePrint"]);
     } catch(any e) {
       //resetCertMan(ds["certificatePrint"]);
+      log.error("Failure during getsip");
+      if (def(e)) {
+        log.error("error " + e);
+      }
     }
     return(CallBackUI.informResponse("Setup Successful"));
    }
@@ -551,8 +555,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         //Web:Client:CertificateManager.validateHosts = true; //appDebug
         //Web:Client:CertificateManager.validateCertificates = true; //appDebug
       //}
-      log.log("got exception during updatemylink");
-      log.log(e.toString());
+      log.error("got exception during updatemylink");
+      if (def(e)) { log.error(e.toString()); }
     }
     return(resMap);
   }
@@ -625,8 +629,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         //Web:Client:CertificateManager.validateHosts = true; //appDebug
         //Web:Client:CertificateManager.validateCertificates = true; //appDebug
       //}
-      log.log("got exception during leab");
-      log.log(e.toString());
+      log.error("got exception during leab");
+      if (def(e)) { log.error(e.toString()); }
     }
     return(resMap);
   }
@@ -667,8 +671,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         //Web:Client:CertificateManager.validateHosts = true; //appDebug
         //Web:Client:CertificateManager.validateCertificates = true; //appDebug
       //}
-      log.log("got exception during removeLink");
-      log.log(e.toString());
+      log.error("got exception during removeLink");
+      if (def(e)) { log.error(e.toString()); }
     }
     return(resMap);
   }
@@ -1206,6 +1210,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       wcl.unlock();
     } catch(any e) {
       wcl.unlock();
+      log.error("failure during doupdate");
+      if (def(e)) { log.log("error " + e); }
     }
   }
   
@@ -1260,9 +1266,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       try {
         updateMyLinks();
       } catch (fpe) {
-        log.log("exception during updateMyLinks ");
+        log.error("exception during updateMyLinks ");
         if (def(fpe)) {
-          log.log("fpe " + fpe);
+          log.error("fpe " + fpe);
         }
       }
       
@@ -1342,7 +1348,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
           wcl.unlock();
         } catch(any e) {
           wcl.unlock();
-          log.log("error during doforward " + e);
+          log.error("error during doforward ");
+          if (def(e)) { log.error("error " + e); }
         }
         if (res) {
           log.log("doForward done");
@@ -1495,13 +1502,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         }
       } catch (any sshe) {
         success = false;
-        log.log("Error during ssh op " + sshe);
+        log.error("Error during ssh op " + sshe);
       }
       try {
         forwardPorts(wc, ssh, rforwarded);
       } catch (any fpe) {
         success = false;
-        log.log("exception during forwardports " + fpe);
+        log.error("exception during forwardports " + fpe);
       }
       
       log.log("saving");

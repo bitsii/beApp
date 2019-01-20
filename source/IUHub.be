@@ -87,7 +87,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         super.new();
         log =@ IO:Logs.get(self);
         //ifEmit(appDebug) {
-          IO:Logs.turnOnAll();
+          //IO:Logs.turnOnAll();
         //}
         //Web:Client:CertificateManager.validateHosts = false;
      }
@@ -267,20 +267,20 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
        try {
          clearTracking();
        } catch (e) { 
-         log.log("error background");
-         if (def(e)) { log.log("error " + e); }
+         log.error("error background");
+         if (def(e)) { log.error("error " + e); }
        }
        try {
          renewCert();
        } catch (e) { 
-         log.log("error background");
-         if (def(e)) { log.log("error " + e); }
+         log.error("error background");
+         if (def(e)) { log.error("error " + e); }
        }
        try {
          doBackup();
        } catch (e) { 
-         log.log("error background");
-         if (def(e)) { log.log("error " + e); }
+         log.error("error background");
+         if (def(e)) { log.error("error " + e); }
        }
        any e;
      }
@@ -474,6 +474,11 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         }
       }
       
+      log.output("logged in " + a.user);
+      if (def(request) && def(request.inputAddress)) {
+        log.output("from " + request.inputAddress);
+      }
+      
       String imso = app.configManager.get("imapSetOnce");
       if (TS.isEmpty(imso) || imso != "true") {
         //res["imapSetOnce"] = "false";
@@ -484,14 +489,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     versionGet() String {
       fields {
-        String version =@ "2.3";
+        String version =@ "2.5";
       }
       return(version);
     }
     
     buildGet() Int {
       fields {
-        Int build =@ 23;
+        Int build =@ 25;
       }
       return(build);
     }
@@ -721,6 +726,8 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       resetCertMan(wco.certificatePrint);
     } catch(any e) {
       resetCertMan(wco.certificatePrint);
+      log.error("error in chooseurl");
+      if (def(e)) { log.error("error " + e); }
     }
     return(null);
   }
@@ -759,11 +766,11 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
         log.log("!!! PING RES EMPTY");
       }
     } catch (any e) {
-      log.log("ERROR DURING PING ");
+      log.error("ERROR DURING PING ");
       if (def(e)) {
-        log.log("PING ERROR IS " + e);
+        log.error("PING ERROR IS " + e);
       } else {
-        log.log("PING ERROR EMPTY");
+        log.error("PING ERROR EMPTY");
       }
     }
     return(worked);
@@ -831,7 +838,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
   }
   
   updateNames() {
-    try { updateNamesInner(); } catch (any e) { log.log("error updatenames"); } if (def(e)) { log.log("" + e); }
+    try { updateNamesInner(); } catch (any e) { log.error("error updatenames"); } if (def(e)) { log.error("" + e); }
   }
   
   updateNamesInner() {
@@ -930,9 +937,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     try {
         updateCfInner();
     } catch (fpe) {
-      log.log("exception during updateDuck ");
+      log.error("exception during updateDuck ");
       if (def(fpe)) {
-        log.log("fpe " + fpe);
+        log.error("fpe " + fpe);
       }
     }
   }
@@ -1107,9 +1114,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     try {
         updateDuckInner();
     } catch (fpe) {
-      log.log("exception during updateDuck ");
+      log.error("exception during updateDuck ");
       if (def(fpe)) {
-        log.log("fpe " + fpe);
+        log.error("fpe " + fpe);
       }
     }
   }
@@ -1181,6 +1188,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       
       WebConnect wc = wcol.o;
       
+      //log.log("ria " + request.inputAddress);
+      //log.log("ref " + request.getInputHeader("referer"));
+      
       if (def(wc)) {
         if (TS.notEmpty(wc.hostedLink)) {
           dlUse = innerLinks;
@@ -1194,8 +1204,23 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           outerLinks += "<p>" += wc.konnLink += "</p>";
         } elseIf(TS.notEmpty(wc.konniLink) && TS.notEmpty(wc.konnLink)) {
           dlUse = innerLinks;
-          outerLinks += "<p>" += wc.konniLink += "</p>";
-          outerLinks += "<p>" += wc.konnLink += "</p>";
+          
+          Int doLink = 0;
+          String refr = request.getInputHeader("referer");
+          if (TS.notEmpty(refr)) {
+            if (refr.lower() == wc.konniUrl.lower()) {
+              doLink = 1;
+            } elseIf (refr.lower() == wc.konnUrl.lower()) {
+              doLink = 2;
+            }
+          }
+      
+          if (doLink == 0 || doLink == 1) {
+            outerLinks += "<p>" += wc.konniLink += "</p>";
+          }
+          if (doLink == 0 || doLink == 2) {
+            outerLinks += "<p>" += wc.konnLink += "</p>";
+          }
          } else {
            dlUse = outerLinks;
            if (internal) {
@@ -1241,8 +1266,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
               outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
             } elseIf(TS.notEmpty(wc.konniLink) && TS.notEmpty(wc.konnLink) && TS.notEmpty(kv.value.get("konniLink")) && TS.notEmpty(kv.value.get("konnLink"))) {
               dlUse = innerLinks;
-              outerLinks += "<p>" += kv.value.get("konniLink") += "</p>";
-              outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+              
+              if (doLink == 0 || doLink == 1) {
+                outerLinks += "<p>" += kv.value.get("konniLink") += "</p>";
+              }
+              if (doLink == 0 || doLink == 2) {
+                outerLinks += "<p>" += kv.value.get("konnLink") += "</p>";
+              }
+              
             } elseIf (TS.notEmpty(kv.value.get("hstLink"))) {
                dlUse = innerLinks;
                outerLinks += "<p>" += kv.value.get("hstLink") += "</p>";
@@ -1281,6 +1312,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
      
       
       actionLinks += "<div id=\"primaryLinksDiv\" style=\"display: none;\">";
+      actionLinks += "<p><a href=\"https://www.abelii.net\" target=\"_blank\">Abelii Router</a> - view all linked devices</p>\n";
       actionLinks += outerLinks;
       actionLinks += "<a href=\"#\" onclick=\"callUI('toggleDisplay', 'secondaryLinksDiv');return false;\">Show/Hide more service connection options</a>";
       actionLinks += "<div id=\"secondaryLinksDiv\" style=\"display: none;\">";

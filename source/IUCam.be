@@ -209,7 +209,7 @@ use class IUCam:CamPlugin(App:AjaxPlugin) {
         super.new();
         log =@ IO:Logs.get(self);
         //ifEmit(appDebug) {
-          IO:Logs.turnOnAll();
+          //IO:Logs.turnOnAll();
         //}
      }
      

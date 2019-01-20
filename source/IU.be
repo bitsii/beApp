@@ -164,8 +164,8 @@ class IU:WebConnect {
         }
       } catch (any e) {
         //don't change external ip when upnp fails
-        log.log("Upnp externalAddress failed");
-        if (def(e)) { log.log(e.toString()); }
+        log.error("Upnp externalAddress failed");
+        if (def(e)) { log.error(e.toString()); }
       }
     
       if (TS.notEmpty(externalPort)) {

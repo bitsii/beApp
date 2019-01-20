@@ -72,7 +72,7 @@ use class App:RemoteWebApp(WebApp) {
       //vwL.o = vw;
       vw.port = port;
       vw.ssl = self.appSsl;
-      ("appSsl = " + vw.ssl).print();
+      //("appSsl = " + vw.ssl).print();
       if (self.appSsl) {
         vw.sslPath = assureCert(port);
       } elseIf(TS.notEmpty(self.appBindAddress)) {

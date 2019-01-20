@@ -509,7 +509,7 @@ class Upnp {
       """
       }
       } catch (e) {
-        log.log("got except during upnp bcast et all " + e);
+        log.error("got except during upnp bcast et all " + e);
       }
       if (def(received)) {
         received.lowerValue();
@@ -1379,6 +1379,10 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   
   badLogin(request) {
     badRequest(request);
+    log.error("bad login");
+    if (def(request) && def(request.inputAddress)) {
+      log.error("from " + request.inputAddress);
+    }
     lastLoginBad.o = true;
   }
   
@@ -1575,7 +1579,10 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     if (TS.notEmpty(accountName)) {
       Account a = self.accountManager.getAccount(accountName);
       if (def(a)) {
-        log.log("Found logged in account " + accountName);
+        log.output("Found logged in account " + accountName);
+        if (def(request) && def(request.inputAddress)) {
+          log.output("from " + request.inputAddress);
+        }
         Map sarg = Map.new();
         sarg["accountName"] = accountName;
         setupSession(sarg, request);
@@ -1586,7 +1593,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         res.delete("loginUri");
         return(res);
       } else {
-        log.log("No such account " + accountName);
+        log.output("No such account " + accountName);
       }
     }
     log.log("doing tologin return");
@@ -1686,6 +1693,15 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   
   logoutRequest(Map arg, request) {
     //request.deleteSession();
+    
+    if (def(request) && def(request.inputAddress)) {
+      log.output("logout from " + request.inputAddress);
+    }
+    
+    if (TS.notEmpty(request.getSession("account.name"))) {
+      log.output("user " + request.getSession("account.name"));
+    }
+    
     request.putSession("account.name", "");
     request.deleteSession();
     
@@ -1982,9 +1998,9 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           log.log("auth done continueHandling is " + request.continueHandling);
           return(self);
         } catch (any e) {
-           log.log("Caught exception during handleWeb B");
+           log.error("Caught exception during handleWeb B");
            if (def(e)) {
-            log.log("Exception was " + e);
+            log.error("Exception was " + e);
            }
         }
     }
@@ -2077,7 +2093,7 @@ use class App:WebReverseProxyPlugin {
           String destUrl;
           Bool sslValidate;
         }
-        IO:Logs.turnOnAll();
+        //IO:Logs.turnOnAll();
      }
      
      start() {
@@ -2242,7 +2258,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           isOk = true;
         }
       } catch (e) {
-        log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
+        log.error("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
       }
       //log.log("checkPath isOk " + isOk);
       return(isOk);
@@ -2268,7 +2284,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
         isOk = true;
       }
     } catch (e) {
-      log.log("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
+      log.error("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
     }
     //log.log("checkPath isOk " + isOk);
     return(isOk);
@@ -2775,7 +2791,7 @@ class App:AppStart {
         Parameters params = Parameters.new(System:Process.new().args);
         start(params);
       } catch (any e) {
-        log.log("Exception in innerMain, error is " + e);
+        log.error("Exception in innerMain, error is " + e);
       }
     }
   
@@ -3090,8 +3106,8 @@ class WebApp {
       lock.unlock();
     } catch (any e) {
       lock.unlock();
-      log.log("exception during closeKvDbs");
-      if (def(e)) { log.log("ex " + e); }
+      log.error("exception during closeKvDbs");
+      if (def(e)) { log.error("ex " + e); }
     }
   }
   
@@ -3106,8 +3122,8 @@ class WebApp {
       lock.unlock();
     } catch (any e) {
       lock.unlock();
-      log.log("exception during closeKvDbs");
-      if (def(e)) { log.log("ex " + e); }
+      log.error("exception during closeKvDbs");
+      if (def(e)) { log.error("ex " + e); }
     }
   }
   
@@ -3142,8 +3158,8 @@ class WebApp {
       lock.unlock();
     } catch (any e) {
       lock.unlock();
-      log.log("exception during getKvDb");
-      if (def(e)) { log.log("ex " + e); }
+      log.error("exception during getKvDb");
+      if (def(e)) { log.error("ex " + e); }
     }
     return(kdb);
   }
@@ -3161,8 +3177,8 @@ class WebApp {
       lock.unlock();
     } catch (any e) {
       lock.unlock();
-      log.log("exception during getKvDb");
-      if (def(e)) { log.log("ex " + e); }
+      log.error("exception during getKvDb");
+      if (def(e)) { log.error("ex " + e); }
     }
     return(kdb);
   }
@@ -3183,7 +3199,7 @@ class WebApp {
     if (undef(sessionManager)) {
       sessionManager = Web:SessionManager.new(self.getKvDb("SESSIONS"), "GsSess" + sessionId);
     }
-    ("got sessionmanager").print();
+    //("got sessionmanager").print();
     return(sessionManager);
   }
     
@@ -3241,9 +3257,9 @@ use class App:Background {
       lastWasError = true;
       lastError = e;
       try {
-        log.log("exception in runMyTasks");
+        log.error("exception in runMyTasks");
         if (def(e)) {
-          log.log("runMyTasks exception was " + e);
+          log.error("runMyTasks exception was " + e);
         }
       } catch (any ee) { }
     }
@@ -3256,12 +3272,12 @@ use class App:Background {
       try {
         runMyTasks();
       } catch (e) {
-        log.log("Caught exception running tasks " + e);
+        log.error("Caught exception running tasks " + e);
       }
       try {          
         Time:Sleep.sleep(repeatDelay);
       } catch (e) {
-        log.log("Caught exception sleeping " + e);
+        log.error("Caught exception sleeping " + e);
       }
     }
   }
@@ -3347,8 +3363,8 @@ class App:AjaxPlugin {
           request.continueHandling = true;
         }
       } catch (any e) {
-        log.log("Caught exception handling request");
-        if (log.will()) { if (undef(e)) { log.log("undefined exception") } else { log.log(e.toString()); } }
+        log.error("Caught exception handling request");
+        if (undef(e)) { log.error("undefined exception") } else { log.error(e.toString()); }
         if (e.sameClass(Alert.new()@)) {
           arg = CallBackUI.informResponse(e.description);
         } else {
