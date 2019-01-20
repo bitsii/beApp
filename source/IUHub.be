@@ -458,18 +458,20 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
       res["appVersion"] = self.version;
       res["deviceName"] = self.deviceName;
       res["loginUri"] = self.getLoginUri(request);
-      res["certificatePrint"] = wcol.o.certificatePrint;
-      if (TS.notEmpty(wcol.o.internalAddress)) {
-        res["internalAddress"] = wcol.o.internalAddress;
-        String inx = app.configManager.get("webApp.Nxc.int.web.port");
-        String ido = app.configManager.get("webApp.Domo.int.web.port");
-        String ica = app.configManager.get("webApp.Cam.int.web.port");
-        if (undef(inx)) { inx = ""; }
-        if (undef(ido)) { ido = ""; }
-        if (undef(ica)) { ica = ""; }
-        res["inx"] = inx;
-        res["ido"] = ido;
-        res["ica"] = ica;
+      if (def(wcol) && def(wcol.o)) {
+        res["certificatePrint"] = wcol.o.certificatePrint;
+        if (TS.notEmpty(wcol.o.internalAddress)) {
+          res["internalAddress"] = wcol.o.internalAddress;
+          String inx = app.configManager.get("webApp.Nxc.int.web.port");
+          String ido = app.configManager.get("webApp.Domo.int.web.port");
+          String ica = app.configManager.get("webApp.Cam.int.web.port");
+          if (undef(inx)) { inx = ""; }
+          if (undef(ido)) { ido = ""; }
+          if (undef(ica)) { ica = ""; }
+          res["inx"] = inx;
+          res["ido"] = ido;
+          res["ica"] = ica;
+        }
       }
       
       String imso = app.configManager.get("imapSetOnce");
