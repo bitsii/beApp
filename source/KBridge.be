@@ -264,6 +264,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.error("error " + e);
       }
     }
+    reforwardAsync();
     return(CallBackUI.informResponse("Setup Successful"));
    }
    
@@ -337,7 +338,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     app.configManager.put("il.sshPort", "22");
     
     //redoforward (from web page?)
-    reforward();
+    reforwardAsync();
     
     return(CallBackUI.informResponse("Setup Tried"));
     
@@ -949,7 +950,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         } else {
           app.configManager.put("onPublicNet", "false");
         }
-        doForward();
+        doForwardAsync();
       }
    }
    
@@ -966,7 +967,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         } else {
           app.configManager.put("internalResolve", "false");
         }
-        doForward();
+        doForwardAsync();
         return(CallBackUI.informResponse("Upnp configuration successful"));
       }
       return(self);
@@ -987,7 +988,8 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       }
       app.configManager.put("il.sshLogin", login);
       app.configManager.put("il.sshPass", pass);
-      app.configManager.put("il.sshPort", port);   
+      app.configManager.put("il.sshPort", port); 
+      reforwardAsync();  
       return(CallBackUI.informResponse("SSH Internet Listen setup successful"));
       }
     return(null);
@@ -1002,10 +1004,29 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    }
    
    reforward() {
-     unforward();
-     preprs();
-     System:Command.new("./App/KBridge/restarthaps.sh").run();
-     doForward();
+     //log.output("reforwarding");
+     try {
+       reforwardLock.lock();
+       unforward();
+       preprs();
+       System:Command.new("./App/KBridge/restarthaps.sh").run();
+       doForward();
+       reforwardLock.unlock();
+     } catch (any e) {
+       reforwardLock.unlock();
+       log.error("error in reforward");
+       if (def(e)) {
+        log.error("forward error " + e);
+       }
+     }
+   }
+   
+   reforwardAsync() {
+     System:Thread.new(getInvocation("reforward", List.new())).start();
+   }
+   
+   doForwardAsync() {
+     System:Thread.new(getInvocation("doForward", List.new())).start();
    }
    
    getForwardPortsList() String {
@@ -1051,6 +1072,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
        //reforward();
+       reforwardAsync();
        return(getRemoteAccessRequest(request));
        }
        return(null);
@@ -1059,7 +1081,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    reforwardRequest(request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        log.log("let's reforward");
-       reforward();
+       reforwardAsync();
      }
      return(null);
    }
@@ -1125,8 +1147,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
        app.configManager.put("hub.webConnect", Json:Marshaller.marshall(wc.toMap()));
        app.plugin.wcol.o = wc;
        oapp.plugin.wcol.o = wc;
-       //TODO update imap wc
-       //reforward();
+       reforwardAsync();
        //return(CallBackUI.informResponse("Service Saved"));
        return(getRemoteAccessRequest(request));
        }
@@ -1205,11 +1226,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   
   doUpdate() {
     try {
-      wcl.lock();
+      updateLock.lock();
       doUpdateInner();
-      wcl.unlock();
+      updateLock.unlock();
     } catch(any e) {
-      wcl.unlock();
+      updateLock.unlock();
       log.error("failure during doupdate");
       if (def(e)) { log.log("error " + e); }
     }
@@ -1343,11 +1364,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         log.log("doForward start");
         Bool res = false;
         try {
-          wcl.lock();
+          forwardLock.lock();
           res = doForwardInner();
-          wcl.unlock();
+          forwardLock.unlock();
         } catch(any e) {
-          wcl.unlock();
+          forwardLock.unlock();
           log.error("error during doforward ");
           if (def(e)) { log.error("error " + e); }
         }
@@ -1397,13 +1418,10 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     closeSsh() {
       if (def(ssh)) {
         try {
-           wcl.lock();
            ssh.close();
            ssh = null;
-           wcl.unlock();
          } catch (any sshe) {
            ssh = null;
-           wcl.unlock();
          }
       }
     }
@@ -1604,6 +1622,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       String enres = System:Command.new(cmdPath).open().output.readStringClose();
       log.log("enable done, output " + enres);
       updateNames();
+      reforwardAsync();
       return(CallBackUI.setElementsDisplaysResponse(Maps.from(appName + "AppDisabled", "none", appName + "AppEnabled", "inline")));
       //return(CallBackUI.informResponse("App " + appName + " Enabled"));
     }

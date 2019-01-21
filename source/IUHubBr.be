@@ -797,21 +797,21 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "Secure Shell, remote command line";
         HD.getElementById("fpPort").value = "22";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpiPort").value = "";
+        HD.getElementById("fpiPort").value = "22";
         HD.getElementById("fpPattern").value = "$type$ SSH: ssh -p $port$ pi@$ip$";
         HD.getElementById("fpDitty").innerHTML = "<p>ssh - <a href=\"https://duckduckgo.com/?q=ssh\">About Secure Shell</a>";
       } elseIf (forService.begins("Let's Encrypt")) {
         HD.getElementById("fpName").value = "Enable Let's Encrypt certificate generation";
         HD.getElementById("fpPort").value = "80";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpiPort").value = "";
+        HD.getElementById("fpiPort").value = "80";
         HD.getElementById("fpPattern").value = "<a href=\"http://$ip$:$port$/\" target=\"_blank\">$type$ Let's Encrypt</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://letsencrypt.org\">Let's Encrypt</a>";
       } elseIf (forService.begins("Shellinabox")) {
         HD.getElementById("fpName").value = "Shellinabox - remote command line in browser";
         HD.getElementById("fpPort").value = "4200";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpiPort").value = "";
+        HD.getElementById("fpiPort").value = "4200";
         HD.getElementById("fpPattern").value = "<a href=\"https://$ip$:$port$/\" target=\"_blank\">$type$ Shellinabox</a>";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://github.com/shellinabox/shellinabox\">Shellinabox on GitHub</a>";
       } elseIf (forService.begins("Domoticz")) {
@@ -849,28 +849,28 @@ use class IUHub:Eui {
         HD.getElementById("fpName").value = "MS Remote Desktop";
         HD.getElementById("fpPort").value = "3389";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpiPort").value = "";
+        HD.getElementById("fpiPort").value = "3389";
         HD.getElementById("fpPattern").value = "$type$ RDP:  $ip$:$port$";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://support.microsoft.com/en-us/help/17463/windows-7-connect-to-another-computer-remote-desktop-connection\">MS Remote Desktop</a>";
       } elseIf (forService.begins("NoMachine")) {
         HD.getElementById("fpName").value = "NoMachine Remote Desktop";
         HD.getElementById("fpPort").value = "4000";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpiPort").value = "";
+        HD.getElementById("fpiPort").value = "4000";
         HD.getElementById("fpPattern").value = "$type$ NoMachine:  $ip$:$port$";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.nomachine.com/\">NoMachine, free cross platform remote desktop</a>";
       } elseIf (forService.begins("VNC")) {
         HD.getElementById("fpName").value = "VNC Remote Desktop";
         HD.getElementById("fpPort").value = "5900";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpiPort").value = "";
+        HD.getElementById("fpiPort").value = "5900";
         HD.getElementById("fpPattern").value = "$type$ VNC:  $ip$:$port$";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://en.wikipedia.org/wiki/Virtual_Network_Computing\">Virtual Network Computing - open source remote desktop (unencrypted)</a>";
       } elseIf (forService.ends("(ard)")) {
         HD.getElementById("fpName").value = "Apple Remote Desktop";
         HD.getElementById("fpPort").value = "5988";
         HD.getElementById("fpExPort").value = "";
-        HD.getElementById("fpiPort").value = "";
+        HD.getElementById("fpiPort").value = "5988";
         HD.getElementById("fpPattern").value = "$type$ Apple Remote Desktop:  $ip$:$port$";
         HD.getElementById("fpDitty").innerHTML = "<p><a href=\"https://www.apple.com/remotedesktop/\">Apple Remote Desktop</a>";
       } else {

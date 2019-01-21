@@ -883,8 +883,6 @@ use class App:AccountManager {
   new() self {
     fields {
       any kvDb;
-      Json:Marshaller mar = Json:Marshaller.new();
-      Json:Unmarshaller unmar = Json:Unmarshaller.new();
     }
   }
   
@@ -905,7 +903,8 @@ use class App:AccountManager {
     if (TS.notEmpty(user)) {
 		String aj = kvDb.get(user);
 		if (TS.notEmpty(aj)) {
-		  Account a = Account.mapNew(unmar.unmarshall(aj));
+      //("aj " + aj).print();
+		  Account a = Account.mapNew(Json:Unmarshaller.unmarshall(aj));
 		}
 	}
     return(a);
@@ -916,7 +915,7 @@ use class App:AccountManager {
   }
   
   putAccount(Account a) {
-    kvDb.put(a.user, mar.marshall(a.toMap()));
+    kvDb.put(a.user, Json:Marshaller.marshall(a.toMap()));
   }
   
   getRequestAccount(request) Account {
@@ -2612,11 +2611,11 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       if (mode == "showConfig") {
         if (TS.notEmpty(params.getFirst("prefix"))) {
           for (kv in app.getKvDb(kvdb).getMap(params.getFirst("prefix"))) {
-            log.log("Config name " + kv.key + " value " + kv.value);
+            log.output("Config name " + kv.key + " value " + kv.value);
           }
         } else {
           for (any kv in app.getKvDb(kvdb).getMap()) {
-            log.log("Config name " + kv.key + " value " + kv.value);
+            log.output("Config name " + kv.key + " value " + kv.value);
           }
         }
       }

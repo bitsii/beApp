@@ -474,11 +474,11 @@ use class Web:ScriptRequest {
    scriptArgGet() {
      String ic = self.inputContent;
      IO:Logs.get(self).log("In scriptArgGet, inputContent " + ic);
-     return(unmar.unmarshall(ic));
+     return(Json:Unmarshaller.unmarshall(ic));
    }
    
    scriptReturnSet(ret) {
-     String oc = mar.marshall(ret);
+     String oc = Json:Marshaller.marshall(ret);
      IO:Logs.get(self).log("In scriptReturnSet, outputContent " + oc);
      self.outputContentType =@ "application/json";
      self.outputContent = oc;
@@ -534,8 +534,6 @@ use class Web:ScriptRequest {
             IO:Writer outputWriter;
             String outputContentType =@ "text/html"; //sensible default
             Bool outputOpened = false;
-            Json:Marshaller mar = Json:Marshaller.new();
-            Json:Unmarshaller unmar = Json:Unmarshaller.new();
             Map context = Map.new();
             Bool continueHandling = true;
         }

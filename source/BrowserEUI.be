@@ -342,8 +342,6 @@ class HC {
 
   new(_callbacks) self {
     fields {
-      Json:Marshaller mar = Json:Marshaller.new();
-      Json:Unmarshaller unmar = Json:Unmarshaller.new();
       List callbacks = _callbacks.copy().addValue(self);
       String pageToken;
     }
@@ -396,7 +394,7 @@ class HC {
     if (TS.notEmpty(pageToken)) {
       arg["pageToken"] = pageToken;
     }
-    String argjs = mar.marshall(arg);
+    String argjs = Json:Marshaller.marshall(arg);
     String resjs;
     emit(js) {
     """
@@ -453,7 +451,7 @@ class HC {
   }
   
   handleCallback(String resjs) {
-    Map resm = unmar.unmarshall(resjs);
+    Map resm = Json:Unmarshaller.unmarshall(resjs);
     if (def(resm)) {
         handleCallbackMap(resm);
     }

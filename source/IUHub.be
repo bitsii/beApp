@@ -82,7 +82,9 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           App:Background trc = App:Background.new();
           App:Background buu = App:Background.new();
           Bool runBackground = true;
-          Lock wcl = Lock.new();
+          Lock reforwardLock = Lock.new();
+          Lock forwardLock = Lock.new();
+          Lock updateLock = Lock.new();
         }
         super.new();
         log =@ IO:Logs.get(self);
@@ -489,14 +491,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     versionGet() String {
       fields {
-        String version =@ "2.5";
+        String version =@ "2.9";
       }
       return(version);
     }
     
     buildGet() Int {
       fields {
-        Int build =@ 25;
+        Int build =@ 29;
       }
       return(build);
     }
@@ -890,7 +892,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           i++=;
         }
         if (TS.notEmpty(kiad)) {
-          authnx += i += " => " += "'" += kiad += ":" += iport += "',\n";
+          authnx += i += " => " += "'" += kiad.lower() += ":" += iport += "',\n";
           i++=;
         }
       }
@@ -900,7 +902,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
           i++=;
         }
         if (TS.notEmpty(kead)) {
-          authnx += i += " => " += "'" += kead += ":" += eport += "',\n";
+          authnx += i += " => " += "'" += kead.lower() += ":" += eport += "',\n";
           i++=;
         }
       }

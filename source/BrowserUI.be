@@ -525,8 +525,6 @@ use class UI:BrowserScriptRequest {
             Map session = _session;
             String contentIn;
             String contentOut;
-            Json:Marshaller mar = Json:Marshaller.new();
-            Json:Unmarshaller unmar = Json:Unmarshaller.new();
             String inputAddress;
             Bool embedded = true;
             Map context = Map.new();
@@ -559,14 +557,14 @@ use class UI:BrowserScriptRequest {
    }
    
    scriptArgGet() {
-     return(unmar.unmarshall(scriptArgJson));
+     return(Json:Unmarshaller.unmarshall(scriptArgJson));
    }
    
    scriptReturnSet(ret) {
      fields {
        String scriptReturnJson;
      }
-     scriptReturnJson = mar.marshall(ret);
+     scriptReturnJson = Json:Marshaller.marshall(ret);
    }
    
    deleteSession() {
