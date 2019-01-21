@@ -38,6 +38,9 @@ mv -f ../KBridge.zip ../../..
 
 cd ../../../edgii
 
+rm -f ../latestVersion.json
+cp doc/latestVersion.json ..
+
 cd ..
 
 rm -rf kinsarch

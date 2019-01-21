@@ -111,6 +111,8 @@ cp scripts/getLE.sh ../apprun/App/KBridge
 cp scripts/lecf.sh ../apprun/App/KBridge
 cp scripts/ledd.sh ../apprun/App/KBridge
 cp scripts/leab.sh ../apprun/App/KBridge
+cp scripts/noinetreboot.sh ../apprun/App/KBridge
+cp scripts/nobridgereboot.sh ../apprun/App/KBridge
 cp scripts/dupgs.sh ../apprun/App/KBridge
 cp scripts/dupgsbk.sh ../apprun/App/KBridge
 cp scripts/dupgsrun.sh ../apprun/App/KBridge

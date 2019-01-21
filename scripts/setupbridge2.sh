@@ -43,6 +43,8 @@ if [ "$OSTYPE" == "Linux" ]; then
   mkdir -p tmp
   echo "@reboot bash -l -c '$INSDIR/apprun/App/KBridge/startiuh.sh'" > tmp/stadd
   crontab tmp/stadd
+  sudo cp -f ./App/KBridge/noinetreboot.sh /etc/cron.daily
+  sudo cp -f ./App/KBridge/nobridgereboot.sh /etc/cron.daily
   bash -c "./App/KBridge/startball.sh"
 fi
 
