@@ -13,32 +13,26 @@ if [ -e "./Data/KBridge/int.haproxy/haproxy.cfg" ]; then
   ./App/KBridge/starthap.sh ./Data/KBridge/int.haproxy certi.pem
 fi
 
-if [ -e "./Data/KBridge/nxcEnabled.txt" ]; then
-  if [ -e "./Data/KBridge/Nxc.haproxy/haproxy.cfg" ]; then
-    ./App/KBridge/starthap.sh Data/KBridge/Nxc.haproxy cert.pem
-  fi
-
-  if [ -e "./Data/KBridge/webApp.Nxc.int.haproxy/haproxy.cfg" ]; then
-    ./App/KBridge/starthap.sh Data/KBridge/webApp.Nxc.int.haproxy certi.pem
-  fi
+if [ -e "./Data/KBridge/Nxc.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/Nxc.haproxy cert.pem
 fi
 
-if [ -e "./Data/KBridge/camEnabled.txt" ]; then
-  if [ -e "./Data/KBridge/webApp.Cam.haproxy/haproxy.cfg" ]; then
-    ./App/KBridge/starthap.sh Data/KBridge/webApp.Cam.haproxy cert.pem
-  fi
-
-  if [ -e "./Data/KBridge/webApp.Cam.int.haproxy/haproxy.cfg" ]; then
-    ./App/KBridge/starthap.sh Data/KBridge/webApp.Cam.int.haproxy certi.pem
-  fi
+if [ -e "./Data/KBridge/webApp.Nxc.int.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Nxc.int.haproxy certi.pem
 fi
 
-if [ -e "./Data/KBridge/domoEnabled.txt" ]; then
-  if [ -e "./Data/KBridge/webApp.Domo.haproxy/haproxy.cfg" ]; then
-    ./App/KBridge/starthap.sh Data/KBridge/webApp.Domo.haproxy cert.pem
-  fi
+if [ -e "./Data/KBridge/webApp.Cam.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Cam.haproxy cert.pem
+fi
 
-  if [ -e "./Data/KBridge/webApp.Domo.int.haproxy/haproxy.cfg" ]; then
-    ./App/KBridge/starthap.sh Data/KBridge/webApp.Domo.int.haproxy certi.pem
-  fi
+if [ -e "./Data/KBridge/webApp.Cam.int.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Cam.int.haproxy certi.pem
+fi
+
+if [ -e "./Data/KBridge/webApp.Domo.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Domo.haproxy cert.pem
+fi
+
+if [ -e "./Data/KBridge/webApp.Domo.int.haproxy/haproxy.cfg" ]; then
+  ./App/KBridge/starthap.sh Data/KBridge/webApp.Domo.int.haproxy certi.pem
 fi
