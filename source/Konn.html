@@ -316,7 +316,7 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-control-group">
             <label for="spacer">Help</label>
             <input type="hidden" placeholder="Space">
-            <span class="pure-form-message-inline"><a href="https://gitlab.com/abelii/edgii/wikis/install-page" target="_blank">Abelii Bridge Install Page</a></span>
+            <span class="pure-form-message-inline"><a href="https://gitlab.com/abelii/edgii/wikis/Final-Setup" target="_blank">Abelii Bridge Setup Instructions</a></span>
         </div>
         
         <div class="pure-control-group">
@@ -347,6 +347,24 @@ document.getElementById('files').addEventListener('change', handleFileSelect, fa
         <div class="pure-control-group">
             <label for="setupKonnPass">Abelii Password</label>
             <input id="setupKonnPass" type="password" placeholder="Password">
+        </div>
+        
+        <div class="pure-control-group">
+         <label for="setupLE" class="pure-checkbox">Enable Let's Encrypt</label>
+            <input id="setupLE" type="checkbox" checked>
+             <span class="pure-form-message-inline">Install a free ssl certificate accepted by browsers, recommended.</span>
+        </div>
+        
+        <div class="pure-control-group" style="display: none;">
+         <label for="setupCam" class="pure-checkbox">Install IUWebCam</label>
+            <input id="setupCam" type="checkbox" checked>
+             <span class="pure-form-message-inline">Install motion detecting webcam</span>
+        </div>
+        
+        <div class="pure-control-group">
+         <label for="setupOther" class="pure-checkbox"></label>
+            <input id="setupOther" type="hidden">
+             <span class="pure-form-message-inline">More items can be installed from Manage Apps after initial setup is complete</span>
         </div>
         
         <!-- String user, String pass, String devName, String konUser, String konPass -->

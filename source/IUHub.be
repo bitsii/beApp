@@ -223,7 +223,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     } else {
       key = "devlink!";
     }
-    for (any kv in app.getKvDb("DEVLINKS").getMap(key)) {
+    for (any kv in app.kvdbs.get("DEVLINKS").getMap(key)) {
       WebConnect wc = WebConnect.new();
       wc.fromMap(unmar.unmarshall(kv.value));
       links.put(wc.deviceId, wc);
@@ -491,14 +491,14 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     
     versionGet() String {
       fields {
-        String version =@ "3.2";
+        String version =@ "3.3";
       }
       return(version);
     }
     
     buildGet() Int {
       fields {
-        Int build =@ 32;
+        Int build =@ 33;
       }
       return(build);
     }
@@ -1056,7 +1056,7 @@ use class IUHub:HubPlugin(IU:IUPlugin) {
     if (undef(wc)) {
       log.log("wc undef");
     }
-    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
+    Map lss = app.kvdbs.get("DEVLINKS").getMap("LinkSession.");
     for (auto kv in lss) {
       Map ds = Json:Unmarshaller.unmarshall(kv.value);
     }

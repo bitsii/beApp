@@ -8,6 +8,9 @@ use IO:File:Path;
 use IO:File;
 use Test:Assertions as Assert;
 use System:Thread:Lock;
+use System:Parameters;
+use Container:LinkedList;
+use Container:LinkedList:Node;
 
 emit(jv) {
 """
@@ -483,6 +486,100 @@ class KvDb(CLocker) {
     container.drop();
   }
   
+}
+
+use Db:KeyValueDbs as KvDbs;
+
+class KvDbs {
+
+  new(Parameters _params, Path _dataPath) self {
+    fields {
+      Parameters params = _params;
+      Lock lock = Lock.new();
+      Map kvDbs = Map.new();
+      IO:Log log =@ IO:Logs.get(self);
+      Path dataPath = _dataPath;
+    }
+  }
+  
+  dbGet() DbDb {
+      fields {
+        String appDbClass;
+      }
+      String appDbClass = params.getFirst("appDbClass");
+      if (TS.isEmpty(appDbClass)) {
+        appDbClass = "Db:SQLite:Database";
+      }
+      //log.log("appDbClass " + appDbClass);
+      DbDb appDb = createInstance(appDbClass);
+      if (appDbClass == "Db:SQLite:Database") {
+        Path appDbPath = dataPath.copy();
+        appDb.pathNew(appDbPath);
+      } elseIf(appDbClass == "Db:Maria:Database") {
+        //log.log("doing mariadb");
+        appDb.invoke("paramsNew", Lists.from(params));
+      } else {
+        appDb.new();
+      }
+      appDb.open();
+      return(appDb);
+  }
+  
+  get(String name) KvDb {
+    fields {
+      Int appKvPoolSize;
+    }
+    try {
+      lock.lock();
+      if (undef(appKvPoolSize)) {
+        String appKvPoolSizeS = params.getFirst("appKvPoolSize");
+        if (TS.notEmpty(appKvPoolSizeS)) {
+          appKvPoolSize = Int.new(appKvPoolSizeS);
+        } else {
+          appKvPoolSize = 3;
+        }
+      }
+      LinkedList kdbl = kvDbs.get(name);
+      if (undef(kdbl)) {
+        kdbl = LinkedList.new();
+        for (Int i = 0;i < appKvPoolSize;i++=) {
+          KvDb kdb = KvDb.new(self.db, name);
+          kdb.create();
+          kdbl.addValueWhole(kdb);
+        }
+        kvDbs.put(name, kdbl);
+      }
+      Node an = kdbl.firstNode;
+      kdbl.deleteNode(an);
+      kdbl.appendNode(an);
+      kdb = an.held;
+      lock.unlock();
+    } catch (any e) {
+      lock.unlock();
+      log.error("exception during getKvDb");
+      if (def(e)) { log.error("ex " + e); }
+    }
+    return(kdb);
+  }
+  
+  close() {
+    log.log("closing kvdbs");
+    try {
+      lock.lock();
+      for (any kvle in kvDbs) {
+        for (any kv in kvle.value) {
+          kv.close();
+        }
+      }
+      kvDbs = Map.new();
+      lock.unlock();
+    } catch (any e) {
+      lock.unlock();
+      log.error("exception during closeKvDbs");
+      if (def(e)) { log.error("ex " + e); }
+    }
+  }
+
 }
 
 use Db:SqlKeyValue as SqKvDb;

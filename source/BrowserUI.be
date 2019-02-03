@@ -623,7 +623,7 @@ use class Web:SessionManager {
       //request.setOutputHeader(keyName, sk);
     } else {
       sk = System:Random.getString(keyLen);
-      until (sessions.getMap(hashKey(sk) + ".").isEmpty) {
+      until (sessions.get("SESSIONS").getMap(hashKey(sk) + ".").isEmpty) {
         sk = System:Random.getString(keyLen);
       }
       request.setOutputCookie(keyName, sk, "/", true, true);
@@ -645,20 +645,20 @@ use class Web:SessionManager {
   
   deleteSessionByKey(String key) {
     if (TS.notEmpty(key)) {
-      Map toDel = sessions.getMap(key + ".");
+      Map toDel = sessions.get("SESSIONS").getMap(key + ".");
       for (any x in toDel) {
         //("deleting session key " + x.key).print(); 
-        sessions.delete(x.key);
+        sessions.get("SESSIONS").delete(x.key);
       }
     }
   }
   
   getSession(request, String name) String {
-    return(sessions.get(getSessionKey(request) + "." + name));
+    return(sessions.get("SESSIONS").get(getSessionKey(request) + "." + name));
   }
   
   putSession(request, String name, String value) {
-    sessions.put(getSessionKey(request) + "." + name, value);
+    sessions.get("SESSIONS").put(getSessionKey(request) + "." + name, value);
   }
 
 }

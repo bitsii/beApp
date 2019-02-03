@@ -56,6 +56,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       Set rforwarded;
       App:Background bfw = App:Background.new();
       App:Background bup = App:Background.new();
+      App:Background bcf = App:Background.new();
       String profile = "bridge";
       String defaultUpnpF = "true";
       String defaultInternalResolveF = "false";
@@ -72,6 +73,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
    runBackgroundTasks() {
       bfw.runMyTasks();
       bup.runMyTasks();
+      bcf.runMyTasks();
    }
    
    startLinkRequest(request) Map {
@@ -410,7 +412,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         ds["certificatePrint"] = resMap["certificatePrint"];
         String dss = Json:Marshaller.marshall(ds);
         log.log("sldss " + dss);
-        app.getKvDb("DEVLINKS").put("LinkSession." + auser + "!" + destUrl, dss);
+        app.kvdbs.get("DEVLINKS").put("LinkSession." + auser + "!" + destUrl, dss);
         //if (true) { resetCertMan(wco.certificatePrint); return(checkConnInner(wco, ds, destUrl)) };
         
         app.configManager.put("router.accountName", account);
@@ -449,13 +451,13 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     Json:Marshaller mar = Json:Marshaller.new();
     WebConnect wc = app.plugin.wcol.o;
     
-    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
+    Map lss = app.kvdbs.get("DEVLINKS").getMap("LinkSession.");
      for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
        if (def(wc)) {
         removeMyLink(wc, ds);
        }
-       app.getKvDb("DEVLINKS").delete(kv.key);
+       app.kvdbs.get("DEVLINKS").delete(kv.key);
      }
      if (def(wc)) {
       log.log("clearing wc konnname");
@@ -477,9 +479,9 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       throw(Alert.new("Must be administrator"));
     }
-    Map lss = app.getKvDb("DEVLINKS").getMap("devlink!");
+    Map lss = app.kvdbs.get("DEVLINKS").getMap("devlink!");
      for (auto kv in lss) {
-       app.getKvDb("DEVLINKS").delete(kv.key);
+       app.kvdbs.get("DEVLINKS").delete(kv.key);
      }
    }
    
@@ -487,18 +489,18 @@ use class IUBridge:BridgePlugin(HubPlugin) {
      WebConnect wc = app.plugin.wcol.o;
      Json:Unmarshaller unmar = Json:Unmarshaller.new();
      Json:Marshaller mar = Json:Marshaller.new();
-     Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
+     Map lss = app.kvdbs.get("DEVLINKS").getMap("LinkSession.");
      for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
        Map res = updateMyLink(wc, ds);
      }
      if (def(res) && res.has("links")) {
-      KvDb knwc = app.getKvDb("KNAMEWCS");
+      KvDb knwc = app.kvdbs.get("KNAMEWCS");
       for (Map lm in res.get("links")) {
         log.log("putting into links");
         WebConnect awc = WebConnect.new().fromMap(lm);
         String conjs = mar.marshall(lm);
-        app.getKvDb("DEVLINKS").put("devlink!" + awc.deviceId, conjs);
+        app.kvdbs.get("DEVLINKS").put("devlink!" + awc.deviceId, conjs);
         log.log("awc did " + awc.deviceId + " wc did " + wc.deviceId);
         if (awc.deviceId == wc.deviceId) {
           //now with konnName et all
@@ -567,7 +569,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     WebConnect wc = app.plugin.wcol.o;
      Json:Unmarshaller unmar = Json:Unmarshaller.new();
      Json:Marshaller mar = Json:Marshaller.new();
-     Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
+     Map lss = app.kvdbs.get("DEVLINKS").getMap("LinkSession.");
      for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
        Int i = 0;
@@ -680,7 +682,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   
   startLes() Map {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
+    Map lss = app.kvdbs.get("DEVLINKS").getMap("LinkSession.");
     for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
        Map res = startLe(ds);
@@ -691,7 +693,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
   
   stopLes() Map {
     Json:Unmarshaller unmar = Json:Unmarshaller.new();
-    Map lss = app.getKvDb("DEVLINKS").getMap("LinkSession.");
+    Map lss = app.kvdbs.get("DEVLINKS").getMap("LinkSession.");
     for (auto kv in lss) {
        Map ds = unmar.unmarshall(kv.value);
        Map res = stopLe(ds);
@@ -739,6 +741,11 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     }
     System:Command.new("./App/KBridge/changePiPass.sh " + piUser + ":" + piPass).run();
     return(CallBackUI.informResponse("SSH Password Changed for " + piUser));
+  }
+  
+  doConfig() {
+    //log.log("in doconfig");
+    
   }
    
    checkUpgrade() {
@@ -881,9 +888,15 @@ use class IUBridge:BridgePlugin(HubPlugin) {
       bup.minimumDelay = Time:Interval.new(43200, 0);
       bup.toInvoke = getInvocation("checkUpgrade", List.new());
       
+      bcf.startDelay = Time:Interval.new(20, 0);
+      bcf.repeatDelay = Time:Interval.new(20, 0);//was 60
+      bcf.minimumDelay = Time:Interval.new(10, 0);//was 30
+      bcf.toInvoke = getInvocation("doConfig", List.new());
+      
       if (runBackground) {
         bfw.start();
         bup.start();
+        bcf.start();
       }
       reforward();
    }
@@ -1184,7 +1197,7 @@ use class IUBridge:BridgePlugin(HubPlugin) {
     return(profile);
   }
   
-  initialSetupRequest(String setupToken, String user, String pass, String devName, String konnLogin, String konnPass, request) {
+  initialSetupRequest(String setupToken, String user, String pass, String devName, String konnLogin, String konnPass, Bool setupLE, Bool setupCam, request) {
     //(
     log.log("In isr, say hello :-)");
     if (TS.isEmpty(user) || TS.isEmpty(pass) || TS.isEmpty(devName) || TS.isEmpty(konnLogin) || TS.isEmpty(konnPass)) {
@@ -1216,12 +1229,23 @@ use class IUBridge:BridgePlugin(HubPlugin) {
         rtrurl = "https://www.abelii.net";
       }
       routerLink(rtrurl, user, konnLogin, konnPass); //includes doForward
+      //async launch installs
+      launchInstalls(setupLE, setupCam, request);
+      
       
       return(CallBackUI.initialSetupResponse());
      }
      
      return(null);
     
+  }
+  
+  launchInstalls(Bool setupLE, Bool setupCam, request) {
+    //put bools in fields
+    //async start
+    log.output("enableing le");
+    enableAppRequest("LE", request);
+    log.output("le enable done");
   }
   
   doUpdate() {

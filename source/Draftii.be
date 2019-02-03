@@ -301,12 +301,12 @@ use class Draftii:DraftiiPlugin(App:AjaxPlugin) {
   }
   
    draftManagerGet() KvDb {
-    return(app.getKvDb("DRAFTS"));
+    return(app.kvdbs.get("DRAFTS"));
   }
   
   catManagerGet() KvDb {
-    //app.getKvDb("SECRETS").drop();
-    return(app.getKvDb("CATS"));
+    //app.kvdbs.get("SECRETS").drop();
+    return(app.kvdbs.get("CATS"));
   }
   
   getPass1(String salt, String pass1) {

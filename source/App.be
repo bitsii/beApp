@@ -18,6 +18,7 @@ use System:Parameters;
 use App:RemoteWebApp;
 use Container:LinkedList;
 use Container:LinkedList:Node;
+use Db:KeyValueDbs as KvDbs;
 
 use class App:Alert(Exception) { }
 
@@ -882,18 +883,18 @@ use class App:AccountManager {
 
   new() self {
     fields {
-      any kvDb;
+      any kvDbs;
     }
   }
   
-  new(_kvDb) {
+  new(_kvDbs) {
     new();
-    kvDb = _kvDb;
+    kvDbs = _kvDbs;
   }
   
   getLogins() List {
     List logins = List.new();
-    for (any kv in kvDb.getMap()) {
+    for (any kv in kvDbs.get("ACCOUNTS").getMap()) {
       logins.addValue(kv.key);
     }
     return(logins);
@@ -901,7 +902,7 @@ use class App:AccountManager {
 
   getAccount(String user) {
     if (TS.notEmpty(user)) {
-		String aj = kvDb.get(user);
+		String aj = kvDbs.get("ACCOUNTS").get(user);
 		if (TS.notEmpty(aj)) {
       //("aj " + aj).print();
 		  Account a = Account.mapNew(Json:Unmarshaller.unmarshall(aj));
@@ -911,11 +912,11 @@ use class App:AccountManager {
   }
   
   deleteAccount(Account a) {
-    kvDb.delete(a.user);
+    kvDbs.get("ACCOUNTS").delete(a.user);
   }
   
   putAccount(Account a) {
-    kvDb.put(a.user, Json:Marshaller.marshall(a.toMap()));
+    kvDbs.get("ACCOUNTS").put(a.user, Json:Marshaller.marshall(a.toMap()));
   }
   
   getRequestAccount(request) Account {
@@ -1238,7 +1239,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         AccountManager accountManager;
       }
       if (undef(accountManager)) {
-        accountManager = AccountManager.new(app.getKvDb("ACCOUNTS"));
+        accountManager = AccountManager.new(app.kvdbs);
       }
       return(accountManager);
     }
@@ -1248,6 +1249,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       if (TS.isEmpty(mode)) {
         return(false);
       }
+      IO:Logs.turnOnAll();
       if (mode == "showAccounts") {
         for (String login in self.accountManager.getLogins()) {
           log.log("Account login " + login);
@@ -1312,18 +1314,18 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         //a.user
         String res = String.new();
         String accountName = a.user;
-        Map all = app.sessionManager.sessions.getMap();
+        Map all = app.sessionManager.sessions.get("SESSIONS").getMap();
         for (any kv in all) {
           if (kv.key.ends("account.name") && kv.value == accountName) {
             //log.log("Found session " + kv.key);
             any kp = kv.key.split(".");
             String sessLabel = String.new();
-            String name = app.sessionManager.sessions.get(kp.first + ".session.name");
+            String name = app.sessionManager.sessions.get("SESSIONS").get(kp.first + ".session.name");
             if (def(name)) {
               log.log("sess name " + name);
               sessLabel += "Session named " += name;
             }
-            String ip = app.sessionManager.sessions.get(kp.first + ".ip");
+            String ip = app.sessionManager.sessions.get("SESSIONS").get(kp.first + ".ip");
             if (def(ip)) {
               log.log("sess ip " + ip);
               if (TS.notEmpty(sessLabel)) {
@@ -1346,7 +1348,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     clearAllSessionsRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         log.log("Clearing all sessions request by login " + request.context.get("account").user);
-        app.sessionManager.sessions.clear();
+        app.sessionManager.sessions.get("SESSIONS").clear();
      }
      return(null);
    }
@@ -1718,7 +1720,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   }
   
   trackingManagerGet() KvDb {
-    return(app.getKvDb("TRACKING"));
+    return(app.kvdbs.get("TRACKING"));
   }
   
   check(request) Bool {
@@ -2607,14 +2609,14 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       if (TS.notEmpty(kvdbov)) {
         kvdb = kvdbov;
       }
-      app.getKvDb(kvdb);//warmup
+      app.kvdbs.get(kvdb);//warmup
       if (mode == "showConfig") {
         if (TS.notEmpty(params.getFirst("prefix"))) {
-          for (kv in app.getKvDb(kvdb).getMap(params.getFirst("prefix"))) {
+          for (kv in app.kvdbs.get(kvdb).getMap(params.getFirst("prefix"))) {
             log.output("Config name " + kv.key + " value " + kv.value);
           }
         } else {
-          for (any kv in app.getKvDb(kvdb).getMap()) {
+          for (any kv in app.kvdbs.get(kvdb).getMap()) {
             log.output("Config name " + kv.key + " value " + kv.value);
           }
         }
@@ -2623,16 +2625,16 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
         String key = params.getFirst("key");
         String value = params.getFirst("value");
         log.log("Creating config " + key + " " + value);
-        app.getKvDb(kvdb).put(key, value);
+        app.kvdbs.get(kvdb).put(key, value);
       }
       if (mode == "deleteConfig") {
         key = params.getFirst("key");
         log.log("Deleting config " + key);
-        app.getKvDb(kvdb).delete(key);
+        app.kvdbs.get(kvdb).delete(key);
       }
       if (mode == "clear") {
         log.log("clearing kvdb");
-        app.getKvDb(kvdb).clear();
+        app.kvdbs.get(kvdb).clear();
       }
       if (mode == "saveLocalUrl") {
         log.log("saveLocalUrl");
@@ -2654,7 +2656,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       if ((def(request.context.get("account")) && request.context.get("account").isAdmin) && TS.notEmpty(name)) {
         app.plugin.deviceName = deviceName;
       }
-      app.getKvDb(kvdb).put("deviceNameSetOnce", "true");
+      app.kvdbs.get(kvdb).put("deviceNameSetOnce", "true");
       //return(CallBackUI.setElementsDisplaysResponse(Maps.from("deviceNameDiv", "none")));
       //return(CallBackUI.reloadResponse());
       return(CallBackUI.reloadResponse());
@@ -2664,7 +2666,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
      Set noshow =@ Sets.from("imap.pass", "auth.sessionId", "imap.user");
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        String conf = String.new();
-       Map ecm = app.getKvDb(kvdb).getMap();
+       Map ecm = app.kvdbs.get(kvdb).getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
          for (any kv in ecm) {
@@ -2688,7 +2690,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    }
    
    backupConfig() String {
-     Map ecm = app.getKvDb(kvdb).getMap();
+     Map ecm = app.kvdbs.get(kvdb).getMap();
      if (ecm.isEmpty) {
        ecm = Map.new();
      }
@@ -2717,7 +2719,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    updateConfigRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       log.log("update for " + arg["configKey"] + " value " + arg["configValue"]);
-      app.getKvDb(kvdb).put(arg["configKey"], arg["configValue"]);
+      app.kvdbs.get(kvdb).put(arg["configKey"], arg["configValue"]);
       return(showConfigRequest(arg, request));
       }
       return(null);
@@ -2726,7 +2728,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    deleteConfigRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       log.log("delete for " + arg["configKey"]);
-      app.getKvDb(kvdb).delete(arg["configKey"]);
+      app.kvdbs.get(kvdb).delete(arg["configKey"]);
       return(showConfigRequest(arg, request));
       }
       return(null);
@@ -2734,7 +2736,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    
   start() {
     log.log("initting managers conf");
-    app.getKvDb(kvdb);
+    app.kvdbs.get(kvdb);
   }
     
 }
@@ -2978,6 +2980,16 @@ class WebApp {
       
   }
   
+  kvdbsGet() KvDbs {
+    fields {
+      KvDbs kvdbs;
+    }
+    if (undef(kvdbs)) {
+      kvdbs = KvDbs.new(params, self.paths.dataPath.addStep("APPDB"));
+    }
+    return(kvdbs);
+  }
+  
   start() {
     self.configManagerGet();
     self.sessionManagerGet();
@@ -2994,7 +3006,7 @@ class WebApp {
         pl.stop();
       }
     }
-    closeKvDbs();
+    self.kvdbs.close();
   }
   
   appPortGet() String {
@@ -3066,120 +3078,7 @@ class WebApp {
   }
   
   configManagerGet() KvDb {
-    return(self.getKvDb("CONFIG"));
-  }
-  
-  appDbGet() DbDb {
-      fields {
-        String appDbClass;
-      }
-      String appDbClass = params.getFirst("appDbClass");
-      if (TS.isEmpty(appDbClass)) {
-        appDbClass = "Db:SQLite:Database";
-      }
-      //log.log("appDbClass " + appDbClass);
-      DbDb appDb = createInstance(appDbClass);
-      if (appDbClass == "Db:SQLite:Database") {
-        Path appDbPath = self.paths.dataPath.addStep("APPDB");
-        appDb.pathNew(appDbPath);
-      } elseIf(appDbClass == "Db:Maria:Database") {
-        //log.log("doing mariadb");
-        appDb.invoke("paramsNew", Lists.from(params));
-      } else {
-        appDb.new();
-      }
-      appDb.open();
-      return(appDb);
-  }
-  
-  closeKvDbs() {
-    log.log("closing kvdbs");
-    try {
-      lock.lock();
-      for (any kvle in kvDbs) {
-        for (any kv in kvle.value) {
-          kv.close();
-        }
-      }
-      kvDbs = Map.new();
-      lock.unlock();
-    } catch (any e) {
-      lock.unlock();
-      log.error("exception during closeKvDbs");
-      if (def(e)) { log.error("ex " + e); }
-    }
-  }
-  
-  oldcloseKvDbs() {
-    log.log("closing kvdbs");
-    try {
-      lock.lock();
-      for (any kv in kvDbs) {
-        kv.value.close();
-      }
-      kvDbs = Map.new();
-      lock.unlock();
-    } catch (any e) {
-      lock.unlock();
-      log.error("exception during closeKvDbs");
-      if (def(e)) { log.error("ex " + e); }
-    }
-  }
-  
-  getKvDb(String name) KvDb {
-    fields {
-      Int appKvPoolSize;
-    }
-    try {
-      lock.lock();
-      if (undef(appKvPoolSize)) {
-        String appKvPoolSizeS = params.getFirst("appKvPoolSize");
-        if (TS.notEmpty(appKvPoolSizeS)) {
-          appKvPoolSize = Int.new(appKvPoolSizeS);
-        } else {
-          appKvPoolSize = 3;
-        }
-      }
-      LinkedList kdbl = kvDbs.get(name);
-      if (undef(kdbl)) {
-        kdbl = LinkedList.new();
-        for (Int i = 0;i < appKvPoolSize;i++=) {
-          KvDb kdb = KvDb.new(self.appDb, name);
-          kdb.create();
-          kdbl.addValueWhole(kdb);
-        }
-        kvDbs.put(name, kdbl);
-      }
-      Node an = kdbl.firstNode;
-      kdbl.deleteNode(an);
-      kdbl.appendNode(an);
-      kdb = an.held;
-      lock.unlock();
-    } catch (any e) {
-      lock.unlock();
-      log.error("exception during getKvDb");
-      if (def(e)) { log.error("ex " + e); }
-    }
-    return(kdb);
-  }
-  
-  oldgetKvDb(String name) KvDb {
-    try {
-      lock.lock();
-      KvDb kdb = kvDbs.get(name);
-      if (undef(kdb)) {
-        kdb = KvDb.new(self.appDb, name);
-        kdb.create();
-        kvDbs.put(name, kdb);
-      }
-      //renew here
-      lock.unlock();
-    } catch (any e) {
-      lock.unlock();
-      log.error("exception during getKvDb");
-      if (def(e)) { log.error("ex " + e); }
-    }
-    return(kdb);
+    return(self.kvdbs.get("CONFIG"));
   }
   
   sessionManagerGet() Web:SessionManager {
@@ -3196,7 +3095,7 @@ class WebApp {
       //log.log("sessionId " + sessionId);
     }
     if (undef(sessionManager)) {
-      sessionManager = Web:SessionManager.new(self.getKvDb("SESSIONS"), "GsSess" + sessionId);
+      sessionManager = Web:SessionManager.new(self.kvdbs, "GsSess" + sessionId);
     }
     //("got sessionmanager").print();
     return(sessionManager);

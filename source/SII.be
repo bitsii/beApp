@@ -150,14 +150,14 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
     getList(Map arg, Map lres) {
       String an = arg["accountName"];
       List titles = List.new();
-      for (auto kv in app.getKvDb("MYPASSES").getMap(an + "!")) {
+      for (auto kv in app.kvdbs.get("MYPASSES").getMap(an + "!")) {
         titles += kv.key.split("!").get(1);
       }
       lres["titles"] = titles;
     }
     
     openSecret(String secName, Map creds, Account a) {
-      auto seckv = app.getKvDb("MYPASSES");
+      auto seckv = app.kvdbs.get("MYPASSES");
       
       String outers = seckv.get(a.user + "!" + secName);
       
@@ -239,7 +239,7 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
         return(CallBackUI.informResponse("Title is Requred"));
       }
       Account a = request.context.get("account");
-      auto seckv = app.getKvDb("MYPASSES");
+      auto seckv = app.kvdbs.get("MYPASSES");
       seckv.delete(a.user + "!" + secName);
       Map lres = Map.new();
       lres["action"] = "relistSecretsResponse";
@@ -263,7 +263,7 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
       
       Map newCreds = getCreds(toRet["ivfirst"], toRet["pcfirst"], request.getSession("ivsecond"), request.getSession("pcsecond"));
       
-      for (auto kv in app.getKvDb("MYPASSES").getMap(a.user + "!")) {
+      for (auto kv in app.kvdbs.get("MYPASSES").getMap(a.user + "!")) {
         String title = kv.key.split("!").get(1);
         try {
           Map sec = openSecret(title, oldCreds, a);
@@ -294,11 +294,11 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
     
     String outers = Json:Marshaller.marshall(outer);
      
-    auto seckv = app.getKvDb("MYPASSES");
+    auto seckv = app.kvdbs.get("MYPASSES");
     
     seckv.put(a.user + "!" + secName, outers);
     
-    auto sechis = app.getKvDb("PASSHIST");
+    auto sechis = app.kvdbs.get("PASSHIST");
     
     sechis.put(a.user + "!" + secName + "!" + nowSecs, outers);
     
@@ -308,7 +308,7 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
    
    showHistoryRequest(request) {
      Account a = request.context.get("account");
-     auto sechis = app.getKvDb("PASSHIST");
+     auto sechis = app.kvdbs.get("PASSHIST");
      String hl = String.new();
      Set seen = Set.new();
      for (auto kv in sechis.getMap(a.user + "!")) {
@@ -325,7 +325,7 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
    
    showHistoryEntryRequest(String secName, request) {
      Account a = request.context.get("account");
-     auto sechis = app.getKvDb("PASSHIST");
+     auto sechis = app.kvdbs.get("PASSHIST");
      String hl = String.new();
      List secopts = List.new();
      for (auto kv in sechis.getMap(a.user + "!" + secName + "!")) {
@@ -346,16 +346,16 @@ use class SII:SIIPlugin(App:AjaxPlugin) {
    
    restoreHistoryEntryRequest(String secName, Int secs, request) {
      Account a = request.context.get("account");
-     auto sechis = app.getKvDb("PASSHIST");
+     auto sechis = app.kvdbs.get("PASSHIST");
      String outers = sechis.get(a.user + "!" + secName + "!" + secs);
-     auto seckv = app.getKvDb("MYPASSES");
+     auto seckv = app.kvdbs.get("MYPASSES");
      seckv.put(a.user + "!" + secName, outers);
      return(CallBackUI.toFindResponse());
    }
    
    shrinkHist(Account a, String secName) {
      
-     auto sechis = app.getKvDb("PASSHIST");
+     auto sechis = app.kvdbs.get("PASSHIST");
      List hl = List.new();
      
      for (auto kv in sechis.getMap(a.user + "!" + secName + "!")) {
