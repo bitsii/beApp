@@ -2826,6 +2826,15 @@ class App:AppStart {
   
   start() this {
     log.log("starting app");
+    Set bfiles = Set.new();
+    if (def(params["runParams"])) {
+      for (String istr in params["runParams"]) {
+         if (bfiles.has(istr)!) {
+            bfiles.put(istr);
+            params.addFile(File.new(istr));
+          }
+      }
+    }
     auto appTypes = Sets.from(params.get("appType").toList());
     if (appTypes.has("cmd")) {
       WebApp cuiapp = WebApp.new();

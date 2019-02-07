@@ -49,7 +49,7 @@ cd ../../../edgii
 find ../abelii/system -name "*.class" -exec rm {} \;
 
 #hub
-cp ../apprun/App/KBridge/Base/target/js/be/BEX_E.js ../apprun/App/KBridge/IUHub_BEX_E.js
+cp ../apprun/App/KBridge/Base/target/js/be/BEX_E.js ../apprun/App/KBridge/BEX_E.js
 cp scripts/upgrade.bat ../apprun/App/KBridge
 cp scripts/postupgrade.bat ../apprun/App/KBridge
 cp scripts/setupbridge.sh ../apprun/App/KBridge

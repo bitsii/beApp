@@ -1,4 +1,4 @@
 --buildFile
-build/base.txt
+../abeliiApp/build/base.txt
 --buildFile
-build/extended.txt
+../abeliiApp/build/extended.txt

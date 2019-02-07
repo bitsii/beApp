@@ -49,7 +49,7 @@ cd ../../../edgii
 find ../abelii/system -name "*.class" -exec rm {} \;
 
 #hub
-cp ../apprun/App/IUCam/Base/target/js/be/BEX_E.js ../apprun/App/IUCam/IUHub_BEX_E.js
+cp ../apprun/App/IUCam/Base/target/js/be/BEX_E.js ../apprun/App/IUCam/BEX_E.js
 cp source/IUCam.html ../apprun/App/IUCam
 cp extlibs/IUCam/* ../apprun/App/IUCam
 cp icons/* ../apprun/App/IUCam

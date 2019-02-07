@@ -4,16 +4,16 @@ rm -rf ../apprun/App/KBridge/Base
 
 if [ -e ~/node_modules/uglify-js/bin/uglifyjs ]
 then
-  ~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/KBridge/IUHub_BEX_E.js > ../apprun/App/KBridge/IUHub_BEX_E.js.1
-  rm -f ../apprun/App/KBridge/IUHub_BEX_E.js
-  mv ../apprun/App/KBridge/IUHub_BEX_E.js.1 ../apprun/App/KBridge/IUHub_BEX_E.js
+  ~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/KBridge/BEX_E.js > ../apprun/App/KBridge/BEX_E.js.1
+  rm -f ../apprun/App/KBridge/BEX_E.js
+  mv ../apprun/App/KBridge/BEX_E.js.1 ../apprun/App/KBridge/BEX_E.js
 fi
 
 if [ -e /usr/local/bin/uglifyjs ]
 then
-  /usr/local/bin/uglifyjs ../apprun/App/KBridge/IUHub_BEX_E.js > ../apprun/App/KBridge/IUHub_BEX_E.js.1
-  rm -f ../apprun/App/KBridge/IUHub_BEX_E.js
-  mv ../apprun/App/KBridge/IUHub_BEX_E.js.1 ../apprun/App/KBridge/IUHub_BEX_E.js
+  /usr/local/bin/uglifyjs ../apprun/App/KBridge/BEX_E.js > ../apprun/App/KBridge/BEX_E.js.1
+  rm -f ../apprun/App/KBridge/BEX_E.js
+  mv ../apprun/App/KBridge/BEX_E.js.1 ../apprun/App/KBridge/BEX_E.js
 fi
 
 cd ../apprun/App/KBridge
