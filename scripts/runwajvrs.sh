@@ -30,7 +30,7 @@ mkdir -p Data/$APPBLDNM
 mkdir -p logs
 
 while :; do
-  java -classpath "App/$APPBLDNM/*" be.BEX_E --runParams App/$APPBLDNM/runParams.txt $*
+  java -classpath "App/$APPBLDNM/*" be.BEX_E --runParams App/$APPBLDNM/runParamsWa.txt $*
     echo "Exited code $?.  Will restart.." >&2
     sleep 2
 done

@@ -619,6 +619,11 @@ class SqKvDb {
     } catch (e) {
     
     }
+    try {
+      db = db.copy();
+    } catch (e) {
+    
+    }
     open();
   }
   

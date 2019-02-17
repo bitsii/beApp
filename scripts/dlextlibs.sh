@@ -1,7 +1,7 @@
 #!/bin/bash
 
-mkdir -p extlibs/KBridge
-cd extlibs/KBridge
+mkdir -p extlibs/jv/wa
+cd extlibs/jv/wa
 
 curl -L https://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar > javax.servlet-api-3.1.0.jar
 

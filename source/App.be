@@ -15,7 +15,6 @@ use Db:Firebird:Database as FbDb;
 use Db:KeyValue as KvDb;
 use Time:Interval;
 use System:Parameters;
-use App:RemoteWebApp;
 use Container:LinkedList;
 use Container:LinkedList:Node;
 use Db:KeyValueDbs as KvDbs;
@@ -2088,7 +2087,7 @@ use class App:WebReverseProxyPlugin {
        fields {
           any app;
           String name = "WRProxy";
-          String dataName = "KBridge";
+          String dataName = "EBridge";
           IO:Log log =@ IO:Logs.get(self);
           //String destUrl = "http://127.0.0.1:";
           String destUrl;
@@ -2837,7 +2836,7 @@ class App:AppStart {
     }
     auto appTypes = Sets.from(params.get("appType").toList());
     if (appTypes.has("cmd")) {
-      WebApp cuiapp = WebApp.new();
+      any cuiapp = WebApp.new();
       cuiapp.params = params;
       setupPlugins(cuiapp);
       setupPlugin(cuiapp);
@@ -2845,7 +2844,7 @@ class App:AppStart {
       cuiapp.stop();
     } else {
       if (appTypes.has("browser")) {
-        LocalWebApp luiapp = LocalWebApp.new();
+        any luiapp = createInstance("App:LocalWebApp");
         luiapp.params = params;
         setupPlugins(luiapp);
         setupPlugin(luiapp);
@@ -2855,7 +2854,7 @@ class App:AppStart {
         }
       }
       if (appTypes.has("server")) {
-        RemoteWebApp wuiapp = RemoteWebApp.new();
+        any wuiapp = createInstance("App:RemoteWebApp");
         wuiapp.params = params;
         setupPlugins(wuiapp);
         setupPlugin(wuiapp);

@@ -81,7 +81,9 @@ class MaDb(DbDb) {
   
   timeoutGet() Int {
     //28800
-    return(28000);
+    //return(28000);
+    //return(14000);
+    return(600);
   }
 
 }

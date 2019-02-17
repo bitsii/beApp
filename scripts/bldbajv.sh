@@ -10,20 +10,20 @@ mkdir -p ../apprun/Data/$APPBLDNM
 rm -rf ../apprun/App/$APPBLDNM
 mkdir -p ../apprun/App/$APPBLDNM
 
-cp ../abeliiApp/scripts/runwajv.sh ../apprun/App/$APPBLDNM
-cp ../abeliiApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
+cp ../abeliiApp/scripts/runbajv.sh ../apprun/App/$APPBLDNM
+#cp ../abeliiApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abelii/target5/*;extlibs/jv/*;../abeliiApp/extlibs/jv/wa/*"
+    export CLASSPATH="../abelii/target5/*;extlibs/jv/*;../abeliiApp/extlibs/jv/ba/*"
     ;;
   *)
-    export CLASSPATH="../abelii/target5/*:extlibs/jv/*:../abeliiApp/extlibs/jv/wa/*"
+    export CLASSPATH="../abelii/target5/*:extlibs/jv/*:../abeliiApp/extlibs/jv/ba/*"
     ;;
 esac
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile ../abeliiApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang jv -mainClass=App:AppStart --buildFile build/build.txt ../abelii/source/extended/Log.be ../abeliiApp/source/App.be ../abeliiApp/source/BrowserUI.be ../abeliiApp/source/WebServer.be ../abeliiApp/source/WebApp.be ../abeliiApp/source/Db.be ../abeliiApp/source/SlDbJv.be   
+mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile ../abeliiApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang jv -mainClass=App:AppStart --buildFile build/build.txt ../abelii/source/extended/Log.be ../abeliiApp/source/App.be ../abeliiApp/source/BrowserUI.be ../abeliiApp/source/BrowserJvFx.be ../abeliiApp/source/Db.be ../abeliiApp/source/SlDbJv.be   
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -47,7 +47,7 @@ find ../abelii/system -name "*.class" -exec rm {} \;
 
 cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js ../apprun/App/$APPBLDNM/BEX_E.js
 cp -R resources/* ../apprun/App/$APPBLDNM
-cp ../abeliiApp/extlibs/jv/wa/* ../apprun/App/$APPBLDNM
+cp ../abeliiApp/extlibs/jv/ba/* ../apprun/App/$APPBLDNM
 cp extlibs/jv/* ../apprun/App/$APPBLDNM
 
 cd ../apprun/App/$APPBLDNM
