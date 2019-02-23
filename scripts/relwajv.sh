@@ -28,14 +28,19 @@ rm *.jar
 mv BEX_E_lib_jv.ja BEX_E_lib_jv.jar
 mv BEX_E_app_jv.ja BEX_E_app_jv.jar
 
-rm ../../../$APPBLDNM.zip
+if [ -z "$APPPKGNM" ]
+then
+  APPPKGNM=${APPBLDNM}.zip
+fi
+
+rm ../../../$APPPKGNM
 
 cd ..
 
-zip -r $APPBLDNM.zip $APPBLDNM
+zip -r $APPPKGNM $APPBLDNM
 
 cd $APPBLDNM
 
-mv -f ../$APPBLDNM.zip ../../..
+mv -f ../$APPPKGNM ../../..
 
 cd ../../../$APPBLDNM

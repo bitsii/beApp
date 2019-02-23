@@ -29,5 +29,5 @@ mkdir -p Data/$APPBLDNM
 
 mkdir -p logs
 
-java -classpath "App/$APPBLDNM/*" be.BEX_E --runParams App/$APPBLDNM/runParamsBa.txt $*
+java -classpath "App/$APPBLDNM/*" be.BEX_E --runParams App/$APPBLDNM/runParamsBa.txt $BERUNARGS $*
 
