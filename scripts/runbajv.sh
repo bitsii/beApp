@@ -13,7 +13,7 @@ if [ "$OSTYPE" == "Darwin" ]; then
 fi
 
 if [[ $OSTYPE == *"MINGW"* ]]; then
-  echo "Is Mingw"
+  #echo "Is Mingw"
   export OSTYPE="Mingw"
 fi
 
