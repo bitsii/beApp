@@ -4,6 +4,11 @@ export APPBLDNM=${PWD##*/}
 
 rm -rf ../apprun/App/$APPBLDNM/Base
 
+if [ -e ./scripts/prerel.sh ]
+then
+  ./scripts/prerel.sh
+fi
+
 if [ -e ~/node_modules/uglify-js/bin/uglifyjs ]
 then
   ~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/$APPBLDNM/BEX_E.js > ../apprun/App/$APPBLDNM/BEX_E.js.1
