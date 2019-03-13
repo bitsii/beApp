@@ -11,3 +11,6 @@ curl -L https://bitbucket.org/xerial/sqlite-jdbc/downloads/sqlite-jdbc-3.19.3.ja
 
 mkdir ../ba
 cp sqlite-jdbc-3.19.3.jar ../ba
+
+mkdir ../ca
+cp sqlite-jdbc-3.19.3.jar ../ca

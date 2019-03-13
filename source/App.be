@@ -1642,10 +1642,10 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     if (app.plugin.okForPageToken(request)) {
       Map res = Map.new();
       pageToken = request.getSession("pageToken");
-      if (TS.isEmpty(pageToken)) {
+      //if (TS.isEmpty(pageToken)) {
         String pageToken = System:Random.getString(32);
         request.putSession("pageToken", pageToken);
-      }
+      //}
       res["pageToken"] = pageToken;
       res["action"] = "pageTokenResponse";
     }
@@ -1703,7 +1703,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     }
     
     request.putSession("account.name", "");
-    request.deleteSession();
+    //request.deleteSession();
     
     if (request.embedded) {
       app.configManager.delete("auth.embeddedLogin");
