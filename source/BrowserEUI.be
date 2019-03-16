@@ -110,6 +110,42 @@ class HD {
     }
   }
   
+  copyField(String name) {
+     emit(js) {
+     """
+     var fld = document.getElementById(beva_name.bems_toJsString());
+     if (fld.type == "password") {
+       var waspass = 1;
+       fld.type = "text";
+     }
+     fld.focus();
+     fld.select();
+     document.execCommand('copy');
+     if (waspass == 1) {
+       fld.type = "password";
+     }
+     """
+     }
+   }
+   
+   pasteField(String name) {
+     emit(js) {
+     """
+     var fld = document.getElementById(beva_name.bems_toJsString());
+     if (fld.type == "password") {
+       var waspass = 1;
+       fld.type = "text";
+     }
+     fld.focus();
+     fld.select();
+     document.execCommand('paste');
+     if (waspass == 1) {
+       fld.type = "password";
+     }
+     """
+     }
+   }
+  
   getElementById(String id) {
     return(HE.new(id));
   }

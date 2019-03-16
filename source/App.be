@@ -2368,6 +2368,55 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
      return(null);
    }
    
+   homeRequest(Map arg, request) Map {
+     log.log("in local browse req");
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+      Path path = getHomeDir(request);
+      
+      Map ret = Map.new();
+      ret.put("action", "getHomeResponse");
+      ret.put("path", path.toString());
+      return(ret);
+    }
+   
+   listRequest(Map arg, request) Map {
+     log.log("in local browse req");
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+      if (arg.has("path")) {
+        Path path = Path.new(arg["path"]);
+      } else {
+        path = getHomeDir(request);
+      }
+      
+      Account a = request.context.get("account");
+      List dirList = List.new();
+      File dirFile = path.file;
+      if (dirFile.exists && checkReadPath(dirFile.path, arg, request)) {
+        if (dirFile.isDir) {
+          auto dit = dirFile.iterator;
+          dit.open();
+          List olist = List.new();
+          Map omap = Map.new();
+          while (dit.hasNext) {
+            File entry = dit.next;
+            Path p = entry.path;
+            dirList += p.toString();
+          }
+          dit.close();
+        }
+      }
+      Map ret = Map.new();
+      ret.put("action", "listResponse");
+      ret.put("list", dirList);
+      return(ret);
+    }
+   
    copyRequest(Map arg, request) Map {
      log.log("copy request");
      String path = arg["path"];
