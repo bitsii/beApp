@@ -2359,13 +2359,54 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       throw(Alert.new("must be authenticated"));
      }
      if (TS.notEmpty(path)) {
-       File dirFile = File.apNew(Encode:Hex.new().decode(path));
+       File dirFile = File.apNew(path);
        if (dirFile.exists && checkWritePath(dirFile.path, arg, request)) {
          log.log("deleting " + dirFile.path);
          dirFile.delete();
        }
      }
      return(null);
+   }
+   
+   smallPutRequest(Map arg, request) Map {
+     log.log("put request");
+     String path = arg["path"];
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+     if (TS.notEmpty(path)) {
+       File dirFile = File.apNew(path);
+       if (checkWritePath(dirFile.path, arg, request)) {
+         log.log("writing " + dirFile.path);
+         if (dirFile.exists) { dirFile.delete(); }
+         if (dirFile.path.parent.file.exists!) { dirFile.path.parent.file.makeDirs(); }
+         dirFile.writer.open().writeStringClose(arg["content"]);
+       }
+     }
+     return(null);
+   }
+   
+   smallGetRequest(Map arg, request) Map {
+     log.log("get request");
+     String path = arg["path"];
+     String accountName = request.getSession("account.name");
+     if (TS.isEmpty(accountName)) {
+      throw(Alert.new("must be authenticated"));
+     }
+     Map res = Map.new();
+     res["action"] = "smallGetResponse";
+     if (TS.notEmpty(path)) {
+       File dirFile = File.apNew(path);
+       if (checkReadPath(dirFile.path, arg, request)) {
+         log.log("reading " + dirFile.path);
+         if (dirFile.exists) {
+           log.log("it exists");
+           res["content"] = dirFile.reader.open().readStringClose();
+         }
+       }
+     }
+     return(res);
    }
    
    homeRequest(Map arg, request) Map {
