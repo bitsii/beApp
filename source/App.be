@@ -2878,8 +2878,12 @@ class App:AppStart {
   
     main() {
       try {
-        //Parameters params = Parameters.new(System:Process.new().args);
-        Parameters params = Parameters.new(Lists.from("--runParams", "App/BPasswd/runParamsWa.txt"));
+        String appArgs = System:Environment.getVariable("BEAPPARGS");
+        if (TS.notEmpty(appArgs)) {
+          params = Parameters.new(appArgs.split(" ").toList());
+        } else {
+          Parameters params = Parameters.new(System:Process.new().args);
+        }
         start(params);
       } catch (any e) {
         log.error("Exception in innerMain, error is " + e);

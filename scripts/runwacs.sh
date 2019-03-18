@@ -30,8 +30,9 @@ mkdir -p Data/$APPBLDNM
 mkdir -p logs
 
 export MONO_OPTIONS="--debug"
-
-xsp --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
+export BEAPPARGS="--runParams App/BPasswd/runParamsWa.txt"
+#$BERUNARGS $*
+xsp 
 
 #java -classpath "App/$APPBLDNM/*" be.BEX_E --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
 
