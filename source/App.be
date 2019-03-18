@@ -2878,7 +2878,8 @@ class App:AppStart {
   
     main() {
       try {
-        Parameters params = Parameters.new(System:Process.new().args);
+        //Parameters params = Parameters.new(System:Process.new().args);
+        Parameters params = Parameters.new(Lists.from("--runParams", "App/BPasswd/runParamsWa.txt"));
         start(params);
       } catch (any e) {
         log.error("Exception in innerMain, error is " + e);
@@ -2919,6 +2920,7 @@ class App:AppStart {
     if (def(params["runParams"])) {
       for (String istr in params["runParams"]) {
          if (bfiles.has(istr)!) {
+            log.log("loading " + istr);
             bfiles.put(istr);
             params.addFile(File.new(istr));
           }

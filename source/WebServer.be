@@ -270,6 +270,14 @@ use class Web:ScriptRequest {
      }
      """
      }
+     emit(cs) {
+     """
+     string val = bevi_req.HttpMethod;
+     if (val != null) {
+       bevl_val = new $class/Text:String$(val);
+     }
+     """
+     }
      return(val);
    }
    

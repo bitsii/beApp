@@ -10,8 +10,8 @@ mkdir -p ../apprun/Data/$APPBLDNM
 rm -rf ../apprun/App/$APPBLDNM
 mkdir -p ../apprun/App/$APPBLDNM
 
-cp ../abeliiApp/scripts/runwajv.sh ../apprun/App/$APPBLDNM
-cp ../abeliiApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
+cp ../abeliiApp/scripts/runwacs.sh ../apprun/App/$APPBLDNM
+#cp ../abeliiApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 

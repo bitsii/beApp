@@ -4,6 +4,6 @@ export APPBLDNM=${PWD##*/}
 
 ../abeliiApp/scripts/bldwacs.sh $*
 
-cd ../apprun/App/$APPBLDNM
+cd csaweb/csaweb/App/$APPBLDNM
 
-./runwajcs.sh $*
+./runwacs.sh $*

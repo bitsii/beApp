@@ -2,8 +2,6 @@
 
 export APPBLDNM=${PWD##*/}
 
-cd ../..
-
 export OSTYPE=`uname`
 
 if [ "$OSTYPE" == "Darwin" ]; then
@@ -25,9 +23,15 @@ export MYHOME=`echo $HOME`
 
 export MYUSER=`whoami`
 
+cd ../..
+
 mkdir -p Data/$APPBLDNM
 
 mkdir -p logs
+
+export MONO_OPTIONS="--debug"
+
+xsp --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
 
 #java -classpath "App/$APPBLDNM/*" be.BEX_E --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
 
