@@ -14,6 +14,9 @@ class SlDb(DbDb) {
     super.pathNew(_dbp); //dbp.toStringWithSeparator("/")
     String dbAddr = "jdbc:sqlite:" + dbp.toString();
     new(dbAddr);
+    fields {
+      Int busyTimeout = 1000;
+    }
   }
   
   open() self {
@@ -23,6 +26,9 @@ class SlDb(DbDb) {
     """
     }
     super.open();
+    if (def(busyTimeout) && busyTimeout > 0) {
+      execute("pragma busy_timeout=" + busyTimeout);
+    }
   }
   
   copy() self {

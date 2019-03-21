@@ -53,6 +53,10 @@ public Connection bevi_trans = null;
     }
   }
   
+  timeoutGet() Int {
+    return(-1);
+  }
+  
   open() self {
     emit(jv) {
     """
@@ -594,16 +598,13 @@ class SqKvDb {
   }
   
   dbCheck() {
-    if (self.timeout > -1) {
-      if (Time:Interval.now().seconds - lastUsed > self.timeout) {
+    Int dbto = db.timeout;
+    if (dbto > -1) {
+      if (Time:Interval.now().seconds - lastUsed > dbto) {
         dbFailed();
       }
       lastUsed = Time:Interval.now().seconds;
     }
-  }
-  
-  timeoutGet() Int {
-    return(-1);
   }
     
   new(DbDb _db, String _tableName) self {

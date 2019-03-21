@@ -425,14 +425,11 @@ class HC {
      """
      }
    }
-
-  call(Map arg) {
-    if (TS.notEmpty(pageToken)) {
-      arg["pageToken"] = pageToken;
-    }
-    String argjs = Json:Marshaller.marshall(arg);
-    String resjs;
-    emit(js) {
+   
+   send(String _argjs, String url, String contentType) String {
+     String argjs = _argjs;
+     String resjs;
+     emit(js) {
     """
     if (typeof(window) !== 'undefined' && typeof(window.external) !== 'undefined'
             && typeof(window.external.HandleCall) !== 'undefined') {
@@ -464,8 +461,8 @@ class HC {
         }
       }
       var data = bevl_argjs.bems_toJsString();
-      req.open('POST', '/', true);
-      req.setRequestHeader("Content-type", "application/json");
+      req.open('POST', beva_url.bems_toJsString(), true);
+      req.setRequestHeader("Content-type", beva_contentType.bems_toJsString());
       //req.setRequestHeader("Connection", "close");
       req.onreadystatechange = function(){
           if (req.readyState != 4) return;
@@ -481,6 +478,15 @@ class HC {
     }
     """
     }
+    return(resjs);
+   }
+
+  call(Map arg) {
+    if (TS.notEmpty(pageToken)) {
+      arg["pageToken"] = pageToken;
+    }
+    String argjs = Json:Marshaller.marshall(arg);
+    String resjs = send(argjs, "/", "application/json");
     if (def(resjs)) {
       handleCallback(resjs);
     }

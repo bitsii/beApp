@@ -30,7 +30,7 @@ mkdir -p Data/$APPBLDNM
 mkdir -p logs
 
 export MONO_OPTIONS="--debug"
-export BEAPPARGS="--runParams App/BPasswd/runParamsWa.txt"
+export BEAPPARGS="--runParams App/$APPBLDNM/runParamsWa.txt"
 #$BERUNARGS $*
 xsp 
 
