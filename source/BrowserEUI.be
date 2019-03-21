@@ -40,6 +40,16 @@ var handleCallback = function(res) {
     }
 }
 
+var handleCallbackInv = function(res, inv) {
+    if (res != null) {
+      var bevs_resjs = new be_$class/Text:String$().bems_new(res);
+      var bevs_zrjs = new be_$class/Math:Int$().beml_set_bevi_int(0);
+      var args = inv.bem_argsGet_0();
+      args.bem_put_2(bevs_zrjs, bevs_resjs);
+      inv.bem_invoke_0();
+    }
+}
+
 var convertArgs = function(args) {
   //make bemap
   //make bearray
@@ -426,14 +436,14 @@ class HC {
      }
    }
    
-   send(String _argjs, String url, String contentType) String {
+   send(String _argjs, String url, String contentType, System:Invocation callback) String {
      String argjs = _argjs;
      String resjs;
      emit(js) {
     """
     if (typeof(window) !== 'undefined' && typeof(window.external) !== 'undefined'
             && typeof(window.external.HandleCall) !== 'undefined') {
-      var res = window.external.HandleCall(bevl_argjs.bems_toJsString());
+      var res = window.external.HandleCall(bevl_argjs.bems_toJsString(), beva_url.bems_toJsString(), beva_contentType.bems_toJsString());
       //document.getElementById("infotxt").value = res;
       if (res !== null && typeof(res) !== 'undefined') {
         bevl_resjs = new be_$class/Text:String$().bems_new(res);
@@ -472,7 +482,11 @@ class HC {
               return;
           }
           //logmsg(req.responseText);
-          handleCallback(req.responseText);
+          if (beva_callback != null) {
+            handleCallbackInv(req.responseText, beva_callback);
+          } else {
+            handleCallback(req.responseText);
+          }
       }
       req.send(data);
     }
@@ -486,7 +500,7 @@ class HC {
       arg["pageToken"] = pageToken;
     }
     String argjs = Json:Marshaller.marshall(arg);
-    String resjs = send(argjs, "/", "application/json");
+    String resjs = send(argjs, "/", "application/json", null);
     if (def(resjs)) {
       handleCallback(resjs);
     }

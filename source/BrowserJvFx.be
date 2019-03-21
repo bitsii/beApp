@@ -87,7 +87,7 @@ class FxBr(WebImp) {
         }
     }
     
-    public Object HandleCall(Object obj) {
+    public Object HandleCall(Object obj, Object urlobj, Object ctobj) {
       try {
         if (obj == null) {
           System.err.println("got a null obj in HandleCall");
@@ -95,7 +95,19 @@ class FxBr(WebImp) {
           //System.out.println("HANDLE CALL GOT " + obj);
           String objstr = obj.toString();
           $class/Text:String$ objbes = new $class/Text:String$(objstr);
-          $class/Text:String$ resbes = sinst.bem_handleWeb_1(objbes);
+          String urlobjstr;
+          $class/Text:String$ urlobjbes = null;;
+          if (urlobj != null) {
+            urlobjstr = urlobj.toString();
+            urlobjbes = new $class/Text:String$(urlobjstr);
+          }
+          String ctobjstr;
+          $class/Text:String$ ctobjbes = null;
+          if (ctobj != null) {
+            ctobjstr = ctobj.toString();
+            ctobjbes = new $class/Text:String$(ctobjstr);
+          }
+          $class/Text:String$ resbes = sinst.bem_handleWeb_3(objbes, urlobjbes, ctobjbes);
           if (resbes != null) {
             return resbes.bems_toJvString();
           }
@@ -161,12 +173,14 @@ class FxBr(WebImp) {
     return(setupHandler.location);
   }
   
-  handleWeb(String arg) String {
+  handleWeb(String arg, String uri, String ctype) String {
     if (def(arg)) {
       log.log("in handleWeb, arg " + arg);
     }
     BrowserScriptRequest r = BrowserScriptRequest.new(session);
     r.scriptArgJson = arg;
+    r.uri = uri;
+    r.inputContentType = ctype;
     webHandler.handleWeb(r);
     String ret = r.scriptReturnJson;
     if (def(ret)) {

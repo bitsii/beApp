@@ -531,7 +531,13 @@ use class UI:BrowserScriptRequest {
             Bool continueHandling = true;
             String inputMethod = "EMBEDDED";
             Map parameters = Map.new();
+            String uri;
+            String inputContentType;
         }
+    }
+    
+    inputContentGet() String {
+      return(scriptArgJson);
     }
     
     new() self {
