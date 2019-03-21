@@ -436,7 +436,7 @@ class HC {
      }
    }
    
-   send(String _argjs, String url, String contentType, System:Invocation callback) String {
+   send(String _argjs, String url, String contentType, System:Invocation callback) this {
      String argjs = _argjs;
      String resjs;
      emit(js) {
@@ -492,7 +492,15 @@ class HC {
     }
     """
     }
-    return(resjs);
+    if (def(resjs)) {
+      if (def(callback)) {
+        callback.args.put(0, resjs);
+        callback.invoke();
+      } else {
+        handleCallback(resjs);
+      }
+    }
+    return(self);
    }
 
   call(Map arg) {
@@ -500,10 +508,7 @@ class HC {
       arg["pageToken"] = pageToken;
     }
     String argjs = Json:Marshaller.marshall(arg);
-    String resjs = send(argjs, "/", "application/json", null);
-    if (def(resjs)) {
-      handleCallback(resjs);
-    }
+    send(argjs, "/", "application/json", null);
   }
   
   handleCallback(String resjs) {

@@ -533,6 +533,7 @@ use class UI:BrowserScriptRequest {
             Map parameters = Map.new();
             String uri;
             String inputContentType;
+            String outputContentType;
         }
     }
     
@@ -564,6 +565,10 @@ use class UI:BrowserScriptRequest {
    
    scriptArgGet() {
      return(Json:Unmarshaller.unmarshall(scriptArgJson));
+   }
+   
+   outputContentSet(String oc) {
+     scriptReturnJson = oc;
    }
    
    scriptReturnSet(ret) {
