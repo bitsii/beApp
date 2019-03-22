@@ -3,14 +3,23 @@
 ../abelii/source/base/EcProcess.be
 --cs_source
 ../abelii/source/base/EcProcess.be
+--cc_source
+../abelii/source/base/EcProcess.be
 --js_source
 ../abelii/source/base/EcProcess.be
 --jv_source
 ../abelii/source/extended/EcPlat.be
 --cs_source
 ../abelii/source/extended/EcPlat.be
+--cc_source
+../abelii/source/extended/EcPlat.be
 --js_source
 ../abelii/source/extended/EcPlat.be
+-cchImport=../abelii/system/cc/be/BEH_Imports.hpp
+-ccImport=../abelii/system/cc/be/BECS_Imports.cpp
+-ccdInclude=../abelii/system/cc/be/BED_Object.hpp
+-cchInclude=../abelii/system/cc/be/BEH_Object.hpp
+-ccInclude=../abelii/system/cc/be/BECS_Object.cpp
 #below for build
 ../abelii/source/extended/Serialize.be
 ../abelii/source/extended/FilePath.be

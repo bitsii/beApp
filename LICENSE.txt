@@ -1,3 +1,1 @@
-Licensed under the Mozilla Public License Version 2.0. See LICENSE-MPL.txt in this directory for full license information.
-
-3rd party components may be licensed under other terms, see licenses in this directory or the license subdirectory for more details.
+Licensed under the MIT license. See LICENSE-MIT.txt in this directory for full license information.

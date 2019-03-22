@@ -3,9 +3,9 @@ Base
 -jsInclude=../abelii/system/js/be/BECS_Runtime.js
 -jsInclude=../abelii/system/js/be/BECS_Object.js
 ../abelii/source/base/Object.be
+../abelii/source/base/Int.be
 ../abelii/source/base/String.be
 ../abelii/source/base/Logic.be
-../abelii/source/base/Int.be
 ../abelii/source/base/Float.be
 ../abelii/source/base/Encode.be
 ../abelii/source/base/LinkedList.be

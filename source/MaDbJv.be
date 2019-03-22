@@ -1,8 +1,7 @@
 // Copyright 2015 Craig Welch
 //
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+// Licensed under the MIT license. See LICENSE.txt file in the project root 
+// for full license information.
 
 use Db:SQLite:Database as SlDb;
 use Db:Relational:Database as DbDb;
