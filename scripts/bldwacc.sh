@@ -30,7 +30,7 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 #javac $BEJVARGS ../abelii/system/jv/be/*.java ../apprun/App/$APPBLDNM/Base/target/jv/be/*.java
 
-time clang++ -DBEDCC_SGC=1 -pthread -o ../apprun/App/$APPBLDNM/BEX_E_cl.exe -ferror-limit=1 -std=c++14 ../apprun/App/$APPBLDNM/Base/target/cc/be/BEX_E.cpp
+time clang++ -DBEDCC_SGC=1 -pthread -o ../apprun/App/$APPBLDNM/BEX_E_cl.exe -ferror-limit=1 -std=c++14 ../apprun/App/$APPBLDNM/Base/target/cc/be/BEX_E.cpp -lsqlite3
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 

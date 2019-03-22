@@ -16,6 +16,7 @@
 --js_source
 ../abelii/source/extended/EcPlat.be
 -cchImport=../abelii/system/cc/be/BEH_Imports.hpp
+-cchImport=../abeliiApp/system/cc/be/BEH_AppImports.hpp
 -ccImport=../abelii/system/cc/be/BECS_Imports.cpp
 -ccdInclude=../abelii/system/cc/be/BED_Object.hpp
 -cchInclude=../abelii/system/cc/be/BEH_Object.hpp

@@ -871,3 +871,107 @@ class SqKvDb {
 }
 
 
+use Db:CCSqlKeyValue as CCSqKvDb;
+class CCSqKvDb(SqKvDb) {
+  
+  dbCheck() {
+    lastUsed = Time:Interval.now().seconds;
+  }
+    
+  new(String _tableName) self {
+    new();
+    tableName = _tableName;
+  }
+  
+  dbFailed() {
+    any e;
+    try {
+      close();
+    } catch (e) {
+    
+    }
+    open();
+  }
+  
+  open() self {
+    
+  }
+  
+  close() self {
+    
+  }
+  
+  create() self {
+    //db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), //KVVALUE VARCHAR(4096), "
+    //  + " constraint " + tableName + "_k primary key (KVKEY) )").close();
+  }
+  
+  drop() self {
+    //db.execute("DROP TABLE " + tableName).close();
+  }
+  
+  getSet() Set {
+      Set res = Set.new();
+      //DbSt ares = db.executeQuery("SELECT KVKEY FROM " + tableName, qa);
+      //for (ares in ares) {
+      //  String name = ares.getString(0);
+      //  res.put(name);
+      //}
+    return(res);
+  }
+  
+  getMap() Map {
+      Map res = Map.new();
+      //DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName, qa);
+    return(res);
+  }
+  
+  getMap(String prefix) Map {
+      Map res = Map.new();
+      //DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName + " WHERE KVKEY LIKE ?", qa);
+    return(res);
+  }
+
+  get(String name) String {
+    //DbSt ares = db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa);
+    //  for (ares in ares) {
+    //    String value = ares.getString(0);
+    //  }
+    //return(value);
+    return("");
+  }
+  
+  insert(String name, String value) {
+      //db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa).close();
+  }
+  
+  update(String name, String value) {
+      //db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa).close();
+  }
+  
+  put(String name, String value) {
+      Bool exists = false;
+      //DbSt ares = db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa);
+      if (exists) {
+        //db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa).close();
+      } else {
+        //db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa).close();
+      }
+  }
+  
+  testAndPut(String name, String oldValue, String value) Bool {
+    Bool result = false;
+    return(result);
+  }
+  
+  delete(String name) {
+      //db.execute("DELETE FROM " + tableName + " WHERE KVKEY=?", qa).close();
+  }
+  
+  clear() {
+      //db.execute("DELETE FROM " + tableName).close();
+  }
+
+}
+
+
