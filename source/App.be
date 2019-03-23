@@ -2720,6 +2720,16 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
         log.log("Deleting config " + key);
         app.kvdbs.get(kvdb).delete(key);
       }
+      if (mode == "getConfig") {
+        key = params.getFirst("key");
+        log.log("Getting config " + key);
+        String getconf = app.kvdbs.get(kvdb).get(key);
+        if (def(getconf)) {
+          log.log(getconf);
+        } else {
+          log.log("conf not found");
+        }
+      }
       if (mode == "clear") {
         log.log("clearing kvdb");
         app.kvdbs.get(kvdb).clear();
