@@ -946,6 +946,10 @@ emit(cc) {
 }
 """
 }
+
+  if (def(busyTimeout) && busyTimeout > 0) {
+      runQuery("pragma busy_timeout=" + busyTimeout);
+    }
   }
   
   close() self {
@@ -957,54 +961,81 @@ bevi_db = nullptr;
 }
   }
   
+  runQuery(String qs) {
+      
+      emit(cc) {
+      """
+        int res;
+        sqlite3_stmt *stmt;
+        res = sqlite3_prepare_v2(bevi_db, beva_qs->bems_toCcString().c_str(), -1, &stmt, NULL);
+        if (res != SQLITE_OK) {
+          printf("nogood on prep for qs");
+        }
+        int row = 0;
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+          row++;
+        }
+        sqlite3_finalize(stmt);
+      """
+      }
+  }
+  
   create() self {
-    //db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), //KVVALUE VARCHAR(4096), "
-    //  + " constraint " + tableName + "_k primary key (KVKEY) )").close();
+    runQuery("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
+    + " constraint " + tableName + "_k primary key (KVKEY) )");
   }
   
   drop() self {
-    //db.execute("DROP TABLE " + tableName).close();
+    runQuery("DROP TABLE " + tableName);
   }
   
   getSet() Set {
       Set res = Set.new();
-      //DbSt ares = db.executeQuery("SELECT KVKEY FROM " + tableName, qa);
-      //for (ares in ares) {
-      //  String name = ares.getString(0);
-      //  res.put(name);
-      //}
+      String qs = "SELECT KVKEY FROM " + tableName;
+      String mk;
+      emit(cc) {
+      """
+      sqlite3_stmt *stmt;
+      sqlite3_prepare_v2(bevi_db, bevl_qs->bems_toCcString().c_str(), -1, &stmt, NULL);
+      while (sqlite3_step(stmt) == SQLITE_ROW) {
+        const unsigned char * key;
+        key  = sqlite3_column_text (stmt, 0);
+        string keys(reinterpret_cast<const char*>(key));
+        bevl_mk = new BEC_2_4_6_TextString(keys);
+      """
+      }
+      
+      res.put(mk);
+      
+      emit(cc) {
+      """
+      }
+      sqlite3_finalize(stmt);
+      """
+      }
     return(res);
   }
   
   getMap() Map {
-      ("in getmap").print();
       Map res = Map.new();
-      //DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName, qa);
       String qs = "SELECT KVKEY, KVVALUE FROM " + tableName;
-      //("qs " + qs).print();
       String mk;String mv;
       emit(cc) {
       """
       sqlite3_stmt *stmt;
       sqlite3_prepare_v2(bevi_db, bevl_qs->bems_toCcString().c_str(), -1, &stmt, NULL);
-      //int row = 0;
       while (sqlite3_step(stmt) == SQLITE_ROW) {
-        //int bytes;
         const unsigned char * key;
         const unsigned char * val;
-        //bytes = sqlite3_column_bytes (stmt, 0);
         key  = sqlite3_column_text (stmt, 0);
         val  = sqlite3_column_text (stmt, 1);
         string keys(reinterpret_cast<const char*>(key));
         string vals(reinterpret_cast<const char*>(val));
         bevl_mk = new BEC_2_4_6_TextString(keys);
         bevl_mv = new BEC_2_4_6_TextString(vals);
-        //printf ("%d: %s\n", row, key);
-        //row++;
       """
       }
       
-      //"stepping".print();
       res.put(mk, mv);
       
       emit(cc) {
@@ -1018,7 +1049,41 @@ bevi_db = nullptr;
   
   getMap(String prefix) Map {
       Map res = Map.new();
-      //DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName + " WHERE KVKEY LIKE ?", qa);
+      String qs = "SELECT KVKEY, KVVALUE FROM " + tableName + " WHERE KVKEY LIKE ?";
+      String mk;String mv;
+      prefix = prefix + "%";
+      emit(cc) {
+      """
+      int res;
+      sqlite3_stmt *stmt;
+      res = sqlite3_prepare_v2(bevi_db, bevl_qs->bems_toCcString().c_str(), -1, &stmt, NULL);
+      if (res != SQLITE_OK) {
+        printf("nogood on prep for getMap");
+      }
+      res = sqlite3_bind_text(stmt, 1, beva_prefix->bems_toCcString().c_str(), -1, NULL);
+      if (res != SQLITE_OK) {
+        printf("nogood on bind for getMap 1");
+      }
+      while (sqlite3_step(stmt) == SQLITE_ROW) {
+        const unsigned char * key;
+        const unsigned char * val;
+        key  = sqlite3_column_text (stmt, 0);
+        val  = sqlite3_column_text (stmt, 1);
+        string keys(reinterpret_cast<const char*>(key));
+        string vals(reinterpret_cast<const char*>(val));
+        bevl_mk = new BEC_2_4_6_TextString(keys);
+        bevl_mv = new BEC_2_4_6_TextString(vals);
+      """
+      }
+      
+      res.put(mk, mv);
+      
+      emit(cc) {
+      """
+      }
+      sqlite3_finalize(stmt);
+      """
+      }
     return(res);
   }
 
