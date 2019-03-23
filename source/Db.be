@@ -477,6 +477,10 @@ class KvDb(CLocker) {
     super.new(sdb);
   }
   
+  sdbNew(SqKvDb _sdb) {
+    super.new(_sdb);
+  }
+  
   create() self {
     container.create();
   }
@@ -545,8 +549,16 @@ class KvDbs {
       LinkedList kdbl = kvDbs.get(name);
       if (undef(kdbl)) {
         kdbl = LinkedList.new();
+        Bool doCC = false;
+        ifEmit(cc) {
+          doCC = true;
+        }
         for (Int i = 0;i < appKvPoolSize;i++=) {
-          KvDb kdb = KvDb.new(self.db, name);
+          if (doCC) {
+            kdb = KvDb.sdbNew(CCSqKvDb.pathNew(dataPath.copy(), name).open());
+          } else {
+            KvDb kdb = KvDb.new(self.db, name);
+          }
           kdb.create();
           kdbl.addValueWhole(kdb);
         }
@@ -874,6 +886,23 @@ class SqKvDb {
 use Db:CCSqlKeyValue as CCSqKvDb;
 class CCSqKvDb(SqKvDb) {
   
+emit(cc_classHead) {
+   """
+
+  sqlite3 *bevi_db;
+
+   """
+}
+
+  pathNew(Path _dbp, String _tableName) self {
+    new();
+    fields {
+      Path dbp = _dbp;
+      Int busyTimeout = 1000;
+      tableName = _tableName;
+    }
+  }
+
   dbCheck() {
     lastUsed = Time:Interval.now().seconds;
   }
@@ -894,11 +923,37 @@ class CCSqKvDb(SqKvDb) {
   }
   
   open() self {
+    String fp = dbp.toString();
     
+emit(cc) {
+"""
+int rc = sqlite3_open(bevl_fp->bems_toCcString().c_str(), &bevi_db);
+if (rc) {
+"""
+}
+
+    "open failed".print();
+emit(cc) {
+"""
+} else {
+"""
+}
+
+  //"open good".print();
+  
+emit(cc) {
+"""
+}
+"""
+}
   }
   
   close() self {
-    
+emit(cc) {
+"""
+sqlite3_close(bevi_db);
+"""
+}
   }
   
   create() self {
@@ -921,8 +976,42 @@ class CCSqKvDb(SqKvDb) {
   }
   
   getMap() Map {
+      ("in getmap").print();
       Map res = Map.new();
       //DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName, qa);
+      String qs = "SELECT KVKEY, KVVALUE FROM " + tableName;
+      //("qs " + qs).print();
+      String mk;String mv;
+      emit(cc) {
+      """
+      sqlite3_stmt *stmt;
+      sqlite3_prepare_v2(bevi_db, bevl_qs->bems_toCcString().c_str(), -1, &stmt, NULL);
+      //int row = 0;
+      while (sqlite3_step(stmt) == SQLITE_ROW) {
+        //int bytes;
+        const unsigned char * key;
+        const unsigned char * val;
+        //bytes = sqlite3_column_bytes (stmt, 0);
+        key  = sqlite3_column_text (stmt, 0);
+        val  = sqlite3_column_text (stmt, 1);
+        string keys(reinterpret_cast<const char*>(key));
+        string vals(reinterpret_cast<const char*>(val));
+        bevl_mk = new BEC_2_4_6_TextString(keys);
+        bevl_mv = new BEC_2_4_6_TextString(vals);
+        //printf ("%d: %s\n", row, key);
+        //row++;
+      """
+      }
+      
+      //"stepping".print();
+      res.put(mk, mv);
+      
+      emit(cc) {
+      """
+      }
+      sqlite3_finalize(stmt);
+      """
+      }
     return(res);
   }
   
