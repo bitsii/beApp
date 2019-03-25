@@ -86,7 +86,7 @@ class FxBr(WebImp) {
         }
     }
     
-    public Object HandleCall(Object obj, Object urlobj, Object ctobj) {
+    public Object HandleCall(Object obj) {
       try {
         if (obj == null) {
           System.err.println("got a null obj in HandleCall");
@@ -94,19 +94,7 @@ class FxBr(WebImp) {
           //System.out.println("HANDLE CALL GOT " + obj);
           String objstr = obj.toString();
           $class/Text:String$ objbes = new $class/Text:String$(objstr);
-          String urlobjstr;
-          $class/Text:String$ urlobjbes = null;;
-          if (urlobj != null) {
-            urlobjstr = urlobj.toString();
-            urlobjbes = new $class/Text:String$(urlobjstr);
-          }
-          String ctobjstr;
-          $class/Text:String$ ctobjbes = null;
-          if (ctobj != null) {
-            ctobjstr = ctobj.toString();
-            ctobjbes = new $class/Text:String$(ctobjstr);
-          }
-          $class/Text:String$ resbes = sinst.bem_handleWeb_3(objbes, urlobjbes, ctobjbes);
+          $class/Text:String$ resbes = sinst.bem_outerHandleWeb_1(objbes);
           if (resbes != null) {
             return resbes.bems_toJvString();
           }
@@ -172,18 +160,29 @@ class FxBr(WebImp) {
     return(setupHandler.location);
   }
   
+  outerHandleWeb(String allArgs) String {
+    //IO:Logs.turnOnAll();
+    //log.log("in outerweb");
+    auto ll = splitAllArgs(allArgs);
+    return(handleWeb(ll[0], ll[1], ll[2]));  
+  }
+  
   handleWeb(String arg, String uri, String ctype) String {
     if (def(arg)) {
       log.log("in handleWeb, arg " + arg);
     }
-    BrowserScriptRequest r = BrowserScriptRequest.new(session);
-    r.scriptArgJson = arg;
-    r.uri = uri;
-    r.inputContentType = ctype;
-    webHandler.handleWeb(r);
-    String ret = r.scriptReturnJson;
-    if (def(ret)) {
-      log.log("in handleWeb, ret " + ret);
+    try {
+      BrowserScriptRequest r = BrowserScriptRequest.new(session);
+      r.scriptArgJson = arg;
+      r.uri = uri;
+      r.inputContentType = ctype;
+      webHandler.handleWeb(r);
+      String ret = r.scriptReturnJson;
+      if (def(ret)) {
+        log.log("in handleWeb, ret " + ret);
+      }
+    } catch (any e) {
+      log.log(System:Exceptions.toString(e));
     }
     return(ret);
   }

@@ -40,6 +40,43 @@ class WebImp {
   close() {
   
   }
+  
+  splitAllArgs(String allArgs) List {
+    //("in splitallargs").print();
+    List allArgsL = List.new(3);
+    Int fc = allArgs.find(":");
+    String arls = allArgs.substring(0, fc);
+    Int sc = allArgs.find(":", fc + 1);
+    String urls = allArgs.substring(fc + 1, sc);
+    Int tc = allArgs.find(":", sc + 1);
+    String ctls = allArgs.substring(sc + 1, tc);
+    
+    if (arls != "N") {
+      Int argsend = Int.new(arls) + tc + 1;
+      String ar = allArgs.substring(tc + 1, argsend);
+      //("|" + ar + "|").print();
+    } else {
+      argsend = tc + 1;
+    }
+    if (urls != "N") {
+      Int urlsend = Int.new(urls) + argsend;
+      String ur = allArgs.substring(argsend, urlsend);
+      //("|" + ur + "|").print();
+    } else {
+      urlsend = argsend;
+    }
+    if (ctls != "N") {
+      Int ctend = Int.new(ctls) + urlsend;
+      String ct = allArgs.substring(urlsend, ctend);
+      //("|" + ct + "|").print();
+    } else {
+      ctend = urlsend;
+    }
+    allArgsL.put(0, ar);
+    allArgsL.put(1, ur);
+    allArgsL.put(2, ct);
+    return(allArgsL);
+  }
 
 }
 

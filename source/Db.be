@@ -516,11 +516,17 @@ class KvDbs {
       String appDbClass = params.getFirst("appDbClass");
       if (TS.isEmpty(appDbClass)) {
         appDbClass = "Db:SQLite:Database";
+        ifEmit(platDroid) {
+          appDbClass = "Db:HSQLDb:Database";
+        }
       }
       //log.log("appDbClass " + appDbClass);
       DbDb appDb = createInstance(appDbClass);
       if (appDbClass == "Db:SQLite:Database") {
         Path appDbPath = dataPath.copy();
+        appDb.pathNew(appDbPath);
+      } elseIf(appDbClass == "Db:HSQLDb:Database") {
+        appDbPath = dataPath.copy();
         appDb.pathNew(appDbPath);
       } elseIf(appDbClass == "Db:Maria:Database") {
         //log.log("doing mariadb");
@@ -932,7 +938,7 @@ if (rc) {
   bevi_db = nullptr;
 """
 }
-    throw(Exception.new("open failed"));
+    if (true) { throw(Exception.new("open failed")); }
 emit(cc) {
 """
 } else {

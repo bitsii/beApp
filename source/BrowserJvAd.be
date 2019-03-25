@@ -91,7 +91,7 @@ public static class MainActivity extends AppCompatActivity {
           } else {
             $class/Text:String$ objbes = new $class/Text:String$(objstr);
             $class/UI:JvAd:WebBrowser$ sinst = $class/UI:JvAd:WebBrowser$.bece_BEC_3_2_4_10_UIJvAdWebBrowser_bevs_inst;
-            $class/Text:String$ resbes = sinst.bem_handleWeb_1(objbes);
+            $class/Text:String$ resbes = sinst.bem_outerHandleWeb_1(objbes);
             if (resbes != null) {
               return resbes.bems_toJvString();
             }
@@ -158,14 +158,25 @@ public static class MainActivity extends AppCompatActivity {
     return(setupHandler.location);
   }
   
-  handleWeb(String arg) String {
+  outerHandleWeb(String allArgs) String {
+    auto ll = splitAllArgs(allArgs);
+    return(handleWeb(ll[0], ll[1], ll[2]));  
+  }
+  
+  handleWeb(String arg, String uri, String ctype) String {
     log.log("in handleWeb, arg " + arg);
-    BrowserScriptRequest r = BrowserScriptRequest.new(session);
-    r.scriptArgJson = arg;
-    webHandler.handleWeb(r);
-    String ret = r.scriptReturnJson;
-    if (def(ret)) {
-      log.log("in handleWeb, ret " + ret);
+    try {
+      BrowserScriptRequest r = BrowserScriptRequest.new(session);
+      r.scriptArgJson = arg;
+      r.uri = uri;
+      r.inputContentType = ctype;
+      webHandler.handleWeb(r);
+      String ret = r.scriptReturnJson;
+      if (def(ret)) {
+        log.log("in handleWeb, ret " + ret);
+      }
+    } catch (any e) {
+      log.log(System:Exceptions.toString(e));
     }
     return(ret);
   }

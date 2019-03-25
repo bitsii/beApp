@@ -435,6 +435,35 @@ class HC {
      }
    }
    
+   combineArgs(String argjs, String url, String ctype) String {
+     String comba = String.new();
+     if (undef(argjs)) {
+       comba += "N:"
+     } else {
+       comba += argjs.size += ":";
+     } 
+     if (undef(url)) {
+       comba += "N:"
+     } else {
+       comba += url.size += ":";
+     }
+     if (undef(ctype)) {
+       comba += "N:";
+     } else {
+       comba += ctype.size += ":";
+     }
+     if (def(argjs)) {
+      comba += argjs;
+     }
+     if (def(url)) {
+       comba += url;
+     }
+     if (def(ctype)) {
+       comba += ctype;
+     }
+     return(comba);
+   }
+   
    send(String _argjs, String url, String contentType, System:Invocation callback) this {
      String argjs = _argjs;
      String resjs;
@@ -442,14 +471,24 @@ class HC {
     """
     if (typeof(window) !== 'undefined' && typeof(window.external) !== 'undefined'
             && typeof(window.external.HandleCall) !== 'undefined') {
-      var res = window.external.HandleCall(bevl_argjs.bems_toJsString(), beva_url.bems_toJsString(), beva_contentType.bems_toJsString());
+    """
+    }
+    comboargs = combineArgs(argjs, url, contentType);
+    emit(js) {
+    """
+      var res = window.external.HandleCall(bevl_comboargs.bems_toJsString());
       //document.getElementById("infotxt").value = res;
       if (res !== null && typeof(res) !== 'undefined') {
         bevl_resjs = new be_$class/Text:String$().bems_new(res);
         //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
       }
     } else if (typeof(Android) !== 'undefined') {
-      var res = Android.HandleCall(bevl_argjs.bems_toJsString());
+    """
+    }
+    String comboargs = combineArgs(argjs, url, contentType);
+    emit(js) {
+    """
+      var res = Android.HandleCall(bevl_comboargs.bems_toJsString());
       if (res !== null  && typeof(res) !== 'undefined') {
         bevl_resjs = new be_$class/Text:String$().bems_new(res);
         //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();

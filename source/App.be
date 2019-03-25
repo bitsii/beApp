@@ -2893,6 +2893,11 @@ class App:AppStart {
         } else {
           Parameters params = Parameters.new(System:Process.new().args);
         }
+        ifEmit(platDroid) {
+          //params = Parameters.new(Lists.from("--runParams","file:///android_asset/App/BNote/runParamsBaAd.txt"));
+          IO:Logs.turnOnAll();
+          params = Parameters.new(Lists.from("--plugin", "SII:SIIPlugin", "--plugin", "App:ConfigPlugin", "--appPlugin", "BNote", "--appType", "browser"));
+        }
         start(params);
       } catch (any e) {
         log.error("Exception in innerMain, error is " + e);
