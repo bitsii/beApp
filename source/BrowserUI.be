@@ -334,6 +334,8 @@ use class Web:Client {
             String certificateThumbprint;
             Map outputHeaders = Map.new(); //really is just a map, multi value is comma separated string
             Bool followRedirects = true;
+            Int connectTimeoutMillis;
+            Int readTimeoutMillis;
         }
     }
     
@@ -371,6 +373,12 @@ use class Web:Client {
         CookieHandler.setDefault(manager);
         URL obj = new URL(bevp_url.bems_toJvString());
 		    bevi_conn = (HttpURLConnection) obj.openConnection();
+        if (bevp_connectTimeoutMillis != null) {
+          bevi_conn.setConnectTimeout(bevp_connectTimeoutMillis.bevi_int);
+        }
+        if (bevp_readTimeoutMillis != null) {
+          bevi_conn.setReadTimeout(bevp_readTimeoutMillis.bevi_int);
+        }
 		    if (bevl_ssl != null &&
       !$class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst.bevp_validateHosts.bevi_bool) {
           HttpsURLConnection c = (HttpsURLConnection) bevi_conn;
