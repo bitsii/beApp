@@ -2086,7 +2086,7 @@ use class App:WebReverseProxyPlugin {
        fields {
           any app;
           String name = "WRProxy";
-          String dataName = "EBridge";
+          String dataName = "BBridge";
           IO:Log log =@ IO:Logs.get(self);
           //String destUrl = "http://127.0.0.1:";
           String destUrl;
