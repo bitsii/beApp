@@ -930,10 +930,15 @@ emit(cc_classHead) {
   
   open() self {
     String fp = dbp.toString();
+    if (dbp.parent.file.exists!) {
+      dbp.parent.file.mkdirs();
+    }
     
 emit(cc) {
 """
+
 int rc = sqlite3_open(bevl_fp->bems_toCcString().c_str(), &bevi_db);
+
 if (rc) {
   bevi_db = nullptr;
 """

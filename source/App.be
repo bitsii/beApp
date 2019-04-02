@@ -808,8 +808,27 @@ use class App:Paths {
       any app = createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(dataName);
     }
+    ifEmit(ccIsIos) {
+    String idd;
+emit(cc) {
+"""
+#ifdef BEDCC_ISIOS
+
+NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+NSString *documentsDirectory = [paths objectAtIndex:0];
+//NSLog(@"%@", documentsDirectory);
+string ccdd = string([documentsDirectory UTF8String]);
+bevl_idd = new BEC_2_4_6_TextString(ccdd);
+#endif
+
+"""
+}
+    dbp = Path.apNew(idd).addStep(dataName);
+    }
     ifNotEmit(platDroid) {
-      Path dbp = Path.apNew("Data").addStep(dataName);
+      ifNotEmit(ccIsIos) {
+        Path dbp = Path.apNew("Data").addStep(dataName);
+      }
     }
     return(dbp);
   }
@@ -2894,9 +2913,11 @@ class App:AppStart {
           Parameters params = Parameters.new(System:Process.new().args);
         }
         ifEmit(platDroid) {
-          //params = Parameters.new(Lists.from("--runParams","file:///android_asset/App/BNote/runParamsBaAd.txt"));
           IO:Logs.turnOnAll();
           params = Parameters.new(Lists.from("--plugin", "SII:SIIPlugin", "--plugin", "App:ConfigPlugin", "--appPlugin", "BNote", "--appType", "browser"));
+        }
+        ifEmit(ccIsIos) {
+          IO:Logs.turnOnAll();
         }
         start(params);
       } catch (any e) {
