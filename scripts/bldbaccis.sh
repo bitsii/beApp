@@ -19,9 +19,9 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 mkdir -p ios/$APPBLDNM/$APPBLDNM
 mkdir -p ios/resources/App/BNote
 rm -f ios/$APPBLDNM/$APPBLDNM/BE*.hpp
-rm -f ios/$APPBLDNM/$APPBLDNM/BE*.cpp
+rm -f ios/$APPBLDNM/$APPBLDNM/BEX_E.mm
 cp ../apprun/App/$APPBLDNM/Base/target/cc/be/BE*.hpp ios/$APPBLDNM/$APPBLDNM
-cp ../apprun/App/$APPBLDNM/Base/target/cc/be/BE*.cpp ios/$APPBLDNM/$APPBLDNM
+cp ../apprun/App/$APPBLDNM/Base/target/cc/be/BEX_E.cpp ios/$APPBLDNM/$APPBLDNM/BEX_E.mm
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
