@@ -2884,7 +2884,17 @@ use class App:LocalWebApp(WebApp) {
       ifEmit(platDroid) {
         mypwd = "android_asset";
       }
+      ifEmit(ccIsIos) {
+        mypwd = "";
+      }
+      
       webr.location = "file:///" + mypwd + self.plugin.homePage;
+      
+      ifEmit(ccIsIos) {
+        String wfl = self.plugin.homePage;
+        wfl = wfl.substring(1, wfl.size);
+        webr.location = wfl;
+      }
       
       webr.setup();
    }

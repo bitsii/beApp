@@ -104,6 +104,9 @@ class UI:WebBrowser {
     ifEmit(platDroid) {
       browserType = "jvad";
     }
+    ifEmit(cc) {
+       browserType = "ccio";
+    }
   }
 
   setup() {
@@ -117,6 +120,9 @@ class UI:WebBrowser {
       }
       if (browserType == "jvad") {
         webImp = createInstance("UI:JvAd:WebBrowser");
+      }
+      if (browserType == "ccio") {
+        webImp = createInstance("UI:CcIo:WebBrowser");
       }
       webImp.new();
       webImp.setupHandler = self;
