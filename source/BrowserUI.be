@@ -123,7 +123,10 @@ class UI:WebBrowser {
       }
       if (browserType == "ccio") {
         webImp = createInstance("UI:CcIo:WebBrowser");
+        any wi = webImp;
+        webImp = wi.getMe();
       }
+      "making webbr".print();
       webImp.new();
       webImp.setupHandler = self;
       webImp.webHandler = webHandler;

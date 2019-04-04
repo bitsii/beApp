@@ -482,6 +482,16 @@ class HC {
         bevl_resjs = new be_$class/Text:String$().bems_new(res);
         //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
       }
+    } else if (typeof(window.webkit) !== 'undefined') {
+    """
+    }
+    comboargs = combineArgs(argjs, url, contentType);
+    emit(js) {
+    """
+      var messgeToPost = {'allArgs':bevl_comboargs.bems_toJsString()};
+      window.webkit.messageHandlers.bems_wkhandleCall.postMessage(messgeToPost);
+      //now need to do callback like xml, put string name of callback into message to post
+      //let it do via reflectionish  
     } else if (typeof(Android) !== 'undefined') {
     """
     }

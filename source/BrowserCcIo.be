@@ -3,9 +3,27 @@
 // Licensed under the MIT license. See LICENSE.txt file in the project root 
 // for full license information.
 
+use System:Thread:ContainerLocker as CLocker;
+
+use UI:CcIo:InFlight as InFlight;
+
+class InFlight {
+
+   new() {
+     fields {
+       String allArgs;
+     }
+   }
+   
+}
+
 use UI:CcIo:WebBrowser as IoBr;
 class IoBr(WebImp) {
 
+  getMe() self {
+    return(IoBr.new());
+  }
+  
   default() self {
    }
    
@@ -13,7 +31,18 @@ class IoBr(WebImp) {
      fields {
         IO:Log log =@ IO:Logs.get(self);
         Map session = Map.new();
+        CLocker inflight = CLocker.new(Set.new());
      }
+   }
+   
+   startRequest() InFlight {
+     InFlight inf = InFlight.new();
+     inflight.put(inf);
+     return(inf);
+   }
+   
+   endRequest(InFlight inf) {
+     inflight.delete(inf);
    }
    
    initWeb() self {
@@ -49,9 +78,9 @@ class IoBr(WebImp) {
     return(setupHandler.location);
   }
   
-  outerHandleWeb(String allArgs) String {
-    auto ll = splitAllArgs(allArgs);
-    return(handleWeb(ll[0], ll[1], ll[2]));  
+  outerHandleWeb(InFlight inf) this {
+    auto ll = splitAllArgs(inf.allArgs);
+    inf.allArgs = handleWeb(ll[0], ll[1], ll[2]);
   }
   
   handleWeb(String arg, String uri, String ctype) String {
