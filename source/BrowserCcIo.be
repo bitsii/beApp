@@ -12,6 +12,7 @@ class InFlight {
    new() {
      fields {
        String allArgs;
+       String callbackId;
      }
    }
    
@@ -80,7 +81,11 @@ class IoBr(WebImp) {
   
   outerHandleWeb(InFlight inf) this {
     auto ll = splitAllArgs(inf.allArgs);
-    inf.allArgs = handleWeb(ll[0], ll[1], ll[2]);
+    String ress = handleWeb(ll[0], ll[1], ll[2]);
+    if (undef(ress)) { ress = ""; }
+    //fashion the js to run here
+    String resjs = "handleCallback(\"" + Json:Marshaller.jsonEscape(ress) + "\");\n";
+    inf.allArgs = resjs;
   }
   
   handleWeb(String arg, String uri, String ctype) String {

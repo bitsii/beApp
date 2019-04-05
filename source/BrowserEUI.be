@@ -39,6 +39,15 @@ var handleCallback = function(res) {
     }
 }
 
+var handleCallbackInvId = function(res, invid) {
+    if (res != null) {
+      var bevs_resjs = new be_$class/Text:String$().bems_new(res);
+      var bevs_invidjs = new be_$class/Text:String$().bems_new(invid);
+      ui.bem_handleCallback_1(bevs_resjs, bevs_invidjs);
+    }
+}
+
+
 var handleCallbackInv = function(res, inv) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
@@ -389,6 +398,7 @@ class HC {
     fields {
       List callbacks = _callbacks.copy().addValue(self);
       String pageToken;
+      Map invokeBacks = Map.new();
     }
   }
   
@@ -485,13 +495,17 @@ class HC {
     } else if (typeof(window.webkit) !== 'undefined') {
     """
     }
+    if (def(callback)) {
+      String cbk = System:Random.getString(16);
+      invokeBacks.put(cbk, callback);
+    } else {
+      cbk = "";
+    }
     comboargs = combineArgs(argjs, url, contentType);
     emit(js) {
     """
-      var messgeToPost = {'allArgs':bevl_comboargs.bems_toJsString()};
+      var messgeToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':bevl_cbk.bems_toJsString()};
       window.webkit.messageHandlers.bems_wkhandleCall.postMessage(messgeToPost);
-      //now need to do callback like xml, put string name of callback into message to post
-      //let it do via reflectionish  
     } else if (typeof(Android) !== 'undefined') {
     """
     }
@@ -557,6 +571,21 @@ class HC {
     }
     String argjs = Json:Marshaller.marshall(arg);
     send(argjs, "/", "application/json", null);
+  }
+  
+  handleCallback(String resjs, String cbid) {
+    if (TS.notEmpty(cbid)) {
+      System:Invocation callback = invokeBacks.get(cbid);
+      invokeBacks.delete(cbid);
+    }
+    if (def(resjs)) {
+      if (def(callback)) {
+        callback.args.put(0, resjs);
+        callback.invoke();
+      } else {
+        handleCallback(resjs);
+      }
+    }
   }
   
   handleCallback(String resjs) {
