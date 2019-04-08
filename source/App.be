@@ -2924,7 +2924,7 @@ class App:AppStart {
         }
         ifEmit(platDroid) {
           IO:Logs.turnOnAll();
-          params = Parameters.new(Lists.from("--plugin", "SII:SIIPlugin", "--plugin", "App:ConfigPlugin", "--appPlugin", "BNote", "--appType", "browser"));
+          params = Parameters.new(Lists.from("--plugin", "SII:SIIPlugin", "--plugin", "App:ConfigPlugin", "--appPlugin", "BNote", "--appType", "browser", "--sdbClass", "Db:MemFileStoreKeyValue", "--appKvPoolSize", "1"));
         }
         ifEmit(ccIsIos) {
           IO:Logs.turnOnAll();
