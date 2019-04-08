@@ -54,10 +54,14 @@ public static class MainActivity extends AppCompatActivity {
       mainActivity.startActivity(browserIntent);
       
     }
+    
+    public String[] getStartupArgs() {
+      return new String[] {};
+    }
 
     protected void postCreate() {
         mainActivity = this;
-        $class/App:RunMainOnce$.runMainOnce();
+        $class/App:RunMainOnce$.runMainOnce(getStartupArgs());
         $class/App:EventHandlers$.handleEvent("startUi");
         //so things stay in the webview
         mWebView.setWebViewClient(new WebViewClient());
@@ -89,6 +93,7 @@ public static class MainActivity extends AppCompatActivity {
           if (objstr == null) {
             System.err.println("got a null obj in HandleCall");
           } else {
+            //System.err.println("doing a handlecall");
             $class/Text:String$ objbes = new $class/Text:String$(objstr);
             $class/UI:JvAd:WebBrowser$ sinst = $class/UI:JvAd:WebBrowser$.bece_BEC_3_2_4_10_UIJvAdWebBrowser_bevs_inst;
             $class/Text:String$ resbes = sinst.bem_outerHandleWeb_1(objbes);

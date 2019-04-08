@@ -1045,9 +1045,9 @@ class RunMainOnce {
 emit(jv) {
 """
 public static volatile boolean haveRun = false;
-public synchronized static void runMainOnce() {
+public synchronized static void runMainOnce(String[] margs) {
   if (!haveRun) {
-    String[] margs = new String[0];
+    //String[] margs = new String[0];
     try {
         be.BEX_E.main(margs);
     } catch (Throwable t) {
@@ -2924,7 +2924,6 @@ class App:AppStart {
         }
         ifEmit(platDroid) {
           IO:Logs.turnOnAll();
-          params = Parameters.new(Lists.from("--plugin", "SII:SIIPlugin", "--plugin", "App:ConfigPlugin", "--appPlugin", "BNote", "--appType", "browser", "--sdbClass", "Db:MemFileStoreKeyValue", "--appKvPoolSize", "1"));
         }
         ifEmit(ccIsIos) {
           IO:Logs.turnOnAll();

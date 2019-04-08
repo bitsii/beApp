@@ -35,26 +35,15 @@ var uiStartup = function(_ui) {
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
-      ui.bem_handleCallback_1(bevs_resjs);
+      hc.bem_handleCallback_1(bevs_resjs);
     }
 }
 
-var handleCallbackInvId = function(res, invid) {
+var handleNamedCallback = function(res, name) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
-      var bevs_invidjs = new be_$class/Text:String$().bems_new(invid);
-      ui.bem_handleCallback_2(bevs_resjs, bevs_invidjs);
-    }
-}
-
-
-var handleCallbackInv = function(res, inv) {
-    if (res != null) {
-      var bevs_resjs = new be_$class/Text:String$().bems_new(res);
-      var bevs_zrjs = new be_$class/Math:Int$().beml_set_bevi_int(0);
-      var args = inv.bem_argsGet_0();
-      args.bem_put_2(bevs_zrjs, bevs_resjs);
-      inv.bem_invoke_0();
+      var bevs_namejs = new be_$class/Text:String$().bems_new(name);
+      hc.bem_handleNamedCallback_2(bevs_resjs, namejs);
     }
 }
 
@@ -398,7 +387,6 @@ class HC {
     fields {
       List callbacks = _callbacks.copy().addValue(self);
       String pageToken;
-      Map invokeBacks = Map.new();
     }
   }
   
@@ -474,7 +462,7 @@ class HC {
      return(comba);
    }
    
-   send(String _argjs, String url, String contentType, System:Invocation callback) this {
+   send(String _argjs, String url, String contentType, String name) this {
      String argjs = _argjs;
      String resjs;
      emit(js) {
@@ -495,23 +483,16 @@ class HC {
     } else if (typeof(window.webkit) !== 'undefined') {
     """
     }
-    if (def(callback)) {
-      String cbk = System:Random.getString(16);
-      log.log("cbk headed in " + cbk);
-      invokeBacks.put(cbk, callback);
-    } else {
-      log.log("no cbk headed in");
-      cbk = "";
-    }
     comboargs = combineArgs(argjs, url, contentType);
     emit(js) {
     """
-      var messgeToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':bevl_cbk.bems_toJsString()};
+      var messgeToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':bevl_name.bems_toJsString()};
       window.webkit.messageHandlers.bems_wkhandleCall.postMessage(messgeToPost);
     } else if (typeof(Android) !== 'undefined') {
     """
     }
     String comboargs = combineArgs(argjs, url, contentType);
+    //log.log("android will send comboargs " + comboargs);
     emit(js) {
     """
       var res = Android.HandleCall(bevl_comboargs.bems_toJsString());
@@ -546,8 +527,8 @@ class HC {
               return;
           }
           //logmsg(req.responseText);
-          if (beva_callback != null) {
-            handleCallbackInv(req.responseText, beva_callback);
+          if (beva_name != null) {
+            handleNamedCallback(req.responseText, beva_name);
           } else {
             handleCallback(req.responseText);
           }
@@ -557,9 +538,8 @@ class HC {
     """
     }
     if (def(resjs)) {
-      if (def(callback)) {
-        callback.args.put(0, resjs);
-        callback.invoke();
+      if (def(name)) {
+        handleNamedCallback(resjs, name);
       } else {
         handleCallback(resjs);
       }
@@ -575,32 +555,26 @@ class HC {
     send(argjs, "/", "application/json", null);
   }
   
-  handleCallback(String resjs, String cbid) {
-    if (TS.notEmpty(cbid)) {
-    log.log("cbid notempty " + cbid);
-      System:Invocation callback = invokeBacks.get(cbid);
-      if (def(callback)) { log.log("callback def"); }
-      else { log.log("callback undef"); }
-      invokeBacks.delete(cbid);
-    } else {
-     log.log("cbid empty");
-    }
-    if (def(resjs)) {
-      if (def(callback)) {
-        callback.args.put(0, resjs);
-        callback.invoke();
-      } else {
-        handleCallback(resjs);
-      }
-    }
-  }
-  
   handleCallback(String resjs) {
     Map resm = Json:Unmarshaller.unmarshall(resjs);
     if (def(resm)) {
         handleCallbackMap(resm);
     }
   }
+  
+  handleNamedCallback(String res, String name) {
+      if (def(name) && name.ends("Response")) {
+        List rargs = List.new(1);
+        rargs[0] = res;
+        String show = rargs.size.toString();
+        for (any callback in callbacks) {
+          if (callback.can(name, rargs.length)) {
+            callback.invoke(name, rargs);
+            break;
+          } 
+        }
+      }
+    }
     
   handleCallbackMap(Map resm) {
       String mname = resm["action"];
