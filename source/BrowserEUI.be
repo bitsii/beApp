@@ -43,7 +43,7 @@ var handleCallbackInvId = function(res, invid) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
       var bevs_invidjs = new be_$class/Text:String$().bems_new(invid);
-      ui.bem_handleCallback_1(bevs_resjs, bevs_invidjs);
+      ui.bem_handleCallback_2(bevs_resjs, bevs_invidjs);
     }
 }
 
@@ -497,8 +497,10 @@ class HC {
     }
     if (def(callback)) {
       String cbk = System:Random.getString(16);
+      log.log("cbk headed in " + cbk);
       invokeBacks.put(cbk, callback);
     } else {
+      log.log("no cbk headed in");
       cbk = "";
     }
     comboargs = combineArgs(argjs, url, contentType);
@@ -575,8 +577,13 @@ class HC {
   
   handleCallback(String resjs, String cbid) {
     if (TS.notEmpty(cbid)) {
+    log.log("cbid notempty " + cbid);
       System:Invocation callback = invokeBacks.get(cbid);
+      if (def(callback)) { log.log("callback def"); }
+      else { log.log("callback undef"); }
       invokeBacks.delete(cbid);
+    } else {
+     log.log("cbid empty");
     }
     if (def(resjs)) {
       if (def(callback)) {
