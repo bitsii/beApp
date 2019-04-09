@@ -43,7 +43,7 @@ var handleNamedCallback = function(res, name) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
       var bevs_namejs = new be_$class/Text:String$().bems_new(name);
-      hc.bem_handleNamedCallback_2(bevs_resjs, namejs);
+      hc.bem_handleNamedCallback_2(bevs_resjs, bevs_namejs);
     }
 }
 
@@ -486,8 +486,13 @@ class HC {
     comboargs = combineArgs(argjs, url, contentType);
     emit(js) {
     """
-      var messgeToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':bevl_name.bems_toJsString()};
-      window.webkit.messageHandlers.bems_wkhandleCall.postMessage(messgeToPost);
+      var messageToPost;
+      if (beva_name == null) {
+        messageToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':''};
+      } else {
+        messageToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':beva_name.bems_toJsString()};
+      }
+      window.webkit.messageHandlers.bems_wkhandleCall.postMessage(messageToPost);
     } else if (typeof(Android) !== 'undefined') {
     """
     }

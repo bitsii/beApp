@@ -84,7 +84,11 @@ class IoBr(WebImp) {
     String ress = handleWeb(ll[0], ll[1], ll[2]);
     if (undef(ress)) { ress = ""; }
     //fashion the js to run here
-    String resjs = "handleCallbackInvId(\"" + Json:Marshaller.jsonEscape(ress) + "\", \"" + Json:Marshaller.jsonEscape(inf.callbackId) + "\");\n";
+    if (TS.isEmpty(inf.callbackId)) {
+      String resjs = "handleCallback(\"" + Json:Marshaller.jsonEscape(ress) + "\");\n";
+    } else {
+      resjs = "handleNamedCallback(\"" + Json:Marshaller.jsonEscape(ress) + "\", \"" + Json:Marshaller.jsonEscape(inf.callbackId) + "\");\n";
+    }
     inf.allArgs = resjs;
   }
   

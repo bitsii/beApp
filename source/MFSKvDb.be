@@ -42,7 +42,10 @@ class MFSKvDb(SqKvDb) {
     Hex eh = Hex.new();
     if (tbp.file.exists!) { tbp.file.makeDirs(); }
     for (File f in tbp.file) {
-      names.put(eh.decode(f.path.lastStep));
+      String ls = f.path.lastStep;
+      if (ls != "." && ls != "..") {
+        names.put(eh.decode(ls));
+      }
     }
   }
   
