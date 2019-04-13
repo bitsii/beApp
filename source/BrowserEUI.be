@@ -229,6 +229,14 @@ class HE {
     }
   }
   
+  click() self {
+    emit(js) {
+    """
+    this.bevi_element.click();
+    """
+    }
+  }
+  
   valueSet(String val) self {
     emit(js) {
     """
@@ -533,7 +541,7 @@ class HC {
           }
           //logmsg(req.responseText);
           if (beva_name != null) {
-            handleNamedCallback(req.responseText, beva_name);
+            handleNamedCallback(req.responseText, beva_name.bems_toJsString());
           } else {
             handleCallback(req.responseText);
           }

@@ -472,6 +472,14 @@ use class Web:Client {
         return(outputWriter);
     }
     
+    contentsOutSet(String payload) self {
+      openOutput().write(payload);
+    }
+    
+    contentsInGet() String {
+      return(openInput().readString());
+    }
+    
     openInput() IO:Reader {
         fields {
           Map inputHeaders = Map.new(); //really is just a map, multi value is comma sep string

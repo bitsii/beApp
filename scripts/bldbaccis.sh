@@ -12,7 +12,7 @@ mkdir -p ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be -cchImport=../abeliiApp/system/cc/be/BEH_AppPreImports.hpp --buildFile ../abeliiApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang cc --singleCC true --saveIds false --emitFlag ccSgc --emitFlag ccBeMain --emitFlag ccIsIos -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../abelii/source/extended/Log.be ../abeliiApp/source/App.be ../abeliiApp/source/BrowserUI.be ../abeliiApp/source/BrowserCcIo.be ../abeliiApp/source/Db.be ../abeliiApp/source/MFSKvDb.be
+mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be -cchImport=../abeliiApp/system/cc/be/BEH_AppPreImports.hpp --buildFile ../abeliiApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang cc --singleCC true --saveIds false --emitFlag ccSgc --emitFlag ccBeMain --emitFlag ccIsIos -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../abelii/source/extended/Log.be ../abeliiApp/source/App.be ../abeliiApp/source/BrowserUI.be ../abeliiApp/source/BrowserCcIo.be ../abeliiApp/source/Db.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
