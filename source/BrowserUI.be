@@ -756,7 +756,11 @@ use class UI:ExternalBrowser {
     //desktop.browse(new java.net.URI(beva_url.bems_toJvString()));
     """
     }
-    System:Command.new("xdg-open " + url).run();
+     if (System:CurrentPlatform.name == "mswin") {
+       System:Command.new("cmd /c start " + url).run();
+     } else {
+       System:Command.new("xdg-open " + url).run();
+     }
     }
     
     ifEmit(platDroid) {
