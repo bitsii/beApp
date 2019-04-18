@@ -14,7 +14,7 @@ class SlDb(DbDb) {
     String dbAddr = "jdbc:sqlite:" + dbp.toString();
     new(dbAddr);
     fields {
-      Int busyTimeout = 1000;
+      Int busyTimeout = 30000;
     }
   }
   
@@ -25,6 +25,7 @@ class SlDb(DbDb) {
     """
     }
     super.open();
+    execute("PRAGMA journal_mode=WAL");
     if (def(busyTimeout) && busyTimeout > 0) {
       execute("pragma busy_timeout=" + busyTimeout);
     }
