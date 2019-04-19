@@ -47,7 +47,11 @@ class FxBr(WebImp) {
       
             final WebView browser = new WebView();
             final WebEngine webEngine = browser.getEngine();
-      
+            
+            com.sun.javafx.webkit.WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
+                System.out.println(message + "[at " + lineNumber + "]");
+            });
+            
             $class/Text:String$ cont = sinst.bem_contentGet_0();
             if (cont != null) {
               webEngine.loadContent(cont.bems_toJvString());
