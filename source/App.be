@@ -1917,9 +1917,9 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   }
   
   handleWeb(request) this {
-    //log.log("in auth uri " + request.uri);
+    log.log("in auth uri " + request.uri);
     
-    if (request.embedded || request.uri == "/") {
+    if (request.uri == "/") {
       //only for ajaxy and embedded calls, ?embedded auth version?
       prepArgs(request);
       Map arg = request.context["arg"];
