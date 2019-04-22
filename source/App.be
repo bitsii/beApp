@@ -1917,10 +1917,15 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   }
   
   handleWeb(request) this {
-    prepArgs(request);
-    Map arg = request.context["arg"];
-    if (request.embedded! && def(arg) && TS.notEmpty(arg["serviceSessionKey"])) {
-      request.serviceSessionKey = arg["serviceSessionKey"];
+    //log.log("in auth uri " + request.uri);
+    
+    if (request.embedded || request.uri == "/") {
+      //only for ajaxy and embedded calls, ?embedded auth version?
+      prepArgs(request);
+      Map arg = request.context["arg"];
+      if (request.embedded! && def(arg) && TS.notEmpty(arg["serviceSessionKey"])) {
+        request.serviceSessionKey = arg["serviceSessionKey"];
+      }
     }
     unless (check(request)) {
       toLogin(request);
