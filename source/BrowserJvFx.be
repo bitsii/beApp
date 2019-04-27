@@ -51,7 +51,7 @@ class FxBr(WebImp) {
             com.sun.javafx.webkit.WebConsoleListener.setDefaultListener((webView, message, lineNumber, sourceId) -> {
                 System.out.println(message + "[at " + lineNumber + "]");
             });
-            
+            //webEngine.setUserAgent("AppleWebKit/537.44");
             $class/Text:String$ cont = sinst.bem_contentGet_0();
             if (cont != null) {
               webEngine.loadContent(cont.bems_toJvString());

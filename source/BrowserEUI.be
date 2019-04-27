@@ -87,6 +87,10 @@ var callAppLaterInside = function(myhc, alist) {
   myhc.bem_callApp_1(alist);
 }
 
+var callUILaterInside = function(myhc, alist) {
+  myhc.bem_callUI_1(alist);
+}
+
 //callUI does invoke on ui
 var callUI = function() {
   var alist = convertArgs(arguments);
@@ -151,6 +155,26 @@ class HD {
      }
      """
      }
+   }
+   
+   getElementsByName(String name) List {
+     List elements = List.new();
+     emit(js) {
+     """
+     var x = document.getElementsByName(beva_name.bems_toJsString());
+      var i;
+      for (i = 0; i < x.length; i++) {
+        """
+      }
+      HE he = HE.new();
+      elements += he;
+      emit(js) {
+        """
+          bevl_he.bevi_element = x[i];
+      } 
+     """
+     }
+     return(elements);
    }
   
   getElementById(String id) {
@@ -437,6 +461,14 @@ class HC {
      emit(js) {
      """
      setTimeout(function(){callAppLaterInside(hc, beva_args)}, beva_waitHowLong.bevi_int);
+     """
+     }
+   }
+   
+   callUILater(List args, Int waitHowLong) {
+     emit(js) {
+     """
+     setTimeout(function(){callUILaterInside(hc, beva_args)}, beva_waitHowLong.bevi_int);
      """
      }
    }

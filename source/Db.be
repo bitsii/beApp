@@ -663,7 +663,7 @@ class SqKvDb {
     //("creating kvdbdb").print();
     //db.className.print();
     try {
-    db.begin();
+    //db.begin();
     if (db.className == "Db:Maria:Database") {
       //("doing mariadb").print();
       db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
@@ -672,9 +672,9 @@ class SqKvDb {
       db.execute("CREATE TABLE IF NOT EXISTS " + tableName + "( KVKEY VARCHAR(512), KVVALUE VARCHAR(4096), "
       + " constraint " + tableName + "_k primary key (KVKEY) )").close();
     }
-    db.commit();
+    //db.commit();
     } catch (any e) {
-    db.rollback();
+    //db.rollback();
     dbFailed();
     throw(e);
     }
@@ -682,11 +682,11 @@ class SqKvDb {
   
   drop() self {
     try {
-    db.begin();
+    //db.begin();
     db.execute("DROP TABLE " + tableName).close();
-    db.commit();
+    //db.commit();
     } catch (any e) {
-    db.rollback();
+    //db.rollback();
     dbFailed();
     }
   }
@@ -695,16 +695,16 @@ class SqKvDb {
     try {
       Set res = Set.new();
       List qa = List.new(0);
-      db.begin();
+      //db.begin();
       DbSt ares = db.executeQuery("SELECT KVKEY FROM " + tableName, qa);
       for (ares in ares) {
         String name = ares.getString(0);
         res.put(name);
       }
       ares.close();
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }
@@ -716,7 +716,7 @@ class SqKvDb {
       dbCheck();
       Map res = Map.new();
       List qa = List.new(0);
-      db.begin();
+      //db.begin();
       DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName, qa);
       for (ares in ares) {
         String name = ares.getString(0);
@@ -724,9 +724,9 @@ class SqKvDb {
         res.put(name, value);
       }
       ares.close();
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }
@@ -739,7 +739,7 @@ class SqKvDb {
       Map res = Map.new();
       List qa = List.new(1);
       qa.put(0, prefix + "%");
-      db.begin();
+      //db.begin();
       DbSt ares = db.executeQuery("SELECT KVKEY, KVVALUE FROM " + tableName + " WHERE KVKEY LIKE ?", qa);
       for (ares in ares) {
         String name = ares.getString(0);
@@ -747,9 +747,9 @@ class SqKvDb {
         res.put(name, value);
       }
       ares.close();
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }
@@ -761,15 +761,15 @@ class SqKvDb {
       dbCheck();
       List qa = List.new(1);
       qa[0] = name;
-      db.begin();
+      //db.begin();
       DbSt ares = db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa);
       for (ares in ares) {
         String value = ares.getString(0);
       }
       ares.close();
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }
@@ -788,11 +788,11 @@ class SqKvDb {
     try {
       dbCheck();
       List qa = List.new(2).put(0, name).put(1, value);
-      db.begin();
+      //db.begin();
       db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa).close();
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }
@@ -802,11 +802,11 @@ class SqKvDb {
     try {
       dbCheck();
       List qa = List.new(2).put(0, value).put(1, name);
-      db.begin();
+      //db.begin();
       db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa).close();
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }
@@ -817,7 +817,7 @@ class SqKvDb {
       dbCheck();
       List qa = List.new(1);
       qa[0] = name;
-      db.begin();
+      //db.begin();
       Bool exists = false;
       DbSt ares = db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qa);
       for (ares in ares) {
@@ -831,9 +831,9 @@ class SqKvDb {
         qa = List.new(2).put(0, name).put(1, value);
         db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa).close();
       }
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }
@@ -842,10 +842,10 @@ class SqKvDb {
   testAndPut(String name, String oldValue, String value) Bool {
     Bool result = false;
     try {
-      db.begin();
+      //db.begin();
       List qa = List.new(3).put(0, value).put(1, name).put(2, oldValue);
       db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=? AND KVVALUE=?", qa).close();
-      //db.commit();
+      ////db.commit();
       List qc = List.new(1).put(0, name);
       DbSt ares = db.executeQuery("SELECT KVVALUE FROM " + tableName + " WHERE KVKEY=?", qc);
       for (ares in ares) {
@@ -856,10 +856,10 @@ class SqKvDb {
       }
       ares.close();
       //if (true) { throw(Exception.new("fail")); }
-      db.commit();
+      //db.commit();
     } catch (any e) {
       result = false;
-      db.rollback();
+      //db.rollback();
       //expected case, not fatal
     }
     return(result);
@@ -869,11 +869,11 @@ class SqKvDb {
     try {
       dbCheck();
       List qa = List.new(1).put(0, name);
-      db.begin();
+      //db.begin();
       db.execute("DELETE FROM " + tableName + " WHERE KVKEY=?", qa).close();
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }
@@ -882,11 +882,11 @@ class SqKvDb {
   clear() {
     try {
       dbCheck();
-      db.begin();
+      //db.begin();
       db.execute("DELETE FROM " + tableName).close();
-      db.commit();
+      //db.commit();
     } catch (any e) {
-      db.rollback();
+      //db.rollback();
       dbFailed();
       throw(e);
     }

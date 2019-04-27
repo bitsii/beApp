@@ -26,6 +26,8 @@ class SlDb(DbDb) {
     }
     super.open();
     execute("PRAGMA journal_mode=WAL");
+    execute("PRAGMA cache=shared");
+    execute("PRAGMA read_uncommitted = true;");
     if (def(busyTimeout) && busyTimeout > 0) {
       execute("pragma busy_timeout=" + busyTimeout);
     }
