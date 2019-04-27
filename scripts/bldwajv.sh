@@ -12,6 +12,8 @@ mkdir -p ../apprun/App/$APPBLDNM
 
 cp ../abeliiApp/scripts/runwajv.sh ../apprun/App/$APPBLDNM
 cp ../abeliiApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
+cp ../abeliiApp/scripts/runwajv.bat ../apprun/App/$APPBLDNM
+cp ../abeliiApp/scripts/runwajvrs.bat ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 case "$una" in
