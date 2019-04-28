@@ -152,6 +152,7 @@ public Connection bevi_trans = null;
     emit(jv) {
     """
       bevi_conn.close();
+      bevi_conn = null;
     """
     }
   }
@@ -705,6 +706,7 @@ class SqKvDb {
       //db.commit();
     } catch (any e) {
       //db.rollback();
+      try { ares.close(); } catch (any ee) { }
       dbFailed();
       throw(e);
     }
@@ -727,6 +729,7 @@ class SqKvDb {
       //db.commit();
     } catch (any e) {
       //db.rollback();
+      try { ares.close(); } catch (any ee) { }
       dbFailed();
       throw(e);
     }
@@ -750,6 +753,7 @@ class SqKvDb {
       //db.commit();
     } catch (any e) {
       //db.rollback();
+      try { ares.close(); } catch (any ee) { }
       dbFailed();
       throw(e);
     }
@@ -770,6 +774,7 @@ class SqKvDb {
       //db.commit();
     } catch (any e) {
       //db.rollback();
+      try { ares.close(); } catch (any ee) { }
       dbFailed();
       throw(e);
     }
@@ -859,6 +864,7 @@ class SqKvDb {
       //db.commit();
     } catch (any e) {
       result = false;
+      try { ares.close(); } catch (any ee) { }
       //db.rollback();
       //expected case, not fatal
     }

@@ -60,7 +60,7 @@ class MaDb(DbDb) {
     } else {
       a = "";
     }
-    String dbAddr = "jdbc:mariadb://" + host + ":" + port + "/" + db + q + userbit + a + passbit;
+    String dbAddr = "jdbc:mariadb://" + host + ":" + port + "/" + db + q + userbit + a + passbit + "&maxPoolSize=50&pool";
     //("dbAddr mariadb " + dbAddr).print();
     new(dbAddr);
   }
@@ -78,7 +78,7 @@ class MaDb(DbDb) {
     return(MaDb.paramsNew(params));
   }
   
-  timeoutGet() Int {
+  notusingPoolInsteadtimeoutGet() Int {
     //28800
     //return(28000);
     //return(14000);
