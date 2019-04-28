@@ -2979,6 +2979,19 @@ class App:AppStart {
           }
       }
     }
+    if (def(params["logSink"])) {
+      IO:Log:Sink ls = IO:Log:Sink.new();
+      if (def(params["logSinkPrefix"])) {
+        ls.prefix = params.getFirst("logSinkPrefix");
+      }
+      if (def(params["logSinkDir"])) {
+        ls.dir = Path.apNew(params.getFirst("logSinkDir"));
+        if (ls.dir.file.exists!) {
+          ls.dir.file.makeDirs();
+        }
+      }
+      IO:Logs.setAllSinks(ls);
+    }
     auto appTypes = Sets.from(params.get("appType").toList());
     if (appTypes.has("cmd")) {
       any cuiapp = WebApp.new();
