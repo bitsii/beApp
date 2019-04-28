@@ -15,3 +15,5 @@ SET MYPWD=%cd%
 
 SET PATH=..\jv\bin;..\sc;..\up;..\Apache24\bin;..\gw\bin;%PATH%
 java.exe -classpath "App/%APPBLDNM%/*" be.BEX_E --runParams App/%APPBLDNM%/runParamsWa.txt %*
+
+exit

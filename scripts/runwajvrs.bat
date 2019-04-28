@@ -23,3 +23,5 @@ timeout /t 3
 if exist App\%APPBLDNM%\betweenrs.bat call App\%APPBLDNM%\betweenrs.bat
 
 goto :loop
+
+exit
