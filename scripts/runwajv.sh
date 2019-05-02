@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "${0%/*}"
+
 export APPBLDNM=${PWD##*/}
 
 cd ../..
@@ -26,8 +28,6 @@ export MYHOME=`echo $HOME`
 export MYUSER=`whoami`
 
 mkdir -p Data/$APPBLDNM
-
-mkdir -p logs
 
 java $BEJVRUNARGS -classpath "App/$APPBLDNM/*" be.BEX_E --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
 

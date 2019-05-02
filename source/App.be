@@ -1243,6 +1243,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           Set nonAuthedRequests = Set.new();
           OLocker lastLoginBad = OLocker.new(false);
           Set authedUrls = Set.new();
+          String authedUrlsConfigKey;
         }
         super.new();
      }
@@ -1840,6 +1841,12 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       log.log("isCrossSite true empty");
       //if (TS.isEmpty(ref)) { log.log("ref empty"); } else { log.log("la empty"); }
       return(true);
+    }
+    if (def(authedUrlsConfigKey)) {
+      String aval = app.configManager.get(authedUrlsConfigKey);
+      if (TS.notEmpty(aval)) {
+        authedUrls = Sets.from(Json:Unmarshaller.unmarshall(aval));
+      }
     }
     for (sn in authedUrls) {
       log.log("authedUrl is " + sn);

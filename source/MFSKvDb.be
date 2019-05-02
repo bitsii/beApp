@@ -16,7 +16,6 @@ class MFSKvDb(SqKvDb) {
       Path dbp = _dbp;
       tableName = _tableName;
       Path tbp = dbp.copy().addStep(Hex.encode(tableName));
-      Set names = Set.new();
     }
   }
 
@@ -41,16 +40,15 @@ class MFSKvDb(SqKvDb) {
   open() self {
     Hex eh = Hex.new();
     if (tbp.file.exists!) { tbp.file.makeDirs(); }
-    for (File f in tbp.file) {
-      String ls = f.path.lastStep;
-      if (ls != "." && ls != "..") {
-        names.put(eh.decode(ls));
-      }
-    }
+    //for (File f in tbp.file) {
+    //  String ls = f.path.lastStep;
+    //  if (ls != "." && ls != "..") {
+    //    names.put(eh.decode(ls));
+    //  }
+    //}
   }
   
   close() self {
-    names.clear();
   }
   
   create() self {
@@ -67,24 +65,42 @@ class MFSKvDb(SqKvDb) {
   }
   
   getSet() Set {
-    return(names.copy());
+    Hex eh = Hex.new();
+    Set names = Set.new();
+    for (File f in tbp.file) {
+      String ls = f.path.lastStep;
+      if (ls != "." && ls != "..") {
+        names.put(eh.decode(ls));
+      }
+    }
+    return(names);
   }
   
   getMap() Map {
+    Hex eh = Hex.new();
     Map res = Map.new();
-    for (String k in names) {
-      res.put(k, get(k));
+    for (File f in tbp.file) {
+      String ls = f.path.lastStep;
+      if (ls != "." && ls != "..") {
+        String k = eh.decode(ls);
+        res.put(k, get(k));
+      }
     }  
     return(res);
   }
   
   getMap(String prefix) Map {
+    Hex eh = Hex.new();
     Map res = Map.new();
-    for (String k in names) {
-      if (k.begins(prefix)) {
-        res.put(k, get(k));
+    for (File f in tbp.file) {
+      String ls = f.path.lastStep;
+      if (ls != "." && ls != "..") {
+        String k = eh.decode(ls);
+        if (k.begins(prefix)) {
+          res.put(k, get(k));
+        }
       }
-    }
+    }  
     return(res);
   }
 
@@ -97,7 +113,11 @@ class MFSKvDb(SqKvDb) {
   }
   
   has(String name) Bool {
-    return(names.has(name));
+    Path np = tbp.copy().addStep(Hex.encode(name));
+    if (np.file.exists) {
+      return(true);
+    }
+    return(false);
   }
   
   insert(String name, String value) {
@@ -109,7 +129,6 @@ class MFSKvDb(SqKvDb) {
   }
   
   put(String name, String value) {      
-    names.put(name);
     Path np = tbp.copy().addStep(Hex.encode(name));
     np.file.contents = value;
   }
@@ -119,7 +138,6 @@ class MFSKvDb(SqKvDb) {
     String cv = get(name);
     if (oldValue == cv) {
       put(name, value);
-      names.put(name);
     }
     return(result);
   }
@@ -127,15 +145,13 @@ class MFSKvDb(SqKvDb) {
   delete(String name) {
     Path np = tbp.copy().addStep(Hex.encode(name));
     if (np.file.exists) { np.file.delete(); }
-    names.delete(name);
   }
   
   clear() {
     //iterate/delete all keys, rmdir
-    for (String k in names) {
+    for (String k in getSet()) {
       delete(k);
     }
-    names.clear();
   }
 
 }
