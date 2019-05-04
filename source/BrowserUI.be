@@ -758,6 +758,8 @@ use class UI:ExternalBrowser {
     }
      if (System:CurrentPlatform.name == "mswin") {
        System:Command.new("cmd /c start " + url).run();
+    } elseIf (System:CurrentPlatform.name == "macos") {
+       System:Command.new("open " + url).run();
      } else {
        System:Command.new("xdg-open " + url).run();
      }

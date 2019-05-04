@@ -2942,7 +2942,7 @@ class App:AppStart {
         }
         start(params);
       } catch (any e) {
-        log.error("Exception in innerMain, error is " + e);
+        log.elog("fail in appstart main", e);
       }
     }
   

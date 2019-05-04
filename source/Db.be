@@ -48,6 +48,9 @@ public Connection bevi_trans = null;
   pathNew(IO:File:Path _dbp) self {
     fields {
       IO:File:Path dbp = _dbp;
+      if (dbp.parent.file.exists!) {
+       dbp.parent.file.makeDirs();
+      }
       //idle timeout, -1 to disable (default)
     }
   }
