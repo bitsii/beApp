@@ -473,11 +473,91 @@ use class Web:Client {
     }
     
     contentsOutSet(String payload) self {
-      openOutput().write(payload);
+      fields {
+        String ccin;
+      }
+      ifNotEmit(ccIsIos) {
+        openOutput().write(payload);
+      }
+      ifEmit(ccIsIos) {
+        emit(cc) {
+        """
+#ifdef BEDCC_ISIOS
+        string res = bevp_url->bems_toCcString();
+        const char* resC = res.c_str();
+        NSString *nsurls = [NSString stringWithCString:resC encoding:NSUTF8StringEncoding];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:nsurls]];
+        NSLog(@"did make url");
+        request.HTTPMethod = @"POST";
+        
+#endif
+        """
+        }
+        for (auto kv in outputHeaders) {
+          String hk = kv.key;
+          String hv = kv.value;
+          ("setting header " + hk + " " + hv).print();
+          if (def(hv)) {
+        emit(cc) {
+        """
+#ifdef BEDCC_ISIOS
+
+        string hkcs = bevl_hk->bems_toCcString();
+        const char* hkcc = hkcs.c_str();
+        NSString *hkos = [NSString stringWithCString:hkcc encoding:NSUTF8StringEncoding];
+        
+        string hvcs = bevl_hv->bems_toCcString();
+        const char* hvcc = hvcs.c_str();
+        NSString *hvos = [NSString stringWithCString:hvcc encoding:NSUTF8StringEncoding];
+        
+        [request setValue:hvos forHTTPHeaderField:hkos];
+#endif
+          """
+          }
+          }
+        }
+        //a
+        emit(cc) {
+        """
+#ifdef BEDCC_ISIOS
+        
+string pays = beva_payload->bems_toCcString();
+const char* payc = pays.c_str();
+NSString *payos = [NSString stringWithCString:payc encoding:NSUTF8StringEncoding];
+        
+NSData *requestBodyData = [payos dataUsingEncoding:NSUTF8StringEncoding];
+request.HTTPBody = requestBodyData;
+
+NSError *err = nil;
+NSHTTPURLResponse *ress = nil;
+NSData *retData = [NSURLConnection sendSynchronousRequest:request returningResponse:&ress error:&err];
+if (retData != nil) {
+  NSString* newStr = [[NSString alloc] initWithBytes:(char *)retData.bytes length:retData.length encoding:NSUTF8StringEncoding];
+
+  NSLog(@"after request");
+  NSLog(newStr);
+  string cppMessage = string([newStr UTF8String]);
+  bevp_ccin = new BEC_2_4_6_TextString(cppMessage);
+  
+}
+
+#endif
+        """
+        }
+      }
+      return(self);
     }
     
     contentsInGet() String {
-      return(openInput().readString());
+      ifNotEmit(ccIsIos) {
+        return(openInput().readString());
+      }
+      ifEmit(ccIsIos) {
+        if (def(ccin)) {
+          return(ccin);
+        }
+        return(null);
+      }
     }
     
     openInput() IO:Reader {
