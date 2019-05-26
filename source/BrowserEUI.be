@@ -84,11 +84,11 @@ var callApp = function() {
 }
 
 var callAppLaterInside = function(myhc, alist) {
-  myhc.bem_callApp_1(alist);
+  myhc.bem_callApp_1(alist.bem_copy_0());
 }
 
 var callUILaterInside = function(myhc, alist) {
-  myhc.bem_callUI_1(alist);
+  myhc.bem_callUI_1(alist.bem_copy_0());
 }
 
 //callUI does invoke on ui
@@ -469,6 +469,22 @@ class HC {
      emit(js) {
      """
      setTimeout(function(){callUILaterInside(hc, beva_args)}, beva_waitHowLong.bevi_int);
+     """
+     }
+   }
+   
+   pollApp(List args, Int waitHowLong) {
+     emit(js) {
+     """
+     setInterval(function(){callAppLaterInside(hc, beva_args)}, beva_waitHowLong.bevi_int);
+     """
+     }
+   }
+   
+   pollUI(List args, Int waitHowLong) {
+     emit(js) {
+     """
+     setInterval(function(){callUILaterInside(hc, beva_args)}, beva_waitHowLong.bevi_int);
      """
      }
    }
