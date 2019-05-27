@@ -771,17 +771,21 @@ use class Web:SessionManager {
       sk = request.getInputCookie(keyName);
     }
     if (TS.notEmpty(sk)) {
-      //to make it harder to probe for sessions
-      //request.setOutputHeader(keyName, sk);
+      if (sessions.get("SESSIONS").getMap(hashKey(sk) + ".").isEmpty) {
+        //could be probing for sessions, let them have this but will be upping bad
+        request.context.put("unknownSession", "unknownSession");
+        sessions.get("SESSIONS").put(hashKey(sk) + ".", "");
+      }
     } else {
       sk = System:Random.getString(keyLen);
       until (sessions.get("SESSIONS").getMap(hashKey(sk) + ".").isEmpty) {
         sk = System:Random.getString(keyLen);
       }
-      request.setOutputCookie(keyName, sk, "/", true, true);
-      //request.setOutputHeader(keyName, sk);
+      sessions.get("SESSIONS").put(hashKey(sk) + ".", "");
     }
-    request.context.put("rawSessionKey", sk);
+    request.setOutputCookie(keyName, sk, "/", true, true);
+    //request.setOutputHeader(keyName, sk);
+    //request.context.put("rawSessionKey", sk);
     String sko = hashKey(sk);
     //("sko for sk " + sko + " " + sk).print();
     return(sko);
@@ -806,11 +810,16 @@ use class Web:SessionManager {
   }
   
   getSession(request, String name) String {
+    if (TS.isEmpty(name)) {
+      return(null);
+    }
     return(sessions.get("SESSIONS").get(getSessionKey(request) + "." + name));
   }
   
   putSession(request, String name, String value) {
-    sessions.get("SESSIONS").put(getSessionKey(request) + "." + name, value);
+    unless (TS.isEmpty(name)) {
+      sessions.get("SESSIONS").put(getSessionKey(request) + "." + name, value);
+    }
   }
 
 }

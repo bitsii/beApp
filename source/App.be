@@ -1371,16 +1371,11 @@ use class App:AuthPlugin(App:AjaxPlugin) {
      return(null);
    }
    
-   badRequest(request) {
-  
-  }
-  
   requestFromAdmin(request) Bool {
     Account a = self.accountManager.getRequestAccount(request);
     if (def(a) && a.perms.has("admin")) {
       return(true);
     }
-    badRequest(request);
     return(false);
   }
   
@@ -1711,7 +1706,6 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   }
   
   logoutRequest(Map arg, request) {
-    //request.deleteSession();
     
     if (def(request) && def(request.inputAddress)) {
       log.output("logout from " + request.inputAddress);
@@ -1722,7 +1716,6 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     }
     
     request.putSession("account.name", "");
-    //request.deleteSession();
     
     if (request.embedded) {
       app.configManager.delete("auth.embeddedLogin");
@@ -1743,43 +1736,20 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   
   check(request) Bool {
   
+  /*
     Int maxBad =@ 300;
     Int clearSecs =@ 40;
     Int updateSecs =@ 20;
-  
-  /*
-    Int maxBad =@ 5;
-    Int clearSecs =@ 10;
-    Int updateSecs =@ 5;
   */
   
-    /*
-    log.log("checking origins");
-    String org = request.getInputHeader("origin");
-    String ref = request.getInputHeader("referer");
-    String uri = request.uri;
-    String la = request.localAddress;
-    String ra = request.inputAddress;
-    if (true) {
-      if (def(org)) {
-        log.log("orgin " + org);
-      }
-      if (def(ref)) {
-        log.log("referer " + ref);
-      }
-      if (def(uri) && def(la) && def(ra)) {
-        log.log("uri, la, ra " + uri + " " + la + " " + ra);
-      }
-    }
-    */
+  
+    Int maxBad =@ 10;
+    Int clearSecs =@ 50;
+    Int updateSecs =@ 10;
+  
     
     if (request.embedded) {
       return(true);
-    }
-    
-    String accountName = request.getSession("account.name");
-    if (TS.notEmpty(accountName)) {
-        return(true);
     }
     
     String ip = request.inputAddress;
@@ -1796,6 +1766,8 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           if (ns - ltmi > clearSecs) {
             log.log("clear bad " + ip);
             badcount = 0;
+            self.trackingManager.delete("IP." + ip);
+            self.trackingManager.delete("LB." + ip);
           } else {
             badcount = Int.new(ct);
           }
@@ -1805,6 +1777,13 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       } else {
         badcount = 0;
       }
+    }
+    if (def(request.context.get("unknownSession"))) {
+      request.context.delete("unknownSession");
+      log.log("upping bad in check");
+      badcount++=;
+      self.trackingManager.put("IP." + ip, badcount.toString());
+      self.trackingManager.put("LB." + ip, ns.toString());
     }
     if (badcount > maxBad) {
       log.log("toomany bad " + ip);
@@ -1816,17 +1795,25 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       }
       return(false);
     }
-    if (TS.isEmpty(accountName)) {
-      log.log("upping bad");
+    return(true);
+  }
+  
+  badRequest(request) {
+    log.log("upping bad in badRequest");
+    String ip = request.inputAddress;
+    if (TS.notEmpty(ip)) {
+      log.log("br ip not empty " + ip);
+      Int ns = Time:Interval.now().seconds;
+      String ct = self.trackingManager.get("IP." + ip);
+      if (TS.notEmpty(ct)) {
+        Int badcount = Int.new(ct);
+      } else {
+        badcount = 0;
+      }
       badcount++=;
       self.trackingManager.put("IP." + ip, badcount.toString());
       self.trackingManager.put("LB." + ip, ns.toString());
-    } else {
-      self.trackingManager.delete("IP." + ip);
-      self.trackingManager.delete("LB." + ip);
-      //self.trackingManager.clear();
     }
-    return(true);
   }
   
   toLogin(request) this {
@@ -2051,13 +2038,13 @@ use class App:PublicReadPlugin {
        
      handleWeb(request) this {
        String rmtd = request.inputMethod;
-       log.log("public read rmtd is " + rmtd);
+       //log.log("public read rmtd is " + rmtd);
        if (TS.isEmpty(rmtd) || rmtd == "GET") {
-         log.log("in rmtd method is get");
+         //log.log("in rmtd method is get");
          String uri = request.uri;
-         log.log("uri " + uri);
+         //log.log("uri " + uri);
          if (TS.isEmpty(uri) || uri == "/") {
-          log.log("empty uri going to base page");
+          //log.log("empty uri going to base page");
           request.outputContent = "<html><head><script>location=\"" + app.plugin.homePage + "\"</script></html>";
           return(self);
          }
@@ -2073,8 +2060,8 @@ use class App:PublicReadPlugin {
           }
          }
          if (readOk) {
-            log.log("chkrdp fm true public");
-           log.log("imgfile " + imgfile.path);
+            //log.log("chkrdp fm true public");
+           //log.log("imgfile " + imgfile.path);
            if (imgfile.exists) {
             String mtype;
             if (uri.ends(".html")) {
@@ -2127,7 +2114,6 @@ use class App:WebReverseProxyPlugin {
      }
      
      start() {
-       log.log("later sessionid " + app.configManager.get("auth.sessionId"));
        if (undef(destUrl)) {
         destUrl = app.params.getFirst("proxyDestUrl");
        }
@@ -2792,7 +2778,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       }
    
    showConfigRequest(Map arg, request) Map {
-     Set noshow =@ Sets.from("imap.pass", "auth.sessionId", "imap.user");
+     Set noshow =@ Sets.from("imap.pass", "imap.user");
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        String conf = String.new();
        Map ecm = app.kvdbs.get(kvdb).getMap();
@@ -3260,10 +3246,10 @@ class WebApp {
       String sessionId;
     }
     if (undef(sessionId)) {
-      sessionId = self.configManager.get("auth.sessionId");
+      sessionId = self.configManager.get(self.configPrefix + "auth.sessionId");
       if (TS.isEmpty(sessionId)) {
         sessionId = System:Random.getString(16);
-        self.configManager.put("auth.sessionId", sessionId);
+        self.configManager.put(self.configPrefix + "auth.sessionId", sessionId);
       }
       //log.log("sessionId " + sessionId);
     }
