@@ -1656,10 +1656,10 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     if (app.plugin.okForPageToken(request)) {
       Map res = Map.new();
       pageToken = request.getSession("pageToken");
-      //if (TS.isEmpty(pageToken)) {
+      if (TS.isEmpty(pageToken)) {
         String pageToken = System:Random.getString(32);
         request.putSession("pageToken", pageToken);
-      //}
+      }
       res["pageToken"] = pageToken;
       res["action"] = "pageTokenResponse";
     }
@@ -3036,6 +3036,7 @@ class WebApp {
       String certificateThumbprint;
       Map kvDbs = Map.new();
       Parameters params;
+      String sessionIdKey = "webApp.sessionId";
     }
   }
   
@@ -3246,10 +3247,10 @@ class WebApp {
       String sessionId;
     }
     if (undef(sessionId)) {
-      sessionId = self.configManager.get(self.configPrefix + "auth.sessionId");
+      sessionId = self.configManager.get(sessionIdKey);
       if (TS.isEmpty(sessionId)) {
         sessionId = System:Random.getString(16);
-        self.configManager.put(self.configPrefix + "auth.sessionId", sessionId);
+        self.configManager.put(sessionIdKey, sessionId);
       }
       //log.log("sessionId " + sessionId);
     }
