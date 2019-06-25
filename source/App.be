@@ -1686,6 +1686,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
         goodLogin(request);
+        request.context.put("account", a);
         return(loggedIn(a, res, arg, request));
       } else {
         log.log("Login notok");
