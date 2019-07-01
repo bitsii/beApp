@@ -27,6 +27,8 @@ using System;
 //using System.Net;
 using System.Threading;
 using System.Web;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
     """
 }
 use class Web:Server {
@@ -225,7 +227,8 @@ use class Web:ScriptRequest {
      String uri;
      emit(cs) {
      """
-     string url = bevi_req.RawUrl; //includes query string, ?HttpRequest.Url.OriginalString
+     //string url = bevi_req.RawUrl; //includes query string, ?HttpRequest.Url.OriginalString
+     string url = Microsoft.AspNetCore.Http.Extensions.UriHelper.GetEncodedUrl(bevi_req); //or GetDisplayUrl?
      if (url != null) {
        bevl_uri = new $class/Text:String$(url);
      }
@@ -271,7 +274,7 @@ use class Web:ScriptRequest {
      }
      emit(cs) {
      """
-     string val = bevi_req.HttpMethod;
+     string val = bevi_req.Method;
      if (val != null) {
        bevl_val = new $class/Text:String$(val);
      }
@@ -316,7 +319,9 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      if (bevi_req != null) {
-       string emaddr = bevi_req.ServerVariables["LOCAL_ADDR"];
+       var httpConnectionFeature = bevi_context.Features.Get<IHttpConnectionFeature>();
+       string emaddr = httpConnectionFeature?.LocalIpAddress.ToString();
+       //string emaddr = bevi_req.ServerVariables["LOCAL_ADDR"];
        bevl_res = new $class/Text:String$(emaddr);
      }
      """
@@ -337,7 +342,8 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      if (bevi_req != null) {
-       string emaddr = bevi_req.UserHostAddress;
+       var httpConnectionFeature = bevi_context.Features.Get<IHttpConnectionFeature>();
+       string emaddr = httpConnectionFeature?.RemoteIpAddress.ToString();
        bevl_res = new $class/Text:String$(emaddr);
      }
      """
@@ -360,8 +366,16 @@ use class Web:ScriptRequest {
    setOutputCookie(String name, String value, String path, Bool httpOnly, Bool longTerm) {
      emit(cs) {
      """
-     HttpCookie toAdd = new HttpCookie(beva_name.bems_toCsString(), beva_value.bems_toCsString());
-     bevi_res.Cookies.Add(toAdd);
+     CookieOptions toAdd = new CookieOptions();  
+     if (beva_path != null) {
+       toAdd.Path = beva_path.bems_toCsString();
+     }
+     toAdd.HttpOnly = beva_httpOnly.bevi_bool;
+     if (beva_longTerm.bevi_bool) {
+           toAdd.Expires = DateTime.Now.AddYears(5);  
+     }
+     
+     bevi_res.Cookies.Append(beva_name.bems_toCsString(), beva_value.bems_toCsString(), toAdd); 
      """
      }
      emit(jv) {
@@ -383,9 +397,9 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      string csname = beva_name.bems_toCsString();
-     HttpCookie cook = bevi_req.Cookies.Get(csname);
+     string cook = bevi_req.Cookies[csname];
      if (cook != null) {
-       return new $class/Text:String$(cook.Value);
+       return new $class/Text:String$(cook);
      }
      """
      }
@@ -412,8 +426,8 @@ use class Web:ScriptRequest {
      String val;
      emit(cs) {
      """
-     string[] vals = bevi_req.Headers.GetValues(beva_name.bems_toCsString());
-     if (vals != null && vals.Length > 0) {
+     var vals = bevi_req.Headers[beva_name.bems_toCsString()];
+     if (vals.Count > 0) {
         bevl_val = new $class/Text:String$(vals[0]);
      }
      """
@@ -453,8 +467,7 @@ use class Web:ScriptRequest {
      String val;
      emit(cs) {
      """
-     bevi_res.AddHeader(beva_name.bems_toCsString(),
-       beva_value.bems_toCsString());
+     bevi_res.Headers[beva_name.bems_toCsString()] = beva_value.bems_toCsString();
      """
      }
      emit(jv) {
@@ -495,8 +508,8 @@ use class Web:ScriptRequest {
        String value;
        emit(cs) {
        """
-       string[] vals = bevi_req.QueryString.GetValues(beva_name.bems_toCsString());
-       if (vals != null && vals.Length > 0) {
+       var vals = bevi_req.Query[beva_name.bems_toCsString()];
+       if (vals.Count > 0) {
           bevl_value = new $class/Text:String$(vals[0]);
        }
        """
@@ -619,7 +632,7 @@ use class Web:ScriptRequest {
       inputReader = IO:Reader.new();
         emit(cs) {
         """
-        bevp_inputReader.bevi_is = bevi_req.InputStream;
+        bevp_inputReader.bevi_is = bevi_req.Body;
         """
         }
         emit(jv) {
@@ -647,7 +660,7 @@ use class Web:ScriptRequest {
             outputWriter = IO:Writer.new();
             emit(cs) {
             """
-            bevp_outputWriter.bevi_os = bevi_res.OutputStream;
+            bevp_outputWriter.bevi_os = bevi_res.Body;
             """
             }
             emit(jv) {

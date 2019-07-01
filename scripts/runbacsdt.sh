@@ -29,5 +29,5 @@ export MYUSER=`whoami`
 
 mkdir -p Data/$APPBLDNM
 
-dotnet ./App/$APPBLDNM/cswa.dll --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
+dotnet ./App/$APPBLDNM/csdt.dll --runParams App/$APPBLDNM/runParamsBa.txt $BERUNARGS $*
 
