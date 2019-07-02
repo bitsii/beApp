@@ -228,7 +228,8 @@ use class Web:ScriptRequest {
      emit(cs) {
      """
      //string url = bevi_req.RawUrl; //includes query string, ?HttpRequest.Url.OriginalString
-     string url = Microsoft.AspNetCore.Http.Extensions.UriHelper.GetEncodedUrl(bevi_req); //or GetDisplayUrl?
+     //string url = Microsoft.AspNetCore.Http.Extensions.UriHelper.GetEncodedUrl(bevi_req); //or GetDisplayUrl?
+     string url = bevi_req.Path;
      if (url != null) {
        bevl_uri = new $class/Text:String$(url);
      }

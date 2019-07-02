@@ -1064,10 +1064,10 @@ emit(cs) {
 """
 public static volatile bool haveRun = false;
 public static volatile Object runMainLock = new Object();
-public static void runMainOnce() {
+public static void runMainOnce(string[] margs) {
   lock(runMainLock) {
     if (!haveRun) {
-      string[] margs = new string[0];
+      //string[] margs = new string[0];
       try {
           be.BEX_E.bems_relocMain(margs);
       } catch (System.Exception t) {
@@ -2038,6 +2038,7 @@ use class App:PublicReadPlugin {
      
        
      handleWeb(request) this {
+       //log.log("in public read plugin");
        String rmtd = request.inputMethod;
        //log.log("public read rmtd is " + rmtd);
        if (TS.isEmpty(rmtd) || rmtd == "GET") {
@@ -2963,6 +2964,7 @@ class App:AppStart {
   
   start() this {
     log.log("starting app");
+    //log.log("params start " + params.toJson());
     Set bfiles = Set.new();
     if (def(params["runParams"])) {
       for (String istr in params["runParams"]) {
@@ -2973,6 +2975,7 @@ class App:AppStart {
           }
       }
     }
+    //log.log("params postloads " + params.toJson());
     if (def(params["logSink"])) {
       IO:Log:Sink ls = IO:Log:Sink.new();
       if (def(params["logSinkPrefix"])) {
