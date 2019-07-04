@@ -183,7 +183,13 @@ use class Web:Server {
     """
     }
     
+    //log.log(" ws port " + port);
+    
     return(null);
+  }
+  
+  localUrlGet() String {
+    return("http://localhost:" + port + "/");
   }
 
 }
@@ -255,6 +261,19 @@ use class Web:ScriptRequest {
        bevl_qs = new $class/Text:String$(qs);
      }
      """
+     }
+     emit(cs) {
+     """
+     var qs = bevi_req.QueryString;
+     if (qs != null) {
+       bevl_qs = new $class/Text:String$(qs.Value);
+     }
+     """
+     }
+     ifEmit(cs) {
+       if (TS.notEmpty(qs)) {
+         qs = qs.substring(1, qs.size);
+       }
      }
      return(qs);
    }

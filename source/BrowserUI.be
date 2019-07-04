@@ -830,11 +830,11 @@ use class UI:ExternalBrowser {
   
     emit(cs) {
     """
-    Process p = new Process();
-    p.StartInfo.FileName = beva_url.bems_toCsString();
-    p.StartInfo.CreateNoWindow = true;
-    //p.StartInfo.UseShellExecute = false;
-    p.Start();
+    //Process p = new Process();
+    //p.StartInfo.FileName = beva_url.bems_toCsString();
+    //p.StartInfo.CreateNoWindow = true;
+    ////p.StartInfo.UseShellExecute = false;
+    //p.Start();
     """
     }
     
@@ -845,6 +845,7 @@ use class UI:ExternalBrowser {
     //desktop.browse(new java.net.URI(beva_url.bems_toJvString()));
     """
     }
+    //("try to open from cmd").print();
      if (System:CurrentPlatform.name == "mswin") {
        System:Command.new("cmd /c start " + url).run();
     } elseIf (System:CurrentPlatform.name == "macos") {

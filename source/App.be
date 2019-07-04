@@ -2100,6 +2100,55 @@ use class App:PublicReadPlugin {
      }
 }
 
+use class App:LocalAccessPlugin {
+
+     new() self {
+       fields {
+          any app;
+          String name = "LocalAccess";
+          IO:Log log =@ IO:Logs.get(self);
+          String lattok = System:Random.getString(64);
+        }
+     }
+     
+       
+     handleWeb(request) this {
+       //log.log("in local access plugin");
+       String rmtd = request.inputMethod;
+       //log.log("la rmtd is " + rmtd);
+       String reqtok = request.getInputCookie("lattok");
+       if (TS.notEmpty(reqtok) && reqtok == lattok) {
+        //log.log("cookie good, keep going");
+        request.continueHandling = true;
+        return(self);
+       }
+       if (TS.isEmpty(rmtd) || rmtd == "GET") {
+         //log.log("in rmtd method is get");
+         String uri = request.uri;
+         //log.log("la uri " + uri);
+         String lat = request.getParameter("lattok");
+         if (TS.isEmpty(lat)) {
+           //log.log("lat empty");
+         } else {
+           //log.log("lat present");
+           String clat = app.configManager.get("localAccess.token");
+           if (TS.notEmpty(clat) && clat == lat) {
+             //log.log("clat eq lattok, set cookie");
+             app.configManager.delete("localAccess.token");
+             request.setOutputCookie("lattok", lattok, "/", true, false);
+             request.outputContent = "<html><head><script>location=\"" + app.plugin.homePage + "\"</script></html>";
+             return(self);
+           } else {
+             //log.log("clat notok, nogood");
+           }
+         }
+       }
+       //log.log("lat failed");
+       request.continueHandling = false;
+       return(self);
+     }
+}
+
 use class App:WebReverseProxyPlugin {
 
      new() self {

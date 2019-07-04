@@ -2,8 +2,8 @@
 
 export APPBLDNM=${PWD##*/}
 
-../abeliiApp/scripts/bldbacsdt.sh $*
+../abeliiApp/scripts/bldbacs.sh $*
 
 cd ../apprun/App/$APPBLDNM
 
-./runbacsdt.sh $*
+./runbacs.sh $*
