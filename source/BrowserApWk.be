@@ -7,6 +7,24 @@ use System:Thread:ContainerLocker as CLocker;
 
 use UI:CcIo:InFlight as InFlight;
 
+emit(js) {
+"""
+
+var jsis;
+
+var setupStuffJs = function() {
+  jsis = new be_$class/UI:CcIo:WebBrowser$();
+  jsis = hc.bemc_getInitial();
+}
+
+var outerHandleWebJs(allArgs, callbackId) {
+
+
+}
+
+"""
+}
+
 class InFlight {
 
    new() {
@@ -34,6 +52,11 @@ class IoBr(WebImp) {
         Map session = Map.new();
         CLocker inflight = CLocker.new(Set.new());
      }
+     emit(js) {
+      """
+      setupStuffJs()
+      """
+      }
    }
    
    startRequest() InFlight {
@@ -77,6 +100,20 @@ class IoBr(WebImp) {
   
   locationGet() String {
     return(setupHandler.location);
+  }
+  
+  outerHandleWebJs(String allArgs, String callbackId) String {
+    auto ll = splitAllArgs(allArgs);
+    
+    String ress = handleWeb(ll[0], ll[1], ll[2]);
+    if (undef(ress)) { ress = ""; }
+    //fashion the js to run here
+    if (TS.isEmpty(callbackId)) {
+      String resjs = "handleCallback(\"" + Json:Marshaller.jsonEscape(ress) + "\");\n";
+    } else {
+      resjs = "handleNamedCallback(\"" + Json:Marshaller.jsonEscape(ress) + "\", \"" + Json:Marshaller.jsonEscape(callbackId) + "\");\n";
+    }
+    return(resjs);
   }
   
   outerHandleWeb(InFlight inf) this {

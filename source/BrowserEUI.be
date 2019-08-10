@@ -539,6 +539,16 @@ class HC {
     } else if (typeof(window.webkit) !== 'undefined') {
     """
     }
+    ifEmit(apwkui) {
+      emit(js) {
+      """
+      console.log("gonna try calling the sync swift delegate");
+      var res = prompt("YO");
+      console.log("got res " + res);
+      """
+      }
+    }
+    ifNotEmit(apwkui) {
     comboargs = combineArgs(argjs, url, contentType);
     emit(js) {
     """
@@ -548,7 +558,12 @@ class HC {
       } else {
         messageToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':beva_name.bems_toJsString()};
       }
-      window.webkit.messageHandlers.bems_wkhandleCall.postMessage(messageToPost);
+      window.webkit.messageHandlers.bems_wkhandleCall.postMessage(messageToPost);//yo
+    """
+    }
+    }
+    emit(js) {
+    """
     } else if (typeof(Android) !== 'undefined') {
     """
     }
