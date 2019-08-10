@@ -17,8 +17,7 @@ var setupStuffJs = function() {
   jsis = hc.bemc_getInitial();
 }
 
-var outerHandleWebJs(allArgs, callbackId) {
-
+var require = function(toreq) {
 
 }
 
