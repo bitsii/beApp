@@ -21,3 +21,4 @@ Base
 ../abelii/source/base/DoNothing.be
 ../abelii/source/base/OpiFc.be
 ../abelii/source/extended/Json.be
+../abeliiApp/source/AppEUI.be
