@@ -797,6 +797,7 @@ use class App:Paths {
       any app = _app;
       String name = app.plugin.name;
       String dataName = name;
+      IO:Log log =@ IO:Logs.get(self);
     }
     if (app.plugin.can("dataNameGet", 0)) {
       dataName = app.plugin.dataName; 
@@ -825,9 +826,23 @@ bevl_idd = new BEC_2_4_6_TextString(ccdd);
 }
     dbp = Path.apNew(idd).addStep(dataName);
     }
+    ifEmit(apwk) {
+    log.log("getting datapath apwk");
+    String jspw = Json:Marshaller.marshall(Maps.from("call", "getDocumentsDirectory"));
+    emit(js) {
+    """
+    var jsres = prompt(bevl_jspw.bems_toJsString());
+    bevl_jspw = new be_$class/Text:String$().bems_new(jsres);
+    """
+    }
+    log.log("jspw " + jspw);
+    dbp = Path.apNew(jspw).addStep(dataName);
+    }
     ifNotEmit(platDroid) {
       ifNotEmit(ccIsIos) {
-        Path dbp = Path.apNew("Data").addStep(dataName);
+        ifNotEmit(apwk) {
+          Path dbp = Path.apNew("Data").addStep(dataName);
+        }
       }
     }
     return(dbp);
