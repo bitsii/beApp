@@ -3078,33 +3078,6 @@ class App:AppStart {
   }
 }
 
-class App:RunClassMethod {
-
-  doWhatsNeeded(String clmtd) {
-  
-  "in dowhatsneeded".print();
-  
-  ifEmit(apwkui) {
-  
-    if (TS.notEmpty(clmtd)) {
-     runit(clmtd);
-    }
-  
-  }
-  
-  }
-
-  runit(String clmtd) {
-    "in runit".print();
-    auto ll = clmtd.split(".");
-    any inst = createInstance(ll[0]);
-    inst.invoke(ll[1], List.new());
-    "runit done".print();
-  }
-
-}
-
-
 use App:WebApp;
 class WebApp {
 
