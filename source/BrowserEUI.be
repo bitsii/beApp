@@ -20,8 +20,9 @@ var hc;
 var hd;
 var pageToken;
 
-var uiStartup = function(_ui) {
-  ui = _ui;
+var uiStartup = function(_uiClassName) {
+  var tmpo = new be_$class/System:Object$();
+  ui = tmpo.bem_createInstance_1(new be_$class/Text:String$().bems_new(_uiClassName));
   ui.bem_new_0();
   ui.bem_main_0();
   hc = new be_$class/UI:HtmlDom:Call$();
@@ -109,6 +110,15 @@ var downloadJson = function(jsonData, fileName) {
   downloadJsonElem.setAttribute("href", dataStr );
   downloadJsonElem.setAttribute("download", fileName);
   downloadJsonElem.click();
+}
+
+//ui startup
+var startup = function() {
+  uiStartup(document.getElementById("beUiMain").value);
+}
+
+if (typeof(window) !== 'undefined') {
+  window.onload = startup;
 }
 
 """
