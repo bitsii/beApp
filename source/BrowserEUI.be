@@ -21,6 +21,12 @@ var hd;
 var pageToken;
 
 var uiStartup = function(_uiClassName) {
+
+  var mtdnm = (document.getElementById('beApWkAppStart'))? document.getElementById('beApWkAppStart').value : '';
+  var rcm = new be_$class/App:RunClassMethod$();
+  var mtdnmbs = new be_$class/Text:String$().bems_new(mtdnm);
+  rcm.bem_doWhatsNeeded_1(mtdnmbs);
+
   var tmpo = new be_$class/System:Object$();
   ui = tmpo.bem_createInstance_1(new be_$class/Text:String$().bems_new(_uiClassName));
   ui.bem_new_0();
@@ -31,6 +37,7 @@ var uiStartup = function(_uiClassName) {
   hd = hd.bemc_getInitial();
   hd.bem_new_0();
   ui.bem_startup_0();
+  
 }
 
 var handleCallback = function(res) {
