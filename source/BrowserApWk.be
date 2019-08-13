@@ -14,7 +14,7 @@ var jsis;
 
 var setupStuffJs = function() {
   jsis = new be_$class/UI:CcIo:WebBrowser$();
-  jsis = hc.bemc_getInitial();
+  jsis = jsis.bemc_getInitial();
 }
 
 var require = function(toreq) {

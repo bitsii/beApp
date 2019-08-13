@@ -828,7 +828,8 @@ bevl_idd = new BEC_2_4_6_TextString(ccdd);
     }
     ifEmit(apwk) {
     log.log("getting datapath apwk");
-    String jspw = Json:Marshaller.marshall(Maps.from("call", "getDocumentsDirectory"));
+    //String jspw = Json:Marshaller.marshall(Maps.from("call", "getDocumentsDirectory"));
+    String jspw = "getDocumentsDirectory:";
     emit(js) {
     """
     var jsres = prompt(bevl_jspw.bems_toJsString());
@@ -2951,11 +2952,20 @@ use class App:LocalWebApp(WebApp) {
       ifEmit(ccIsIos) {
         mypwd = "";
       }
+      ifEmit(apwk) {
+        mypwd = "";
+      }
       
       webr.location = "file:///" + mypwd + self.plugin.homePage;
       
       ifEmit(ccIsIos) {
         String wfl = self.plugin.homePage;
+        wfl = wfl.substring(1, wfl.size);
+        webr.location = wfl;
+      }
+      
+      ifEmit(apwk) {
+        wfl = self.plugin.homePage;
         wfl = wfl.substring(1, wfl.size);
         webr.location = wfl;
       }
@@ -3000,6 +3010,9 @@ class App:AppStart {
   
     start(Parameters params) {
       self.new(params);
+      ifEmit(apwk) {
+        IO:Logs.turnOnAll();
+      }
       start();
     }
     

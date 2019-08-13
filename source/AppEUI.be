@@ -7,7 +7,7 @@ class App:RunClassMethod {
 
   doWhatsNeeded(String clmtd) {
   
-  "in dowhatsneeded".print();
+  //"in dowhatsneeded".print();
   
   if (TS.isEmpty(clmtd)) {
     return(self);

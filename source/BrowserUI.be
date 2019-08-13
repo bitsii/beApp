@@ -107,6 +107,9 @@ class UI:WebBrowser {
     ifEmit(cc) {
        browserType = "ccio";
     }
+    ifEmit(apwk) {
+       browserType = "apwk";
+    }
   }
 
   setup() {
@@ -124,6 +127,11 @@ class UI:WebBrowser {
       if (browserType == "ccio") {
         webImp = createInstance("UI:CcIo:WebBrowser");
         any wi = webImp;
+        webImp = wi.getMe();
+      }
+      if (browserType == "apwk") {
+        webImp = createInstance("UI:CcIo:WebBrowser");
+        wi = webImp;
         webImp = wi.getMe();
       }
       "making webbr".print();
