@@ -17,22 +17,7 @@ var setupStuffJs = function() {
   jsis = jsis.bemc_getInitial();
 }
 
-var require = function(toreq) {
-
-}
-
 """
-}
-
-class InFlight {
-
-   new() {
-     fields {
-       String allArgs;
-       String callbackId;
-     }
-   }
-   
 }
 
 use UI:CcIo:WebBrowser as IoBr;
@@ -56,16 +41,6 @@ class IoBr(WebImp) {
       setupStuffJs()
       """
       }
-   }
-   
-   startRequest() InFlight {
-     InFlight inf = InFlight.new();
-     inflight.put(inf);
-     return(inf);
-   }
-   
-   endRequest(InFlight inf) {
-     inflight.delete(inf);
    }
    
    initWeb() self {
@@ -113,19 +88,6 @@ class IoBr(WebImp) {
       resjs = "handleNamedCallback(\"" + Json:Marshaller.jsonEscape(ress) + "\", \"" + Json:Marshaller.jsonEscape(callbackId) + "\");\n";
     }
     return(resjs);
-  }
-  
-  outerHandleWeb(InFlight inf) this {
-    auto ll = splitAllArgs(inf.allArgs);
-    String ress = handleWeb(ll[0], ll[1], ll[2]);
-    if (undef(ress)) { ress = ""; }
-    //fashion the js to run here
-    if (TS.isEmpty(inf.callbackId)) {
-      String resjs = "handleCallback(\"" + Json:Marshaller.jsonEscape(ress) + "\");\n";
-    } else {
-      resjs = "handleNamedCallback(\"" + Json:Marshaller.jsonEscape(ress) + "\", \"" + Json:Marshaller.jsonEscape(inf.callbackId) + "\");\n";
-    }
-    inf.allArgs = resjs;
   }
   
   handleWeb(String arg, String uri, String ctype) String {

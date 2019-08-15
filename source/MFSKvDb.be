@@ -13,6 +13,7 @@ class MFSKvDb(SqKvDb) {
   pathNew(Path _dbp, String _tableName) self {
     new();
     fields {
+      IO:Log log =@ IO:Logs.get(self);
       Path dbp = _dbp;
       tableName = _tableName;
       Path tbp = dbp.copy().addStep(Hex.encode(tableName));
@@ -128,9 +129,11 @@ class MFSKvDb(SqKvDb) {
     put(name, value);
   }
   
-  put(String name, String value) {      
+  put(String name, String value) {  
+    //log.log("in mfs put2");
     Path np = tbp.copy().addStep(Hex.encode(name));
     np.file.contents = value;
+    //log.log("mfs put2 done")
   }
   
   testAndPut(String name, String oldValue, String value) Bool {

@@ -540,41 +540,7 @@ class HC {
      String resjs;
      emit(js) {
     """
-    if (typeof(window) !== 'undefined' && typeof(window.external) !== 'undefined'
-            && typeof(window.external.HandleCall) !== 'undefined') { //}
-    """
-    }
-    comboargs = combineArgs(argjs, url, contentType);
-    emit(js) {
-    """
-      var res = window.external.HandleCall(bevl_comboargs.bems_toJsString());
-      //document.getElementById("infotxt").value = res;
-      if (res !== null && typeof(res) !== 'undefined') {
-        bevl_resjs = new be_$class/Text:String$().bems_new(res);
-        //document.getElementById("infotxt").value = bevl_resjs.bems_toJsString();
-      }
-      //{
-    } else if (typeof(window.webkit) !== 'undefined') { //}
-    """
-    }
-    ifNotEmit(apwkui) {
-    comboargs = combineArgs(argjs, url, contentType);
-    emit(js) {
-    """
-      var messageToPost;
-      if (beva_name == null) {
-        messageToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':''};
-      } else {
-        messageToPost = {'allArgs':bevl_comboargs.bems_toJsString(), 'callBack':beva_name.bems_toJsString()};
-      }
-      window.webkit.messageHandlers.bems_wkhandleCall.postMessage(messageToPost);
-    """
-    }
-    }
-    emit(js) {
-    """
-    //{
-    } else if (typeof(Android) !== 'undefined') { //}
+    if (typeof(Android) !== 'undefined') { //}
     """
     }
     String comboargs = combineArgs(argjs, url, contentType);
@@ -591,13 +557,7 @@ class HC {
     """
     }
     ifEmit(apwkui) {
-      emit(js) {
-      """
-      console.log("gonna try calling the sync swift delegate");
-      var res = prompt("YO");
-      console.log("got res " + res);
-      """
-      }
+      resjs = UI:CcIo:WebBrowser.handleWeb(argjs, url, contentType);
     }
     ifNotEmit(apwkui) {
     emit(js) {
