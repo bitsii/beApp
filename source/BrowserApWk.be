@@ -36,6 +36,7 @@ class IoBr(WebImp) {
         Map session = Map.new();
         CLocker inflight = CLocker.new(Set.new());
      }
+     UI:HtmlDom:Call.apwkHandlerSet(self);
      emit(js) {
       """
       setupStuffJs()

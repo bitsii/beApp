@@ -429,6 +429,7 @@ class HC {
   default() self {
     fields {
       IO:Log log =@ IO:Logs.get(self);
+      any apwkHandler;
     }
   }
 
@@ -557,7 +558,7 @@ class HC {
     """
     }
     ifEmit(apwkui) {
-      resjs = UI:CcIo:WebBrowser.handleWeb(argjs, url, contentType);
+      resjs = apwkHandler.handleWeb(argjs, url, contentType);
     }
     ifNotEmit(apwkui) {
     emit(js) {
