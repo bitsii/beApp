@@ -3368,6 +3368,20 @@ class WebApp {
     
 }
 
+use class System:RunAsync {
+
+  new(String _classMethod) {
+    fields {
+      String classMethod = _classMethod;
+    }
+  }
+  
+  start() {
+  
+  }
+
+}
+
 use class App:Background {
 
   new() self {

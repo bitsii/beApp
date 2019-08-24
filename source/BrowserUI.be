@@ -485,7 +485,20 @@ use class Web:Client {
         String ccin;
       }
       ifNotEmit(ccIsIos) {
-        openOutput().write(payload);
+        ifNotEmit(apwk) {
+          openOutput().write(payload);
+        }
+      }
+      ifEmit(apwk) {
+        Map reqjs = Maps.from("url", url, "verb", verb, "outputHeaders", outputHeaders, "payload", payload);
+        String reqjss = Json:Marshaller.marshall(reqjs);
+        String jspw = "httpSend:" + reqjss;
+        emit(js) {
+        """
+        var jsres = prompt(bevl_jspw.bems_toJsString());
+        bevp_ccin = new be_$class/Text:String$().bems_new(jsres);
+        """
+        }
       }
       ifEmit(ccIsIos) {
         emit(cc) {
