@@ -2988,6 +2988,18 @@ class App:AppStart {
     }
   }
   
+  invokePlugin(List args) {
+    String pln = args.get(0);
+    args.delete(0);
+    String plmtd = args.get(0);
+    args.delete(0);
+    Parameters params = Parameters.new(args);
+    any app = setup(params);
+    any plugin = app.pluginsByName.get(pln);
+    log.log("params invokePlugin " + params.toJson());
+    plugin.invoke(plmtd, List.new());
+  }
+  
     main() {
       try {
         String appArgs = System:Environment.getVariable("BEAPPARGS");
@@ -3008,13 +3020,15 @@ class App:AppStart {
       }
     }
   
-    start(Parameters params) {
-      self.new(params);
-      ifEmit(apwk) {
-        IO:Logs.turnOnAll();
-      }
-      start();
-    }
+  start(Parameters params) {
+    any app = setup(params);
+    app.main();
+  }
+  
+  start() {
+    any app = setup();
+    app.main();
+  }
     
   setupPlugins(WebApp app) {
     auto pluginClasses = params.get("plugin");
@@ -3039,9 +3053,17 @@ class App:AppStart {
     }
   }
   
-  start() this {
-    log.log("starting app");
-    //log.log("params start " + params.toJson());
+  setup(Parameters params) {
+    self.new(params);
+    return(setup());
+  }
+  
+  setup() {
+    //ifEmit(apwk) {
+      IO:Logs.turnOnAll();
+    //}
+    log.log("setup app");
+    log.log("params setup " + params.toJson());
     Set bfiles = Set.new();
     if (def(params["runParams"])) {
       for (String istr in params["runParams"]) {
@@ -3052,7 +3074,7 @@ class App:AppStart {
           }
       }
     }
-    //log.log("params postloads " + params.toJson());
+    log.log("params setup postloads " + params.toJson());
     if (def(params["logSink"])) {
       IO:Log:Sink ls = IO:Log:Sink.new();
       if (def(params["logSinkPrefix"])) {
@@ -3072,37 +3094,21 @@ class App:AppStart {
       cuiapp.params = params;
       setupPlugins(cuiapp);
       setupPlugin(cuiapp);
-      cuiapp.main();
-      cuiapp.stop();
-    } else {
-      if (appTypes.has("browser")) {
-        any luiapp = createInstance("App:LocalWebApp");
-        luiapp.params = params;
-        setupPlugins(luiapp);
-        setupPlugin(luiapp);
-        unless (appTypes.has("server")) {
-          log.log("starting browser app");
-          luiapp.main();
-        }
-      }
-      if (appTypes.has("server")) {
-        any wuiapp = createInstance("App:RemoteWebApp");
-        wuiapp.params = params;
-        setupPlugins(wuiapp);
-        setupPlugin(wuiapp);
-        if (appTypes.has("browser")) {
-          log.log("cohosting apps");
-          wuiapp.cohostWith(luiapp);
-          log.log("starting server app");
-          wuiapp.main();
-          log.log("starting browser app");
-          luiapp.main();
-        } else {
-          log.log("starting server app");
-          wuiapp.main();
-        }
-      }
+      return(cuiapp);
+    } elseIf (appTypes.has("browser")) {
+      any luiapp = createInstance("App:LocalWebApp");
+      luiapp.params = params;
+      setupPlugins(luiapp);
+      setupPlugin(luiapp);
+      return(luiapp);
+    } elseIf (appTypes.has("server")) {
+      any wuiapp = createInstance("App:RemoteWebApp");
+      wuiapp.params = params;
+      setupPlugins(wuiapp);
+      setupPlugin(wuiapp);
+      return(wuiapp);
     }
+    return(null);
   }
 }
 
@@ -3359,6 +3365,7 @@ class WebApp {
         }
       }
      }
+     stop();
     }
     
     main() this {
@@ -3366,18 +3373,52 @@ class WebApp {
       System:Process.exit(0);
     }
     
+    runAsync(String plugName, String plugMtd) {
+      List appargs = params.initialArgs;
+      List pnp = Lists.from(plugName, plugMtd);
+      List pnaa = pnp + appargs;
+      List invargs = List.new();
+      invargs[0] = pnaa;
+      System:RunAsync.run("App:AppStart", "invokePlugin", invargs);
+    }
+    
 }
 
 use class System:RunAsync {
 
-  new(String _classMethod) {
+  new(String _klass, String _toInvoke, List _args) self {
     fields {
-      String classMethod = _classMethod;
+      IO:Log log =@ IO:Logs.get(self);
+      String klass = _klass;
+      String toInvoke = _toInvoke;
+      List args = _args;
+         //for app runasync
+         //one arg is the startup args for params
+         //one arg is the name of the plugin
+         //one arg is the name of the method on the plugin
     }
   }
   
-  start() {
+  run(klass, toInvoke, args) self {
+    new(klass, toInvoke, args).start();
+  }
   
+  start() self {
+    fields {
+      System:Thread myThread;
+    }
+    myThread = System:Thread.new(self);
+    myThread.start();
+  }
+  
+  main() {
+    any e;
+    try {
+      any inst = createInstance(klass);
+      inst.invoke(toInvoke, args);
+    } catch (e) {
+      log.error("Caught exception running tasks " + e);
+    }
   }
 
 }
