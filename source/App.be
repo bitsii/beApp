@@ -3063,7 +3063,7 @@ class App:AppStart {
       IO:Logs.turnOnAll();
     //}
     log.log("setup app");
-    log.log("params setup " + params.toJson());
+    //log.log("params setup " + params.toJson());
     Set bfiles = Set.new();
     if (def(params["runParams"])) {
       for (String istr in params["runParams"]) {
@@ -3074,7 +3074,7 @@ class App:AppStart {
           }
       }
     }
-    log.log("params setup postloads " + params.toJson());
+    //log.log("params setup postloads " + params.toJson());
     if (def(params["logSink"])) {
       IO:Log:Sink ls = IO:Log:Sink.new();
       if (def(params["logSinkPrefix"])) {
@@ -3399,8 +3399,36 @@ use class System:RunAsync {
     }
   }
   
-  run(klass, toInvoke, args) self {
-    new(klass, toInvoke, args).start();
+  prepAndPush() {
+    Map margs = Maps.from("klass", klass, "toInvoke", toInvoke, "args", args);
+    String jsargs = Encode:Hex.encode(Json:Marshaller.marshall(margs));
+    String jspw = "runAsync:" + jsargs;
+    emit(js) {
+    """
+    var jsres = prompt(bevl_jspw.bems_toJsString());
+    //bevl_res = new be_$class/Text:String$().bems_new(jsres);
+    """
+    }
+  }
+  
+  readAndRun(String jsargs) {
+  
+    Map margs = Json:Unmarshaller.unmarshall(Encode:Hex.decode(jsargs));
+    klass = margs["klass"];
+    toInvoke = margs["toInvoke"];
+    args = margs["args"];
+    main();
+    
+  }
+  
+  run(String klass, String toInvoke, List args) self {
+    new(klass, toInvoke, args);
+    ifNotEmit(apwk) {
+      start();
+    }
+    ifEmit(apwk) {
+      prepAndPush();
+    }
   }
   
   start() self {

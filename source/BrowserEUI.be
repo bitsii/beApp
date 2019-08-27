@@ -40,6 +40,12 @@ var uiStartup = function(_uiClassName) {
   
 }
 
+var readAndRun = function(jsargs) {
+  var ras = new be_$class/System:RunAsync$();
+  var beargs = new be_$class/Text:String$().bems_new(jsargs);
+  ras.bem_readAndRun_1(beargs);
+}
+
 var handleCallback = function(res) {
     if (res != null) {
       var bevs_resjs = new be_$class/Text:String$().bems_new(res);
