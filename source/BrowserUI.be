@@ -496,9 +496,18 @@ use class Web:Client {
         emit(js) {
         """
         var jsres = prompt(bevl_jspw.bems_toJsString());
-        bevp_ccin = new be_$class/Text:String$().bems_new(jsres);
+        //console.log("got jsres");
+        //console.log(jsres);
+        bevl_jspw = new be_$class/Text:String$().bems_new(jsres);
         """
         }
+        ccin = jspw;
+        //("post http apwk results").print();
+        //if (def(ccin)) {
+        //  ccin.print();
+        //} else {
+        //  "nada".print();
+        //}
       }
       ifEmit(ccIsIos) {
         emit(cc) {
@@ -571,9 +580,17 @@ if (retData != nil) {
     
     contentsInGet() String {
       ifNotEmit(ccIsIos) {
-        return(openInput().readString());
+        ifNotEmit(apwk) {
+          return(openInput().readString());
+        }
       }
       ifEmit(ccIsIos) {
+        if (def(ccin)) {
+          return(ccin);
+        }
+        return(null);
+      }
+      ifEmit(apwk) {
         if (def(ccin)) {
           return(ccin);
         }
