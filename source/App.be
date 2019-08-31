@@ -2997,7 +2997,12 @@ class App:AppStart {
     any app = setup(params);
     any plugin = app.pluginsByName.get(pln);
     log.log("params invokePlugin " + params.toJson());
-    plugin.invoke(plmtd, List.new());
+    if (params.has("plma")) {
+      iar = params.params.get("plma").toList();
+    } else {
+      List iar = List.new();
+    }
+    plugin.invoke(plmtd, iar);
   }
   
     main() {
@@ -3373,10 +3378,14 @@ class WebApp {
       System:Process.exit(0);
     }
     
-    runAsync(String plugName, String plugMtd) {
+    runAsync(String plugName, String plugMtd, List plmargs) {
       List appargs = params.initialArgs;
       List pnp = Lists.from(plugName, plugMtd);
       List pnaa = pnp + appargs;
+      for (any plma in plmargs) {
+        pnaa += "--plma";
+        pnaa += plma;
+      }
       List invargs = List.new();
       invargs[0] = pnaa;
       System:RunAsync.run("App:AppStart", "invokePlugin", invargs);
