@@ -17,6 +17,9 @@ fi
 if [[ $OSTYPE == *"MINGW"* ]]; then
   #echo "Is Mingw"
   export OSTYPE="Mingw"
+  export CLASSPATH="$CLASSPATH;App/$APPBLDNM/*"
+else
+  export CLASSPATH="$CLASSPATH:App/$APPBLDNM/*"
 fi
 
 export MYPWD=`pwd`
@@ -29,5 +32,5 @@ export MYUSER=`whoami`
 
 mkdir -p Data/$APPBLDNM
 
-java $BEJVRUNARGS -classpath "App/$APPBLDNM/*" be.BEX_E --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
+java $BEJVRUNARGS -classpath "$CLASSPATH" be.BEX_E --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
 
