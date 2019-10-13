@@ -25,13 +25,13 @@ fi
 
 cd ../apprun/App/$APPBLDNM
 
-mv BEX_E_lib_jv.jar BEX_E_lib_jv.ja
-mv BEX_E_app_jv.jar BEX_E_app_jv.ja
+mkdir bereljar
+mv BEX_*jar bereljar
 
 rm *.jar
 
-mv BEX_E_lib_jv.ja BEX_E_lib_jv.jar
-mv BEX_E_app_jv.ja BEX_E_app_jv.jar
+mv bereljar/* .
+rmdir bereljar
 
 if [ -z "$APPPKGNM" ]
 then
