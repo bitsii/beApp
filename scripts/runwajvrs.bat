@@ -13,6 +13,8 @@ SET OPENSSL_CONF=..\Apache24\conf\openssl.cnf
 REM SET MYPWD=\Edgii\BBridge\apprun
 SET MYPWD=%cd%
 
+SET MYHN=%ComputerName%
+
 SET PATH=..\jv\bin;..\sc;..\up;..\Apache24\bin;..\gw\bin;%PATH%
 
 :loop
