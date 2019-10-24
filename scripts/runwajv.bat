@@ -10,7 +10,7 @@ REM echo Current location: %APPBLDNM%
 cd ..\..
 
 SET OPENSSL_CONF=..\Apache24\conf\openssl.cnf
-REM SET MYPWD=\Edgii\BBridge\apprun
+REM SET MYPWD=\Edgii\SBridge\apprun
 SET MYPWD=%cd%
 
 SET MYHN=%ComputerName%

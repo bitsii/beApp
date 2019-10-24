@@ -11,24 +11,24 @@ mkdir -p ../apprun/App/SII
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abelii/target5/*;extlibs/SII/*"
+    export CLASSPATH="../brace/target5/*;extlibs/SII/*"
     ;;
   *)
-    export CLASSPATH="../abelii/target5/*:extlibs/SII/*"
+    export CLASSPATH="../brace/target5/*:extlibs/SII/*"
     ;;
 esac
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/SII/d --buildPath ../apprun/App/SII --emitLang jv --emitFlag appDebug -mainClass=App:AppStart ../abelii/source/extended/Log.be source/SII.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
+mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile build/shared.txt --deployPath ../apprun/App/SII/d --buildPath ../apprun/App/SII --emitLang jv --emitFlag appDebug -mainClass=App:AppStart ../brace/source/extended/Log.be source/SII.be source/Db.be source/SlDbJv.be source/BrowserUI.be source/BrowserJvFx.be source/WebServer.be source/App.be source/WebApp.be
 
 #--emitFlag iuOwnBackground
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-javac ../abelii/system/jv/be/*.java ../apprun/App/SII/Base/target/jv/be/*.java
+javac ../brace/system/jv/be/*.java ../apprun/App/SII/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/SII/d --buildPath ../apprun/App/SII --emitLang js --ownProcess false -mainClass=IUHub:Eui ../abelii/source/extended/Log.be source/SIIBr.be source/BrowserEUI.be
+mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/SII/d --buildPath ../apprun/App/SII --emitLang js --ownProcess false -mainClass=IUHub:Eui ../brace/source/extended/Log.be source/SIIBr.be source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -42,7 +42,7 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 #--emitFlag appDebug (actually, not ???)
 # and change last line from run to rel
 
-#mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/SII/d --buildPath ../apprun/App/SII --emitLang js --ownProcess false -mainClass=SANSite:Wui ../abelii/source/extended/Log.be source/KonSiteBr.be source/SIIBr.be source/BrowserEUI.be
+#mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile build/base.txt --deployPath ../apprun/App/SII/d --buildPath ../apprun/App/SII --emitLang js --ownProcess false -mainClass=SANSite:Wui ../brace/source/extended/Log.be source/KonSiteBr.be source/SIIBr.be source/BrowserEUI.be
 
 #lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -55,11 +55,11 @@ find . -name "*.java" -exec rm {} \;
 jar -cf ../../../BEX_E_lui_jv.jar .
 cd ../../../../../../edgii
 
-cd ../abelii/system/jv
+cd ../brace/system/jv
 jar -cf ../../../apprun/App/SII/BEX_E_lib_jv.jar .
 cd ../../../edgii
 
-find ../abelii/system -name "*.class" -exec rm {} \;
+find ../brace/system -name "*.class" -exec rm {} \;
 
 #common
 cp extlibs/SII/* ../apprun/App/SII
