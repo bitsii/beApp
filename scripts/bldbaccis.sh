@@ -17,7 +17,7 @@ mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be -cchImp
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 mkdir -p ios/$APPBLDNM/$APPBLDNM
-mkdir -p ios/resources/App/BNote
+mkdir -p ios/resources/App/$APPBLDNM
 rm -f ios/$APPBLDNM/$APPBLDNM/BE*.hpp
 rm -f ios/$APPBLDNM/$APPBLDNM/BEX_E.mm
 cp ../apprun/App/$APPBLDNM/Base/target/cc/be/BE*.hpp ios/$APPBLDNM/$APPBLDNM
@@ -29,8 +29,8 @@ mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --build
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js ios/resources/App/BNote/BEX_E.js
+cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js ios/resources/App/$APPBLDNM/BEX_E.js
 
-cp -R resources/* ios/resources/App/BNote
+cp -R resources/* ios/resources/App/$APPBLDNM
 
 cd ../apprun/App/$APPBLDNM

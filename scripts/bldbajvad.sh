@@ -25,7 +25,7 @@ mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --build
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 mkdir -p android/$APPBLDNM/app/src/main/java/be
-mkdir -p android/$APPBLDNM/app/src/main/assets/App/BNote
+mkdir -p android/$APPBLDNM/app/src/main/assets/App/$APPBLDNM
 rm android/$APPBLDNM/app/src/main/java/be/BE*.java
 cp ../brace/system/jv/be/*.java android/$APPBLDNM/app/src/main/java/be
 cp ../apprun/App/$APPBLDNM/Base/target/jv/be/*.java android/$APPBLDNM/app/src/main/java/be
@@ -36,9 +36,9 @@ mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --build
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js android/$APPBLDNM/app/src/main/assets/App/BNote/BEX_E.js
+cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js android/$APPBLDNM/app/src/main/assets/App/$APPBLDNM/BEX_E.js
 
-cp -R resources/* android/$APPBLDNM/app/src/main/assets/App/BNote
+cp -R resources/* android/$APPBLDNM/app/src/main/assets/App/$APPBLDNM
 
 cp ../braceApp/extlibs/jv/baad/* android/$APPBLDNM/app/libs
 
