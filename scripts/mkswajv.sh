@@ -22,6 +22,11 @@ cp $APPPKGNM ${APPBLDNM}_appins
 cp $APPBLDNM/resources/relwajvins.sh ${APPBLDNM}_appins
 chmod +x ${APPBLDNM}_appins/relwajvins.sh
 
+if [ -e ./$APPBLDNM/scripts/premks.sh ]
+then
+  ./$APPBLDNM/scripts/premks.sh
+fi
+
 makeself ${APPBLDNM}_appins $APPINSNM ${APPBLDNM}Install ./relwajvins.sh
 
 cd ${APPBLDNM}
