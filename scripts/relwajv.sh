@@ -12,15 +12,19 @@ fi
 if [ -e ~/node_modules/uglify-js/bin/uglifyjs ]
 then
   ~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/$APPBLDNM/BEX_E.js > ../apprun/App/$APPBLDNM/BEX_E.js.1
-  rm -f ../apprun/App/$APPBLDNM/BEX_E.js
-  mv ../apprun/App/$APPBLDNM/BEX_E.js.1 ../apprun/App/$APPBLDNM/BEX_E.js
+  lae=$?;if [[ $lae -eq 0 ]]; then
+    rm -f ../apprun/App/$APPBLDNM/BEX_E.js
+    mv ../apprun/App/$APPBLDNM/BEX_E.js.1 ../apprun/App/$APPBLDNM/BEX_E.js
+  fi
 fi
 
 if [ -e /usr/local/bin/uglifyjs ]
 then
   /usr/local/bin/uglifyjs ../apprun/App/$APPBLDNM/BEX_E.js > ../apprun/App/$APPBLDNM/BEX_E.js.1
-  rm -f ../apprun/App/$APPBLDNM/BEX_E.js
-  mv ../apprun/App/$APPBLDNM/BEX_E.js.1 ../apprun/App/$APPBLDNM/BEX_E.js
+  lae=$?;if [[ $lae -eq 0 ]]; then
+    rm -f ../apprun/App/$APPBLDNM/BEX_E.js
+    mv ../apprun/App/$APPBLDNM/BEX_E.js.1 ../apprun/App/$APPBLDNM/BEX_E.js
+  fi
 fi
 
 cd ../apprun/App/$APPBLDNM
