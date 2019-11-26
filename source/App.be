@@ -1264,10 +1264,6 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         super.new();
      }
      
-     cohostWith(App:AuthPlugin ohp) {
-       ohp.accountManager = self.accountManager;
-     }
-     
      accountManagerGet() AccountManager {
       fields {
         AccountManager accountManager;
@@ -2086,6 +2082,8 @@ use class App:PublicReadPlugin {
               mtype = "text/html";
             } elseIf (uri.ends(".jpg")) {
               mtype = "image/jpeg";
+            } elseIf (uri.ends(".gif")) {
+              mtype = "image/gif";
             } elseIf (uri.ends(".svg")) {
               mtype = "image/svg+xml";
             } elseIf (uri.ends(".js")) {
@@ -2411,6 +2409,8 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
               mtype = "text/html";
             } elseIf (uri.ends(".jpg")) {
               mtype = "image/jpeg";
+            } elseIf (uri.ends(".gif")) {
+              mtype = "image/gif";
             } elseIf (uri.ends(".svg")) {
               mtype = "image/svg+xml";
             } elseIf (uri.ends(".js")) {
@@ -2608,6 +2608,8 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
    jscallForPath(Path p) {
     if (p.toString().ends(".jpg")) {
       String jscall = " onclick=\"localBrowseRequest('" += Encode:Hex.encode(p.toString()) += "');return false;\"";
+    } elseIf (p.toString().ends(".gif")) {
+      jscall = " onclick=\"localBrowseRequest('" += Encode:Hex.encode(p.toString()) += "');return false;\"";
     } elseIf (p.toString().ends(".html") || p.toString().ends(".htm")) {
       jscall = " onclick = \"return false;\"";
     } else {
@@ -2643,7 +2645,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       String dirListHtml = String.new();
       dirListHtml += "<input type=\"hidden\" id=\"browsingDirId\" value=\"" += hex.encode(dirFile.path.toString()) += "\"/>";
       if (dirFile.exists && checkReadPath(dirFile.path, arg, request)) {
-        dirListHtml += "<p>Listing 3 for " += htmle.encode(dirFile.path.toString()) += "</p>";
+        dirListHtml += "<p>Listing for " += htmle.encode(dirFile.path.toString()) += "</p>";
         dirListHtml += "<table>";
         if (adminLinks) {
           if (System:CurrentPlatform.name == "mswin") {
@@ -2698,7 +2700,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           dit.close();
         } elseIf (dirFile.path.toString().ends(".note")) {
           
-        } elseIf (dirFile.path.toString().ends(".jpg")) {
+        } elseIf (dirFile.path.toString().ends(".jpg") || dirFile.path.toString().ends(".gif")) {
           //get one before and after for slideshow
           dit = dirFile.path.parent.file.iterator;
           dit.open();
@@ -2720,7 +2722,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             if (ps == pitcs) {
               found = true;
             } else {
-              if (ps.ends(".jpg")) {
+              if (ps.ends(".jpg") || ps.ends(".gif")) {
                 if (found) {
                   if (undef(safter)) {
                     auto safter = entry.path;
@@ -3311,21 +3313,6 @@ class WebApp {
       paths = App:Paths.new(self);
     }
     return(paths);
-  }
-  
-  cohostWith(WebApp other) {
-    other.lock = self.lock;
-    
-    other.sessionManager = self.sessionManager;
-    
-    for (any pl in plugins) {
-      if (pl.can("cohostWith", 1)) {
-        any opl = other.pluginsByName.get(pl.name);
-        if (def(opl)) {
-          pl.cohostWith(opl);
-        }
-      }
-    }
   }
   
   configManagerGet() KvDb {
