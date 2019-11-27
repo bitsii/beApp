@@ -2740,16 +2740,25 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             log.log("Got before pic " + sbefore);
             p = sbefore;
             jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-            auto plink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">Prior Pic</a>";
+            auto plink = "<a id='picBefore' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\<</a>";
             res["plink"] = plink;
+            
+            jscall = " onclick=\"callUI('keepGoingPY');localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
+            plink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\<\<</a>";
+            res["plinkgo"] = plink;
           
           }
           if (def(safter)) {
             log.log("Got after pic " + safter);
             p = safter;
             jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-            auto nlink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">Next Pic</a>";
+            auto nlink = "<a id='picAfter' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\></a>";
             res["nlink"] = nlink;
+            
+            jscall = " onclick=\"callUI('keepGoingNY');localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
+            nlink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\>\></a>";
+            res["nlinkgo"] = nlink;
+            
           }
           return(res);
         }
