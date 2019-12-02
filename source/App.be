@@ -659,6 +659,9 @@ class Upnp {
       res = System:Command.new(cmd).open().output.readStringClose();
       log.log("forwardPort result " + res);
       
+      if (res.has("is redirected to")!) {
+        throw(System:Exception.new("UPnP port forward failed, verify router settings"));
+      }
       if (external != internal) {
         log.log("doing socat");
         //socat tcp-listen:2022,reuseaddr,fork tcp:localhost:22
