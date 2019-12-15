@@ -26,3 +26,8 @@ if [ "$OSTYPE" == "Darwin" ]; then
   lsof -d cwd | grep $APPRUNDIR | grep java | awk '{$1=$1}1' | cut -d " " -f 2 | xargs -I{} ps -fe {} | grep $APPBLDNM | awk '{$1=$1}1' | cut -d " " -f 3 | xargs -I{} kill {}
   lsof -d cwd | grep $APPRUNDIR | grep java | awk '{$1=$1}1' | cut -d " " -f 2 | xargs -I{} ps -fe {} | grep $APPBLDNM | awk '{$1=$1}1' | cut -d " " -f 2 | xargs -I{} kill {}
 fi
+
+if [ "$OSTYPE" == "Linux" ]; then
+  lsof -d cwd | grep $APPRUNDIR | grep java | awk '{$1=$1}1' | cut -d " " -f 2 | xargs -I{} ps -feq {} | grep $APPBLDNM | awk '{$1=$1}1' | cut -d " " -f 3 | xargs -I{} kill {}
+  lsof -d cwd | grep $APPRUNDIR | grep java | awk '{$1=$1}1' | cut -d " " -f 2 | xargs -I{} ps -feq {} | grep $APPBLDNM | awk '{$1=$1}1' | cut -d " " -f 2 | xargs -I{} kill {}
+fi

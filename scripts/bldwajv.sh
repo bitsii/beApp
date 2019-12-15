@@ -12,6 +12,7 @@ mkdir -p ../apprun/App/$APPBLDNM
 
 cp ../braceApp/scripts/runwajv.sh ../apprun/App/$APPBLDNM
 cp ../braceApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
+cp ../braceApp/scripts/stopwajvrs.sh ../apprun/App/$APPBLDNM
 cp ../braceApp/scripts/runwajv.bat ../apprun/App/$APPBLDNM
 cp ../braceApp/scripts/runwajvex.bat ../apprun/App/$APPBLDNM
 cp ../braceApp/scripts/runwajvrs.bat ../apprun/App/$APPBLDNM
