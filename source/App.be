@@ -2763,6 +2763,12 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             res["nlinkgo"] = nlink;
             
           }
+          if (def(sbefore) || def(safter)) {
+            log.log("got a pic for slink");
+            nlink = "<a href='#' id='slinkhr' onclick=\"callUI('stopGoing');return false;\">||</a>";
+            res["slink"] = nlink;
+            
+          }
           return(res);
         }
         dirListHtml += "</table>";
