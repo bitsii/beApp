@@ -2739,6 +2739,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           Map res = Map.new();
           res["action"] = "updateImageResponse";
           res["imghtm"] = "<img style=\"object-fit: cover; max-width: 100%;\" src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + "\" >";
+          
           if (def(sbefore)) {
             log.log("Got before pic " + sbefore);
             p = sbefore;
@@ -2749,8 +2750,11 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             jscall = " onclick=\"callUI('keepGoingPY');localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
             plink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\<\<</a>";
             res["plinkgo"] = plink;
+            
+            res["plbefore"] = "../../" + sbefore.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken");
           
           }
+          
           if (def(safter)) {
             log.log("Got after pic " + safter);
             p = safter;
@@ -2762,7 +2766,10 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             nlink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\>\></a>";
             res["nlinkgo"] = nlink;
             
+            res["plafter"] = "../../" + safter.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken");
+            
           }
+          
           if (def(sbefore) || def(safter)) {
             log.log("got a pic for slink");
             nlink = "<a href='#' id='slinkhr' onclick=\"callUI('stopGoing');return false;\">||</a>";
