@@ -2367,6 +2367,10 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       if (def(h) && pas.begins(h.toString())) {
         isOk = true;
       }
+      Path s = Path.apNew("Shared").file.absPath;
+      if (def(s) && pas.begins(s.toString())) {
+        isOk = true;
+      }
     } catch (e) {
       log.error("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
     }
