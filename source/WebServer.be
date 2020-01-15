@@ -91,6 +91,15 @@ use class Web:Server {
   }
   
   handleStartWeb() {
+    
+    if (def(port)) {
+      String smsg = "Starting web server, available at http://127.0.0.1:" + port;
+      smsg.print();
+      if (def(log)) {
+        log.log(smsg);
+      }
+    }
+    
     if (app.can("handleStartWeb", 0)) {
       app.handleStartWeb();
     }
