@@ -474,19 +474,21 @@ class Db:Derby:Database(DbDb) {
 
 use System:Thread:ContainerLocker as CLocker;
 use Db:KeyValue as KvDb;
-class KvDb(CLocker) {
+class KvDb {
   
   new(DbDb _db, String _tableName) self {
     SqKvDb sdb = SqKvDb.new(_db, _tableName);
-    super.new(sdb);
+    new(sdb);
   }
   
   sdbNew(SqKvDb _sdb) {
-    super.new(_sdb);
+    new(_sdb);
   }
   
   create() self {
+    open();
     container.create();
+    close();
   }
   
   open() self {
@@ -494,8 +496,197 @@ class KvDb(CLocker) {
   }
   
   drop() self {
+    open();
     container.drop();
+    close();
   }
+  
+  //from Clocker
+  new(_container) self {
+    fields {
+      any container;
+    }
+    container = _container;
+  }
+  
+  has(key) Bool {
+    open();
+    Bool r = container.has(key);
+    close();
+    return(r);
+  }
+  
+  has(key, key2) Bool {
+    open();
+    Bool r = container.has(key, key2);
+    close();
+    return(r);
+  }
+  
+  get() {
+    open();
+    any r = container.get();
+    close();
+    return(r);
+  }
+  
+  get(key) {
+    open();
+    any r = container.get(key);
+    close();
+    return(r);
+  }
+  
+  getAndClear(key) {
+    open();
+    any r = container.get(key);
+    container.delete(key);
+    close();
+    return(r);
+  }
+  
+  get(p, k) {
+    open();
+    any r = container.get(p, k);
+    close();
+    return(r);
+  }
+  
+  addValue(key) self {
+    open();
+    container.addValue(key);
+    close();
+  }
+  
+  putReturn(key) {
+    open();
+    any r = container.put(key);
+    close();
+    return(r);
+  }
+  
+  put(key) self {
+    open();
+    container.put(key);
+    close();
+  }
+  
+  putReturn(key, value) {
+    open();
+    any r = container.put(key, value);
+    close();
+    return(r);
+  }
+  
+  put(key, value) self {
+    open();
+    container.put(key, value);
+    close();
+  }
+  
+  testAndPut(key, oldValue, value) {
+    open();
+    any rc = container.testAndPut(key, oldValue, value);
+    close();
+    return(rc);
+  }
+  
+  getSet() {
+    open();
+    Map rc = container.getSet();
+    close();
+    return(rc);
+  }
+  
+  getMap() {
+    open();
+    Map rc = container.getMap();
+    close();
+    return(rc);
+  }
+  
+  getMap(String prefix) {
+    open();
+    Map rc = container.getMap(prefix);
+    close();
+    return(rc);
+  }
+  
+  putIfAbsent(key, value) Bool {
+    open();
+    if (container.has(key)) {
+      Bool didPut = false;
+    } else {
+      container.put(key, value);
+      didPut = true;
+    }
+    close();
+    return(didPut);
+  }
+  
+  getOrPut(key, value) {
+    open();
+    if (container.has(key)) {
+      any result = container.get(key);
+    } else {
+      container.put(key, value);
+      result = value;
+    }
+    close();
+    return(result);
+  }
+  
+  put(p, k, v) self {
+    open();
+    container.put(p, k, v);
+    close();
+  }
+  
+  delete(key) {
+    open();
+    any r = container.delete(key);
+    close();
+    return(r);
+  }
+  
+  delete(p, k) {
+    open();
+    any r = container.delete(p, k);
+    close();
+    return(r);
+  }
+  
+  sizeGet() Int {
+    open();
+    Int r = container.size;
+    close();
+    return(r);
+  }
+  
+  isEmptyGet() Bool {
+    open();
+    Bool r = container.isEmpty;
+    close();
+    return(r);
+  }
+  
+  copyContainer() {
+    open();
+    any r = container.copy();
+    close();
+    return(r);
+  }
+  
+  clear() self {
+    open();
+    container.clear();
+    close();
+  }
+  
+  close() self {
+    container.close();
+  }
+  
   
 }
 
@@ -506,10 +697,9 @@ class KvDbs {
   new(Parameters _params, Path _dataPath) self {
     fields {
       Parameters params = _params;
-      Lock lock = Lock.new();
-      Map kvDbs = Map.new();
       IO:Log log =@ IO:Logs.get(self);
       Path dataPath = _dataPath;
+      CLocker kvdbCreated = CLocker.new(Map.new());
     }
   }
   
@@ -538,55 +728,31 @@ class KvDbs {
       } else {
         appDb.new();
       }
-      appDb.open();
       return(appDb);
   }
   
   get(String name) KvDb {
-    fields {
-      Int appKvPoolSize;
-    }
     try {
-      lock.lock();
-      if (undef(appKvPoolSize)) {
-        String appKvPoolSizeS = params.getFirst("appKvPoolSize");
-        if (TS.notEmpty(appKvPoolSizeS)) {
-          appKvPoolSize = Int.new(appKvPoolSizeS);
-        } else {
-          appKvPoolSize = 3;
-        }
+      Bool doCC = false;
+      ifEmit(cc) {
+        doCC = true;
       }
-      LinkedList kdbl = kvDbs.get(name);
-      if (undef(kdbl)) {
-        kdbl = LinkedList.new();
-        Bool doCC = false;
-        ifEmit(cc) {
-          doCC = true;
-        }
-        String sdbClass = params.getFirst("sdbClass");
-        for (Int i = 0;i < appKvPoolSize;i++=) {
-          if (TS.notEmpty(sdbClass)) {
-            cckdb = createInstance(sdbClass);
-            kdb = KvDb.sdbNew(cckdb.pathNew(dataPath.copy(), name).open());
-          } elseIf (doCC) {
-            //any cckdb = createInstance("Db:CCSqlKeyValue");
-            any cckdb = createInstance("Db:MemFileStoreKeyValue");
-            kdb = KvDb.sdbNew(cckdb.pathNew(dataPath.copy(), name).open());
-          } else {
-            KvDb kdb = KvDb.new(self.db, name);
-          }
-          kdb.create();
-          kdbl.addValueWhole(kdb);
-        }
-        kvDbs.put(name, kdbl);
+      String sdbClass = params.getFirst("sdbClass");
+      if (TS.notEmpty(sdbClass)) {
+        cckdb = createInstance(sdbClass);
+        kdb = KvDb.sdbNew(cckdb.pathNew(dataPath.copy(), name));
+      } elseIf (doCC) {
+        //any cckdb = createInstance("Db:CCSqlKeyValue");
+        any cckdb = createInstance("Db:MemFileStoreKeyValue");
+        kdb = KvDb.sdbNew(cckdb.pathNew(dataPath.copy(), name));
+      } else {
+        KvDb kdb = KvDb.new(self.db, name);
       }
-      Node an = kdbl.firstNode;
-      kdbl.deleteNode(an);
-      kdbl.appendNode(an);
-      kdb = an.held;
-      lock.unlock();
+      unless (kvdbCreated.has(name)) {
+        kdb.create();
+        kvdbCreated.put(name, true);
+      }
     } catch (any e) {
-      lock.unlock();
       log.error("exception during getKvDb");
       if (def(e)) { log.error("ex " + e); }
     }
@@ -594,21 +760,6 @@ class KvDbs {
   }
   
   close() {
-    log.log("closing kvdbs");
-    try {
-      lock.lock();
-      for (any kvle in kvDbs) {
-        for (any kv in kvle.value) {
-          kv.close();
-        }
-      }
-      kvDbs = Map.new();
-      lock.unlock();
-    } catch (any e) {
-      lock.unlock();
-      log.error("exception during closeKvDbs");
-      if (def(e)) { log.error("ex " + e); }
-    }
   }
 
 }
@@ -620,17 +771,6 @@ class SqKvDb {
     fields {
       DbDb db;
       String tableName;
-      Int lastUsed = Time:Interval.now().seconds;
-    }
-  }
-  
-  dbCheck() {
-    Int dbto = db.timeout;
-    if (dbto > -1) {
-      if (Time:Interval.now().seconds - lastUsed > dbto) {
-        dbFailed();
-      }
-      lastUsed = Time:Interval.now().seconds;
     }
   }
     
@@ -718,7 +858,6 @@ class SqKvDb {
   
   getMap() Map {
     try {
-      dbCheck();
       Map res = Map.new();
       List qa = List.new(0);
       //db.begin();
@@ -741,7 +880,6 @@ class SqKvDb {
   
   getMap(String prefix) Map {
     try {
-      dbCheck();
       Map res = Map.new();
       List qa = List.new(1);
       qa.put(0, prefix + "%");
@@ -765,7 +903,6 @@ class SqKvDb {
 
   get(String name) String {
     try {
-      dbCheck();
       List qa = List.new(1);
       qa[0] = name;
       //db.begin();
@@ -794,7 +931,6 @@ class SqKvDb {
   
   insert(String name, String value) {
     try {
-      dbCheck();
       List qa = List.new(2).put(0, name).put(1, value);
       //db.begin();
       db.execute("INSERT INTO " + tableName + " (KVKEY, KVVALUE) VALUES (?, ?)", qa).close();
@@ -808,7 +944,6 @@ class SqKvDb {
   
   update(String name, String value) {
     try {
-      dbCheck();
       List qa = List.new(2).put(0, value).put(1, name);
       //db.begin();
       db.execute("UPDATE " + tableName + " SET KVVALUE=? WHERE KVKEY=?", qa).close();
@@ -822,7 +957,6 @@ class SqKvDb {
   
   put(String name, String value) {
     try {
-      dbCheck();
       List qa = List.new(1);
       qa[0] = name;
       //db.begin();
@@ -876,7 +1010,6 @@ class SqKvDb {
   
   delete(String name) {
     try {
-      dbCheck();
       List qa = List.new(1).put(0, name);
       //db.begin();
       db.execute("DELETE FROM " + tableName + " WHERE KVKEY=?", qa).close();
@@ -890,7 +1023,6 @@ class SqKvDb {
   
   clear() {
     try {
-      dbCheck();
       //db.begin();
       db.execute("DELETE FROM " + tableName).close();
       //db.commit();
