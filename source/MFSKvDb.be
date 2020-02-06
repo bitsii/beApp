@@ -141,6 +141,7 @@ class MFSKvDb(SqKvDb) {
     String cv = get(name);
     if (oldValue == cv) {
       put(name, value);
+      result = true;
     }
     return(result);
   }
