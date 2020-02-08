@@ -5,17 +5,16 @@
 
 use IO:File:Path;
 use IO:File;
-use Db:SqlKeyValue as SqKvDb;
 use Db:MemFileStoreKeyValue as MFSKvDb;
 use Encode:Hex as Hex;
-class MFSKvDb(SqKvDb) {
+class MFSKvDb {
 
   pathNew(Path _dbp, String _tableName) self {
     new();
     fields {
       IO:Log log =@ IO:Logs.get(self);
       Path dbp = _dbp;
-      tableName = _tableName;
+      String tableName = _tableName;
       Path tbp = dbp.copy().addStep(Hex.encode(tableName));
     }
   }
@@ -104,6 +103,15 @@ class MFSKvDb(SqKvDb) {
     }  
     return(res);
   }
+  
+  get(String name, String default) String {
+    String val = self.get(name);
+    if (undef(val)) {
+      return(default);
+    }
+    return(val);
+  }
+
 
   get(String name) String {
     Path np = tbp.copy().addStep(Hex.encode(name));
