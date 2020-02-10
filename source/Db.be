@@ -70,7 +70,7 @@ class KvDbs {
         }
         for (Int i = 0;i < appKvPoolSize;i++=) {
           any cckdb = createInstance(sdbClass);
-          KvDb kdb = KvDb.sdbNew(cckdb.pathNew(dataPath.copy(), name).open());
+          KvDb kdb = KvDb.sdbNew(cckdb.pathParamsNew(dataPath.copy(), params, name).open());
           kdb.create();
           kdbl.addValueWhole(kdb);
         }

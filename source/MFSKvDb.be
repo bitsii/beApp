@@ -5,16 +5,18 @@
 
 use IO:File:Path;
 use IO:File;
+use System:Parameters;
 use Db:MemFileStoreKeyValue as MFSKvDb;
 use Encode:Hex as Hex;
 class MFSKvDb {
 
-  pathNew(Path _dbp, String _tableName) self {
+  pathParamsNew(Path _dbp, Parameters _params, String _tableName) self {
     new();
     fields {
       IO:Log log =@ IO:Logs.get(self);
       Path dbp = _dbp;
       String tableName = _tableName;
+      Parameters params = _params;
       Path tbp = dbp.copy().addStep(Hex.encode(tableName));
     }
   }
