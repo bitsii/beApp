@@ -9,6 +9,8 @@ use System:Parameters;
 use Db:FireStoreKeyValue as GFSKvDb;
 use Encode:Hex as Hex;
 
+//FIRESTORE IS SLOW, DO NOT RECOMMEND
+
 emit(jv) {
 """
 import com.google.api.core.ApiFuture;

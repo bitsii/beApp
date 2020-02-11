@@ -53,16 +53,16 @@ class KvDbs {
     }
     try {
       lock.lock();
-      if (undef(appKvPoolSize)) {
-        String appKvPoolSizeS = params.getFirst("appKvPoolSize");
-        if (TS.notEmpty(appKvPoolSizeS)) {
-          appKvPoolSize = Int.new(appKvPoolSizeS);
-        } else {
-          appKvPoolSize = 3;
-        }
-      }
       LinkedList kdbl = kvDbs.get(name);
       if (undef(kdbl)) {
+        if (undef(appKvPoolSize)) {
+          String appKvPoolSizeS = params.getFirst("appKvPoolSize");
+          if (TS.notEmpty(appKvPoolSizeS)) {
+            appKvPoolSize = Int.new(appKvPoolSizeS);
+          } else {
+            appKvPoolSize = 3;
+          }
+        }
         kdbl = LinkedList.new();
         String sdbClass = params.getFirst("sdbClass");
         if (TS.isEmpty(sdbClass)) {
