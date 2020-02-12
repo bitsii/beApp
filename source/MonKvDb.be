@@ -11,12 +11,15 @@ use Encode:Hex as Hex;
 
 emit(jv) {
 """
+import java.util.regex.Pattern;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.DBCursor;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.MongoClient; 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI; 
 """
 }
 
@@ -38,9 +41,14 @@ emit(jv) {
       Parameters params = _params;
       String monDb;
       String monTableName;
+      String monUri;
     }
     monDb = params.getFirst("monDb");
     monTableName = "kvt" + tableName;
+    monUri = params.getFirst("monUri");
+    if (TS.isEmpty(monUri)) {
+      monUri = "mongodb://localhost:27017";
+    }
   }
 
   dbCheck() {
@@ -59,7 +67,7 @@ emit(jv) {
   open() self {
     emit(jv) {
     """
-    mongoClient = new MongoClient();
+    mongoClient = new MongoClient(new MongoClientURI(bevp_monUri.bems_toJvString()));
     database = mongoClient.getDB(bevp_monDb.bems_toJvString());
     collection = database.getCollection(bevp_monTableName.bems_toJvString());
     """
@@ -101,17 +109,42 @@ emit(jv) {
       String rv;
       emit(jv) {
       """
-      try {
+      /*-attr- -noreplace-*/
       
-
+      BasicDBObject regexQuery = new BasicDBObject();
+      regexQuery.put("_id", 
+        new BasicDBObject("$regex", "^" + Pattern.quote(beva_prefix.bems_toJvString())));
+      """
+      }
+      emit(jv) {
+      """
+      try {
+        DBCursor cursor = collection.find(regexQuery);
+        while (cursor.hasNext()) {
+          DBObject dbo = cursor.next();
+          bevl_rk = null;
+          bevl_rv = null;
+          Object kvdbvalueo = dbo.get("kvdbvalue");
+          if (kvdbvalueo != null) {
+            String kvdbvalue = (String) kvdbvalueo;
+            bevl_rv = new $class/Text:String$(kvdbvalue);
+          }
+          Object kvdbnameo = dbo.get("_id");
+          if (kvdbnameo != null) {
+            String kvdbname = (String) kvdbnameo;
+            bevl_rk = new $class/Text:String$(kvdbname);
+            bevl_res.bem_put_2(bevl_rk, bevl_rv);
+          }
+        }
+        cursor.close();
       } catch (Throwable t) {
-        System.out.println("got error getMapping0 from mon");
+        System.out.println("got error reading from mon getmap");
         System.out.println(t.getMessage());
         System.out.println(t.getStackTrace());
       }
       """
       }
-    return(res);
+      return(res);
   }
   
   getMap() Map {
@@ -121,9 +154,26 @@ emit(jv) {
       emit(jv) {
       """
       try {
-
+        DBCursor cursor = collection.find();
+        while (cursor.hasNext()) {
+          DBObject dbo = cursor.next();
+          bevl_rk = null;
+          bevl_rv = null;
+          Object kvdbvalueo = dbo.get("kvdbvalue");
+          if (kvdbvalueo != null) {
+            String kvdbvalue = (String) kvdbvalueo;
+            bevl_rv = new $class/Text:String$(kvdbvalue);
+          }
+          Object kvdbnameo = dbo.get("_id");
+          if (kvdbnameo != null) {
+            String kvdbname = (String) kvdbnameo;
+            bevl_rk = new $class/Text:String$(kvdbname);
+            bevl_res.bem_put_2(bevl_rk, bevl_rv);
+          }
+        }
+        cursor.close();
       } catch (Throwable t) {
-        System.out.println("got error getMapping0 from mon");
+        System.out.println("got error reading from mon getmap");
         System.out.println(t.getMessage());
         System.out.println(t.getStackTrace());
       }
@@ -151,14 +201,13 @@ emit(jv) {
     DBCursor cursor = collection.find(query);
     if (cursor.hasNext()) {
       DBObject dbo = cursor.next();
-      if (((String) dbo.get("kvdbname")).equals(kvn)) {
         Object kvdbvalueo = dbo.get("kvdbvalue");
         if (kvdbvalueo != null) {
           String kvdbvalue = (String) kvdbvalueo;
           bevl_res = new $class/Text:String$(kvdbvalue);
         }
-      }
     }
+    cursor.close();
   } catch (Throwable t) {
     System.out.println("got error reading from mon");
     System.out.println(t.getMessage());
@@ -176,7 +225,7 @@ emit(jv) {
     String kvn = beva_name.bems_toJvString();
     String kvv = beva_value.bems_toJvString();
     BasicDBObject dbo =  new BasicDBObject("_id", kvn)
-    .append("kvdbname", kvn)
+    //.append("kvdbname", kvn)
     .append("kvdbvalue", kvv);
     collection.save(dbo);
   } catch (Throwable t) {
@@ -189,20 +238,26 @@ emit(jv) {
   }
   
   has(String name) Bool {
-    Bool resb = false;
-    Bool t = true;
-    emit(jv) {
-    """
-    try {
-
-    } catch (Throwable t) {
-      System.out.println("got error hassing mon");
-      System.out.println(t.getMessage());
-      System.out.println(t.getStackTrace());
+  Bool res = false;
+  Bool t = true;
+  emit(jv) {
+  """
+  try {
+    String kvn = beva_name.bems_toJvString();
+    DBObject query = new BasicDBObject("_id", kvn);
+    DBCursor cursor = collection.find(query);
+    if (cursor.hasNext()) {
+      bevl_res = bevl_t;
     }
-    """
-    }
-    return(resb);
+    cursor.close();
+  } catch (Throwable t) {
+    System.out.println("got error hassing from mon");
+    System.out.println(t.getMessage());
+    System.out.println(t.getStackTrace());
+  }
+  """
+  }
+    return(res);
   }
   
   insert(String name, String value) {
@@ -224,19 +279,19 @@ emit(jv) {
   }
   
   delete(String name) {
-  
-    emit(jv) {
-    """
-    try {
-
-    } catch (Throwable t) {
-      System.out.println("got error deleting mon");
-      System.out.println(t.getMessage());
-      System.out.println(t.getStackTrace());
-    }
-    """
-    }
-  
+  emit(jv) {
+  """
+  try {
+    String kvn = beva_name.bems_toJvString();
+    DBObject query = new BasicDBObject("_id", kvn);
+    collection.remove(query);
+  } catch (Throwable t) {
+    System.out.println("got error reading from mon");
+    System.out.println(t.getMessage());
+    System.out.println(t.getStackTrace());
+  }
+  """
+  }
   }
   
   clear() {
