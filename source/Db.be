@@ -60,7 +60,7 @@ class KvDbs {
           if (TS.notEmpty(appKvPoolSizeS)) {
             appKvPoolSize = Int.new(appKvPoolSizeS);
           } else {
-            appKvPoolSize = 3;
+            appKvPoolSize = 1;
           }
         }
         kdbl = LinkedList.new();
