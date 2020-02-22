@@ -2739,7 +2739,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           }
           Map res = Map.new();
           res["action"] = "updateImageResponse";
-          res["imghtm"] = "<img style=\"object-fit: cover; max-width: 100%;\" src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + "\" >";
+          res["imghtm"] = "<img id=\"camImage\" style=\"object-fit: cover; max-width: 100%;\" src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + "\" >";
           
           if (def(sbefore)) {
             log.log("Got before pic " + sbefore);
