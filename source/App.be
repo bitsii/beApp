@@ -1073,6 +1073,15 @@ public synchronized static void runMainOnce(String[] margs) {
     haveRun = true;
   }
 }
+
+public synchronized static void runMain(String[] margs) {
+    try {
+        be.BEX_E.main(margs);
+    } catch (Throwable t) {
+        System.err.println("Failed in main with " + t.getMessage());
+        throw new Error(t.getMessage(), t);
+    }
+}
 """
 }
 
@@ -3388,7 +3397,10 @@ class WebApp {
     
     main() this {
       handleCmd();
-      System:Process.exit(0);
+      String hcne = params.getFirst("handleCmdNoExit");
+      unless (TS.notEmpty(hcne) && hcne == "true") {
+        System:Process.exit(0);
+      }
     }
     
     runAsync(String plugName, String plugMtd, List plmargs) {

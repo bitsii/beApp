@@ -14,6 +14,7 @@ import android.webkit.JavascriptInterface;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.content.Context;
 """
 }
 
@@ -41,6 +42,8 @@ public static class MainActivity extends AppCompatActivity {
 
     public static volatile MainActivity mainActivity;
     
+    public static volatile Context appContext;
+    
     public WebView mWebView;
     
     public String initialUrl;
@@ -61,7 +64,8 @@ public static class MainActivity extends AppCompatActivity {
 
     protected void postCreate() {
         mainActivity = this;
-        $class/App:RunMainOnce$.runMainOnce(getStartupArgs());
+        appContext = getApplicationContext();
+        $class/App:RunMainOnce$.runMain(getStartupArgs());
         $class/App:EventHandlers$.handleEvent("startUi");
         //so things stay in the webview
         mWebView.setWebViewClient(new WebViewClient());
@@ -196,7 +200,8 @@ public static class MainActivity extends AppCompatActivity {
   ifEmit(platDroid) {
   emit(jv) {
   """
-  String ddir = MainActivity.mainActivity.getApplicationContext().getApplicationInfo().dataDir;
+  //main activity is null in jobservice
+  String ddir = MainActivity.appContext.getApplicationInfo().dataDir;
   bevl_toRet = new $class/Text:String$(ddir);
   """
   }
