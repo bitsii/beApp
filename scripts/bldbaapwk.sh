@@ -16,9 +16,6 @@ una=`uname -a`
 
 #lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-#mkdir -p iosjs/resources/App/$APPBLDNM
-#rm -f iosjs/resources/App/$APPBLDNM/BEX_E_app.js
-#cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js iosjs/resources/App/$APPBLDNM/BEX_E_app.js
 
 #lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -32,6 +29,8 @@ mono --debug ../brace/target5/BEX_E_mcs.exe -jsInclude=../braceApp/system/js/APW
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
+mkdir -p iosjs/resources/App/$APPBLDNM
+rm -f iosjs/resources/App/$APPBLDNM/BEX_E_app.js
 cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js iosjs/resources/App/$APPBLDNM/BEX_E.js
 
 cp -R resources/* iosjs/resources/App/$APPBLDNM
