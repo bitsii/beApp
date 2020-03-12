@@ -42,6 +42,7 @@ class KvDbs {
       Parameters params = _params;
       Lock lock = Lock.new();
       Map kvDbs = Map.new();
+      Map kvDbNxt = Map.new();
       IO:Log log =@ IO:Logs.get(self);
       Path dataPath = _dataPath;
     }
@@ -53,7 +54,7 @@ class KvDbs {
     }
     try {
       lock.lock();
-      LinkedList kdbl = kvDbs.get(name);
+      List kdbl = kvDbs.get(name);
       if (undef(kdbl)) {
         if (undef(appKvPoolSize)) {
           String appKvPoolSizeS = params.getFirst("appKvPoolSize");
@@ -63,7 +64,7 @@ class KvDbs {
             appKvPoolSize = 1;
           }
         }
-        kdbl = LinkedList.new();
+        kdbl = List.new();
         String sdbClass = params.getFirst("sdbClass");
         if (TS.isEmpty(sdbClass)) {
           sdbClass = "Db:MemFileStoreKeyValue";
@@ -72,14 +73,21 @@ class KvDbs {
           any cckdb = createInstance(sdbClass);
           KvDb kdb = KvDb.sdbNew(cckdb.pathParamsNew(dataPath.copy(), params, name).open());
           kdb.create();
-          kdbl.addValueWhole(kdb);
+          kdbl[i] = kdb;
         }
         kvDbs.put(name, kdbl);
       }
-      Node an = kdbl.firstNode;
-      kdbl.deleteNode(an);
-      kdbl.appendNode(an);
-      kdb = an.held;
+      Int nv = kvDbNxt[name];
+      if (undef(nv)) {
+        nv = 0;
+        kvDbNxt[name] = nv;
+      } else {
+        nv++=;
+        if (nv >= kdbl.size) {
+          nv.setValue(0);
+        }
+      }
+      kdb = kdbl[nv];
       lock.unlock();
     } catch (any e) {
       lock.unlock();
