@@ -2099,6 +2099,8 @@ use class App:PublicReadPlugin {
               mtype = "text/javascript";
             } elseIf (uri.ends(".css")) {
               mtype = "text/css";
+            } elseIf (uri.ends(".txt")) {
+              mtype = "text/plain";
             } elseIf (uri.ends(".woff")) {
               mtype = "application/font-woff";
             } elseIf (uri.ends(".eot")) {
@@ -2430,6 +2432,8 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
               mtype = "text/javascript";
             } elseIf (uri.ends(".css")) {
               mtype = "text/css";
+            } elseIf (uri.ends(".txt")) {
+              mtype = "text/plain";
             } else {
               mtype = "application/octet-stream";
             }
