@@ -29,6 +29,15 @@ mono --debug ../brace/target5/BEX_E_mcs.exe -jsInclude=../braceApp/system/js/APW
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
+if [ -e ~/node_modules/uglify-js/bin/uglifyjs ]
+then
+  ~/node_modules/uglify-js/bin/uglifyjs ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js > ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js.1
+  lae=$?;if [[ $lae -eq 0 ]]; then
+    rm -f ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js
+    mv ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js.1 ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js
+  fi
+fi
+
 mkdir -p iosjs/resources/App/$APPBLDNM
 rm -f iosjs/resources/App/$APPBLDNM/BEX_E_app.js
 cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js iosjs/resources/App/$APPBLDNM/BEX_E.js
