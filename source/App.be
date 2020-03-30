@@ -2758,11 +2758,11 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             log.log("Got before pic " + sbefore);
             p = sbefore;
             jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-            auto plink = "<a id='picBefore' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\<</a>";
+            auto plink = "<a id='picBefore' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + " style=\"font-size:3em;\">\<</a>";
             res["plink"] = plink;
             
             jscall = " onclick=\"callUI('keepGoingPY');localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-            plink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\<\<</a>";
+            plink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + " style=\"font-size:3em;\">\<\<</a>";
             res["plinkgo"] = plink;
             
             res["plbefore"] = "../../" + sbefore.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken");
@@ -2773,11 +2773,11 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             log.log("Got after pic " + safter);
             p = safter;
             jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-            auto nlink = "<a id='picAfter' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\></a>";
+            auto nlink = "<a id='picAfter' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + " style=\"font-size:3em;\">\></a>";
             res["nlink"] = nlink;
             
             jscall = " onclick=\"callUI('keepGoingNY');localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-            nlink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">\>\></a>";
+            nlink = "<a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + " style=\"font-size:3em;\">\>\></a>";
             res["nlinkgo"] = nlink;
             
             res["plafter"] = "../../" + safter.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken");
@@ -2786,7 +2786,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           
           if (def(sbefore) || def(safter)) {
             log.log("got a pic for slink");
-            nlink = "<a href='#' id='slinkhr' onclick=\"callUI('stopGoing');return false;\">||</a>";
+            nlink = "<a href='#' id='slinkhr' onclick=\"callUI('stopGoing');return false;\" style=\"font-size:3em;\">||</a>";
             res["slink"] = nlink;
             
           }
