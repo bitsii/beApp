@@ -2531,6 +2531,9 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
      }
       if (arg.has("path")) {
         Path path = Path.new(arg["path"]);
+      } elseIf (arg.has("homeRelPath")) {
+        path = getHomeDir(request) + Path.new(arg["homeRelPath"]);
+        log.log("homeRelPath " + path.toString());
       } else {
         path = getHomeDir(request);
       }
@@ -2554,6 +2557,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       }
       Map ret = Map.new();
       ret.put("action", "listResponse");
+      ret.put("path", path.toString());
       ret.put("list", dirList);
       return(ret);
     }
