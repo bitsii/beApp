@@ -2385,6 +2385,12 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           isOk = true;
         }
       }
+      for (kv in app.configManager.getMap("fileManager.accountDirs." + accountName + ".")) {
+        fms = Path.apNew(kv.value).file.absPath;
+        if (def(fms) && pas.begins(fms.toString())) {
+          isOk = true;
+        }
+      }
     } catch (e) {
       log.error("Path " + p + " accountName " + accountName + " excepted in checkPath " + e);
     }
@@ -2696,6 +2702,10 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
         for (any kv in app.configManager.getMap("fileManager.sharedDirs.")) {
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(kv.value) += "');return false;\">" += kv.key.substring(23, kv.key.size) += "</a></td></tr>";
+        }
+        for (kv in app.configManager.getMap("fileManager.accountDirs." + accountName + ".")) {
+          dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(kv.value) += "');return false;\">" += kv.key.substring(25 + accountName.size, kv.key.size) += "</a></td></tr>";
         }
         if (dirFile.isDir) {
           auto dit = dirFile.iterator;
