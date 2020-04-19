@@ -2684,12 +2684,16 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           if (System:CurrentPlatform.name == "mswin") {
             dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode("\\") += "');return false;\">ROOT</a></td></tr>";
+            String homep = System:Environment.getVariable("USERPROFILE");
           } else {
             dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode("/") += "');return false;\">ROOT</a></td></tr>";
+            homep = System:Environment.getVariable("HOME");
           }
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(".") += "');return false;\">APPDIR</a></td></tr>";
+          dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
+          += hex.encode(homep) += "');return false;\">OSHOME</a></td></tr>";
         }
         dirListHtml += getBaseLink(request); 
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
@@ -2822,7 +2826,74 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       ret.put("dirListHtml", dirListHtml);
       return(ret);
     }
-   
+    
+    showSharesRequest(request) {
+        unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      String dirListHtml = String.new();
+      for (any kv in app.configManager.getMap("fileManager.sharedDirs.")) {
+        dirListHtml += "<p>" += kv.value += " shared to ALL as " += kv.key.substring(23, kv.key.size) += "</p>";  
+      }
+      for (kv in app.configManager.getMap("fileManager.accountDirs.")) {
+        auto steps = kv.key.split(".");
+        dirListHtml += "<p>" += kv.value += " shared with " += steps[2] += " as " += steps[3] += "</p>";
+      }
+      return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("sharesDiv", dirListHtml)));
+    }
+    
+    unshareSelectedRequest(Map args, request) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      if (TS.isEmpty(args["path"])) {
+        throw(Alert.new("Must select path to unshare"));
+      }
+      String path = Encode:Hex.decode(args["path"]);
+      log.log("path for unshare " + path);
+      Set delKeys = Set.new();
+      for (any kv in app.configManager.getMap("fileManager.sharedDirs.")) {
+        if (kv.value == path) {
+          delKeys += kv.key;
+        }  
+      }
+      for (kv in app.configManager.getMap("fileManager.accountDirs.")) {
+        if (kv.value == path) {
+          delKeys += kv.key;
+        } 
+      }
+      for (any delKey in delKeys) {
+        app.configManager.delete(delKey);
+      }
+      return(showSharesRequest(request));
+    }
+    
+    shareAllSelectedRequest(Map args, request) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      if (TS.isEmpty(args["path"]) || TS.isEmpty(args["shareName"])) {
+        throw(Alert.new("Must select path to share and provide name for share"));
+      }
+      String path = Encode:Hex.decode(args["path"]);
+      log.log("path for all share " + path);
+      app.configManager.put("fileManager.sharedDirs." + args["shareName"], path);
+      return(showSharesRequest(request));
+    }
+    
+    shareOneSelectedRequest(Map args, request) {
+      unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
+        throw(Alert.new("Must be administrator"));
+      }
+      if (TS.isEmpty(args["path"]) || TS.isEmpty(args["shareName"]) || TS.isEmpty(args["shareAccount"])) {
+        throw(Alert.new("Must select path to share and provide name for share and account login to share with"));
+      }
+      String path = Encode:Hex.decode(args["path"]);
+      log.log("path for one share " + path + " account " + args["shareAccount"]);
+      app.configManager.put("fileManager.accountDirs." + args["shareAccount"] + "." + args["shareName"], path);
+      return(showSharesRequest(request));
+    }
+    
 }
 
 use class App:ConfigPlugin(App:AjaxPlugin) {
