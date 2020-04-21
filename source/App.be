@@ -2086,26 +2086,27 @@ use class App:PublicReadPlugin {
             //log.log("chkrdp fm true public");
            //log.log("imgfile " + imgfile.path);
            if (imgfile.exists) {
+            String uril = uri.lower();
             String mtype;
-            if (uri.ends(".html")) {
+            if (uril.ends(".html")) {
               mtype = "text/html";
-            } elseIf (uri.ends(".jpg")) {
+            } elseIf (uril.ends(".jpg")) {
               mtype = "image/jpeg";
-            } elseIf (uri.ends(".gif")) {
+            } elseIf (uril.ends(".gif")) {
               mtype = "image/gif";
-            } elseIf (uri.ends(".svg")) {
+            } elseIf (uril.ends(".svg")) {
               mtype = "image/svg+xml";
-            } elseIf (uri.ends(".js")) {
+            } elseIf (uril.ends(".js")) {
               mtype = "text/javascript";
-            } elseIf (uri.ends(".css")) {
+            } elseIf (uril.ends(".css")) {
               mtype = "text/css";
-            } elseIf (uri.ends(".txt")) {
+            } elseIf (uril.ends(".txt")) {
               mtype = "text/plain";
-            } elseIf (uri.ends(".woff")) {
+            } elseIf (uril.ends(".woff")) {
               mtype = "application/font-woff";
-            } elseIf (uri.ends(".eot")) {
+            } elseIf (uril.ends(".eot")) {
               mtype = "application/vnd.ms-fontobject";  
-            } elseIf (uri.ends(".eot")) {
+            } elseIf (uril.ends(".eot")) {
               mtype = "application/font-sfnt";
             } else {
               mtype = "application/octet-stream";
@@ -2431,20 +2432,21 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
          } elseIf (checkReadPath(imgfile.path, arg, request)) {
            log.log("imgfile " + imgfile.path);
            if (imgfile.exists) {
+            String uril = uri.lower();
             String mtype;
-            if (uri.ends(".html")) {
+            if (uril.ends(".html")) {
               mtype = "text/html";
-            } elseIf (uri.ends(".jpg")) {
+            } elseIf (uril.ends(".jpg")) {
               mtype = "image/jpeg";
-            } elseIf (uri.ends(".gif")) {
+            } elseIf (uril.ends(".gif")) {
               mtype = "image/gif";
-            } elseIf (uri.ends(".svg")) {
+            } elseIf (uril.ends(".svg")) {
               mtype = "image/svg+xml";
-            } elseIf (uri.ends(".js")) {
+            } elseIf (uril.ends(".js")) {
               mtype = "text/javascript";
-            } elseIf (uri.ends(".css")) {
+            } elseIf (uril.ends(".css")) {
               mtype = "text/css";
-            } elseIf (uri.ends(".txt")) {
+            } elseIf (uril.ends(".txt")) {
               mtype = "text/plain";
             } else {
               mtype = "application/octet-stream";
@@ -2639,11 +2641,11 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
    }
    
    jscallForPath(Path p) {
-    if (p.toString().ends(".jpg")) {
+    if (p.toString().lower().ends(".jpg")) {
       String jscall = " onclick=\"localBrowseRequest('" += Encode:Hex.encode(p.toString()) += "');return false;\"";
-    } elseIf (p.toString().ends(".gif")) {
+    } elseIf (p.toString().lower().ends(".gif")) {
       jscall = " onclick=\"localBrowseRequest('" += Encode:Hex.encode(p.toString()) += "');return false;\"";
-    } elseIf (p.toString().ends(".html") || p.toString().ends(".htm")) {
+    } elseIf (p.toString().lower().ends(".html") || p.toString().lower().ends(".htm")) {
       jscall = " onclick = \"return false;\"";
     } else {
       jscall = "";
@@ -2745,7 +2747,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           dit.close();
         } elseIf (dirFile.path.toString().ends(".note")) {
           
-        } elseIf (dirFile.path.toString().ends(".jpg") || dirFile.path.toString().ends(".gif")) {
+        } elseIf (dirFile.path.toString().lower().ends(".jpg") || dirFile.path.toString().lower().ends(".gif")) {
           //get one before and after for slideshow
           dit = dirFile.path.parent.file.iterator;
           dit.open();
@@ -2767,7 +2769,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             if (ps == pitcs) {
               found = true;
             } else {
-              if (ps.ends(".jpg") || ps.ends(".gif")) {
+              if (ps.lower().ends(".jpg") || ps.lower().ends(".gif")) {
                 if (found) {
                   if (undef(safter)) {
                     auto safter = entry.path;
