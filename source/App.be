@@ -2137,6 +2137,15 @@ use class App:LocalAccessPlugin {
         }
      }
      
+     start() {
+       String clk = app.configManager.get("localAccess.cookie");
+       if (TS.isEmpty(clk)) {
+         app.configManager.put("localAccess.cookie", lattok);
+       } else {
+         lattok = clk;
+       }
+     }
+     
        
      handleWeb(request) this {
        //log.log("in local access plugin");
