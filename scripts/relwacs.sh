@@ -8,6 +8,7 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 cd ..
 
 cp -f ../braceApp/scripts/runwacssc.sh ../apprun/App/$APPBLDNM/runwacs.sh
+cp -f ../braceApp/scripts/runwacssc.bat ../apprun/App/$APPBLDNM/runwacs.bat
 
 rm -rf ../apprun/App/$APPBLDNM/Base
 

@@ -11,6 +11,7 @@ rm -rf ../apprun/App/$APPBLDNM
 mkdir -p ../apprun/App/$APPBLDNM
 
 cp ../braceApp/scripts/runwacs.sh ../apprun/App/$APPBLDNM
+cp ../braceApp/scripts/runwacs.bat ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 case "$una" in
