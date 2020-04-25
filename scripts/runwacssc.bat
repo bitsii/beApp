@@ -10,6 +10,6 @@ cd ..\..
 
 SET MYHN=%ComputerName%
 
-.\App\%APPBLDNM%\cswa.exe --runParams App/%APPBLDNM%/runParamsWa.txt %*
+start /min .\App\%APPBLDNM%\cswa.exe --runParams App/%APPBLDNM%/runParamsWa.txt %*
 
-REM exit
+exit
