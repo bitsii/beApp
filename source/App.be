@@ -2151,12 +2151,6 @@ use class App:LocalAccessPlugin {
        //log.log("in local access plugin");
        String rmtd = request.inputMethod;
        //log.log("la rmtd is " + rmtd);
-       String reqtok = request.getInputCookie("lattok");
-       if (TS.notEmpty(reqtok) && reqtok == lattok) {
-        //log.log("cookie good, keep going");
-        request.continueHandling = true;
-        return(self);
-       }
        if (TS.isEmpty(rmtd) || rmtd == "GET") {
          //log.log("in rmtd method is get");
          String uri = request.uri;
@@ -2177,6 +2171,19 @@ use class App:LocalAccessPlugin {
              //log.log("clat notok, nogood");
            }
          }
+       }
+       String reqtok = request.getInputCookie("lattok");
+       if (TS.notEmpty(reqtok) && reqtok == lattok) {
+        //log.log("cookie good, keep going");
+        if (request.localAddress == "127.0.0.1" && request.remoteAddress == "127.0.0.1" && request.getInputHeader("referer").begins("http://127.0.0.1")) {
+          request.continueHandling = true;
+          return(self);
+        } else {
+          log.log("nogood bad addr");
+          log.log("raddr " + request.localAddress);
+          log.log("remaddr " + request.remoteAddress);
+          log.log("refr " + request.getInputHeader("referer"));
+        }
        }
        //log.log("lat failed");
        request.continueHandling = false;
