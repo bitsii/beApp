@@ -900,6 +900,17 @@ be.$class/UI:JvAd:WebBrowser$.MainActivity.openExternalBrowserToUrl(beva_url.bem
     """
     }
     }
+    
+    ifEmit(apwk) {
+        Map reqjs = Maps.from("url", url);
+        String reqjss = Json:Marshaller.marshall(reqjs);
+        String jspw = "openToUrl:" + reqjss;
+        emit(js) {
+        """
+        prompt(bevl_jspw.bems_toJsString());
+        """
+        }
+      }
   
   }
 
