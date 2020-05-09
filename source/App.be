@@ -2764,6 +2764,11 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
         } elseIf (dirFile.path.toString().ends(".note")) {
           
         } elseIf (dirFile.path.toString().lower().ends(".jpg") || dirFile.path.toString().lower().ends(".gif")) {
+          if (dirFile.path.toString().lower().ends(".gif")) {
+            Bool isGif = true;
+          } else {
+            isGif = false;
+          }
           //get one before and after for slideshow
           dit = dirFile.path.parent.file.iterator;
           dit.open();
@@ -2796,9 +2801,15 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
               }
             }
           }
+          
+          if (isGif) {
+            String cb = "&cb=" + System:Random.getString(8);
+          } else {
+            cb = "";
+          }
           Map res = Map.new();
           res["action"] = "updateImageResponse";
-          res["imghtm"] = "<img id=\"camImage\" style=\"object-fit: cover; max-width: 100%;\" src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + "\" >";
+          res["imghtm"] = "<img id=\"camImage\" style=\"object-fit: cover; max-width: 100%;\" src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + cb + "\" >";
           
           if (def(sbefore)) {
             log.log("Got before pic " + sbefore);
