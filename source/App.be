@@ -2809,6 +2809,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           }
           Map res = Map.new();
           res["action"] = "updateImageResponse";
+          res["isGif"] = isGif;
           res["imghtm"] = "<img id=\"camImage\" style=\"object-fit: cover; max-width: 100%;\" src=\"../../" + dirFile.path.toStringWithSeparator("/") + "?pageToken=" + request.getSession("pageToken") + cb + "\" >";
           
           if (def(sbefore)) {
