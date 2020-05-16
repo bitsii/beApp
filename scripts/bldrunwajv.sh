@@ -2,7 +2,7 @@
 
 export APPBLDNM=${PWD##*/}
 
-../braceApp/scripts/bldwajv.sh $*
+../abeliiApp/scripts/bldwajv.sh $*
 
 cd ../apprun/App/$APPBLDNM
 

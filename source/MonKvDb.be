@@ -12,6 +12,7 @@ use Encode:Hex as Hex;
 emit(jv) {
 """
 import java.util.regex.Pattern;
+import java.util.HashMap;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -30,6 +31,7 @@ emit(jv) {
     MongoClient mongoClient;
     DB database;
     DBCollection collection;
+    static HashMap<String, MongoClient> clients = new HashMap<String, MongoClient>();
 """
 }
 
@@ -67,7 +69,14 @@ emit(jv) {
   open() self {
     emit(jv) {
     """
-    mongoClient = new MongoClient(new MongoClientURI(bevp_monUri.bems_toJvString()));
+    synchronized(clients) {
+      String juris = bevp_monUri.bems_toJvString();
+      mongoClient = clients.get(juris);
+      if (mongoClient == null) {
+        mongoClient = new MongoClient(new MongoClientURI(juris));
+        clients.put(juris, mongoClient);
+      }
+    }
     database = mongoClient.getDB(bevp_monDb.bems_toJvString());
     collection = database.getCollection(bevp_monTableName.bems_toJvString());
     """
@@ -78,7 +87,7 @@ emit(jv) {
     emit(jv) {
     """
     if (mongoClient != null) {
-      mongoClient.close();
+      //mongoClient.close(); - nope, let mongo handle - connection pooling
       mongoClient = null;
       database = null;
       collection = null;
