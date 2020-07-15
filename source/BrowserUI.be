@@ -809,14 +809,14 @@ use class Web:SessionManager {
       sk = request.getInputCookie(keyName);
     }
     if (TS.notEmpty(sk)) {
-      if (sessions.get("SESSIONS").getMap(hashKey(sk) + ".").isEmpty) {
+      unless (sessions.get("SESSIONS").has(hashKey(sk) + ".")) {
         //could be probing for sessions, let them have this but will be upping bad
         request.context.put("unknownSession", "unknownSession");
         sessions.get("SESSIONS").put(hashKey(sk) + ".", "");
       }
     } else {
       sk = System:Random.getString(keyLen);
-      until (sessions.get("SESSIONS").getMap(hashKey(sk) + ".").isEmpty) {
+      until (sessions.get("SESSIONS").has(hashKey(sk) + ".")!) {
         sk = System:Random.getString(keyLen);
       }
       sessions.get("SESSIONS").put(hashKey(sk) + ".", "");

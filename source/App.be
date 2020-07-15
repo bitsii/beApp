@@ -1383,6 +1383,34 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         return(res);
       }
       
+      clearExpired() {
+        log.log("in clearExpired");
+        any sess = app.sessionManager.sessions.get("SESSIONS");
+        Map all = sess.getMap();
+        Set seen = Set.new();
+        Set del = Set.new();
+        for (any kv in all) {
+          any kp = kv.key.split(".");
+          String skey = kp.first;
+          if (del.has(skey)) {
+            //delete it
+            sess.delete(kv.key);
+          }
+          unless (seen.has(skey)) {
+            seen.put(skey);
+            String se = all.get(skey + ".sessionExp");
+            if (TS.notEmpty(se) && Int.new(se) < 0) {
+              //log.log("NO delete session " + skey);
+            } else {
+              //log.log("YES delete session " + skey);
+              del.put(skey);
+              //delete it
+              sess.delete(kv.key);
+            }
+          }
+        }
+      }
+      
      
     clearAllSessionsRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
