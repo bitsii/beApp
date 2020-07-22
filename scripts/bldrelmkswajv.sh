@@ -2,7 +2,7 @@
 
 export RELMKS="yes"
 
-../abeliiApp/scripts/bldwajv.sh $*
-../abeliiApp/scripts/relwajv.sh $*
-../abeliiApp/scripts/mkswajv.sh $*
+../braceApp/scripts/bldwajv.sh $*
+../braceApp/scripts/relwajv.sh $*
+../braceApp/scripts/mkswajv.sh $*
 

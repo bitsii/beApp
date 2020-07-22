@@ -1,4 +1,4 @@
 --buildFile
-../abeliiApp/build/base.txt
+../braceApp/build/base.txt
 --buildFile
-../abeliiApp/build/extended.txt
+../braceApp/build/extended.txt
