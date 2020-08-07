@@ -1,7 +1,6 @@
-// Copyright 2015 Craig Welch
-//
-// Licensed under the MIT license. See LICENSE.txt file in the project root 
-// for full license information.
+// Copyright 2015 The BraceApp Authors. All rights reserved.
+// Use of this source code is governed by the BSD-3-Clause
+// license that can be found in the LICENSE file.
 
 emit(jv) {
 """
