@@ -17,6 +17,8 @@ cp ../braceApp/scripts/runwajv.bat ../apprun/App/$APPBLDNM
 cp ../braceApp/scripts/runwajvex.bat ../apprun/App/$APPBLDNM
 cp ../braceApp/scripts/runwajvrs.bat ../apprun/App/$APPBLDNM
 cp ../braceApp/scripts/runwajvrs.vbs ../apprun/App/$APPBLDNM
+cp ../braceApp/scripts/stopwajvrs.bat ../apprun/App/$APPBLDNM
+cp ../braceApp/scripts/stopwajvrs.vbs ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 case "$una" in
