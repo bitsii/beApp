@@ -1388,6 +1388,8 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         Map all = sess.getMap();
         Set seen = Set.new();
         Set del = Set.new();
+        Int ns = Time:Interval.now().seconds;
+        log.log("ns is " + ns);
         for (any kv in all) {
           any kp = kv.key.split(".");
           String skey = kp.first;
@@ -1401,10 +1403,26 @@ use class App:AuthPlugin(App:AjaxPlugin) {
             if (TS.notEmpty(se) && Int.new(se) < 0) {
               //log.log("NO delete session " + skey);
             } else {
-              //log.log("YES delete session " + skey);
-              del.put(skey);
-              //delete it
-              sess.delete(kv.key);
+              if (TS.notEmpty(se)) {
+                //log.log("sessionExp " + se);
+                String sl = all.get(skey + ".sessionLength");
+                if (TS.notEmpty(sl)) {
+                  //log.log("sessionLength " + sl);
+                }
+                Int sei = Int.new(se);
+                if (ns > sei) {
+                  //log.log("session expired");
+                  //log.log("YES delete session " + skey);
+                  del.put(skey);
+                  //delete it
+                  sess.delete(kv.key);
+                }
+              } else {
+                //log.log("YES delete session " + skey);
+                del.put(skey);
+                //delete it
+                sess.delete(kv.key);
+              }
             }
           }
         }
@@ -1682,21 +1700,19 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     if (request.embedded) {
       sessionLength = "-1";
     }
-    Int sessionLengthI = Int.new(sessionLength) * 60;
-    if (sessionLengthI < 0) {
-      sessionLengthI = -1;
-    }
+    Int sessionLengthI = Int.new(sessionLength);
     log.log("sessionLength " + sessionLengthI.toString());
     request.putSession("sessionLength", sessionLengthI.toString());
     if (sessionLengthI < 0) {
       request.putSession("sessionExp", sessionLengthI.toString());
     } else {
       Int snow = Time:Interval.now().seconds;
-      Int ssd = snow + sessionLengthI;
+      Int ssd = snow + (sessionLengthI * 60);
       request.putSession("sessionExp", ssd.toString());
       Int ssu = snow + 60;
       request.putSession("sessionUpdate", ssu.toString());
     }
+    log.log("setup session, sessionLength " + request.getSession("sessionLength") + " sessionExp " + request.getSession("sessionExp"))
   }
   
   pageTokenRequest(Map arg, request) {
@@ -1952,7 +1968,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       log.log("refreshing sessionUpdate");
       nu = ns + 60;
       request.putSession("sessionUpdate", nu.toString());
-      Int ne = Int.new(request.getSession("sessionLength")) + ns;
+      Int ne = (Int.new(request.getSession("sessionLength")) * 60) + ns;
       request.putSession("sessionExp", ne.toString());
     }
     log.log("checkRenewSession returning true");
