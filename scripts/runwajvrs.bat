@@ -23,6 +23,8 @@ REM if exist App\%APPBLDNM%\prers.bat call App\%APPBLDNM%\prers.bat
 
 java.exe -classpath "App/%APPBLDNM%/*" be.BEX_E --myPwd %MYPWD% --runParams App/%APPBLDNM%/runParamsWa.txt %*
 timeout /t 3
+call App\%APPBLDNM%\bpinrestart.bat
+timeout /t 1
 
 goto :loop
 
