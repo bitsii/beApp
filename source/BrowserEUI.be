@@ -672,7 +672,7 @@ class HC {
      //returns true if was opened by this action, false else
      Bool didOpen = false;
      HE he = HD.getElementById(id);
-     if (he.display == "block") {
+     if (he.display != "none") {
       he.display = "none";
      } else {
       he.display = "block";
