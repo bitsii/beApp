@@ -1746,6 +1746,10 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           res["serviceSessionKey"] = serviceSessionKey;
           res["pageToken"] = pageToken;
         }
+        if (arg.has("pageToken") && TS.notEmpty(arg["pageToken"])) {
+          log.log("in login saving pagetoken");
+          request.putSession("pageToken", arg["pageToken"]);
+        }
         setupSession(arg, request);
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
@@ -2049,15 +2053,17 @@ use class App:AuthPlugin(App:AjaxPlugin) {
                      
                     String stok = request.getSession("pageToken");
                     String atok = arg["pageToken"];
-                    if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
-                      log.log("stok or atok emtpy failing due to pageToken");
-                      toLogin(request);
-                      return(self);
-                    }
-                    if (stok != atok) {
-                      log.log("stok != atok failing due to pageToken");
-                      toLogin(request);
-                      return(self);
+                    unless (TS.isEmpty(stok) && aname == "loginRequest") {
+                      if (TS.isEmpty(stok) || TS.isEmpty(atok)) {
+                        log.log("stok or atok emtpy failing due to pageToken");
+                        toLogin(request);
+                        return(self);
+                      }
+                      if (stok != atok) {
+                        log.log("stok != atok failing due to pageToken");
+                        toLogin(request);
+                        return(self);
+                      }
                     }
                   
                     //log.log("pageToken action " + aname);
