@@ -2135,31 +2135,7 @@ use class App:PublicReadPlugin {
             //log.log("chkrdp fm true public");
            //log.log("imgfile " + imgfile.path);
            if (imgfile.exists) {
-            String uril = uri.lower();
-            String mtype;
-            if (uril.ends(".html")) {
-              mtype = "text/html";
-            } elseIf (uril.ends(".jpg")) {
-              mtype = "image/jpeg";
-            } elseIf (uril.ends(".gif")) {
-              mtype = "image/gif";
-            } elseIf (uril.ends(".svg")) {
-              mtype = "image/svg+xml";
-            } elseIf (uril.ends(".js")) {
-              mtype = "text/javascript";
-            } elseIf (uril.ends(".css")) {
-              mtype = "text/css";
-            } elseIf (uril.ends(".txt")) {
-              mtype = "text/plain";
-            } elseIf (uril.ends(".woff")) {
-              mtype = "application/font-woff";
-            } elseIf (uril.ends(".eot")) {
-              mtype = "application/vnd.ms-fontobject";  
-            } elseIf (uril.ends(".eot")) {
-              mtype = "application/font-sfnt";
-            } else {
-              mtype = "application/octet-stream";
-            }
+            String mtype = Mimes.forUri(uri);
             request.outputContentType = mtype;
             IO:Writer outw = request.openOutput();
             IO:Reader inr = imgfile.reader.open();
@@ -2386,6 +2362,47 @@ use class App:WebReverseProxyPlugin {
      }
 }
 
+use App:MimeTypes as Mimes;
+
+class Mimes {
+  
+  default() self {  }
+  
+  forUri(String uri) String {
+    String uril = uri.lower();
+    String mtype;
+    if (uril.ends(".html") || uril.ends(".htm") || uril.ends(".mhtml")) {
+      mtype = "text/html";
+    } elseIf (uril.ends(".jpg")) {
+      mtype = "image/jpeg";
+    } elseIf (uril.ends(".gif")) {
+      mtype = "image/gif";
+    } elseIf (uril.ends(".svg")) {
+      mtype = "image/svg+xml";
+    } elseIf (uril.ends(".js")) {
+      mtype = "text/javascript";
+    } elseIf (uril.ends(".css")) {
+      mtype = "text/css";
+    } elseIf (uril.ends(".txt")) {
+      mtype = "text/plain";
+    } elseIf (uril.ends(".pdf")) {
+      mtype = "application/pdf";
+    } elseIf (uril.ends(".woff")) {
+      mtype = "application/font-woff";
+    } elseIf (uril.ends(".eot")) {
+      mtype = "application/vnd.ms-fontobject";  
+    } elseIf (uril.ends(".odt")) {
+      mtype = "application/vnd.oasis.opendocument.text";  
+    } elseIf (uril.ends(".eot")) {
+      mtype = "application/font-sfnt";
+    } else {
+      mtype = "application/octet-stream";
+    }
+    return(mtype);
+  }
+  
+}
+
 use class App:FileManagerPlugin(App:AjaxPlugin) {
 
      new() self {
@@ -2497,25 +2514,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
          } elseIf (checkReadPath(imgfile.path, arg, request)) {
            log.log("imgfile " + imgfile.path);
            if (imgfile.exists) {
-            String uril = uri.lower();
-            String mtype;
-            if (uril.ends(".html")) {
-              mtype = "text/html";
-            } elseIf (uril.ends(".jpg")) {
-              mtype = "image/jpeg";
-            } elseIf (uril.ends(".gif")) {
-              mtype = "image/gif";
-            } elseIf (uril.ends(".svg")) {
-              mtype = "image/svg+xml";
-            } elseIf (uril.ends(".js")) {
-              mtype = "text/javascript";
-            } elseIf (uril.ends(".css")) {
-              mtype = "text/css";
-            } elseIf (uril.ends(".txt")) {
-              mtype = "text/plain";
-            } else {
-              mtype = "application/octet-stream";
-            }
+            String mtype = Mimes.forUri(uri);
             request.outputContentType = mtype;
             IO:Writer outw = request.openOutput();
             IO:Reader inr = imgfile.reader.open();
@@ -2706,12 +2705,13 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
    }
    
    jscallForPath(Path p) {
-    if (p.toString().lower().ends(".jpg")) {
+    String psl = p.toString().lower();
+    if (psl.ends(".jpg")) {
       String jscall = " onclick=\"localBrowseRequest('" += Encode:Hex.encode(p.toString()) += "');return false;\"";
-    } elseIf (p.toString().lower().ends(".gif")) {
+    } elseIf (psl.ends(".gif")) {
       jscall = " onclick=\"localBrowseRequest('" += Encode:Hex.encode(p.toString()) += "');return false;\"";
-    } elseIf (p.toString().lower().ends(".html") || p.toString().lower().ends(".htm")) {
-      jscall = " onclick = \"return false;\"";
+    } elseIf (psl.ends(".html") || psl.ends(".htm") || psl.ends(".mhtml")) {
+      jscall = " onclick = \"return true;\"";
     } else {
       jscall = "";
     }
@@ -2802,8 +2802,14 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
               dirListHtml += "</tr>";   
             } else {
               String jscall = jscallForPath(p);
+              String psl = p.toString().lower();
+              if (psl.ends(".html") || psl.ends(".htm") || psl.ends(".mhtml") || psl.ends(".pdf")) {
+                String targ = " target=\"_blank\"";
+              } else {
+                targ = "";
+              }
               dirListHtml += "<tr>";
-              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
+              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + targ + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
               dirListHtml += "<td><input type=\"checkbox\" id=\"FCB"
               += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\"></td>";
               dirListHtml += "</tr>";
