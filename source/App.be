@@ -1611,6 +1611,8 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   }
       
    saveAccountRequest(Map arg, request) {
+      //I think this is unused
+      log.log("in app saveAccountRequest");
       unless (def(request.context.get("account")) && request.context.get("account").isAdmin) {
         throw(Alert.new("Must be administrator"));
       }
