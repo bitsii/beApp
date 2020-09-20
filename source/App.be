@@ -1907,13 +1907,13 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       }
     }
     for (sn in authedUrls) {
-      log.log("authedUrl is " + sn);
+      //log.log("authedUrl is " + sn);
       if (ref.lower().begins(sn.lower())) {
         //log.log("ixs false sitelist");
         return(false);
       }
     }
-    log.log("referer is " + ref);
+    //log.log("referer is " + ref);
     String snlist = app.configManager.get("auth.siteNames");
     if (TS.notEmpty(snlist)) {
       log.log("siteNames " + snlist);
@@ -1932,7 +1932,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     }
     
     String pref = app.webProto + "://";
-    log.log("prefix " + pref);
+    //log.log("prefix " + pref);
     String intPort = app.webPort;
     if (ref.begins(pref + "127.0.0.1:" + intPort) || ref.begins(pref + "localhost:" + intPort)) {
       //log.log("icc false localhost");
@@ -1940,7 +1940,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     }
     
     pref = "http://";
-    log.log("prefix " + pref);
+    //log.log("prefix " + pref);
     intPort = app.appPort;
     if (ref.begins(pref + "127.0.0.1:" + intPort) || ref.begins(pref + "localhost:" + intPort)) {
       //log.log("icc false localhost");
@@ -1982,7 +1982,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   }
   
   handleWeb(request) this {
-    log.log("in auth uri " + request.uri);
+    //log.log("in auth uri " + request.uri);
     
     if (request.uri == "/") {
       //only for ajaxy and embedded calls, ?embedded auth version?
@@ -2030,11 +2030,11 @@ use class App:AuthPlugin(App:AjaxPlugin) {
             if (def(arg) && def(arg.get("action"))) {
               String aname = arg.get("action");
                if (nonAuthedRequests.has(aname)) {
-                 log.log("nar has");
+                 //log.log("nar has");
                  request.continueHandling = true;
                  return(self);
                } else {
-                log.log("nar nohas");
+                //log.log("nar nohas");
                 unless (aname == "pageTokenRequest") {
                   accountName = request.getSession("account.name");
                   if (TS.isEmpty(accountName)) {
@@ -2074,7 +2074,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
                   }
                 }
               } 
-              log.log("here");
+              //log.log("here");
               request.context.put("account", self.accountManager.getRequestAccount(request));
               super.handleWeb(request);
           } else {

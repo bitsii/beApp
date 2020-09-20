@@ -521,13 +521,13 @@ use class Web:ScriptRequest {
    
    scriptArgGet() {
      String ic = self.inputContent;
-     IO:Logs.get(self).log("In scriptArgGet, inputContent " + ic);
+     //IO:Logs.get(self).log("In scriptArgGet, inputContent " + ic);
      return(Json:Unmarshaller.unmarshall(ic));
    }
    
    scriptReturnSet(ret) {
      String oc = Json:Marshaller.marshall(ret);
-     IO:Logs.get(self).log("In scriptReturnSet, outputContent " + oc);
+     //IO:Logs.get(self).log("In scriptReturnSet, outputContent " + oc);
      self.outputContentType =@ "application/json";
      self.outputContent = oc;
    }
