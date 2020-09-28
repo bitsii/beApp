@@ -319,8 +319,7 @@ use class Web:ScriptRequest {
      //}
      //X-Forwarded-For
      //String xff = request.getInputHeader("X-Forwarded-For");
-   
-     String addr = getInputHeader("X-Forwarded-For");
+
       /*if (TS.isEmpty(addr) || addr.lower() == "unknown") {
           addr = getInputHeader("WL-Proxy-Client-IP");
       }
@@ -333,12 +332,26 @@ use class Web:ScriptRequest {
       if (TS.isEmpty(addr) || addr.lower() == "unknown") {  
           addr = getInputHeader("HTTP_X_FORWARDED_FOR");
       }*/
+      
+      String addr;
+      if (TS.isEmpty(addr) || addr.lower() == "unknown") {
+          addr = getInputHeader("X-Forwarded-For");
+      }
+      if (TS.notEmpty(addr)) {
+        if (addr.has(",")) {
+          auto addrl = addr.split(",");
+          addr = addrl[0];
+        }
+      }
+      
       if (TS.isEmpty(addr) || addr.lower() == "unknown") {  
           addr = self.remoteAddress;
       }
+      
       //if (TS.notEmpty(addr)) {
       //  ("returning addr " + addr).print();
       //}
+      
       return(addr);
    }
    
