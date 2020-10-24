@@ -1006,7 +1006,7 @@ use class App:Account {
     }
     pass = salt + pass;
     Digest:SHA256 ds = Digest:SHA256.new();
-    for (Int i = 0;i < 7;i++=) {
+    for (Int i = 0;i < 5000;i++=) {
       pass = ds.digest(pass);
     }
     pass = Encode:Hex.encode(pass);
@@ -1179,7 +1179,10 @@ class Crypt {
   }
 
   encryptPass(String iv, String pass, String val) String {
-    pass = Digest:SHA256.digest(pass);
+    Digest:SHA256 ds = Digest:SHA256.new();
+    for (Int i = 0;i < 5000;i++=) {
+      pass = ds.digest(pass);
+    }
     return(encrypt(iv, pass, val));
   }
   
