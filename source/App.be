@@ -1223,7 +1223,10 @@ class Crypt {
   }
   
   decryptPass(String iv, String pass, String val) String {
-    pass = Digest:SHA256.digest(pass);
+    Digest:SHA256 ds = Digest:SHA256.new();
+    for (Int i = 0;i < 5000;i++=) {
+      pass = ds.digest(pass);
+    }
     return(decrypt(iv, pass, val));
   }
   
