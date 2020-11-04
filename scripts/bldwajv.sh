@@ -46,7 +46,9 @@ javac $BEJVARGS ../brace/system/jv/be/*.java ../apprun/App/$APPBLDNM/Base/target
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile ../braceApp/build/base.txt $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --ownProcess false --buildFile build/buildbr.txt ../brace/source/extended/Log.be ../braceApp/source/BrowserEUI.be
+if [ -e build/buildbr.txt ]; then
+  mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile ../braceApp/build/base.txt $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --ownProcess false --buildFile build/buildbr.txt ../brace/source/extended/Log.be ../braceApp/source/BrowserEUI.be
+fi
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -60,7 +62,9 @@ cd ../../../$APPBLDNM
 
 find ../brace/system -name "*.class" -exec rm {} \;
 
-cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js ../apprun/App/$APPBLDNM/BEX_E.js
+if [ -e build/buildbr.txt ]; then
+  cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js ../apprun/App/$APPBLDNM/BEX_E.js
+fi
 cp -R resources/* ../apprun/App/$APPBLDNM
 cp ../braceApp/extlibs/jv/wa/* ../apprun/App/$APPBLDNM
 cp extlibs/jv/* ../apprun/App/$APPBLDNM

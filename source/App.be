@@ -1093,7 +1093,7 @@ public static void runMainOnce(string[] margs) {
     if (!haveRun) {
       //string[] margs = new string[0];
       try {
-          be.BEX_E.bems_relocMain(margs);
+          //be.BEX_E.bems_relocMain(margs);
       } catch (System.Exception t) {
           Console.Write(t.ToString());
       }

@@ -17,7 +17,16 @@ namespace cswa
         {
             Startup.args = args;
             lock (Startup.handlerLock) {
-              BEC_2_3_11_AppRunMainOnce.runMainOnce(args);
+              //BEC_2_3_11_AppRunMainOnce.runMainOnce(args);
+              if (!Startup.haveRun) {
+                //string[] margs = new string[0];
+                try {
+                    be.BEX_E.bems_relocMain(args);
+                } catch (System.Exception t) {
+                    Console.Write(t.ToString());
+                }
+                Startup.haveRun = true;
+              }
             }
             string locurl = BEC_2_3_6_WebServer.bevs_webServer.bem_localUrlGet_0().bems_toCsString();
             CreateWebHostBuilder(args).UseUrls(locurl).Build().Run();

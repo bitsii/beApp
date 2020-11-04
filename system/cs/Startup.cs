@@ -15,6 +15,7 @@ namespace cswa
         public static volatile Object handlerLock = new Object();
         public static volatile BEC_2_3_6_WebServer bevs_webServer;
         public static volatile string[] args;
+        public static volatile bool haveRun = false;
     
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
