@@ -582,10 +582,14 @@ class HC {
           catch (e) {}
         }
       }
-      var data = bevl_argjs.bems_toJsString();
-      req.open('POST', beva_url.bems_toJsString(), true);
-      req.setRequestHeader("Content-type", beva_contentType.bems_toJsString());
-      //req.setRequestHeader("Connection", "close");
+      if (bevl_argjs === null) {
+        req.open('GET', beva_url.bems_toJsString(), true);
+      } else {
+        var data = bevl_argjs.bems_toJsString();
+        req.open('POST', beva_url.bems_toJsString(), true);
+        req.setRequestHeader("Content-type", beva_contentType.bems_toJsString());
+        //req.setRequestHeader("Connection", "close");
+      }
       req.onreadystatechange = function(){
           if (req.readyState != 4) return;
           if (req.status != 200 && req.status != 304) {
