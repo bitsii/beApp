@@ -1,4 +1,5 @@
 
+export BERCDONE=""
 export BEPREBUILD=""
 export CLASSPATH=""
 export BEJVARGS=""

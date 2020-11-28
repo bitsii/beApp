@@ -2,6 +2,26 @@
 
 export APPBLDNM=${PWD##*/}
 
+export OSTYPE=`uname`
+
+if [ "$OSTYPE" == "Darwin" ]; then
+  export BLDPLAT="macos"
+fi
+
+if [ "$OSTYPE" == "Linux" ]; then
+  export BLDPLAT="linux"
+fi
+
+if [[ $OSTYPE == *"MINGW"* ]]; then
+  export BLDPLAT="mswin"
+fi
+
+if [ "$BERCDONE" != "true" ]; then
+  if [ -e "./build/build${BLDPLAT}rcjv.sh" ]; then
+    . "./build/build${BLDPLAT}rcjv.sh"
+  fi
+fi
+
 if [ -z "$APPPKGNM" ]
 then
   APPPKGNM=${APPBLDNM}.zip

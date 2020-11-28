@@ -885,6 +885,7 @@ use class UI:ExternalBrowser {
     //("try to open from cmd").print();
      if (System:CurrentPlatform.name == "mswin") {
        System:Command.new("cmd /c start " + url).run();
+       //try start \"\" \"url\"
     } elseIf (System:CurrentPlatform.name == "macos") {
        System:Command.new("open " + url).run();
      } else {
