@@ -6,4 +6,12 @@ export APPBLDNM=${PWD##*/}
 
 cd ../apprun/App/$APPBLDNM
 
-./runwajv.sh $*
+una=`uname -a`
+case "$una" in
+  *Msys*)
+    ./runwajv.bat $*
+    ;;
+  *)
+    ./runwajv.sh $*
+    ;;
+esac
