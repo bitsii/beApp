@@ -4,10 +4,6 @@ trap '' HUP
 trap '' TERM
 trap '' CHLD
 
-trap ':' HUP
-trap ':' TERM
-trap ':' CHLD
-
 cd "${0%/*}"
 
 export APPBLDNM=${PWD##*/}
