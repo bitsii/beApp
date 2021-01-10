@@ -580,30 +580,34 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
       }
       Map decids = decideIn(auser, sublist);
       for (auto kv in decids) {
-        if (kv.value != "none") {
-          n = eh.encode(kv.key) + ".json";
-          p = dirp.copy().addStep(n);
-          if (kv.value == "load") {
-          
-            auto sl = kv.key.split(" ");
-            String snh = sl.get(1);
-            Int updateSecs = Int.new(sl.get(2));
-            String subp = sl.get(0);
-          
-            String outers = p.file.reader.open().readStringClose();
-            String pk = auh + "!" + subp + "!" + snh + "!" + updateSecs;
-            seckv.put(pk, outers);
-            deleteOthers(pk);
-            sechis.put(auh + "!" + "EntryActive" + "!" + snh + "!" + updateSecs, outers);
-            shrinkHist(auser, snh, 10);
-          } else {
-            if (kv.value == "delete") {
-              log.log("delete");
-              p.file.delete();
+        try {
+          if (kv.value != "none") {
+            n = eh.encode(kv.key) + ".json";
+            p = dirp.copy().addStep(n);
+            if (kv.value == "load") {
+            
+              auto sl = kv.key.split(" ");
+              String snh = sl.get(1);
+              Int updateSecs = Int.new(sl.get(2));
+              String subp = sl.get(0);
+            
+              String outers = p.file.reader.open().readStringClose();
+              String pk = auh + "!" + subp + "!" + snh + "!" + updateSecs;
+              seckv.put(pk, outers);
+              deleteOthers(pk);
+              sechis.put(auh + "!" + "EntryActive" + "!" + snh + "!" + updateSecs, outers);
+              shrinkHist(auser, snh, 10);
             } else {
-              log.log("not delete");
+              if (kv.value == "delete") {
+                log.log("delete");
+                p.file.delete();
+              } else {
+                log.log("not delete");
+              }
             }
           }
+        } catch (any ee) {
+          log.elog("except in sync for item", ee);
         }
       }
       return(decids);
@@ -615,15 +619,19 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
       String auh = auser;
       auto unmar = Json:Unmarshaller.new();
       for (auto kv in app.kvdbs.get(dbName).getMap(auh + "!")) {
-        String outers = kv.value;
-        Map outer = unmar.unmarshall(outers);
-        String fn = eh.encode(outer["subject"]) + ".json";
-        Path fp = dirp.copy().addStep(fn);
-        unless (decids.has(outer["subject"])) {
-          log.log("outputting for " + outer["subject"]);
-          fp.file.writer.open().writeStringClose(outers);
-        } else {
-          //log.log("not outputting for " + outer["subject"]);
+        try {
+          String outers = kv.value;
+          Map outer = unmar.unmarshall(outers);
+          String fn = eh.encode(outer["subject"]) + ".json";
+          Path fp = dirp.copy().addStep(fn);
+          unless (decids.has(outer["subject"])) {
+            log.log("outputting for " + outer["subject"]);
+            fp.file.writer.open().writeStringClose(outers);
+          } else {
+            //log.log("not outputting for " + outer["subject"]);
+          }
+        } catch (any ee) {
+          log.elog("except in sync for item", ee);
         }
       }
     }
