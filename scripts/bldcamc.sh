@@ -10,7 +10,7 @@ mkdir -p ../apprun/Data/$APPBLDNM
 rm -rf ../apprun/App/$APPBLDNM
 mkdir -p ../apprun/App/$APPBLDNM
 
-cp ../braceApp/scripts/runcamc.sh ../apprun/App/$APPBLDNM
+cp ../abeliiApp/scripts/runcamc.sh ../apprun/App/$APPBLDNM
 
 if [ ! -z "$BEPREBUILD" -a "$BEPREBUILD" != " " ]; then
   eval "$BEPREBUILD"
@@ -18,11 +18,11 @@ fi
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile ../braceApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang cs -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../brace/source/extended/Log.be ../brace/source/extended/LogSink.be ../braceApp/source/App.be ../braceApp/source/BrowserUI.be ../braceApp/source/Db.be   
+mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile ../abeliiApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang cs -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../abelii/source/extended/Log.be ../abelii/source/extended/LogSink.be ../abeliiApp/source/App.be ../abeliiApp/source/BrowserUI.be ../abeliiApp/source/Db.be   
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mcs -debug:pdbonly -warn:0 -out:../apprun/App/$APPBLDNM/BEX_E_mcs.exe ../brace/system/cs/be/*.cs ../apprun/App/$APPBLDNM/Base/target/cs/be/*.cs
+mcs -debug:pdbonly -warn:0 -out:../apprun/App/$APPBLDNM/BEX_E_mcs.exe ../abelii/system/cs/be/*.cs ../apprun/App/$APPBLDNM/Base/target/cs/be/*.cs
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
