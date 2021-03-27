@@ -59,6 +59,11 @@ use class Web:Server {
   """
   public static volatile BEC_2_3_6_WebServer bevs_webServer;
   public void bems_handleWeb(HttpContext context)  {
+      var syncIOFeature = context.Features.Get<IHttpBodyControlFeature>();
+    if (syncIOFeature != null)
+    {
+      syncIOFeature.AllowSynchronousIO = true;
+    }
     $class/Web:ScriptRequest$ request = new $class/Web:ScriptRequest$(context);
     request.bem_new_0();
     bem_handleWeb_1(request);
