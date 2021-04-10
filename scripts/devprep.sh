@@ -4,7 +4,7 @@ export OSTYPE=`uname`
 
 if [[ "$OSTYPE" == *"MINGW"* ]]; then
   echo "Mswin"
-  echo "Install wget for windows http://gnuwin32.sourceforge.net/packages/wget.htm"
+  echo "Install wget for windows https://eternallybored.org/misc/wget/"
   echo "(add it to your path)"
   npm -g install uglify-js
 fi
