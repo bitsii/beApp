@@ -17,7 +17,6 @@ namespace cswa
         {
             Startup.args = args;
             lock (Startup.handlerLock) {
-              //BEC_2_3_11_AppRunMainOnce.runMainOnce(args);
               if (!Startup.haveRun) {
                 //string[] margs = new string[0];
                 try {

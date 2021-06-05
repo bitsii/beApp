@@ -38,7 +38,6 @@ namespace cswa
             
             //Console.WriteLine("Doing Configure");
             lock (handlerLock) {
-              //BEC_2_3_11_AppRunMainOnce.runMainOnce(args);
               if (bevs_webServer == null) {
                 bevs_webServer = BEC_2_3_6_WebServer.bevs_webServer;
               }

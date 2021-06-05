@@ -1063,23 +1063,23 @@ public static volatile boolean haveRun = false;
 public synchronized static void runMainOnce(String[] margs) {
   if (!haveRun) {
     //String[] margs = new String[0];
-    try {
+    /*try {
         be.BEX_E.main(margs);
     } catch (Throwable t) {
         System.err.println("Failed in main with " + t.getMessage());
         throw new Error(t.getMessage(), t);
-    }
+    }*/
     haveRun = true;
   }
 }
 
 public synchronized static void runMain(String[] margs) {
-    try {
+    /*try {
         be.BEX_E.main(margs);
     } catch (Throwable t) {
         System.err.println("Failed in main with " + t.getMessage());
         throw new Error(t.getMessage(), t);
-    }
+    }*/
 }
 """
 }

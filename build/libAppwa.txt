@@ -1,0 +1,15 @@
+--libraryName
+Appwa
+-saveSyns=true
+-saveIds=true
+-mainClass=System:DoNothing
+-deployPath=lib/deploy
+-buildPath=lib/
+../abelii/source/base/Uses.be
+source/AppEUI.be
+source/App.be
+source/BrowserUI.be
+source/WebServer.be
+source/WebApp.be
+source/Db.be
+source/MFSKvDb.be
