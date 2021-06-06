@@ -1,0 +1,11 @@
+--libraryName
+App
+-saveSyns=true
+-mainClass=System:DoNothing
+-deployPath=lib/wabr/deploy
+-buildPath=lib/wabr/
+-jsInclude=../abelii/lib/br/js/BEL_Base.js
+../abelii/source/base/Uses.be
+../abelii/source/extended/Log.be
+source/AppEUI.be
+source/BrowserEUI.be

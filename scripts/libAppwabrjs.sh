@@ -1,23 +1,13 @@
 #!/bin/bash
 
-rm -rf lib/jv/BEL_Base_*
+rm -rf lib/wabr/js/BEL_Base_*
 
-time mono --debug ../abelii/target5/BEX_E_mcs.exe --buildFile build/libAppwa.txt --emitLang jv --doMain false -loadSyns=../abelii/lib/jv/BEL_Base.syn -loadIds=../abelii/lib/jv/BEL_Base -initLib=Base
-
-lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
-
-javac lib/Appwa/target/jv/be/*.java
+time mono --debug ../abelii/target5/BEX_E_mcs.exe --buildFile build/libAppwabr.txt --emitLang js --ownProcess false -loadSyns=../abelii/lib/br/js/BEL_Base.syn --initLib Base
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-rm -rf lib/jv
-mkdir lib/jv
-mv lib/Appwa/target/jv/be/*.ids lib/jv
-mv lib/Appwa/target/jv/be/*.syn lib/jv
-rm -f lib/Appwa/target/jv/be/*.java
-
-rm -f lib/jv/BEL_Appwa.jar
-cd lib/Appwa/target/jv
-jar -cf ../../../jv/BEL_Appwa.jar .
-cd ../../../..
-rm -rf lib/Appwa
+rm -rf lib/wabr/js
+mkdir lib/wabr/js
+mv lib/wabr/App/target/js/be/*.syn lib/wabr/js
+mv lib/wabr/App/target/js/be/*.js lib/wabr/js
+rm -rf lib/wabr/App
