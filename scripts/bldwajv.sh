@@ -71,7 +71,7 @@ javac $BEJVARGS ../apprun/App/$APPBLDNM/$APPBLDNM/target/jv/be/*.java
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 if [ -e build/buildbr.txt ]; then
-  mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile ../abeliiApp/build/base.txt $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --ownProcess false --buildFile build/buildbr.txt ../abelii/source/extended/Log.be ../abeliiApp/source/BrowserEUI.be
+  time mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -loadSyns=../abeliiApp/lib/wabr/js/BEL_App.syn -initLib=App -jsInclude=../abeliiApp/lib/wabr/js/BEL_App.js --emitLang js --ownProcess false --buildFile build/buildbr.txt
 fi
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
@@ -84,7 +84,7 @@ cp ../abelii/lib/ex/jv/*.jar ../apprun/App/$APPBLDNM
 cp ../abeliiApp/lib/wa/jv/*.jar ../apprun/App/$APPBLDNM
 
 if [ -e build/buildbr.txt ]; then
-  cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEL_Base.js ../apprun/App/$APPBLDNM/BEX_E.js
+  cp ../apprun/App/$APPBLDNM/$APPBLDNM/target/js/be/BEL_BBridge.js ../apprun/App/$APPBLDNM/BEX_E.js
 fi
 cp -R resources/* ../apprun/App/$APPBLDNM
 cp ../abeliiApp/extlibs/wa/jv/* ../apprun/App/$APPBLDNM
