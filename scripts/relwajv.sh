@@ -50,7 +50,7 @@ fi
 cd ../apprun/App/$APPBLDNM
 
 mkdir bereljar
-mv BEX_*jar bereljar
+mv BE*jar bereljar
 
 rm *.jar
 
