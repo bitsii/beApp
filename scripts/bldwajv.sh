@@ -45,10 +45,10 @@ cp ../abeliiApp/scripts/stopwajv.vbs ../apprun/App/$APPBLDNM
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="$CLASSPATH;../abeliiApp/lib/jv/*;../abelii/lib/jv/*;extlibs/jv/*;../abeliiApp/extlibs/wa/jv/*"
+    export CLASSPATH="$CLASSPATH;../abeliiApp/lib/wa/jv/*;../abelii/lib/ex/jv/*;extlibs/jv/*;../abeliiApp/extlibs/wa/jv/*"
     ;;
   *)
-    export CLASSPATH="$CLASSPATH:../abeliiApp/lib/jv/*:../abelii/lib/jv/*:extlibs/jv/*:../abeliiApp/extlibs/wa/jv/*"
+    export CLASSPATH="$CLASSPATH:../abeliiApp/lib/wa/jv/*:../abelii/lib/ex/jv/*:extlibs/jv/*:../abeliiApp/extlibs/wa/jv/*"
     ;;
 esac
 
@@ -60,7 +60,7 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 #mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile ../abeliiApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang jv -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS 
 
-time mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -mainClass=App:AppStart -loadSyns=../abeliiApp/lib/jv/BEL_Appwa.syn -loadIds=../abeliiApp/lib/jv/BEL_Appwa -initLib=Appwa --emitLang jv --buildFile build/build.txt $BEBLDARGS
+time mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -mainClass=App:AppStart -loadSyns=../abeliiApp/lib/wa/jv/BEL_App.syn -loadIds=../abeliiApp/lib/wa/jv/BEL_App -initLib=App --emitLang jv --buildFile build/build.txt $BEBLDARGS
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -80,8 +80,8 @@ cd ../apprun/App/$APPBLDNM/$APPBLDNM/target/jv
 jar -cf ../../../BEL_${APPBLDNM}_jv.jar .
 cd ../../../../../../$APPBLDNM
 
-cp ../abelii/lib/jv/*.jar ../apprun/App/$APPBLDNM
-cp ../abeliiApp/lib/jv/*.jar ../apprun/App/$APPBLDNM
+cp ../abelii/lib/ex/jv/*.jar ../apprun/App/$APPBLDNM
+cp ../abeliiApp/lib/wa/jv/*.jar ../apprun/App/$APPBLDNM
 
 if [ -e build/buildbr.txt ]; then
   cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEL_Base.js ../apprun/App/$APPBLDNM/BEX_E.js

@@ -1,10 +1,10 @@
 --libraryName
-Appwa
+App
 -saveSyns=true
 -saveIds=true
 -mainClass=System:DoNothing
--deployPath=lib/deploy
--buildPath=lib/
+-deployPath=lib/wa/deploy
+-buildPath=lib/wa/
 ../abelii/source/base/Uses.be
 source/AppEUI.be
 source/App.be
