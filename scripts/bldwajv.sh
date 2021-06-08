@@ -84,7 +84,7 @@ cp ../abelii/lib/ex/jv/*.jar ../apprun/App/$APPBLDNM
 cp ../abeliiApp/lib/wa/jv/*.jar ../apprun/App/$APPBLDNM
 
 if [ -e build/buildbr.txt ]; then
-  cp ../apprun/App/$APPBLDNM/$APPBLDNM/target/js/be/BEL_BBridge.js ../apprun/App/$APPBLDNM/BEX_E.js
+  cp ../apprun/App/$APPBLDNM/$APPBLDNM/target/js/be/BEL_${APPBLDNM}.js ../apprun/App/$APPBLDNM/BEX_E.js
 fi
 cp -R resources/* ../apprun/App/$APPBLDNM
 cp ../abeliiApp/extlibs/wa/jv/* ../apprun/App/$APPBLDNM
