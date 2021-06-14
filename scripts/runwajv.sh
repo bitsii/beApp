@@ -17,9 +17,9 @@ fi
 if [[ $OSTYPE == *"MINGW"* ]]; then
   #echo "Is Mingw"
   export OSTYPE="Mingw"
-  export CLASSPATH="$CLASSPATH;App/$APPBLDNM/*"
+  export CLASSPATH="App/$APPBLDNM/*"
 else
-  export CLASSPATH="$CLASSPATH:App/$APPBLDNM/*"
+  export CLASSPATH="App/$APPBLDNM/*"
 fi
 
 export MYPWD=`pwd`
