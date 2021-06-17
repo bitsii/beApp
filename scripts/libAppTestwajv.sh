@@ -3,10 +3,10 @@
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="$CLASSPATH;../abelii/lib/ex/jv/*;lib/wa/jv/*;extlibs/wa/jv/*;targetAppTestwa/AppTest/target/jv"
+    export CLASSPATH="../abelii/lib/ex/jv/*;lib/wa/jv/*;extlibs/wa/jv/*;targetAppTestwa/AppTest/target/jv"
     ;;
   *)
-    export CLASSPATH="$CLASSPATH:../abelii/lib/ex/jv/*:lib/wa/jv/*:extlibs/wa/jv/*:targetAppTestwa/AppTest/target/jv"
+    export CLASSPATH="../abelii/lib/ex/jv/*:lib/wa/jv/*:extlibs/wa/jv/*:targetAppTestwa/AppTest/target/jv"
     ;;
 esac
 
