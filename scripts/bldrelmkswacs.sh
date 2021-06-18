@@ -2,7 +2,7 @@
 
 export RELMKS="yes"
 
-../abeliiApp/scripts/bldwacs.sh $*
-../abeliiApp/scripts/relwacs.sh $*
-../abeliiApp/scripts/mkswacs.sh $*
+../braceApp/scripts/bldwacs.sh $*
+../braceApp/scripts/relwacs.sh $*
+../braceApp/scripts/mkswacs.sh $*
 

@@ -10,28 +10,28 @@ mkdir -p ../apprun/Data/$APPBLDNM
 rm -rf ../apprun/App/$APPBLDNM
 mkdir -p ../apprun/App/$APPBLDNM
 
-cp ../abeliiApp/scripts/runbajv.sh ../apprun/App/$APPBLDNM
-#cp ../abeliiApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
+cp ../braceApp/scripts/runbajv.sh ../apprun/App/$APPBLDNM
+#cp ../braceApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abelii/target5/*;extlibs/jv/*;../abeliiApp/extlibs/jv/ba/*"
+    export CLASSPATH="../brace/target5/*;extlibs/jv/*;../braceApp/extlibs/jv/ba/*"
     ;;
   *)
-    export CLASSPATH="../abelii/target5/*:extlibs/jv/*:../abeliiApp/extlibs/jv/ba/*"
+    export CLASSPATH="../brace/target5/*:extlibs/jv/*:../braceApp/extlibs/jv/ba/*"
     ;;
 esac
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile ../abeliiApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang jv -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../abelii/source/extended/Log.be ../abeliiApp/source/App.be ../abeliiApp/source/BrowserUI.be ../abeliiApp/source/BrowserJvFx.be ../abeliiApp/source/Db.be
+mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile ../braceApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang jv -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../brace/source/extended/Log.be ../braceApp/source/App.be ../braceApp/source/BrowserUI.be ../braceApp/source/BrowserJvFx.be ../braceApp/source/Db.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-javac $BEJVARGS ../abelii/system/jv/be/*.java ../apprun/App/$APPBLDNM/Base/target/jv/be/*.java
+javac $BEJVARGS ../brace/system/jv/be/*.java ../apprun/App/$APPBLDNM/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be --buildFile ../abeliiApp/build/base.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --ownProcess false --buildFile build/buildbr.txt ../abelii/source/extended/Log.be ../abeliiApp/source/BrowserEUI.be
+mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile ../braceApp/build/base.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --ownProcess false --buildFile build/buildbr.txt ../brace/source/extended/Log.be ../braceApp/source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -39,15 +39,15 @@ cd ../apprun/App/$APPBLDNM/Base/target/jv
 jar -cf ../../../BEX_E_app_jv.jar .
 cd ../../../../../../$APPBLDNM
 
-cd ../abelii/system/jv
+cd ../brace/system/jv
 jar -cf ../../../apprun/App/$APPBLDNM/BEX_E_lib_jv.jar .
 cd ../../../$APPBLDNM
 
-find ../abelii/system -name "*.class" -exec rm {} \;
+find ../brace/system -name "*.class" -exec rm {} \;
 
 cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js ../apprun/App/$APPBLDNM/BEX_E.js
 cp -R resources/* ../apprun/App/$APPBLDNM
-cp ../abeliiApp/extlibs/jv/ba/* ../apprun/App/$APPBLDNM
+cp ../braceApp/extlibs/jv/ba/* ../apprun/App/$APPBLDNM
 cp extlibs/jv/* ../apprun/App/$APPBLDNM
 
 cd ../apprun/App/$APPBLDNM

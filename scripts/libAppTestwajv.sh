@@ -3,16 +3,16 @@
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="../abelii/lib/ex/jv/*;lib/wa/jv/*;extlibs/wa/jv/*;targetAppTestwa/AppTest/target/jv"
+    export CLASSPATH="../brace/lib/ex/jv/*;lib/wa/jv/*;extlibs/wa/jv/*;targetAppTestwa/AppTest/target/jv"
     ;;
   *)
-    export CLASSPATH="../abelii/lib/ex/jv/*:lib/wa/jv/*:extlibs/wa/jv/*:targetAppTestwa/AppTest/target/jv"
+    export CLASSPATH="../brace/lib/ex/jv/*:lib/wa/jv/*:extlibs/wa/jv/*:targetAppTestwa/AppTest/target/jv"
     ;;
 esac
 
 rm -rf targetAppTestwa
 
-time mono --debug ../abelii/target5/BEX_E_mcs.exe ../abelii/source/base/Uses.be -deployPath=deployAppTestwa -buildPath=targetAppTestwa -libraryName=AppTest -mainClass=AppTest:Tests -loadSyns=lib/wa/jv/BEL_App.syn -loadIds=lib/wa/jv/BEL_App -initLib=App --emitLang jv source/AppTest.be
+time mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be -deployPath=deployAppTestwa -buildPath=targetAppTestwa -libraryName=AppTest -mainClass=AppTest:Tests -loadSyns=lib/wa/jv/BEL_App.syn -loadIds=lib/wa/jv/BEL_App -initLib=App --emitLang jv source/AppTest.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 

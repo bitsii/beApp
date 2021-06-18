@@ -1,5 +1,5 @@
 #!/bin/bash
 
-../abeliiApp/scripts/bldwajv.sh $*
-../abeliiApp/scripts/relwajv.sh $*
+../braceApp/scripts/bldwajv.sh $*
+../braceApp/scripts/relwajv.sh $*
 

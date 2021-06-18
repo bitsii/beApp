@@ -3,16 +3,16 @@
 una=`uname -a`
 case "$una" in
   *Msys*)
-    export CLASSPATH="$CLASSPATH;../abelii/lib/ex/jv/*;extlibs/wa/jv/*"
+    export CLASSPATH="$CLASSPATH;../brace/lib/ex/jv/*;extlibs/wa/jv/*"
     ;;
   *)
-    export CLASSPATH="$CLASSPATH:../abelii/lib/ex/jv/*:extlibs/wa/jv/*"
+    export CLASSPATH="$CLASSPATH:../brace/lib/ex/jv/*:extlibs/wa/jv/*"
     ;;
 esac
 
 rm -rf lib/wa/jv/BEL_App_*
 
-time mono --debug ../abelii/target5/BEX_E_mcs.exe --buildFile build/libAppwa.txt --emitLang jv --doMain false -loadSyns=../abelii/lib/ex/jv/BEL_Base.syn -loadIds=../abelii/lib/ex/jv/BEL_Base -initLib=Base
+time mono --debug ../brace/target5/BEX_E_mcs.exe --buildFile build/libAppwa.txt --emitLang jv --doMain false -loadSyns=../brace/lib/ex/jv/BEL_Base.syn -loadIds=../brace/lib/ex/jv/BEL_Base -initLib=Base
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
