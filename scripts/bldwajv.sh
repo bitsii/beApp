@@ -89,5 +89,6 @@ fi
 cp -R resources/* ../apprun/App/$APPBLDNM
 cp ../braceApp/extlibs/wa/jv/* ../apprun/App/$APPBLDNM
 cp extlibs/jv/* ../apprun/App/$APPBLDNM
+rm -rf ../apprun/App/$APPBLDNM/$APPBLDNM/target
 
 #cd ../apprun/App/$APPBLDNM

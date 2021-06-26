@@ -6,6 +6,8 @@ if [[ "$OSTYPE" == *"MINGW"* ]]; then
   echo "Mswin"
   echo "Install wget for windows https://eternallybored.org/misc/wget/"
   echo "(add it to your path)"
+  echo "Same for zip - http://gnuwin32.sourceforge.net/packages/zip.htm"
+  echo "(need deps for zip too)"
   npm -g install uglify-js
 fi
 
