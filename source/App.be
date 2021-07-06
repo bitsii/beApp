@@ -1820,7 +1820,8 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   */
   
   
-    Int maxBad =@ 10;
+    //Int maxBad =@ 10;
+    Int maxBad =@ 75;
     Int clearSecs =@ 50;
     Int updateSecs =@ 10;
   
