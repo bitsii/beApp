@@ -2,7 +2,9 @@
 First - quick Getting Started for Development! (more about BraceApp below...)
 
 First you have to have already setup the brace language environment, see
-https://gitlab.com/bitsii/brace (Getting Started in Readme.md) for that
+https://gitlab.com/bitsii/brace (Getting Started in Readme.md) for that  (you 
+  have to install not only the base environment but javascript and java ones
+  as well)
 
 then, from the directory containing "brace" (where you cloned it), clone braceApp
 (from your shell / on MSWin from the git shell you installed)
