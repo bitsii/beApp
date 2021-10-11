@@ -13,6 +13,7 @@ Base
 ../brace/source/base/List.be
 ../brace/source/base/Map.be
 ../brace/source/base/System.be
+../brace/source/base/ExtSystem.be
 ../brace/source/base/Exceptions.be
 ../brace/source/base/Tokenize.be
 ../brace/source/base/Test.be
