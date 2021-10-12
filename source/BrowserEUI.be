@@ -139,7 +139,7 @@ if (typeof(window) !== 'undefined') {
 class HD {
   default() self {
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
     }
   }
   
@@ -433,7 +433,7 @@ class HC {
 
   default() self {
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
       any apwkHandler;
     }
   }

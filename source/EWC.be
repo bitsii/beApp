@@ -36,7 +36,7 @@ use class EWC:NetMaker {
 
      new() self {
        fields {
-          auto log =@ IO:Logs.get(self);
+          auto log = IO:Logs.get(self);
         }
         IO:Logs.turnOnAll();
      }

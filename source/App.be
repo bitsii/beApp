@@ -318,7 +318,7 @@ class Wol {
 
   default() self {
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
     }
   }
 
@@ -421,7 +421,7 @@ class Upnp {
   new() self {
     fields {
       String netGw;
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
     }
   }
   
@@ -710,7 +710,7 @@ class IP {
 
   default() self {
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
     }
   }
   
@@ -796,7 +796,7 @@ use class App:Paths {
       any app = _app;
       String name = app.plugin.name;
       String dataName = name;
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
     }
     if (app.plugin.can("dataNameGet", 0)) {
       dataName = app.plugin.dataName; 
@@ -1267,7 +1267,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
-          log =@ IO:Logs.get(self);
+          log = IO:Logs.get(self);
           any app;
           String name = "Auth";
           Set nonAuthedRequests = Set.new();
@@ -1814,16 +1814,16 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   check(request) Bool {
   
   /*
-    Int maxBad =@ 300;
-    Int clearSecs =@ 40;
-    Int updateSecs =@ 20;
+    Int maxBad = 300;
+    Int clearSecs = 40;
+    Int updateSecs = 20;
   */
   
   
-    //Int maxBad =@ 10;
-    Int maxBad =@ 75;
-    Int clearSecs =@ 50;
-    Int updateSecs =@ 10;
+    //Int maxBad = 10;
+    Int maxBad = 75;
+    Int clearSecs = 50;
+    Int updateSecs = 10;
   
     
     if (request.embedded) {
@@ -2111,7 +2111,7 @@ use class App:PublicReadPlugin {
        fields {
           any app;
           String name = "Public";
-          IO:Log log =@ IO:Logs.get(self);
+          IO:Log log = IO:Logs.get(self);
         }
      }
      
@@ -2166,7 +2166,7 @@ use class App:LocalAccessPlugin {
        fields {
           any app;
           String name = "LocalAccess";
-          IO:Log log =@ IO:Logs.get(self);
+          IO:Log log = IO:Logs.get(self);
           String lattok = System:Random.getString(64);
         }
      }
@@ -2232,7 +2232,7 @@ use class App:WebReverseProxyPlugin {
           any app;
           String name = "WRProxy";
           String dataName = "BBridge";
-          IO:Log log =@ IO:Logs.get(self);
+          IO:Log log = IO:Logs.get(self);
           //String destUrl = "http://127.0.0.1:";
           String destUrl;
           Bool sslValidate;
@@ -2301,9 +2301,9 @@ use class App:WebReverseProxyPlugin {
        client.url = destReq;
        
        //"User-Agent"
-       //Set suppress =@ Sets.from("Server", "Accept", "Connection", "Content-Length", "Content-Type", "Date", "Expect", "Host", "If-Modified-Since", "Range", "Referrer", "Referer", "Transfer-Encoding", "Proxy-Connection");
+       //Set suppress = Sets.from("Server", "Accept", "Connection", "Content-Length", "Content-Type", "Date", "Expect", "Host", "If-Modified-Since", "Range", "Referrer", "Referer", "Transfer-Encoding", "Proxy-Connection");
        
-       Set include =@ Sets.from("User-Agent", "Cookie", "Referer", "Set-Cookie");
+       Set include = Sets.from("User-Agent", "Cookie", "Referer", "Set-Cookie");
        
        //headers
        Set hkeys = request.inputHeaderKeys;
@@ -2420,7 +2420,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           String name = "Files";
         }
         super.new();
-        log =@ IO:Logs.get(self);
+        log = IO:Logs.get(self);
      }
      
     checkWritePath(Path p, Map arg, request) Bool {
@@ -2999,7 +2999,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
           String kvdb = "CONFIG";
         }
         super.new();
-        log =@ IO:Logs.get(self);
+        log = IO:Logs.get(self);
      }
      
      handleCmd(Parameters params) Bool {
@@ -3075,7 +3075,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       }
    
    showConfigRequest(Map arg, request) Map {
-     Set noshow =@ Sets.from("imap.pass", "imap.user");
+     Set noshow = Sets.from("imap.pass", "imap.user");
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
        String conf = String.new();
        Map ecm = app.kvdbs.get(kvdb).getMap();
@@ -3213,7 +3213,7 @@ class App:AppStart {
 
   new(Parameters _params) self {
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
       Parameters params = _params;
     }
   }
@@ -3352,7 +3352,7 @@ class WebApp {
 
   new() self {
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
       Lock lock = Lock.new();
       String certificateThumbprint;
       Map kvDbs = Map.new();
@@ -3615,7 +3615,7 @@ use class System:RunAsync {
 
   new(String _klass, String _toInvoke, List _args) self {
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
       String klass = _klass;
       String toInvoke = _toInvoke;
       List args = _args;
@@ -3682,7 +3682,7 @@ use class App:Background {
 
   new() self {
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
       Interval startDelay = Interval.new(10, 0);
       Interval repeatDelay = Interval.new(10, 0);
       Interval minimumDelay = Interval.new(5, 0);
@@ -3758,13 +3758,13 @@ class App:AjaxPlugin {
    new() self {
     fields {
       any plugin = self;
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
     }
    }
    
    new(_plugin) self {
      plugin = _plugin;
-     log =@ IO:Logs.get(self);
+     log = IO:Logs.get(self);
    } 
    
    prepArgs(request) {
@@ -3813,7 +3813,7 @@ class App:AjaxPlugin {
       } catch (any e) {
         log.error("Caught exception handling request");
         if (undef(e)) { log.error("undefined exception") } else { log.error(e.toString()); }
-        if (e.sameClass(Alert.new()@)) {
+        if (e.sameClass(Alert.new())) {
           arg = CallBackUI.informResponse(e.description);
         } else {
           arg = CallBackUI.informResponse("Sorry, unable to handle request");

@@ -79,7 +79,7 @@ use class Web:Server {
       Bool ssl = false;
       String sslPath;
       any sessionManager;
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
       Bool gzipOutput = false;
     }
   }
@@ -546,7 +546,7 @@ use class Web:ScriptRequest {
    scriptReturnSet(ret) {
      String oc = Json:Marshaller.marshall(ret);
      //IO:Logs.get(self).log("In scriptReturnSet, outputContent " + oc);
-     self.outputContentType =@ "application/json";
+     self.outputContentType = "application/json";
      self.outputContent = oc;
    }
    
@@ -598,7 +598,7 @@ use class Web:ScriptRequest {
     new() self {
         fields {
             IO:Writer outputWriter;
-            String outputContentType =@ "text/html"; //sensible default
+            String outputContentType = "text/html"; //sensible default
             Bool outputOpened = false;
             Map context = Map.new();
             Bool continueHandling = true;
@@ -744,7 +744,7 @@ class Net:PortForward {
       Int localPort = _localPort;
       String remoteHost = _remoteHost;
       Int remotePort = _remotePort;
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
      }
    }
    

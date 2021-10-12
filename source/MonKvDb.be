@@ -37,7 +37,7 @@ emit(jv) {
   pathParamsNew(Path _dbp, Parameters _params, String _tableName) self {
     new();
     fields {
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
       String tableName = _tableName;
       Parameters params = _params;
       String monDb;

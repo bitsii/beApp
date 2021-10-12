@@ -44,7 +44,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
       String syncersName;
     }
     super.new();
-    log =@ IO:Logs.get(self);
+    log = IO:Logs.get(self);
  }
  
  shrinkHist(String auser, String snh, Int keep) {
@@ -104,7 +104,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
     }
  
  nameGet() String {
-       String name =@ "BSync";
+       String name = "BSync";
        return(name);
      }
  

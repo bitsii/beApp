@@ -126,7 +126,7 @@ public static class MainActivity extends AppCompatActivity {
    
    setupStuff() {
      fields {
-        IO:Log log =@ IO:Logs.get(self);
+        IO:Log log = IO:Logs.get(self);
         Map session = Map.new();
      }
    }

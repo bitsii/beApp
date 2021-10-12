@@ -42,7 +42,7 @@ class KvDbs {
       Lock lock = Lock.new();
       Map kvDbs = Map.new();
       Map kvDbNxt = Map.new();
-      IO:Log log =@ IO:Logs.get(self);
+      IO:Log log = IO:Logs.get(self);
       Path dataPath = _dataPath;
     }
   }
