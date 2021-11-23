@@ -818,7 +818,7 @@ NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUser
 NSString *documentsDirectory = [paths objectAtIndex:0];
 //NSLog(@"%@", documentsDirectory);
 string ccdd = string([documentsDirectory UTF8String]);
-bevl_idd = new BEC_2_4_6_TextString(ccdd);
+bevl_idd = (new BEC_2_4_6_TextString())->bems_ccsnew(ccdd);
 #endif
 
 """

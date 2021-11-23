@@ -127,7 +127,7 @@ bevi_db = nullptr;
         const unsigned char * key;
         key  = sqlite3_column_text (stmt, 0);
         string keys(reinterpret_cast<const char*>(key));
-        bevl_mk = new BEC_2_4_6_TextString(keys);
+        bevl_mk = (new BEC_2_4_6_TextString())->bems_ccsnew(keys);
       """
       }
       
@@ -157,8 +157,8 @@ bevi_db = nullptr;
         val  = sqlite3_column_text (stmt, 1);
         string keys(reinterpret_cast<const char*>(key));
         string vals(reinterpret_cast<const char*>(val));
-        bevl_mk = new BEC_2_4_6_TextString(keys);
-        bevl_mv = new BEC_2_4_6_TextString(vals);
+        bevl_mk = (new BEC_2_4_6_TextString())->bems_ccsnew(keys);
+        bevl_mv = (new BEC_2_4_6_TextString())->bems_ccsnew(vals);
       """
       }
       
@@ -197,8 +197,8 @@ bevi_db = nullptr;
         val  = sqlite3_column_text (stmt, 1);
         string keys(reinterpret_cast<const char*>(key));
         string vals(reinterpret_cast<const char*>(val));
-        bevl_mk = new BEC_2_4_6_TextString(keys);
-        bevl_mv = new BEC_2_4_6_TextString(vals);
+        bevl_mk = (new BEC_2_4_6_TextString())->bems_ccsnew(keys);
+        bevl_mv = (new BEC_2_4_6_TextString())->bems_ccsnew(vals);
       """
       }
       
@@ -229,7 +229,7 @@ bevi_db = nullptr;
         const unsigned char * val;
         val  = sqlite3_column_text (stmt, 0);
         string vals(reinterpret_cast<const char*>(val));
-        bevl_value = new BEC_2_4_6_TextString(vals);
+        bevl_value = (new BEC_2_4_6_TextString())->bems_ccsnew(vals);
       }
       sqlite3_finalize(stmt);
       """

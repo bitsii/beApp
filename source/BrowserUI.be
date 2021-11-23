@@ -566,7 +566,7 @@ if (retData != nil) {
   NSLog(@"after request");
   NSLog(newStr);
   string cppMessage = string([newStr UTF8String]);
-  bevp_ccin = new BEC_2_4_6_TextString(cppMessage);
+  bevp_ccin = (new BEC_2_4_6_TextString())->bems_ccsnew(cppMessage);
   
 }
 
