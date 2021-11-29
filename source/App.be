@@ -3239,7 +3239,7 @@ class App:AppStart {
       try {
         String appArgs = System:Environment.getVariable("BEAPPARGS");
         if (TS.notEmpty(appArgs)) {
-          params = Parameters.new(appArgs.split(" ").toList());
+          params = Parameters.new(appArgs.split(" "));
         } else {
           Parameters params = Parameters.new(System:Process.new().args);
         }

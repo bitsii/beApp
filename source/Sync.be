@@ -144,7 +144,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
       yesSync.startDelay = Time:Interval.new(0, 500);
       yesSync.repeatDelay = Time:Interval.new(Int.new(rd), 0);
       yesSync.minimumDelay = Time:Interval.new(5, 0);
-      yesSync.toInvoke = getInvocation("yesSync", List.new());
+      yesSync.toInvoke = System:Invocation.new(self, "yesSync", List.new());
       yesSync.main();
     }
     

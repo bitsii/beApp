@@ -8,6 +8,7 @@ Base
 ../brace/source/base/Logic.be
 ../brace/source/base/Float.be
 ../brace/source/base/Encode.be
+../brace/source/base/EncodeUrl.be
 ../brace/source/base/LinkedList.be
 ../brace/source/base/Stack.be
 ../brace/source/base/List.be
