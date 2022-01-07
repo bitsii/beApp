@@ -2,7 +2,7 @@
 // Use of this source code is governed by the BSD-3-Clause
 // license that can be found in the LICENSE file.
 
-emit(java) {
+emit(jv) {
 """
 import java.io.*;                                                               
 import java.net.*;  
@@ -11,7 +11,7 @@ import java.net.*;
 
 class App:TCPServer {
 
-   emit(java) {
+   emit(jv) {
    """
    public ServerSocket server;
    """
@@ -24,7 +24,7 @@ class App:TCPServer {
   }
   
   start() {
-    emit(java) {
+    emit(jv) {
     """
     server = new ServerSocket(bevp_port.bevi_int);
     """
@@ -33,14 +33,14 @@ class App:TCPServer {
   
   checkGetClient() App:TCPClient {
     App:TCPClient res;
-    emit(java) {
+    emit(jv) {
     """
     Socket client = server.accept();
     """
     }
     res = App:TCPClient.new();
     res.opened = true;
-    emit(java) {
+    emit(jv) {
     """
     bevl_res.client = client;
     """
@@ -52,12 +52,12 @@ class App:TCPServer {
 
 class App:TCPClient {
 
-emit(java) {
+emit(jv) {
 """
 
 public Socket client;
-public InputStream input;
-public OutputStream output;
+public InputStream inputStream;
+public OutputStream outputStream;
 
 """
 }
@@ -83,33 +83,29 @@ public OutputStream output;
   
   write(String line) self {
     Int len = line.size;
-    emit(java) {
+    emit(jv) {
     """
     if (outputStream == null) {
       outputStream = client.getOutputStream();
     }
-    outputStream.write(beva_line.bevi_bytes, 0, len.bevi_int);
+    outputStream.write(beva_line.bevi_bytes, 0, bevl_len.bevi_int);
     """
     }
   }
   
-  checkGetPayload() String {
-    return(checkGetPayload(null));
-  }
-  
-  checkGetPayload(String endmark) String {
+  getPayload(String endmark) String {
     String payload = String.new();
     Int chari = Int.new();
     String chars = String.new(1);
     chars.setCodeUnchecked(0, 32);
     chars.size.setValue(1);
     Int zero = 0;
-    emit(java) {
+    emit(jv) {
     """      
       if (inputStream == null) {
         inputStream = client.getInputStream();
       }
-      while (inputStream.available() > 0) {     
+      while (client.isConnected()) {    
           int c = inputStream.read(); 
           //Serial.write(c);  
           bevl_chari.bevi_int = c;
@@ -117,29 +113,43 @@ public OutputStream output;
           }
           //("got int " + chari).print();
           chars.setCodeUnchecked(zero, chari);
-          ("got char").print();
-          chars.print();
+          //("got char").print();
+          //chars.print();
           payload += chars;
           if (def(endmark) && payload.ends(endmark)) {
-            "got endmark".print();
-            payload.print();
+            //"got endmark".print();
+            //payload.print();
             return(payload);
           }
-emit(java) {
+emit(jv) {
 """        
-        }
     }
     """
     }
-    if (TS.notEmpty(payload)) {
-    "got request, payload".print();
-    payload.print();
-    }
+    //if (TS.notEmpty(payload)) {
+    //"got request, payload".print();
+    //payload.print();
+    //}
     return(payload);
   }
   
+  connectedGet() Bool {
+    emit(jv) {
+    """
+    if (client != null && client.isConnected()) {
+    """
+    }
+    return(true);
+    emit(jv) {
+    """
+    }
+    """
+    }
+    return(false);
+  }
+  
   close() {
-    emit(java) {
+    emit(jv) {
     """ 
     client.close();
     """
