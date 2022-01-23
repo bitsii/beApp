@@ -77,6 +77,11 @@ public OutputStream outputStream;
   }
   
   open() self {
+    emit(jv) {
+    """
+    client = new Socket(bevp_host.bems_toJvString(), bevp_port.bevi_int);
+    """
+    }
     opened = true;
     return(self);
   }
@@ -93,7 +98,7 @@ public OutputStream outputStream;
     }
   }
   
-  getPayload(String endmark) String {
+  checkGetPayload(Int maxsz, String endmark) String {
     String payload = String.new();
     Int chari = Int.new();
     String chars = String.new(1);
@@ -105,7 +110,7 @@ public OutputStream outputStream;
       if (inputStream == null) {
         inputStream = client.getInputStream();
       }
-      while (client.isConnected()) {    
+      while (client.isConnected() && (inputStream.available() > 0)) {    
           int c = inputStream.read(); 
           //Serial.write(c);  
           bevl_chari.bevi_int = c;
@@ -117,6 +122,11 @@ public OutputStream outputStream;
           //chars.print();
           payload += chars;
           if (def(endmark) && payload.ends(endmark)) {
+            //"got endmark".print();
+            //payload.print();
+            return(payload);
+          }
+          if (def(maxsz) && payload.size >= maxsz) {
             //"got endmark".print();
             //payload.print();
             return(payload);
@@ -143,6 +153,25 @@ emit(jv) {
     emit(jv) {
     """
     }
+    """
+    }
+    return(false);
+  }
+  
+  availableGet() Bool {
+    emit(jv) {
+    """
+    if (client != null && client.isConnected()) {
+      if (inputStream == null) {
+        inputStream = client.getInputStream();
+      }
+      if (inputStream.available() > 0) {
+    """
+    }
+    return(true);
+    emit(jv) {
+    """
+    } }
     """
     }
     return(false);
