@@ -2,7 +2,8 @@
 
 rm -rf targetAppTestwabr
 
-time mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be -deployPath=deployAppTestwabr -buildPath=targetAppTestwabr -libraryName=AppTest -mainClass=AppTestbr:Tests -loadSyns=lib/wabr/js/BEL_App.syn -initLib=App -jsInclude=lib/wabr/js/BEL_App.js --emitLang js source/AppTestbr.be
+export CLASSPATH=../brace/target5/*
+time java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be -deployPath=deployAppTestwabr -buildPath=targetAppTestwabr -libraryName=AppTest -mainClass=AppTestbr:Tests -loadSyns=lib/wabr/js/BEL_App.syn -initLib=App -jsInclude=lib/wabr/js/BEL_App.js --emitLang js source/AppTestbr.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 

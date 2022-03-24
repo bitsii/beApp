@@ -2,11 +2,11 @@
 First - quick Getting Started for Development! (more about BraceApp below...)
 
 First you have to have already setup the brace language environment, see
-https://gitlab.com/bitsii/brace (Getting Started in Readme.md) for that  (you 
-  have to install not only the base environment but javascript and java ones
-  as well)
+https://gitlab.com/bitsii/brace (Getting Started in Readme.md) for that  (the base 
+  java environment should be enough)
 
-then, from the directory containing "brace" (where you cloned it), clone braceApp
+then, from the directory containing "brace" (where you cloned it, not the brace 
+  directory itself, the one above it), clone braceApp
 (from your shell / on MSWin from the git shell you installed)
 
 git clone https://gitlab.com/bitsii/braceApp
@@ -16,7 +16,6 @@ cd braceApp
 that's it - Brace as such is just a source and dependencies library project
 to actually use it checkout and build a project that uses it (here's a couple):
 
-https://gitlab.com/edgii/BNote
 https://gitlab.com/edgii/BBridge
 
 as you build these apps all of the artifacts and the runtime environment

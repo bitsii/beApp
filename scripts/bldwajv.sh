@@ -50,12 +50,8 @@ fi
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-#mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile ../braceApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang jv -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS 
-
-#time mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -mainClass=App:AppStart -loadSyns=../braceApp/lib/wa/jv/BEL_App.syn -loadIds=../braceApp/lib/wa/jv/BEL_App -initLib=App --emitLang jv --buildFile build/build.txt $BEBLDARGS
-
 export CLASSPATH=../brace/target5/*
-time java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -mainClass=App:AppStart -loadSyns=../braceApp/lib/wa/jv/BEL_App.syn -loadIds=../braceApp/lib/wa/jv/BEL_App -initLib=App --emitLang jv --buildFile build/build.txt $BEBLDARGS
+java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -mainClass=App:AppStart -loadSyns=../braceApp/lib/wa/jv/BEL_App.syn -loadIds=../braceApp/lib/wa/jv/BEL_App -initLib=App --emitLang jv --buildFile build/build.txt $BEBLDARGS
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -63,10 +59,10 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 case "$una" in
   *Msys*)
-    export CLASSPATH="$CLASSPATH;../braceApp/lib/wa/jv/*;../brace/lib/ex/jv/*;extlibs/jv/*;../braceApp/extlibs/wa/jv/*"
+    export CLASSPATH="../braceApp/lib/wa/jv/*;../brace/lib/ex/jv/*;extlibs/jv/*;../braceApp/extlibs/wa/jv/*"
     ;;
   *)
-    export CLASSPATH="$CLASSPATH:../braceApp/lib/wa/jv/*:../brace/lib/ex/jv/*:extlibs/jv/*:../braceApp/extlibs/wa/jv/*"
+    export CLASSPATH="../braceApp/lib/wa/jv/*:../brace/lib/ex/jv/*:extlibs/jv/*:../braceApp/extlibs/wa/jv/*"
     ;;
 esac
 
@@ -75,9 +71,8 @@ javac $BEJVARGS ../apprun/App/$APPBLDNM/$APPBLDNM/target/jv/be/*.java
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 if [ -e build/buildbr.txt ]; then
-  #time mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -loadSyns=../braceApp/lib/wabr/js/BEL_App.syn -initLib=App -jsInclude=../braceApp/lib/wabr/js/BEL_App.js --emitLang js --ownProcess false --buildFile build/buildbr.txt
   export CLASSPATH=../brace/target5/*
-  time java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -loadSyns=../braceApp/lib/wabr/js/BEL_App.syn -initLib=App -jsInclude=../braceApp/lib/wabr/js/BEL_App.js --emitLang js --ownProcess false --buildFile build/buildbr.txt 
+  java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -loadSyns=../braceApp/lib/wabr/js/BEL_App.syn -initLib=App -jsInclude=../braceApp/lib/wabr/js/BEL_App.js --emitLang js --ownProcess false --buildFile build/buildbr.txt 
 fi
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi

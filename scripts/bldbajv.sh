@@ -14,6 +14,12 @@ cp ../braceApp/scripts/runbajv.sh ../apprun/App/$APPBLDNM
 #cp ../braceApp/scripts/runwajvrs.sh ../apprun/App/$APPBLDNM
 
 una=`uname -a`
+
+export CLASSPATH=../brace/target5/*
+java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be --buildFile ../braceApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang jv -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../brace/source/extended/Log.be ../braceApp/source/App.be ../braceApp/source/BrowserUI.be ../braceApp/source/BrowserJvFx.be ../braceApp/source/Db.be
+
+lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
+
 case "$una" in
   *Msys*)
     export CLASSPATH="../brace/target5/*;extlibs/jv/*;../braceApp/extlibs/jv/ba/*"
@@ -23,15 +29,12 @@ case "$una" in
     ;;
 esac
 
-mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile ../braceApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang jv -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../brace/source/extended/Log.be ../braceApp/source/App.be ../braceApp/source/BrowserUI.be ../braceApp/source/BrowserJvFx.be ../braceApp/source/Db.be
-
-lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
-
 javac $BEJVARGS ../brace/system/jv/be/*.java ../apprun/App/$APPBLDNM/Base/target/jv/be/*.java
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-mono --debug ../brace/target5/BEX_E_mcs.exe ../brace/source/base/Uses.be --buildFile ../braceApp/build/base.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --ownProcess false --buildFile build/buildbr.txt ../brace/source/extended/Log.be ../braceApp/source/BrowserEUI.be
+export CLASSPATH=../brace/target5/*
+java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be --buildFile ../braceApp/build/base.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --ownProcess false --buildFile build/buildbr.txt ../brace/source/extended/Log.be ../braceApp/source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
