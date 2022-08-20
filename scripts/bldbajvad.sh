@@ -30,7 +30,7 @@ java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../br
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js android/$APPBLDNM/app/src/main/assets/App/$APPBLDNM/BEX_E.js
+cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEL_Base.js android/$APPBLDNM/app/src/main/assets/App/$APPBLDNM/BEX_E.js
 
 cp -R resources/* android/$APPBLDNM/app/src/main/assets/App/$APPBLDNM
 

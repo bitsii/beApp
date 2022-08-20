@@ -1053,59 +1053,6 @@ use class App:Account {
   
 }
 
-use App:RunMainOnce;
-
-class RunMainOnce {
-
-emit(jv) {
-"""
-public static volatile boolean haveRun = false;
-public synchronized static void runMainOnce(String[] margs) {
-  if (!haveRun) {
-    //String[] margs = new String[0];
-    /*try {
-        be.BEX_E.main(margs);
-    } catch (Throwable t) {
-        System.err.println("Failed in main with " + t.getMessage());
-        throw new Error(t.getMessage(), t);
-    }*/
-    haveRun = true;
-  }
-}
-
-public synchronized static void runMain(String[] margs) {
-    /*try {
-        be.BEX_E.main(margs);
-    } catch (Throwable t) {
-        System.err.println("Failed in main with " + t.getMessage());
-        throw new Error(t.getMessage(), t);
-    }*/
-}
-"""
-}
-
-emit(cs) {
-"""
-public static volatile bool haveRun = false;
-public static volatile Object runMainLock = new Object();
-public static void runMainOnce(string[] margs) {
-  lock(runMainLock) {
-    if (!haveRun) {
-      //string[] margs = new string[0];
-      try {
-          //be.BEX_E.bems_relocMain(margs);
-      } catch (System.Exception t) {
-          Console.Write(t.ToString());
-      }
-      haveRun = true;
-    }
-  }
-}
-"""
-}
-
-}
-
 use App:EventHandlers as AppEv;
 class AppEv {
 

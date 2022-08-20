@@ -5,7 +5,8 @@
 emit(jv) {
 """
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -64,7 +65,14 @@ public static class MainActivity extends AppCompatActivity {
     protected void postCreate() {
         mainActivity = this;
         appContext = getApplicationContext();
-        $class/App:RunMainOnce$.runMain(getStartupArgs());
+        //?need to be protected against rerun?
+        try {
+            be.BEL_Base.main(getStartupArgs());
+        } catch (Throwable t) {
+            System.err.println("Failed in main with " + t.getMessage());
+            throw new Error(t.getMessage(), t);
+        }
+        //$class/App:RunMainOnce$.runMain(getStartupArgs());
         $class/App:EventHandlers$.handleEvent("startUi");
         //so things stay in the webview
         mWebView.setWebViewClient(new WebViewClient());
