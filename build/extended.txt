@@ -22,6 +22,7 @@
 -cchInclude=../brace/system/cc/be/BEH_Object.hpp
 -ccInclude=../brace/system/cc/be/BECS_Object.cpp
 #below for build
+../brace/source/extended/IdentityMap.be
 ../brace/source/extended/Serialize.be
 ../brace/source/extended/FilePath.be
 ../brace/source/extended/FileReadWrite.be
