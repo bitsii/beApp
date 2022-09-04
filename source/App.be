@@ -1857,7 +1857,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
     if (def(authedUrlsConfigKey)) {
       String aval = app.configManager.get(authedUrlsConfigKey);
       if (TS.notEmpty(aval)) {
-        authedUrls = Sets.from(Json:Unmarshaller.unmarshall(aval));
+        authedUrls = Sets.fromList(Json:Unmarshaller.unmarshall(aval));
       }
     }
     for (sn in authedUrls) {
@@ -3270,7 +3270,7 @@ class App:AppStart {
       }
       IO:Logs.setAllSinks(ls);
     }
-    auto appTypes = Sets.from(params.get("appType").toList());
+    auto appTypes = Sets.fromList(params.get("appType").toList());
     if (appTypes.has("cmd")) {
       any cuiapp = WebApp.new();
       cuiapp.params = params;
@@ -3290,6 +3290,7 @@ class App:AppStart {
       setupPlugin(wuiapp);
       return(wuiapp);
     }
+    log.log("no appType");
     return(null);
   }
 }
