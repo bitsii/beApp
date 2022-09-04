@@ -3,6 +3,8 @@ Base
 -jsInclude=../brace/system/js/be/BECS_Runtime.js
 -jsInclude=../brace/system/js/be/BECS_Object.js
 ../brace/source/base/Object.be
+../brace/source/base/Classes.be
+../brace/source/base/Objects.be
 ../brace/source/base/Int.be
 ../brace/source/base/String.be
 ../brace/source/base/Logic.be
@@ -17,6 +19,7 @@ Base
 ../brace/source/base/Initializer.be
 ../brace/source/base/System.be
 ../brace/source/base/ExtSystem.be
+../brace/source/base/Types.be
 ../brace/source/base/Exceptions.be
 ../brace/source/base/Tokenize.be
 ../brace/source/base/Test.be

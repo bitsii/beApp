@@ -3761,7 +3761,7 @@ class App:AjaxPlugin {
       } catch (any e) {
         log.error("Caught exception handling request");
         if (undef(e)) { log.error("undefined exception") } else { log.error(e.toString()); }
-        if (e.sameClass(Alert.new())) {
+        if (System:Classes.sameClass(e, Alert.new())) {
           arg = CallBackUI.informResponse(e.description);
         } else {
           arg = CallBackUI.informResponse("Sorry, unable to handle request");
