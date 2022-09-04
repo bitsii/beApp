@@ -14,6 +14,7 @@ Base
 ../brace/source/base/Stack.be
 ../brace/source/base/List.be
 ../brace/source/base/Map.be
+../brace/source/base/Initializer.be
 ../brace/source/base/System.be
 ../brace/source/base/ExtSystem.be
 ../brace/source/base/Exceptions.be
