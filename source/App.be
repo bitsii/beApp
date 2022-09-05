@@ -3398,7 +3398,6 @@ class WebApp {
         if (pl.can("nameGet", 0)) {
           pluginsByName.put(pl.name, pl);
         }
-        //("PUT PLUGIN " + pl.className).print();
       }
       
   }
