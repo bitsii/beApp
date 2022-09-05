@@ -115,21 +115,21 @@ class UI:WebBrowser {
     unless (haveSetup) {
       haveSetup = true;
       if (browserType == "winform") {
-        webImp = createInstance("UI:WinForm:WebBrowser");
+        webImp = System:Objects.createInstance("UI:WinForm:WebBrowser");
       }
       if (browserType == "jvfx") {
-        webImp = createInstance("UI:JvFx:WebBrowser");
+        webImp = System:Objects.createInstance("UI:JvFx:WebBrowser");
       }
       if (browserType == "jvad") {
-        webImp = createInstance("UI:JvAd:WebBrowser");
+        webImp = System:Objects.createInstance("UI:JvAd:WebBrowser");
       }
       if (browserType == "ccio") {
-        webImp = createInstance("UI:CcIo:WebBrowser");
+        webImp = System:Objects.createInstance("UI:CcIo:WebBrowser");
         any wi = webImp;
         webImp = wi.getMe();
       }
       if (browserType == "apwk") {
-        webImp = createInstance("UI:CcIo:WebBrowser");
+        webImp = System:Objects.createInstance("UI:CcIo:WebBrowser");
         wi = webImp;
         webImp = wi.getMe();
       }

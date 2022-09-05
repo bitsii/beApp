@@ -19,6 +19,7 @@ Base
 ../brace/source/base/Initializer.be
 ../brace/source/base/System.be
 ../brace/source/base/ExtSystem.be
+../brace/source/base/ExceptionTranslator.be
 ../brace/source/base/Types.be
 ../brace/source/base/Exceptions.be
 ../brace/source/base/Tokenize.be

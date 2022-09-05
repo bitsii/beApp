@@ -805,7 +805,7 @@ use class App:Paths {
 
   dataPathGet() Path {
     ifEmit(platDroid) {
-      any app = createInstance("UI:JvAd:WebBrowser");
+      any app = System:Objects.createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(dataName);
     }
     ifEmit(ccIsIos) {
@@ -850,7 +850,7 @@ bevl_idd = (new BEC_2_4_6_TextString())->bems_ccsnew(ccdd);
   
   appPathGet() Path {
     ifEmit(platDroid) {
-      any app = createInstance("UI:JvAd:WebBrowser");
+      any app = System:Objects.createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(name);
     }
     ifNotEmit(platDroid) {
@@ -3216,7 +3216,7 @@ class App:AppStart {
     auto pluginClasses = params.get("plugin");
     List plugins = List.new();
     for (String pluginClass in pluginClasses) {
-      any plugin = createInstance(pluginClass);
+      any plugin = System:Objects.createInstance(pluginClass);
       plugins += plugin;
     }
     app.plugins = plugins;
@@ -3274,13 +3274,13 @@ class App:AppStart {
       setupPlugin(cuiapp);
       return(cuiapp);
     } elseIf (appTypes.has("browser")) {
-      any luiapp = createInstance("App:LocalWebApp");
+      any luiapp = System:Objects.createInstance("App:LocalWebApp");
       luiapp.params = params;
       setupPlugins(luiapp);
       setupPlugin(luiapp);
       return(luiapp);
     } elseIf (appTypes.has("server")) {
-      any wuiapp = createInstance("App:RemoteWebApp");
+      any wuiapp = System:Objects.createInstance("App:RemoteWebApp");
       wuiapp.params = params;
       setupPlugins(wuiapp);
       setupPlugin(wuiapp);
@@ -3610,7 +3610,7 @@ use class System:RunAsync {
   main() {
     any e;
     try {
-      any inst = createInstance(klass);
+      any inst = System:Objects.createInstance(klass);
       inst.invoke(toInvoke, args);
     } catch (e) {
       log.error("Caught exception running tasks " + e);

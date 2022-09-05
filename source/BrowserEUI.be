@@ -26,8 +26,8 @@ var uiStartup = function(_uiClassName) {
   var mtdnmbs = new be_$class/Text:String$().bems_new(mtdnm);
   rcm.bem_doWhatsNeeded_1(mtdnmbs);
 
-  var tmpo = new be_$class/System:Object$();
-  ui = tmpo.bem_createInstance_1(new be_$class/Text:String$().bems_new(_uiClassName));
+  var tmpos = new be_$class/System:Objects$();
+  ui = tmpos.bem_createInstance_1(new be_$class/Text:String$().bems_new(_uiClassName));
   ui.bem_new_0();
   ui.bem_main_0();
   hc = new be_$class/UI:HtmlDom:Call$();
