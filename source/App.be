@@ -3227,11 +3227,7 @@ class App:AppStart {
     if (def(pln)) {
       app.plugin = app.pluginsByName[pln];
     } else {
-      String plc = params.getFirst("appPluginClass");
-      if (undef(plc)) {
-        throw(Exception.new("No app plugin defined"));
-      }
-      app.plugin = app.pluginsByClassName[plc];
+      throw(Exception.new("No app plugin defined"));
     }
   }
   
@@ -3394,13 +3390,11 @@ class WebApp {
         if (undef(plugin)) {
           any plugin = plugins.first;
         }
-        Map pluginsByClassName = Map.new();
         Map pluginsByName = Map.new();
       }
       
       for (any pl in plugins) {
         pl.app = self;
-        pluginsByClassName.put(pl.className, pl);
         if (pl.can("nameGet", 0)) {
           pluginsByName.put(pl.name, pl);
         }
