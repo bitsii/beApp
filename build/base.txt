@@ -17,6 +17,7 @@ Base
 ../brace/source/base/List.be
 ../brace/source/base/Map.be
 ../brace/source/base/Initializer.be
+../brace/source/base/Random.be
 ../brace/source/base/System.be
 ../brace/source/base/ExtSystem.be
 ../brace/source/base/ExceptionTranslator.be

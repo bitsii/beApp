@@ -806,7 +806,7 @@ use class App:Paths {
   dataPathGet() Path {
     ifEmit(platDroid) {
       any app = System:Objects.createInstance("UI:JvAd:WebBrowser");
-      dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(dataName);
+      dbp = Path.apNew(app.secDataDir).addStep("BeData").addStep(dataName);
     }
     ifEmit(ccIsIos) {
     String idd;

@@ -209,6 +209,22 @@ public static class MainActivity extends AppCompatActivity {
   """
   //main activity is null in jobservice
   String ddir = MainActivity.appContext.getApplicationInfo().dataDir;
+  //String ddir = MainActivity.appContext.getFilesDir().toPath().toAbsolutePath().toString();  //secure for secure things
+  bevl_toRet = new $class/Text:String$(ddir);
+  """
+  }
+  }
+  return(toRet);
+  }
+
+  secDataDirGet() String {
+  String toRet;
+  ifEmit(platDroid) {
+  emit(jv) {
+  """
+  //main activity is null in jobservice
+  //String ddir = MainActivity.appContext.getApplicationInfo().dataDir;
+  String ddir = MainActivity.appContext.getFilesDir().toString();  //secure for secure things
   bevl_toRet = new $class/Text:String$(ddir);
   """
   }
