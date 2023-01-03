@@ -1,4 +1,4 @@
 --buildFile
-../braceApp/build/base.txt
+../beApp/build/base.txt
 --buildFile
-../braceApp/build/extended.txt
+../beApp/build/extended.txt

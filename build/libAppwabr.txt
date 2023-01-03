@@ -4,8 +4,8 @@ App
 -mainClass=System:DoNothing
 -deployPath=lib/wabr/deploy
 -buildPath=lib/wabr/
--jsInclude=../brace/lib/br/js/BEL_Base.js
-../brace/source/base/Uses.be
-../brace/source/extended/Log.be
+-jsInclude=../beBase/lib/br/js/BEL_Base.js
+../beBase/source/base/Uses.be
+../beBase/source/extended/Log.be
 source/AppEUI.be
 source/BrowserEUI.be

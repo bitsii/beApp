@@ -2,6 +2,6 @@
 
 #export APPBLDNM=${PWD##*/}
 
-export CLASSPATH=../brace/target5/*
-java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be --buildFile ../braceApp/build/base.txt --buildFile ../braceApp/build/extended.txt --deployPath njs --buildPath njs --emitLang js --ownProcess true ../brace/source/extended/Log.be $*
+export CLASSPATH=../beBase/target5/*
+java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../beBase/source/base/Uses.be --buildFile ../beApp/build/base.txt --buildFile ../beApp/build/extended.txt --deployPath njs --buildPath njs --emitLang js --ownProcess true ../beBase/source/extended/Log.be $*
 

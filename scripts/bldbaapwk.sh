@@ -12,8 +12,8 @@ mkdir -p ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 
-export CLASSPATH=../brace/target5/*
-java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base -jsInclude=../braceApp/system/js/APWK_head.js ../brace/source/base/Uses.be --buildFile ../braceApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --emitFlag apwkui --emitFlag apwk --ownProcess false --buildFile build/build.txt $BEBLDARGS --buildFile build/buildbr.txt ../brace/source/extended/Log.be ../brace/source/extended/LogSink.be ../braceApp/source/BrowserEUI.be ../braceApp/source/App.be ../braceApp/source/BrowserUI.be ../braceApp/source/BrowserApWk.be ../braceApp/source/Db.be
+export CLASSPATH=../beBase/target5/*
+java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base -jsInclude=../beApp/system/js/APWK_head.js ../beBase/source/base/Uses.be --buildFile ../beApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --emitFlag apwkui --emitFlag apwk --ownProcess false --buildFile build/build.txt $BEBLDARGS --buildFile build/buildbr.txt ../beBase/source/extended/Log.be ../beBase/source/extended/LogSink.be ../beApp/source/BrowserEUI.be ../beApp/source/App.be ../beApp/source/BrowserUI.be ../beApp/source/BrowserApWk.be ../beApp/source/Db.be
 
 
 

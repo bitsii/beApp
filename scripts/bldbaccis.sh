@@ -12,8 +12,8 @@ mkdir -p ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 
-export CLASSPATH=../brace/target5/*
-java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be -cchImport=../braceApp/system/cc/be/BEH_AppPreImports.hpp --buildFile ../braceApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang cc --singleCC true --saveIds false --emitFlag ccSgc --emitFlag relocMain --emitFlag holdMain --emitFlag ccIsIos -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../brace/source/extended/Log.be ../brace/source/extended/LogSink.be ../braceApp/source/App.be ../braceApp/source/BrowserUI.be ../braceApp/source/BrowserCcIo.be ../braceApp/source/Db.be
+export CLASSPATH=../beBase/target5/*
+java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../beBase/source/base/Uses.be -cchImport=../beApp/system/cc/be/BEH_AppPreImports.hpp --buildFile ../beApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang cc --singleCC true --saveIds false --emitFlag ccSgc --emitFlag relocMain --emitFlag holdMain --emitFlag ccIsIos -mainClass=App:AppStart --buildFile build/build.txt $BEBLDARGS ../beBase/source/extended/Log.be ../beBase/source/extended/LogSink.be ../beApp/source/App.be ../beApp/source/BrowserUI.be ../beApp/source/BrowserCcIo.be ../beApp/source/Db.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -26,8 +26,8 @@ cp ../apprun/App/$APPBLDNM/Base/target/cc/be/BEX_E.cpp ios/$APPBLDNM/$APPBLDNM/B
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-export CLASSPATH=../brace/target5/*
-java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../brace/source/base/Uses.be --buildFile ../braceApp/build/base.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --emitFlag ccIsIos --ownProcess false --buildFile build/buildbr.txt ../brace/source/extended/Log.be ../braceApp/source/BrowserEUI.be
+export CLASSPATH=../beBase/target5/*
+java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../beBase/source/base/Uses.be --buildFile ../beApp/build/base.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --emitFlag ccIsIos --ownProcess false --buildFile build/buildbr.txt ../beBase/source/extended/Log.be ../beApp/source/BrowserEUI.be
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-../braceApp/scripts/bldwacs.sh $*
-../braceApp/scripts/relwacs.sh $*
+../beApp/scripts/bldwacs.sh $*
+../beApp/scripts/relwacs.sh $*
 

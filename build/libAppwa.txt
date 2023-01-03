@@ -5,7 +5,7 @@ App
 -mainClass=System:DoNothing
 -deployPath=lib/wa/deploy
 -buildPath=lib/wa/
-../brace/source/base/Uses.be
+../beBase/source/base/Uses.be
 source/AppEUI.be
 source/App.be
 source/BrowserUI.be

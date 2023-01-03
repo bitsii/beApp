@@ -4,17 +4,17 @@ una=`uname -a`
 
 rm -rf lib/wa/jv/BEL_App_*
 
-export CLASSPATH=../brace/target5/*
-time java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base --buildFile build/libAppwa.txt --emitLang jv --doMain false -loadSyns=../brace/lib/ex/jv/BEL_Base.syn -loadIds=../brace/lib/ex/jv/BEL_Base -initLib=Base
+export CLASSPATH=../beBase/target5/*
+time java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base --buildFile build/libAppwa.txt --emitLang jv --doMain false -loadSyns=../beBase/lib/ex/jv/BEL_Base.syn -loadIds=../beBase/lib/ex/jv/BEL_Base -initLib=Base
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 case "$una" in
   *Msys*)
-    export CLASSPATH="../brace/lib/ex/jv/*;extlibs/wa/jv/*"
+    export CLASSPATH="../beBase/lib/ex/jv/*;extlibs/wa/jv/*"
     ;;
   *)
-    export CLASSPATH="../brace/lib/ex/jv/*:extlibs/wa/jv/*"
+    export CLASSPATH="../beBase/lib/ex/jv/*:extlibs/wa/jv/*"
     ;;
 esac
 

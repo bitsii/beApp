@@ -2,8 +2,8 @@
 
 rm -rf lib/wabr/js/BEL_Base_*
 
-export CLASSPATH=../brace/target5/*
-time java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base --buildFile build/libAppwabr.txt --emitLang js --ownProcess false -loadSyns=../brace/lib/br/js/BEL_Base.syn --initLib Base
+export CLASSPATH=../beBase/target5/*
+time java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base --buildFile build/libAppwabr.txt --emitLang js --ownProcess false -loadSyns=../beBase/lib/br/js/BEL_Base.syn --initLib Base
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
