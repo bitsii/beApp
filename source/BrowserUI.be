@@ -546,33 +546,6 @@ use class Web:Client {
           }
         }
         //a
-        emit(cc) {
-        """
-#ifdef BEDCC_ISIOS
-        
-string pays = beva_payload->bems_toCcString();
-const char* payc = pays.c_str();
-NSString *payos = [NSString stringWithCString:payc encoding:NSUTF8StringEncoding];
-        
-NSData *requestBodyData = [payos dataUsingEncoding:NSUTF8StringEncoding];
-request.HTTPBody = requestBodyData;
-
-NSError *err = nil;
-NSHTTPURLResponse *ress = nil;
-NSData *retData = [NSURLConnection sendSynchronousRequest:request returningResponse:&ress error:&err];
-if (retData != nil) {
-  NSString* newStr = [[NSString alloc] initWithBytes:(char *)retData.bytes length:retData.length encoding:NSUTF8StringEncoding];
-
-  NSLog(@"after request");
-  NSLog(newStr);
-  string cppMessage = string([newStr UTF8String]);
-  bevp_ccin = (new BEC_2_4_6_TextString())->bems_ccsnew(cppMessage);
-  
-}
-
-#endif
-        """
-        }
       }
       return(self);
     }
