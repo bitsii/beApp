@@ -12,7 +12,7 @@ class App:RunClassMethod {
     return(self);
   }
   
-  ifEmit(apwkui) {
+  ifEmit(apwk) {
   
      runit(clmtd);
   

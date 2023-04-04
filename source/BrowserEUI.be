@@ -562,10 +562,10 @@ class HC {
     } else { //}
     """
     }
-    ifEmit(apwkui) {
+    ifEmit(apwk) {
       resjs = apwkHandler.handleWeb(argjs, url, contentType);
     }
-    ifNotEmit(apwkui) {
+    ifNotEmit(apwk) {
     emit(js) {
     """
       var req;
