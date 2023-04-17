@@ -185,7 +185,7 @@ public static class MainActivity extends AppCompatActivity {
   }
   
   handleWeb(String arg, String uri, String ctype) String {
-    log.log("in handleWeb, arg " + arg);
+    //log.log("in handleWeb, arg " + arg);
     try {
       BrowserScriptRequest r = BrowserScriptRequest.new(session);
       r.scriptArgJson = arg;
@@ -194,7 +194,7 @@ public static class MainActivity extends AppCompatActivity {
       webHandler.handleWeb(r);
       String ret = r.scriptReturnJson;
       if (def(ret)) {
-        log.log("in handleWeb, ret " + ret);
+        //log.log("in handleWeb, ret " + ret);
       }
     } catch (any e) {
       log.log(System:Exceptions.toString(e));
