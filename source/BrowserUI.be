@@ -491,6 +491,7 @@ use class Web:Client {
       ifEmit(apwk) {
         Map reqjs = Maps.from("url", url, "verb", verb, "outputHeaders", outputHeaders, "payload", payload);
         String reqjss = Json:Marshaller.marshall(reqjs);
+        if (true) { throw(Exception.new("borken now")); }
         String jspw = "httpSend:" + reqjss;
         emit(js) {
         """
