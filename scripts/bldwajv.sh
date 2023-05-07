@@ -51,7 +51,7 @@ fi
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 export CLASSPATH=../beBase/target5/*
-java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../beBase/source/base/Uses.be --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -mainClass=App:AppStart -loadSyns=../beApp/lib/wa/jv/BEL_App.syn -loadIds=../beApp/lib/wa/jv/BEL_App -initLib=App --emitLang jv --buildFile build/build.txt $BEBLDARGS
+java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../beBase/source/base/Uses.be --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -mainClass=App:AppStart -loadSyns=../beApp/lib/wa/jv/BEL_App.syn -loadIds=../beApp/lib/wa/jv/BEL_App -initLib=App --emitLang jv --emitFlag wajv --buildFile build/build.txt $BEBLDARGS
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
@@ -72,7 +72,7 @@ lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 if [ -e build/buildbr.txt ]; then
   export CLASSPATH=../beBase/target5/*
-  java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../beBase/source/base/Uses.be $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -loadSyns=../beApp/lib/wabr/js/BEL_App.syn -initLib=App -jsInclude=../beApp/lib/wabr/js/BEL_App.js --emitLang js --ownProcess false --buildFile build/buildbr.txt
+  java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../beBase/source/base/Uses.be $BRBLDARGS --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM -libraryName=$APPBLDNM -loadSyns=../beApp/lib/wabr/js/BEL_App.syn -initLib=App -jsInclude=../beApp/lib/wabr/js/BEL_App.js --emitLang js --emitFlag wajv --ownProcess false --buildFile build/buildbr.txt
 fi
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
