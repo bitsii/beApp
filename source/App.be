@@ -804,6 +804,7 @@ use class App:Paths {
   }
 
   dataPathGet() Path {
+    Path dbp;
     ifEmit(platDroid) {
       any app = System:Objects.createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.secDataDir).addStep("BeData").addStep(dataName);
@@ -841,7 +842,7 @@ bevl_idd = (new BEC_2_4_6_TextString())->bems_ccsnew(ccdd);
     ifNotEmit(platDroid) {
       ifNotEmit(ccIsIos) {
         ifNotEmit(apwk) {
-          Path dbp = Path.apNew("Data").addStep(dataName);
+          dbp = Path.apNew("Data").addStep(dataName);
         }
       }
     }
@@ -849,12 +850,13 @@ bevl_idd = (new BEC_2_4_6_TextString())->bems_ccsnew(ccdd);
   }
   
   appPathGet() Path {
+    Path dbp;
     ifEmit(platDroid) {
       any app = System:Objects.createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(name);
     }
     ifNotEmit(platDroid) {
-      Path dbp = Path.apNew("App").addStep(name);
+      dbp = Path.apNew("App").addStep(name);
     }
     return(dbp);
   }
