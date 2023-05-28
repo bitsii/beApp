@@ -3144,7 +3144,7 @@ use class App:LocalWebApp(WebApp) {
       }
       
       ifEmit(apwk) {
-        wfl = self.plugin.homePage;
+        String wfl = self.plugin.homePage;
         wfl = wfl.substring(1, wfl.size);
         webr.location = wfl;
       }
