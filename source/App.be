@@ -1911,13 +1911,13 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   checkRenewSession(request) Bool {
     String sessionExp = request.getSession("sessionExp");
     if (TS.isEmpty(sessionExp)) {
-      log.log("no sessionExp");
+      //log.log("no sessionExp");
       return(false);
     }
-    log.log("sessionExp " + sessionExp);
+    //log.log("sessionExp " + sessionExp);
     Int sei = Int.new(sessionExp);
     if (sei < 0) {
-      log.log("session never expires");
+      //log.log("session never expires");
       return(true); //never expires
     }
     Int ns = Time:Interval.now().seconds;
@@ -1933,7 +1933,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       Int ne = (Int.new(request.getSession("sessionLength")) * 60) + ns;
       request.putSession("sessionExp", ne.toString());
     }
-    log.log("checkRenewSession returning true");
+    //log.log("checkRenewSession returning true");
     return(true);
   }
   
@@ -2041,7 +2041,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           } elseIf (undef(request.context.get("account"))) {
             request.context.put("account", self.accountManager.getRequestAccount(request));
           }
-          log.log("auth done continueHandling is " + request.continueHandling);
+          //log.log("auth done continueHandling is " + request.continueHandling);
           return(self);
         } catch (any e) {
            log.error("Caught exception during handleWeb B");
