@@ -37,6 +37,7 @@ class App:Mqtt {
       Int qos = 1;
       IO:Log log = IO:Logs.get(self);
       any messageHandler;
+      String lastError;
     }
   }
 
@@ -46,10 +47,19 @@ class App:Mqtt {
       messageHandler.handleMessage(topic, payload);
     }
   }
+
+  open() self {
+    try {
+      openInner();
+    } catch (any e) {
+      log.elog("mqtt error", e);
+      if (def(e)) { lastError = e.description; }
+    }
+  }
   
-  start() {
+  openInner() {
     if (TS.isEmpty(clientId)) {
-      clientId = System:Random.getString(12);
+      clientId = System:Random.getString(12); //reusing same id on reconnect is fine, oldest is kicked out
     }
     ifEmit(wajv) {
     emit(jv) {
@@ -93,6 +103,15 @@ class App:Mqtt {
   }
 
   publish(String topic, String message) {
+    try {
+      publishInner(topic, message);
+    } catch (any e) {
+      log.elog("mqtt error", e);
+      if (def(e)) { lastError = e.description; }
+    }
+  }
+
+  publishInner(String topic, String message) {
     ifEmit(wajv) {
       emit(jv) {
         """
@@ -105,10 +124,85 @@ class App:Mqtt {
   }
 
   subscribe(String topic) {
+    try {
+      subscribeInner(topic);
+    } catch (any e) {
+      log.elog("mqtt error", e);
+      if (def(e)) { lastError = e.description; }
+    }
+  }
+
+  subscribeInner(String topic) {
     ifEmit(wajv) {
       emit(jv) {
         """
         client.subscribe(beva_topic.bems_toJvString(), bevp_qos.bevi_int);
+        """
+      }
+    }
+  }
+
+  unsubscribe(String topic) {
+    try {
+      unsubscribeInner(topic);
+    } catch (any e) {
+      log.elog("mqtt error", e);
+      if (def(e)) { lastError = e.description; }
+    }
+  }
+
+  unsubscribeInner(String topic) {
+    ifEmit(wajv) {
+      emit(jv) {
+        """
+        client.unsubscribe(beva_topic.bems_toJvString());
+        """
+      }
+    }
+  }
+
+  isOpenGet() Bool {
+    try {
+      return(isOpenGetInner());
+    } catch (any e) {
+      log.elog("mqtt error", e);
+      if (def(e)) { lastError = e.description; }
+    }
+    return(false);
+  }
+
+  isOpenGetInner() Bool {
+    ifEmit(wajv) {
+      emit(jv) {
+        """
+        if (client != null && client.isConnected()) {
+        """
+      }
+      return(true);
+      emit(jv) {
+        """
+      }
+        """
+      }
+    }
+    return(false);
+  }
+
+  close() {
+    try {
+      closeInner();
+    } catch (any e) {
+      log.elog("mqtt error", e);
+      if (def(e)) { lastError = e.description; }
+    }
+  }
+
+  closeInner() {
+    ifEmit(wajv) {
+      emit(jv) {
+        """
+        client.disconnectForcibly(10);
+        client = null;
         """
       }
     }
