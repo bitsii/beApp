@@ -190,6 +190,7 @@ class App:Mqtt {
 
   close() {
     try {
+      messageHandler = null;
       closeInner();
     } catch (any e) {
       log.elog("mqtt error", e);
