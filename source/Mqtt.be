@@ -44,7 +44,11 @@ class App:Mqtt {
   handleMessage(String topic, String payload) {
       //log.log("got message " + topic + " " + payload);
     if (def(messageHandler)) {
-      messageHandler.handleMessage(topic, payload);
+      try {
+        messageHandler.handleMessage(topic, payload);
+      } catch (any e) {
+        log.elog("exception in messageHandler.handleMessage", e);
+      }
     }
   }
 
