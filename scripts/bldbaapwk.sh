@@ -32,10 +32,10 @@ cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEL_Base.js ../apprun/App/$APPBLDNM
 #  fi
 #fi
 
-mkdir -p iosjs/resources/App/$APPBLDNM
-rm -f iosjs/resources/App/$APPBLDNM/BEX_E_app.js
-cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js iosjs/resources/App/$APPBLDNM/BEX_E.js
+mkdir -p ios/$APPBLDNM/resources/App/$APPBLDNM
+rm -f ios/$APPBLDNM/resources/App/$APPBLDNM/BEX_E_app.js
+cp ../apprun/App/$APPBLDNM/Base/target/js/be/BEX_E.js ios/$APPBLDNM/resources/App/$APPBLDNM/BEX_E.js
 
-cp -R resources/* iosjs/resources/App/$APPBLDNM
+cp -R resources/* ios/$APPBLDNM/resources/App/$APPBLDNM
 
 cd ../apprun/App/$APPBLDNM
