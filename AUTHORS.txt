@@ -1,3 +1,0 @@
-# This is the official list of Bennt App authors for copyright purposes.
-
-Craig Welch <edgii.ionet@gmail.com>
