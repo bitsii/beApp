@@ -639,6 +639,9 @@ class HC {
   }
   
   handleCallback(String resjs) {
+    //if (def(resjs)) {
+    //log.log("handleCallback resjs " + resjs);
+    //}
     Map resm = Json:Unmarshaller.unmarshall(resjs);
     if (def(resm)) {
         handleCallbackMap(resm);
@@ -646,6 +649,9 @@ class HC {
   }
   
   handleNamedCallback(String res, String name) {
+    //if (def(res)) {
+    //log.log("handleNamedCallback res " + res);
+    //}
       if (def(name) && name.ends("Response")) {
         List rargs = List.new(1);
         rargs[0] = res;
