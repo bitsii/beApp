@@ -44,6 +44,12 @@ cp ../beApp/scripts/stopwajv.vbs ../apprun/App/$APPBLDNM
 
 una=`uname -a`
 
+if [ ! -z "$BERCME" -a "$BERCME" != " " ]; then
+  if [ -e "$BERCME" ]; then
+    . "$BERCME"
+  fi
+fi
+
 if [ ! -z "$BEPREBUILD" -a "$BEPREBUILD" != " " ]; then
   eval "$BEPREBUILD"
 fi
