@@ -3762,10 +3762,11 @@ class App:AjaxPlugin {
       } catch (any e) {
         log.error("Caught exception handling request");
         if (undef(e)) { log.error("undefined exception") } else { log.error(e.toString()); }
+        if (TS.isEmpty(aname)) { aname = "Unknown Action"; }
         if (System:Classes.sameClass(e, Alert.new())) {
-          arg = CallBackUI.informResponse(e.description);
+          arg = CallBackUI.informResponse(aname + " " + e.description);
         } else {
-          arg = CallBackUI.informResponse("Sorry, unable to handle request");
+          arg = CallBackUI.informResponse(aname + " Sorry, unable to handle request");
         }
         request.scriptReturn = arg;
       }

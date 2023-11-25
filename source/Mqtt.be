@@ -8,6 +8,9 @@
  *
  */
 
+//https://repo.eclipse.org/index.html#nexus-search;gav~org.eclipse.paho~org.eclipse.paho.client.mqttv3~~~~kw,versionexpand
+//https://repo.eclipse.org/service/local/repositories/maven_central/content/org/eclipse/paho/org.eclipse.paho.client.mqttv3/1.2.5/org.eclipse.paho.client.mqttv3-1.2.5.jar
+
 ifEmit(wajv) {
 emit(jv) {
 """
