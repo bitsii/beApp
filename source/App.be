@@ -3766,8 +3766,8 @@ class App:AjaxPlugin {
         if (System:Classes.sameClass(e, Alert.new())) {
           arg = CallBackUI.informResponse(e.description);
         } else {
-          //arg = CallBackUI.informResponse(" Sorry, unable to handle request");
-          arg = CallBackUI.reloadResponse();
+          arg = CallBackUI.informResponse(" Sorry, unable to handle request");
+          //arg = CallBackUI.reloadResponse();
         }
         request.scriptReturn = arg;
       }
