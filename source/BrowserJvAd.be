@@ -98,7 +98,7 @@ public static class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
       //startActivity(new Intent(getApplicationContext(), NextActivity.class));
       //finish();
-      System.exit(0);
+      //System.exit(0);
         /*if(mWebView.canGoBack()) {
             mWebView.goBack();
         } else {
