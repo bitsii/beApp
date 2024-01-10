@@ -3361,7 +3361,9 @@ class WebApp {
   configPrefixGet() String {
     String an = self.appName;
     if (TS.notEmpty(an)) {
-      return("webApp." + an + ".");
+      String cpx = "webApp." + an + ".";
+      //log.log("configPrefix " + cpx);
+      return(cpx);
     }
     return(an);
   }
