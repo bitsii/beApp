@@ -2009,7 +2009,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
               String aname = arg.get("action");
             }
             if (isCrossSite(request)) {
-              unless (aname == "loginRequest") {
+              unless (aname == "loginRequest" || aname == "pageTokenRequest") {
                 log.log("rejecting cross site request");
                 toLogin(request);
                 return(self);
