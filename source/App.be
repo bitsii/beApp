@@ -1675,6 +1675,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       Int ssu = snow + 60;
       request.putSession("sessionUpdate", ssu.toString());
     }
+
     log.log("setup session, sessionLength " + request.getSession("sessionLength") + " sessionExp " + request.getSession("sessionExp"))
   }
   
@@ -1714,6 +1715,10 @@ use class App:AuthPlugin(App:AjaxPlugin) {
           request.putSession("pageToken", arg["pageToken"]);
         }
         setupSession(arg, request);
+        String ref = request.getInputHeader("referer");
+        if (TS.notEmpty(ref)) {
+          request.putSession("loginReferer", ref);
+        }
         res["action"] = "loggedInResponse";
         res["name"] = arg["accountName"];
         goodLogin(request);
@@ -1856,6 +1861,22 @@ use class App:AuthPlugin(App:AjaxPlugin) {
   isCrossSite(request) Bool {
     if (request.embedded) { return(false); }
     String ref = request.getInputHeader("referer");
+    String lref = request.getSession("loginReferer");
+    if (TS.notEmpty(ref) && TS.notEmpty(lref)) {
+      //log.log("have ref and lref " + ref + " " + lref);
+      if (ref.begins(lref) || lref.begins(ref)) {
+        //log.log("not crosssite due to loginReferer");
+        return(false);
+      }
+    } else {
+      if (TS.isEmpty(ref)) {
+        log.log("no ref");
+      }
+      if (TS.isEmpty(lref)) {
+        log.log("no lref");
+      }
+    }
+    //if (true) { return(false); } //tempt to test referrer edition
     String la = request.localAddress;
     if (TS.isEmpty(ref) || TS.isEmpty(la)) {
       log.log("isCrossSite true empty");
@@ -1984,13 +2005,17 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       }
      
         try {
-            if (isCrossSite(request)) {
-              log.log("rejecting cross site request");
-              toLogin(request);
-              return(self);
-            }
             if (def(arg) && def(arg.get("action"))) {
               String aname = arg.get("action");
+            }
+            if (isCrossSite(request)) {
+              unless (aname == "loginRequest") {
+                log.log("rejecting cross site request");
+                toLogin(request);
+                return(self);
+              }
+            }
+            if (TS.notEmpty(aname)) {
                if (nonAuthedRequests.has(aname)) {
                  //log.log("nar has");
                  request.continueHandling = true;
