@@ -1259,7 +1259,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         log.log("Getting Account " + user);
         ac = self.accountManager.getAccount(user);
         if (def(ac)) {
-          log.log(Json:Marshaller.new().marshall(ac.toMap()));
+          //log.log(Json:Marshaller.new().marshall(ac.toMap()));
         } else {
           log.log("no such account");
         }
@@ -1284,7 +1284,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
         ac = self.accountManager.getAccount(user);
         ac.permsString = perms;
         self.accountManager.putAccount(ac);
-        log.log("Account " + ac);
+        //log.log("Account " + ac);
       }
       if (mode == "setPass") {
         user = params.getFirst("user");
@@ -2292,10 +2292,10 @@ use class App:WebReverseProxyPlugin {
         String ihv = request.getInputHeader(hkey);
         //log.log("inputHeaderValue " + ihv);
         if (include.has(hkey)) {
-          log.log("sending client header " + hkey + " " + ihv);
+          //log.log("sending client header " + hkey + " " + ihv);
           client.outputHeaders.put(hkey, ihv);
         } else {
-          log.log("suppressed header " + hkey + " " + ihv);
+          //log.log("suppressed header " + hkey + " " + ihv);
         }
        }
        
@@ -2324,7 +2324,7 @@ use class App:WebReverseProxyPlugin {
               
        for (auto kv in client.inputHeaders) {
         if (include.has(kv.key)) {
-          log.log("sending response header " + kv.key + " " + kv.value);
+          //log.log("sending response header " + kv.key + " " + kv.value);
           request.setOutputHeader(kv.key, kv.value);
         } else {
           if (kv.key == "Location") {
@@ -2338,7 +2338,7 @@ use class App:WebReverseProxyPlugin {
             request.outputContent = "<html><head><script>location=\"" + loc + "\"</script></html>";
             return(self);
           }
-          log.log("suppressed response header " + kv.key + " " + kv.value);
+          //log.log("suppressed response header " + kv.key + " " + kv.value);
         }
        }
        
@@ -3006,17 +3006,17 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
       if (mode == "putConfig") {
         String key = params.getFirst("key");
         String value = params.getFirst("value");
-        log.log("Creating config " + key + " " + value);
+        //log.log("Creating config " + key + " " + value);
         app.kvdbs.get(kvdb).put(key, value);
       }
       if (mode == "deleteConfig") {
         key = params.getFirst("key");
-        log.log("Deleting config " + key);
+        //log.log("Deleting config " + key);
         app.kvdbs.get(kvdb).delete(key);
       }
       if (mode == "getConfig") {
         key = params.getFirst("key");
-        log.log("Getting config " + key);
+        //log.log("Getting config " + key);
         String getconf = app.kvdbs.get(kvdb).get(key);
         if (def(getconf)) {
           log.log(getconf);
@@ -3102,7 +3102,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
        Map res = Map.new();
        res["action"] = "backupConfigResponse";
        res["configJson"] = backupConfig();
-       log.log("ret configJson " + res["configJson"]);
+       //log.log("ret configJson " + res["configJson"]);
        return(res);
      }
      return(null);
@@ -3110,7 +3110,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    
    updateConfigRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-      log.log("update for " + arg["configKey"] + " value " + arg["configValue"]);
+      //log.log("update for " + arg["configKey"] + " value " + arg["configValue"]);
       app.kvdbs.get(kvdb).put(arg["configKey"], arg["configValue"]);
       return(showConfigRequest(arg, request));
       }
@@ -3119,7 +3119,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
    
    deleteConfigRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
-      log.log("delete for " + arg["configKey"]);
+      //log.log("delete for " + arg["configKey"]);
       app.kvdbs.get(kvdb).delete(arg["configKey"]);
       return(showConfigRequest(arg, request));
       }
