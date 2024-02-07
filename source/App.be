@@ -733,7 +733,7 @@ class IP {
     } else {
       for (String llipp in llip) {
         log.log("llipp " + llipp);
-        if (llipp.isInteger()!) {
+        if (llipp.isInteger!) {
           isIp = false;
         }
       }
@@ -1654,9 +1654,9 @@ use class App:AuthPlugin(App:AjaxPlugin) {
       request.putSession("session.name", arg["sessionName"]);
     }
     String sessionLength = arg["sessionLength"];
-    if (TS.isEmpty(sessionLength) || sessionLength.isInteger()!) {
+    if (TS.isEmpty(sessionLength) || sessionLength.isInteger!) {
       sessionLength = request.getSession("sessionLength");
-      if (TS.isEmpty(sessionLength) || sessionLength.isInteger()!) {
+      if (TS.isEmpty(sessionLength) || sessionLength.isInteger!) {
         sessionLength = "30";
       }
     }
