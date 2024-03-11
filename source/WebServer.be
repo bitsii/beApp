@@ -81,10 +81,10 @@ use class Web:Server {
     fields {
       Int port = 8080;
       String appBindAddress;
-      any app;
+      dyn app;
       Bool ssl = false;
       String sslPath;
-      any sessionManager;
+      dyn sessionManager;
       IO:Log log = IO:Logs.get(self);
       Bool gzipOutput = false;
     }
@@ -116,7 +116,7 @@ use class Web:Server {
   }
   
   handleWeb(request) {
-    any e;
+    dyn e;
     try {
       request.gzipOutput = gzipOutput;
       request.sessionManager = sessionManager;
@@ -146,7 +146,7 @@ use class Web:Server {
 
   start() {
     
-    any ussl;
+    dyn ussl;
     if (ssl) {
       ussl = "notnull";
     }
@@ -586,7 +586,7 @@ use class Web:ScriptRequest {
    
    getSession(String name) String {
      fields {
-       any sessionManager;
+       dyn sessionManager;
        String serviceSessionKey;
      }
      if (def(sessionManager)) {

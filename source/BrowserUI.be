@@ -37,8 +37,8 @@ class WebImp {
   
   setup() {
     fields {
-      any setupHandler;
-      any webHandler;
+      dyn setupHandler;
+      dyn webHandler;
     }
   }
   
@@ -97,7 +97,7 @@ class UI:WebBrowser {
       String content;
       String location;
       String browserType;
-      any webHandler;
+      dyn webHandler;
       WebImp webImp;
     }
     ifEmit(cs) {
@@ -131,7 +131,7 @@ class UI:WebBrowser {
       }
       if (browserType == "ccio") {
         webImp = System:Objects.createInstance("UI:CcIo:WebBrowser");
-        any wi = webImp;
+        dyn wi = webImp;
         webImp = wi.getMe();
       }
       if (browserType == "apwk") {
@@ -378,7 +378,7 @@ use class Web:Client {
         """
         }
         if (url.begins("https")) {
-          any ssl = "yup";//null or not null
+          dyn ssl = "yup";//null or not null
         }
         emit(cs) {
         """
@@ -443,7 +443,7 @@ use class Web:Client {
       open();
       certificateThumbprint = null;
       if (url.begins("https")) {
-        any ssl = "yup";//null or not null
+        dyn ssl = "yup";//null or not null
       }
       outputWriter = IO:Writer.new();
       emit(cs) {
@@ -588,7 +588,7 @@ use class Web:Client {
         inputReader = IO:Reader.new();
         certificateThumbprint = null;
         if (url.begins("https")) {
-          any ssl = "yup";//null or not null
+          dyn ssl = "yup";//null or not null
         }
         emit(cs) {
         """
@@ -768,7 +768,7 @@ use class Web:SessionManager {
   
   new(_sessions, String _keyName) self {
     fields {
-      any sessions = _sessions;
+      dyn sessions = _sessions;
       String keyName = _keyName;
       Int keyLen = 64;
     }
@@ -819,7 +819,7 @@ use class Web:SessionManager {
   deleteSessionByKey(String key) {
     if (TS.notEmpty(key)) {
       Map toDel = sessions.get("SESSIONS").getMap(key + ".");
-      for (any x in toDel) {
+      for (dyn x in toDel) {
         //("deleting session key " + x.key).print(); 
         sessions.get("SESSIONS").delete(x.key);
       }

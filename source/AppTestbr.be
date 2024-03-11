@@ -21,7 +21,7 @@ class AppTestbr:Tests {
        for (Int i = 0;i < howManyTimes;i++=) {
         innerMain();
       }
-     } catch (any e) {
+     } catch (dyn e) {
        if (def(e)) {
         e.print();
         throw(e);

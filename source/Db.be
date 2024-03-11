@@ -20,7 +20,7 @@ use System:Thread:ContainerLocker as CLocker;
 use Db:KeyValue as KvDb;
 class KvDb(CLocker) {
   
-  sdbNew(any _sdb) {
+  sdbNew(dyn _sdb) {
     super.new(_sdb);
   }
   
@@ -75,7 +75,7 @@ class KvDbs {
           sdbClass = "Db:MemFileStoreKeyValue";
         }
         for (Int i = 0;i < appKvPoolSize;i++=) {
-          any cckdb = System:Objects.createInstance(sdbClass);
+          dyn cckdb = System:Objects.createInstance(sdbClass);
           KvDb kdb = KvDb.sdbNew(cckdb.pathParamsNew(dataPath.copy(), params, name).open());
           kdb.create();
           kdbl[i] = kdb;
@@ -94,7 +94,7 @@ class KvDbs {
       }
       kdb = kdbl[nv];
       lock.unlock();
-    } catch (any e) {
+    } catch (dyn e) {
       lock.unlock();
       log.error("exception during getKvDb");
       if (def(e)) { log.error("ex " + e); }
@@ -106,14 +106,14 @@ class KvDbs {
     log.log("closing kvdbs");
     try {
       lock.lock();
-      for (any kvle in kvDbs) {
-        for (any kv in kvle.value) {
+      for (dyn kvle in kvDbs) {
+        for (dyn kv in kvle.value) {
           kv.close();
         }
       }
       kvDbs = Map.new();
       lock.unlock();
-    } catch (any e) {
+    } catch (dyn e) {
       lock.unlock();
       log.error("exception during closeKvDbs");
       if (def(e)) { log.error("ex " + e); }

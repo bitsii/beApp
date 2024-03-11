@@ -233,7 +233,7 @@ class HD {
     }
   }
   
-  call(List args) any {
+  call(List args) dyn {
      String aname = args[0];
      args.delete(0);
      if (self.can(aname, args.length)) {
@@ -440,7 +440,7 @@ class HC {
   default() self {
     fields {
       IO:Log log = IO:Logs.get(self);
-      any apwkHandler;
+      dyn apwkHandler;
     }
   }
 
@@ -468,10 +468,10 @@ class HC {
      call(arg);
    }
    
-   callUI(List args) any {
+   callUI(List args) dyn {
      String aname = args[0];
      args.delete(0);
-     for (any callback in callbacks) {
+     for (dyn callback in callbacks) {
        if (callback.can(aname, args.length)) {
          return(callback.invoke(aname, args));
        }
@@ -656,7 +656,7 @@ class HC {
         List rargs = List.new(1);
         rargs[0] = res;
         String show = rargs.size.toString();
-        for (any callback in callbacks) {
+        for (dyn callback in callbacks) {
           if (callback.can(name, rargs.length)) {
             callback.invoke(name, rargs);
             break;
@@ -675,7 +675,7 @@ class HC {
           rargs[0] = resm;
         }
         String show = rargs.size.toString();
-        for (any callback in callbacks) {
+        for (dyn callback in callbacks) {
           if (callback.can(mname, rargs.length)) {
             callback.invoke(mname, rargs);
             break;
@@ -704,7 +704,7 @@ class HC {
    }
    
    setElementsValuesResponse(Map idvals) {
-     for (any kv in idvals) {
+     for (dyn kv in idvals) {
       HD.getElementById(kv.key).value = kv.value;
      }
    }
@@ -714,7 +714,7 @@ class HC {
    }
    
    setElementsDisplaysResponse(Map idvals) {
-     for (any kv in idvals) {
+     for (dyn kv in idvals) {
        HD.getElementById(kv.key).display = kv.value;
      }
    }
@@ -724,7 +724,7 @@ class HC {
    }
    
    setElementsInnerHTMLResponse(Map idvals) {
-     for (any kv in idvals) {
+     for (dyn kv in idvals) {
       HD.getElementById(kv.key).innerHTML = kv.value;
      }
    }

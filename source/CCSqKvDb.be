@@ -40,7 +40,7 @@ emit(cc_classHead) {
   }
   
   dbFailed() {
-    any e;
+    dyn e;
     try {
       close();
     } catch (e) {

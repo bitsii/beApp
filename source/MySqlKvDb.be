@@ -56,7 +56,7 @@ emit(jv) {
   }
   
   dbFailed() {
-    any e;
+    dyn e;
     try {
       close();
     } catch (e) {

@@ -42,7 +42,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
   new() self {
    fields {
       Lock syncLock = Lock.new();
-      any app;
+      dyn app;
       App:Background yesSync = App:Background.new();
       String appId;
       String dbName;
@@ -267,7 +267,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
         }
       }
       //resetCertMan(ds["certificatePrint"]);
-    } catch(any e) {
+    } catch(dyn e) {
       //resetCertMan(ds["certificatePrint"]);
       throw(e);
     }
@@ -333,7 +333,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
         }
         
         syncLock.unlock();
-      } catch (any e) {
+      } catch (dyn e) {
         syncLock.unlock();
         log.log(E.tS(e));
       }
@@ -462,7 +462,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
               app.configManager.put("sync." + appId + "." + auser + ".lastStatus", "OK");
               break;
             }
-         } catch (any e) {
+         } catch (dyn e) {
            log.log("list failed");
            app.configManager.put("sync." + appId + "." + auser + ".lastStatus", "Failed");
            if (def(e)) { log.log(e.toString()); }
@@ -612,7 +612,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
               }
             }
           }
-        } catch (any ee) {
+        } catch (dyn ee) {
           log.elog("except in sync for item", ee);
         }
       }
@@ -636,7 +636,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
           } else {
             //log.log("not outputting for " + outer["subject"]);
           }
-        } catch (any ee) {
+        } catch (dyn ee) {
           log.elog("except in sync for item", ee);
         }
       }
@@ -688,7 +688,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
                 Map resMap = Json:Unmarshaller.unmarshall(res);
                 //log.log("!!! got res from getSip  " + res);
               }
-           } catch (any e) {
+           } catch (dyn e) {
              log.log("put failed");
              if (def(e)) { log.log(e.toString()); }
            }
@@ -806,7 +806,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
                 }
                 //break;
               }
-            } catch(any e) {
+            } catch(dyn e) {
               log.error("Failure during set bridge sync will try others");
               if (def(e)) {
                 log.error("error " + e);

@@ -32,7 +32,7 @@ use class App:RemoteWebApp(WebApp) {
     }
     
     startWeb() {
-      any e;
+      dyn e;
       String ports = self.appPort;
       Int port = Int.new(ports);
       //portL.o = port;

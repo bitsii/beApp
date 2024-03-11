@@ -202,7 +202,7 @@ public static class MainActivity extends AppCompatActivity {
       if (def(ret)) {
         //log.log("in handleWeb, ret " + ret);
       }
-    } catch (any e) {
+    } catch (dyn e) {
       log.log(System:Exceptions.toString(e));
     }
     return(ret);
