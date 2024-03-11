@@ -127,8 +127,8 @@ class MFSKvDb {
     }
     return(null);
   }
-  
-  has(String name) Bool {
+
+  contains(String name) Bool {
     Path np = tbp.copy().addStep(Hex.encode(name));
     if (np.file.exists) {
       return(true);

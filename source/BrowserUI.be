@@ -213,7 +213,7 @@ class CM {
     //Console.WriteLine((new X509Certificate2(cert)).Thumbprint);
     $class/Web:Client:CertificateManager$ cm = $class/Web:Client:CertificateManager$.bece_BEC_3_3_6_18_WebClientCertificateManager_bevs_inst;
     //if thumbprint in accepted set, ret true
-    if (cm.bevp_acceptedThumbprints.bem_has_1(
+    if (cm.bevp_acceptedThumbprints.bem_contains_1(
       new $class/Text:String$((new X509Certificate2(cert)).Thumbprint)).bevi_bool) {
       return true;  
     } else if (cm.bevp_onlyAcceptedThumbprints.bevi_bool) {
@@ -248,7 +248,7 @@ class CM {
                 try {
                 for (int i = 0;i < certs.length;i++) {
                 //if thumbprint in accepted set, ret true
-                if (cm.bevp_acceptedThumbprints.bem_has_1(
+                if (cm.bevp_acceptedThumbprints.bem_contains_1(
                   new $class/Text:String$((bems_getThumbprint(certs[i])))).bevi_bool) {
                   return;  
                 }
@@ -788,14 +788,14 @@ import class Web:SessionManager {
       sk = request.getInputCookie(keyName);
     }
     if (TS.notEmpty(sk)) {
-      unless (sessions.get("SESSIONS").has(hashKey(sk) + ".")) {
+      unless (sessions.get("SESSIONS").contains(hashKey(sk) + ".")) {
         //could be probing for sessions, let them have this but will be upping bad
         request.context.put("unknownSession", "unknownSession");
         sessions.get("SESSIONS").put(hashKey(sk) + ".", "");
       }
     } else {
       sk = System:Random.getString(keyLen);
-      until (sessions.get("SESSIONS").has(hashKey(sk) + ".")!) {
+      until (sessions.get("SESSIONS").contains(hashKey(sk) + ".")!) {
         sk = System:Random.getString(keyLen);
       }
       sessions.get("SESSIONS").put(hashKey(sk) + ".", "");

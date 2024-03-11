@@ -515,7 +515,7 @@ class Upnp {
       if (def(received)) {
         received.lowerValue();
         log.log("deviceURLGet Received " + received);
-        if (received.has("upnp:rootdevice")) {
+        if (received.contains("upnp:rootdevice")) {
           Int loc = received.find("location:");
           if (def(loc)) {
             loc += 10;
@@ -523,7 +523,7 @@ class Upnp {
             loc = received.find("\r");
             if (def(loc)) {
               received = received.substring(0, loc);
-              if (received.has(netGw)) {
+              if (received.contains(netGw)) {
                 deviceURL = received;
                 return(received);
               }
@@ -661,7 +661,7 @@ class Upnp {
       res = System:Command.new(cmd).open().output.readStringClose();
       log.log("forwardPort result " + res);
       
-      if (res.has("is redirected to")!) {
+      if (res.contains("is redirected to")!) {
         throw(System:Exception.new("UPnP port forward failed, verify router settings"));
       }
       if (external != internal) {
@@ -698,7 +698,7 @@ class Upnp {
         return(false);
       }
       if (def(res)) {
-        if (res.has("Fault") || res.has("UPnPError")) {
+        if (res.contains("Fault") || res.contains("UPnPError")) {
           return(false);
         }
         return(true);
@@ -1053,7 +1053,7 @@ import class App:Account {
   }
   
   isAdminGet() Bool {
-    if (self.perms.has("admin")) {
+    if (self.perms.contains("admin")) {
       return(true);
     }
     return(false);
@@ -1354,11 +1354,11 @@ import class App:AuthPlugin(App:AjaxPlugin) {
         for (dyn kv in all) {
           dyn kp = kv.key.split(".");
           String skey = kp.first;
-          if (del.has(skey)) {
+          if (del.contains(skey)) {
             //delete it
             sess.delete(kv.key);
           }
-          unless (seen.has(skey)) {
+          unless (seen.contains(skey)) {
             seen.put(skey);
             String se = all.get(skey + ".sessionExp");
             if (TS.notEmpty(se) && Int.new(se) < 0) {
@@ -1400,7 +1400,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
    
   requestFromAdmin(request) Bool {
     Account a = self.accountManager.getRequestAccount(request);
-    if (def(a) && a.perms.has("admin")) {
+    if (def(a) && a.perms.contains("admin")) {
       return(true);
     }
     return(false);
@@ -1463,7 +1463,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
         Map res = Map.new();
         res["action"] = "loadAccountResponse";
         res["accountName"] = a.user;
-        res["admin"] = a.perms.has("admin");
+        res["admin"] = a.perms.contains("admin");
         return(res);
       } elseIf (true) {
         throw(Alert.new("No such account"));
@@ -1701,7 +1701,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
       if (a.checkPass(arg["accountPass"])) {
         log.log("Login ok");
         Map res = Map.new();
-        if (arg.has("serviceLogin")) {
+        if (arg.contains("serviceLogin")) {
           String pageToken = System:Random.getString(32);
           String serviceSessionKey = System:Random.getString(64);
           request.serviceSessionKey = serviceSessionKey;
@@ -1710,7 +1710,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
           res["serviceSessionKey"] = serviceSessionKey;
           res["pageToken"] = pageToken;
         }
-        if (arg.has("pageToken") && TS.notEmpty(arg["pageToken"])) {
+        if (arg.contains("pageToken") && TS.notEmpty(arg["pageToken"])) {
           log.log("in login saving pagetoken");
           request.putSession("pageToken", arg["pageToken"]);
         }
@@ -2016,7 +2016,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
               }
             }
             if (TS.notEmpty(aname)) {
-               if (nonAuthedRequests.has(aname)) {
+               if (nonAuthedRequests.contains(aname)) {
                  //log.log("nar has");
                  request.continueHandling = true;
                  return(self);
@@ -2291,7 +2291,7 @@ import class App:WebReverseProxyPlugin {
         //log.log("inputHeaderKey " + hkey);
         String ihv = request.getInputHeader(hkey);
         //log.log("inputHeaderValue " + ihv);
-        if (include.has(hkey)) {
+        if (include.contains(hkey)) {
           //log.log("sending client header " + hkey + " " + ihv);
           client.outputHeaders.put(hkey, ihv);
         } else {
@@ -2323,14 +2323,14 @@ import class App:WebReverseProxyPlugin {
        }
               
        for (var kv in client.inputHeaders) {
-        if (include.has(kv.key)) {
+        if (include.contains(kv.key)) {
           //log.log("sending response header " + kv.key + " " + kv.value);
           request.setOutputHeader(kv.key, kv.value);
         } else {
           if (kv.key == "Location") {
             log.log("got a location header");
             String loc = kv.value;
-            if (loc.has(destUrl)) {
+            if (loc.contains(destUrl)) {
               loc = loc.substring(destUrl.size);
             }
             log.log("final loc, will send " + loc)
@@ -2405,7 +2405,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
      
     checkWritePath(Path p, Map arg, request) Bool {
       Account a = request.context.get("account");
-      if (def(a) && a.perms.has("admin")) {
+      if (def(a) && a.perms.contains("admin")) {
         return(true);
       }
       String accountName = request.getSession("account.name");
@@ -2433,7 +2433,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
     Path pa = p.file.absPath;
     String pas = pa.toString();
     Account a = request.context.get("account");
-    if (def(a) && a.perms.has("admin")) {
+    if (def(a) && a.perms.contains("admin")) {
       return(true);
     }
     String accountName = request.getSession("account.name");
@@ -2596,9 +2596,9 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
      if (TS.isEmpty(accountName)) {
       throw(Alert.new("must be authenticated"));
      }
-      if (arg.has("path")) {
+      if (arg.contains("path")) {
         Path path = Path.new(arg["path"]);
-      } elseIf (arg.has("homeRelPath")) {
+      } elseIf (arg.contains("homeRelPath")) {
         path = getHomeDir(request) + Path.new(arg["homeRelPath"]);
         log.log("homeRelPath " + path.toString());
       } else {
@@ -2720,7 +2720,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
       String path = arg["path"];
       Account a = request.context.get("account");
       Bool adminLinks = false;
-      if (a.perms.has("admin")) {
+      if (a.perms.contains("admin")) {
         adminLinks = true;
       }
       if (TS.isEmpty(path)) {
@@ -3062,7 +3062,7 @@ import class App:ConfigPlugin(App:AjaxPlugin) {
        if (ecm.isEmpty!) {
          conf += "<table>";
          for (dyn kv in ecm) {
-           unless(kv.value.has("\"") || noshow.has(kv.key)) {
+           unless(kv.value.contains("\"") || noshow.contains(kv.key)) {
               String ckey = "configKey" + kv.key;
               conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"callUI('deleteConfig', '" + kv.key + "');return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
             }
@@ -3207,7 +3207,7 @@ class App:AppStart {
     dyn app = setup(params);
     dyn plugin = app.pluginsByName.get(pln);
     log.log("params invokePlugin " + params.toJson());
-    if (params.has("plma")) {
+    if (params.contains("plma")) {
       iar = params.params.get("plma").toList();
     } else {
       List iar = List.new();
@@ -3278,7 +3278,7 @@ class App:AppStart {
     Set bfiles = Set.new();
     if (def(params["runParams"])) {
       for (String istr in params["runParams"]) {
-         if (bfiles.has(istr)!) {
+         if (bfiles.contains(istr)!) {
             log.log("loading " + istr);
             bfiles.put(istr);
             params.addFile(File.new(istr));
@@ -3300,19 +3300,19 @@ class App:AppStart {
       IO:Logs.setAllSinks(ls);
     }
     var appTypes = Sets.fromList(params.get("appType").toList());
-    if (appTypes.has("cmd")) {
+    if (appTypes.contains("cmd")) {
       dyn cuiapp = WebApp.new();
       cuiapp.params = params;
       setupPlugins(cuiapp);
       setupPlugin(cuiapp);
       return(cuiapp);
-    } elseIf (appTypes.has("browser")) {
+    } elseIf (appTypes.contains("browser")) {
       dyn luiapp = System:Objects.createInstance("App:LocalWebApp");
       luiapp.params = params;
       setupPlugins(luiapp);
       setupPlugin(luiapp);
       return(luiapp);
-    } elseIf (appTypes.has("server")) {
+    } elseIf (appTypes.contains("server")) {
       dyn wuiapp = System:Objects.createInstance("App:RemoteWebApp");
       wuiapp.params = params;
       setupPlugins(wuiapp);
@@ -3751,7 +3751,7 @@ class App:AjaxPlugin {
        if (TS.isEmpty(rmtd) || rmtd != "PUT") {
          arg = request.scriptArg;
          if (def(arg)) {
-           if (arg.has("args")) {
+           if (arg.contains("args")) {
               //is "standard call"
               args = arg["args"];
               args += request;
