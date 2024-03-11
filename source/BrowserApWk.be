@@ -83,7 +83,7 @@ class IoBr(WebImp) {
   }
   
   outerHandleWebJs(String allArgs, String callbackId) String {
-    auto ll = splitAllArgs(allArgs);
+    var ll = splitAllArgs(allArgs);
     
     String ress = handleWeb(ll[0], ll[1], ll[2]);
     if (undef(ress)) { ress = ""; }

@@ -350,7 +350,7 @@ use class Web:ScriptRequest {
       }
       if (TS.notEmpty(addr)) {
         if (addr.has(",")) {
-          auto addrl = addr.split(",");
+          var addrl = addr.split(",");
           addr = addrl[0];
         }
       }

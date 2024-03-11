@@ -55,14 +55,14 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
  
  shrinkHist(String auser, String snh, Int keep) {
      
-     auto eh = Encode:Hex.new();
+     var eh = Encode:Hex.new();
      String auh = auser;
      
-     auto sechis = app.kvdbs.get(histName);
+     var sechis = app.kvdbs.get(histName);
      List hl = List.new();
      
-     for (auto kv in sechis.getMap(auh + "!" + "EntryActive" + "!")) {
-       auto tl = kv.key.split("!");
+     for (var kv in sechis.getMap(auh + "!" + "EntryActive" + "!")) {
+       var tl = kv.key.split("!");
        if (tl.get(2) == snh) {
         String secs = tl.get(3);
         hl += Int.new(secs);
@@ -162,14 +162,14 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
     }
     
     addSyncer(String us) {
-      auto syncers = app.kvdbs.get(syncersName);
+      var syncers = app.kvdbs.get(syncersName);
       syncers.put(us, Time:Interval.now().seconds.toString());
     }
     
     getSyncers() List {
-      auto syncers = app.kvdbs.get(syncersName);
+      var syncers = app.kvdbs.get(syncersName);
       List toRet = List.new();
-      for (auto le in syncers.getMap()) {
+      for (var le in syncers.getMap()) {
         toRet += le.key;
       }
       return(toRet);
@@ -249,7 +249,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
         client.contentsOut = payload;
         res = client.contentsIn;
         client.close();
-        auto eh = Encode:Hex.new();
+        var eh = Encode:Hex.new();
         if (TS.notEmpty(res)) {
           resMap = Json:Unmarshaller.unmarshall(res);
           log.log("!!! got res from getblobs  " + res);
@@ -258,7 +258,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
           if (def(blobs) && blobs.size > 0) {
             return(CallBackUI.syncRtrResponse(blobs));
           }
-          //for (auto kv in blobs) {
+          //for (var kv in blobs) {
           //  if (TS.notEmpty(kv.key) && TS.notEmpty(kv.value)) {
           //    app.configManager.put("sync." + appId + "." + auser + ".syncHost." + eh.encode(kv.key), kv.value);
           //  }
@@ -340,16 +340,16 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
     }
     
     decideIn(String auser, List subs) Map {
-      auto unmar = Json:Unmarshaller.new();
-      auto eh = Encode:Hex.new();
-      auto seckv = app.kvdbs.get(dbName);
-      auto sechis = app.kvdbs.get(histName);
+      var unmar = Json:Unmarshaller.new();
+      var eh = Encode:Hex.new();
+      var seckv = app.kvdbs.get(dbName);
+      var sechis = app.kvdbs.get(histName);
       String an = auser;
       String auh = an;
       Map acts = Map.new();
       for (String sub in subs) {
         //log.log("sub " + sub);
-        auto sl = sub.split(" ");
+        var sl = sub.split(" ");
         String snh = sl.get(1);
         Int updateSecs = Int.new(sl.get(2));
         String subp = sl.get(0);
@@ -364,9 +364,9 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
         Int maxSecs = 0;
         Map cands = seckv.getMap(pkap);
         cands += seckv.getMap(pkdp);
-        for (auto kv in cands) {
+        for (var kv in cands) {
           //log.log("got cand " + kv.key);
-          auto sll = kv.key.split("!");
+          var sll = kv.key.split("!");
           Int secs = Int.new(sll.get(3));
           if (secs > maxSecs) {
             maxSecs = secs;
@@ -398,12 +398,12 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
     
     deleteOthers(String pk) {
      log.log("deleteOthers " + pk);
-     auto sl = pk.split("!");
-     auto seckv = app.kvdbs.get(dbName);
+     var sl = pk.split("!");
+     var seckv = app.kvdbs.get(dbName);
      List todel = List.new();
      Map cands = seckv.getMap(sl.get(0) + "!EntryActive!" + sl.get(2) + "!");
      cands += seckv.getMap(sl.get(0) + "!EntryDeleted!" + sl.get(2) + "!");
-     for (auto kv in cands) {
+     for (var kv in cands) {
        //log.log("got cand " + kv.key);
        if (kv.key != pk) {
          todel += kv.key;
@@ -417,13 +417,13 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
     
     doSyncInBridge(String auser, String blob, String dss, String destUrl) {
       Map ds = Json:Unmarshaller.unmarshall(dss);
-      auto eh = Encode:Hex.new();
+      var eh = Encode:Hex.new();
       Map wcm = Json:Unmarshaller.unmarshall(blob);
       String an = auser;
       String auh = an;
-      auto seckv = app.kvdbs.get(dbName);
-      auto sechis = app.kvdbs.get(histName);
-      auto unmar = Json:Unmarshaller.new();
+      var seckv = app.kvdbs.get(dbName);
+      var sechis = app.kvdbs.get(histName);
+      var unmar = Json:Unmarshaller.new();
       
       //hostedUrl, konnUrl, konniUrl, externalUrl, internalUrl
       List destUrls = Lists.from(destUrl, wcm["hostedBase"], wcm["konnBase"], wcm["konniBase"]);
@@ -437,16 +437,16 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
           //log.log("trying destUrl " + destUrl);
           
           try {
-            auto argOut = Map.new();
+            var argOut = Map.new();
             
             argOut["action"] = "listRequest";
             argOut["pageToken"] = ds["pageToken"];
             argOut["serviceSessionKey"] = ds["serviceSessionKey"];
             argOut["homeRelPath"] = appId;
-            auto client = Web:Client.new();
+            var client = Web:Client.new();
             client.connectTimeoutMillis = 10000;
             client.readTimeoutMillis = 60000;
-            auto payload = Json:Marshaller.marshall(argOut);
+            var payload = Json:Marshaller.marshall(argOut);
             client.verb = "POST";
             //log.log("payload " + payload);
             client.outputHeaders.put("referer", destUrl + "/App/SBridge/SBridge.html");
@@ -488,13 +488,13 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
           }
           Map decids = decideIn(auser, sublist);
           Path dirp = Path.apNew(path);
-          for (auto kv in decids) {
+          for (var kv in decids) {
             if (kv.value != "none") {
               n = eh.encode(kv.key) + ".json";
               p = dirp.copy().addStep(n);
               if (kv.value == "load") {
               
-                auto sl = kv.key.split(" ");
+                var sl = kv.key.split(" ");
                 String snh = sl.get(1);
                 Int updateSecs = Int.new(sl.get(2));
                 String subp = sl.get(0);
@@ -568,10 +568,10 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
       app.configManager.put("sync." + appId + "." + auser + ".lastSuccessSeconds", Time:Interval.now().seconds.toString());
       app.configManager.put("sync." + appId + "." + auser + ".lastStatus", "OK");
       String an = auser;
-      auto unmar = Json:Unmarshaller.new();
-      auto eh = Encode:Hex.new();
-      auto seckv = app.kvdbs.get(dbName);
-      auto sechis = app.kvdbs.get(histName);
+      var unmar = Json:Unmarshaller.new();
+      var eh = Encode:Hex.new();
+      var seckv = app.kvdbs.get(dbName);
+      var sechis = app.kvdbs.get(histName);
       String auh = an;
       List sublist = List.new();
       for (File f in dirp.file) {
@@ -585,14 +585,14 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
         }
       }
       Map decids = decideIn(auser, sublist);
-      for (auto kv in decids) {
+      for (var kv in decids) {
         try {
           if (kv.value != "none") {
             n = eh.encode(kv.key) + ".json";
             p = dirp.copy().addStep(n);
             if (kv.value == "load") {
             
-              auto sl = kv.key.split(" ");
+              var sl = kv.key.split(" ");
               String snh = sl.get(1);
               Int updateSecs = Int.new(sl.get(2));
               String subp = sl.get(0);
@@ -621,10 +621,10 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
     
     doSyncOutFiles(Path dirp, String auser, Map decids) {
       if (dirp.file.exists!) { dirp.file.makeDirs(); }
-      auto eh = Encode:Hex.new();
+      var eh = Encode:Hex.new();
       String auh = auser;
-      auto unmar = Json:Unmarshaller.new();
-      for (auto kv in app.kvdbs.get(dbName).getMap(auh + "!")) {
+      var unmar = Json:Unmarshaller.new();
+      for (var kv in app.kvdbs.get(dbName).getMap(auh + "!")) {
         try {
           String outers = kv.value;
           Map outer = unmar.unmarshall(outers);
@@ -644,16 +644,16 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
     
     doSyncOutBridge(String auser, String blob, String dss, String destUrl, Map decids) {
       //if (dirp.file.exists!) { dirp.file.makeDirs(); }
-      auto eh = Encode:Hex.new();
+      var eh = Encode:Hex.new();
       String auh = auser;
-      auto unmar = Json:Unmarshaller.new();
-      auto mar = Json:Marshaller.new();
+      var unmar = Json:Unmarshaller.new();
+      var mar = Json:Marshaller.new();
       String path = app.configManager.get("sync." + appId + "." + auser + ".bridgeSyncPath");      
       Map ds = unmar.unmarshall(dss);
       Map wcm = unmar.unmarshall(blob);
       Path dirp = Path.apNew(path);
       //log.log("in do sync out bridge for auh " + auh);
-      for (auto kv in app.kvdbs.get(dbName).getMap(auh + "!")) {
+      for (var kv in app.kvdbs.get(dbName).getMap(auh + "!")) {
         //log.log("in do sync out bridge for key " + kv.key);
         String outers = kv.value;
         Map outer = unmar.unmarshall(outers);
@@ -667,16 +667,16 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
             //log.log("trying destUrl " + destUrl);
             
             try {
-              auto argOut = Map.new();
+              var argOut = Map.new();
               argOut["action"] = "smallPutRequest";
               argOut["pageToken"] = ds["pageToken"];
               argOut["serviceSessionKey"] = ds["serviceSessionKey"];
               argOut["path"] = fp.toString();
               argOut["content"] = outers;
-              auto client = Web:Client.new();
+              var client = Web:Client.new();
               client.connectTimeoutMillis = 10000;
               client.readTimeoutMillis = 60000;
-              auto payload = mar.marshall(argOut);
+              var payload = mar.marshall(argOut);
               log.log("sync write url " + destUrl + " payload " + payload);
               client.outputHeaders.put("referer", destUrl + "/App/SBridge/SBridge.html");
               client.url = destUrl;
@@ -714,11 +714,11 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
         addr = "https://" + addr;
       }
       if (TS.notEmpty(addr) && TS.notEmpty(user) && TS.notEmpty(pass)) {
-        auto ll = addr.split("/");
+        var ll = addr.split("/");
         //log.log("splits " + ll.size);
         Int si = 0;
         String na = "";
-        for (auto s in ll) {
+        for (var s in ll) {
           //log.log("s " + s);
           if (si < 3) {
             na += s;

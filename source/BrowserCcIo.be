@@ -85,7 +85,7 @@ class IoBr(WebImp) {
   }
   
   outerHandleWeb(InFlight inf) this {
-    auto ll = splitAllArgs(inf.allArgs);
+    var ll = splitAllArgs(inf.allArgs);
     String ress = handleWeb(ll[0], ll[1], ll[2]);
     if (undef(ress)) { ress = ""; }
     //fashion the js to run here

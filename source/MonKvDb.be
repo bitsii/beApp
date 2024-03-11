@@ -111,7 +111,7 @@ emit(jv) {
   getSet() Set {
     Set names = Set.new();
     Map kvs = getMap();
-    for (auto kv in kvs) {
+    for (var kv in kvs) {
       names.put(kv.key);
     }
     return(names);

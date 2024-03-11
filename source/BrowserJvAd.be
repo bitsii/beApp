@@ -186,7 +186,7 @@ public static class MainActivity extends AppCompatActivity {
   }
   
   outerHandleWeb(String allArgs) String {
-    auto ll = splitAllArgs(allArgs);
+    var ll = splitAllArgs(allArgs);
     return(handleWeb(ll[0], ll[1], ll[2]));  
   }
   

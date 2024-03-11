@@ -172,7 +172,7 @@ class FxBr(WebImp) {
   outerHandleWeb(String allArgs) String {
     //IO:Logs.turnOnAll();
     //log.log("in outerweb");
-    auto ll = splitAllArgs(allArgs);
+    var ll = splitAllArgs(allArgs);
     return(handleWeb(ll[0], ll[1], ll[2]));  
   }
   

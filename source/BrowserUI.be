@@ -415,7 +415,7 @@ use class Web:Client {
         }
         """
         }
-        for (auto kv in outputHeaders) {
+        for (var kv in outputHeaders) {
           String hk = kv.key;
           String hv = kv.value;
           if (def(hv)) {
@@ -529,7 +529,7 @@ use class Web:Client {
 #endif
         """
         }
-        for (auto kv in outputHeaders) {
+        for (var kv in outputHeaders) {
           String hk = kv.key;
           String hv = kv.value;
           ("setting header " + hk + " " + hv).print();

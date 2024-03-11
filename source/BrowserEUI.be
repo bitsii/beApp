@@ -753,7 +753,7 @@ class HC {
      """
      }
      
-     for (auto kv in textVals) {
+     for (var kv in textVals) {
        String val = kv.value;
        String txt = kv.key;
        emit(js) {

@@ -30,7 +30,7 @@ class App:RunClassMethod {
 
   runit(String clmtd) {
     "in runit".print();
-    auto ll = clmtd.split(".");
+    var ll = clmtd.split(".");
     dyn inst = System:Objects.createInstance(ll[0]);
     inst.invoke(ll[1], List.new());
     "runit done".print();

@@ -726,7 +726,7 @@ class IP {
       return(false);
     }
             
-    auto llip = ipback.split(".");
+    var llip = ipback.split(".");
     log.log("llip sz " + llip.size);
     if (llip.size != 4) {
       isIp = false;
@@ -2322,7 +2322,7 @@ use class App:WebReverseProxyPlugin {
         log.log("ct empty");
        }
               
-       for (auto kv in client.inputHeaders) {
+       for (var kv in client.inputHeaders) {
         if (include.has(kv.key)) {
           //log.log("sending response header " + kv.key + " " + kv.value);
           request.setOutputHeader(kv.key, kv.value);
@@ -2610,7 +2610,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
       File dirFile = path.file;
       if (dirFile.exists && checkReadPath(dirFile.path, arg, request)) {
         if (dirFile.isDir) {
-          auto dit = dirFile.iterator;
+          var dit = dirFile.iterator;
           dit.open();
           List olist = List.new();
           Map omap = Map.new();
@@ -2768,7 +2768,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           += hex.encode(kv.value) += "');return false;\">" += kv.key.substring(25 + accountName.size, kv.key.size) += "</a></td></tr>";
         }
         if (dirFile.isDir) {
-          auto dit = dirFile.iterator;
+          var dit = dirFile.iterator;
           dit.open();
           List olist = List.new();
           Map omap = Map.new();
@@ -2826,21 +2826,21 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
           }
           dit.close();
           olist = olist.sort();
-          auto pitcs = dirFile.path.toString();
+          var pitcs = dirFile.path.toString();
           Bool found = false;
           for (ole in olist) {
             entry = omap.get(ole);
-            auto ps = entry.path.toString();
+            var ps = entry.path.toString();
             if (ps == pitcs) {
               found = true;
             } else {
               if (ps.lower().ends(".jpg") || ps.lower().ends(".gif")) {
                 if (found) {
                   if (undef(safter)) {
-                    auto safter = entry.path;
+                    var safter = entry.path;
                   }
                 } else {
-                  auto sbefore = entry.path;
+                  var sbefore = entry.path;
                 }
               }
             }
@@ -2860,7 +2860,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             log.log("Got before pic " + sbefore);
             p = sbefore;
             jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-            auto plink = "<a id='picBefore' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + " style=\"font-size:3em;\">\<</a>";
+            var plink = "<a id='picBefore' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + " style=\"font-size:3em;\">\<</a>";
             res["plink"] = plink;
             
             jscall = " onclick=\"callUI('keepGoingPY');localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
@@ -2875,7 +2875,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
             log.log("Got after pic " + safter);
             p = safter;
             jscall = " onclick=\"localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
-            auto nlink = "<a id='picAfter' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + " style=\"font-size:3em;\">\></a>";
+            var nlink = "<a id='picAfter' href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + " style=\"font-size:3em;\">\></a>";
             res["nlink"] = nlink;
             
             jscall = " onclick=\"callUI('keepGoingNY');localBrowseRequest('" += hex.encode(p.toString()) += "');return false;\"";
@@ -2910,7 +2910,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
         dirListHtml += "<p>" += kv.value += " shared to ALL as " += kv.key.substring(23, kv.key.size) += "</p>";  
       }
       for (kv in app.configManager.getMap("fileManager.accountDirs.")) {
-        auto steps = kv.key.split(".");
+        var steps = kv.key.split(".");
         dirListHtml += "<p>" += kv.value += " shared with " += steps[2] += " as " += steps[3] += "</p>";
       }
       return(CallBackUI.setElementsInnerHTMLResponse(Maps.from("sharesDiv", dirListHtml)));
@@ -3246,7 +3246,7 @@ class App:AppStart {
   }
     
   setupPlugins(WebApp app) {
-    auto pluginClasses = params.get("plugin");
+    var pluginClasses = params.get("plugin");
     List plugins = List.new();
     for (String pluginClass in pluginClasses) {
       dyn plugin = System:Objects.createInstance(pluginClass);
@@ -3299,7 +3299,7 @@ class App:AppStart {
       }
       IO:Logs.setAllSinks(ls);
     }
-    auto appTypes = Sets.fromList(params.get("appType").toList());
+    var appTypes = Sets.fromList(params.get("appType").toList());
     if (appTypes.has("cmd")) {
       dyn cuiapp = WebApp.new();
       cuiapp.params = params;
