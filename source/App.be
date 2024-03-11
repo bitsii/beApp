@@ -8,19 +8,19 @@
  *
  */
 
-use IO:File:Path;
-use IO:File;
-use System:Random;
-use UI:WebBrowser as WeBr;
-use Test:Assertions as Assert;
-use Db:KeyValue as KvDb;
-use Time:Interval;
-use System:Parameters;
-use Container:LinkedList;
-use Container:LinkedList:Node;
-use Db:KeyValueDbs as KvDbs;
+import IO:File:Path;
+import IO:File;
+import System:Random;
+import UI:WebBrowser as WeBr;
+import Test:Assertions as Assert;
+import Db:KeyValue as KvDb;
+import Time:Interval;
+import System:Parameters;
+import Container:LinkedList;
+import Container:LinkedList:Node;
+import Db:KeyValueDbs as KvDbs;
 
-use class App:Alert(Exception) { }
+import class App:Alert(Exception) { }
 
 emit(jv) {
 """
@@ -37,7 +37,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 """
 }
-use class Net:Interface {
+import class Net:Interface {
  
  new(String _description, String _macAddress, String _name, 
      String _status, 
@@ -318,7 +318,7 @@ use class Net:Interface {
  
 }
 
-use Net:Wol;
+import Net:Wol;
 
 class Wol {
 
@@ -420,7 +420,7 @@ private static void wakeOnLan(String hex) throws Exception
 
 }
 
-use Net:UPnP as Upnp;
+import Net:UPnP as Upnp;
 
 class Upnp {
 
@@ -710,7 +710,7 @@ class Upnp {
 
 }
 
-use Net:IP;
+import Net:IP;
 
 class IP {
 
@@ -795,7 +795,7 @@ class IP {
 
 }
 
-use class App:Paths {
+import class App:Paths {
 
   new(_app) self {
     fields {
@@ -869,7 +869,7 @@ bevl_idd = (new BEC_2_4_6_TextString())->bems_ccsnew(ccdd);
 
 }
 
-use Net:Gateway as Gw;
+import Net:Gateway as Gw;
 
 class Gw {
 
@@ -919,7 +919,7 @@ class Gw {
 }
 
 //logic
-use class App:AccountManager {
+import class App:AccountManager {
 
   new() self {
     fields {
@@ -967,7 +967,7 @@ use class App:AccountManager {
 
 }
 
-use class App:Account {
+import class App:Account {
 
   new() self {
     fields {
@@ -1061,7 +1061,7 @@ use class App:Account {
   
 }
 
-use App:EventHandlers as AppEv;
+import App:EventHandlers as AppEv;
 class AppEv {
 
   emit(jv) {
@@ -1119,7 +1119,7 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 """
 }
-use Crypto:Symmetric as Crypt;
+import Crypto:Symmetric as Crypt;
 class Crypt {
 
   new() self {
@@ -1218,7 +1218,7 @@ class Crypt {
   }
 }
 
-use class App:AuthPlugin(App:AjaxPlugin) {
+import class App:AuthPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
@@ -2085,7 +2085,7 @@ use class App:AuthPlugin(App:AjaxPlugin) {
    
 }
 
-use class App:PublicReadPlugin {
+import class App:PublicReadPlugin {
 
      new() self {
        fields {
@@ -2140,7 +2140,7 @@ use class App:PublicReadPlugin {
      }
 }
 
-use class App:LocalAccessPlugin {
+import class App:LocalAccessPlugin {
 
      new() self {
        fields {
@@ -2205,7 +2205,7 @@ use class App:LocalAccessPlugin {
      }
 }
 
-use class App:WebReverseProxyPlugin {
+import class App:WebReverseProxyPlugin {
 
      new() self {
        fields {
@@ -2351,7 +2351,7 @@ use class App:WebReverseProxyPlugin {
      }
 }
 
-use App:MimeTypes as Mimes;
+import App:MimeTypes as Mimes;
 
 class Mimes {
   
@@ -2392,7 +2392,7 @@ class Mimes {
   
 }
 
-use class App:FileManagerPlugin(App:AjaxPlugin) {
+import class App:FileManagerPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
@@ -2970,7 +2970,7 @@ use class App:FileManagerPlugin(App:AjaxPlugin) {
     
 }
 
-use class App:ConfigPlugin(App:AjaxPlugin) {
+import class App:ConfigPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
@@ -3133,7 +3133,7 @@ use class App:ConfigPlugin(App:AjaxPlugin) {
     
 }
 
-use class App:LocalWebApp(WebApp) {
+import class App:LocalWebApp(WebApp) {
 
   new() self {
         fields {
@@ -3324,7 +3324,7 @@ class App:AppStart {
   }
 }
 
-use App:WebApp;
+import App:WebApp;
 class WebApp {
 
   new() self {
@@ -3587,7 +3587,7 @@ class WebApp {
     
 }
 
-use class System:RunAsync {
+import class System:RunAsync {
 
   new(String _klass, String _toInvoke, List _args) self {
     fields {
@@ -3654,7 +3654,7 @@ use class System:RunAsync {
 
 }
 
-use class App:Background {
+import class App:Background {
 
   new() self {
     fields {
@@ -3806,12 +3806,12 @@ class App:AjaxPlugin {
     }
 }
 
-use System:Thread:Lock;
-use System:Thread:ContainerLocker as CLocker;
-use System:Command as Com;
-use Time:Sleep;
-use System:Thread:ObjectLocker as OLocker;
-use Db:HSQLDb:Database as HsDb;
-use Db:Firebird:Database as FbDb;
+import System:Thread:Lock;
+import System:Thread:ContainerLocker as CLocker;
+import System:Command as Com;
+import Time:Sleep;
+import System:Thread:ObjectLocker as OLocker;
+import Db:HSQLDb:Database as HsDb;
+import Db:Firebird:Database as FbDb;
 
-use App:CallBackUI;
+import App:CallBackUI;

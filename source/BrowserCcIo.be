@@ -8,9 +8,9 @@
  *
  */
 
-use System:Thread:ContainerLocker as CLocker;
+import System:Thread:ContainerLocker as CLocker;
 
-use UI:CcIo:InFlight as InFlight;
+import UI:CcIo:InFlight as InFlight;
 
 class InFlight {
 
@@ -23,7 +23,7 @@ class InFlight {
    
 }
 
-use UI:CcIo:WebBrowser as IoBr;
+import UI:CcIo:WebBrowser as IoBr;
 class IoBr(WebImp) {
 
   getMe() self {
@@ -117,8 +117,8 @@ class IoBr(WebImp) {
   
 }
 
-use UI:WebBrowserImpl as WebImp;
-use UI:BrowserScriptRequest;
+import UI:WebBrowserImpl as WebImp;
+import UI:BrowserScriptRequest;
 
 
 

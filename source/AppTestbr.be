@@ -8,10 +8,10 @@
  *
  */
 
-use System:Parameters;
+import System:Parameters;
 
-use Test:Assertions;
-use Test:Failure;
+import Test:Assertions;
+import Test:Failure;
 
 class AppTestbr:Tests {
    

@@ -8,7 +8,7 @@
  *
  */
 
-use System:Parameters;
+import System:Parameters;
 
 emit(cs) {
     """
@@ -32,7 +32,7 @@ using System.Diagnostics;
     """
 }
 
-use UI:WebBrowserImpl as WebImp;
+import UI:WebBrowserImpl as WebImp;
 class WebImp {
   
   setup() {
@@ -85,7 +85,7 @@ class WebImp {
 
 }
 
-use UI:WebBrowser as WeBr; 
+import UI:WebBrowser as WeBr;
 class UI:WebBrowser {
 
   new() self {
@@ -198,7 +198,7 @@ import java.util.Map;
 """
 }
 
-use Web:Client:CertificateManager as CM;
+import Web:Client:CertificateManager as CM;
 
 class CM {
 
@@ -331,7 +331,7 @@ class CM {
   }
 }
 
-use class Web:Client {
+import class Web:Client {
 
    emit(cs) {
    """
@@ -676,7 +676,7 @@ use class Web:Client {
 
 }
 
-use class UI:BrowserScriptRequest {
+import class UI:BrowserScriptRequest {
 
     new(Map _session) self {
         fields {
@@ -754,9 +754,9 @@ use class UI:BrowserScriptRequest {
     
 }
 
-use System:Thread:ContainerLocker as CLocker;
+import System:Thread:ContainerLocker as CLocker;
 
-use class Web:SessionManager {
+import class Web:SessionManager {
 
   new() self {
     new(CLocker.new(Map.new()));
@@ -841,7 +841,7 @@ use class Web:SessionManager {
 
 }
 
-use class UI:ExternalBrowser {
+import class UI:ExternalBrowser {
 
   openToUrl(String url) {
   

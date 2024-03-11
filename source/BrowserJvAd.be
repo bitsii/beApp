@@ -39,7 +39,7 @@ public class MainActivity extends be.BEC_3_2_4_10_UIJvAdWebBrowser.MainActivity 
 
 */
 
-use UI:JvAd:WebBrowser as AdBr;
+import UI:JvAd:WebBrowser as AdBr;
 class AdBr(WebImp) {
 
 emit(jv) {
@@ -240,8 +240,8 @@ public static class MainActivity extends AppCompatActivity {
 
 }
 
-use UI:WebBrowserImpl as WebImp;
-use UI:BrowserScriptRequest;
+import UI:WebBrowserImpl as WebImp;
+import UI:BrowserScriptRequest;
 
 
 

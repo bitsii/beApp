@@ -8,37 +8,37 @@
  *
  */
 
-use IO:File:Path;
-use IO:File;
-use System:Random;
-use UI:WebBrowser as WeBr;
-use Test:Assertions as Assert;
-use Db:Relational:Database as DbDb;
-use Db:Relational:Statement as DbSt;
-use System:Thread:Lock;
-use System:Thread:ContainerLocker as CLocker;
-use System:Command as Com;
-use Time:Sleep;
-use Container:Pair;
+import IO:File:Path;
+import IO:File;
+import System:Random;
+import UI:WebBrowser as WeBr;
+import Test:Assertions as Assert;
+import Db:Relational:Database as DbDb;
+import Db:Relational:Statement as DbSt;
+import System:Thread:Lock;
+import System:Thread:ContainerLocker as CLocker;
+import System:Command as Com;
+import Time:Sleep;
+import Container:Pair;
 
-use App:Alert;
+import App:Alert;
 
-use App:LocalWebApp;
-use App:RemoteWebApp;
-use App:WebApp;
-use Text:String;
-use App:CallBackUI;
+import App:LocalWebApp;
+import App:RemoteWebApp;
+import App:WebApp;
+import Text:String;
+import App:CallBackUI;
 
-use System:Thread:Lock;
-use System:Thread:ObjectLocker as OLocker;
+import System:Thread:Lock;
+import System:Thread:ObjectLocker as OLocker;
 
-use Crypto:Symmetric as Crypt;
+import Crypto:Symmetric as Crypt;
 
-use System:Parameters;
-use Net:UPnP as Upnp;
-use Net:IP;
+import System:Parameters;
+import Net:UPnP as Upnp;
+import Net:IP;
 
-use class EWC:NetMaker {
+import class EWC:NetMaker {
 
      new() self {
        fields {
@@ -92,4 +92,4 @@ use class EWC:NetMaker {
    
 }
    
-use Db:KeyValue as KvDb;
+import Db:KeyValue as KvDb;

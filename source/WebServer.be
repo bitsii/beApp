@@ -36,7 +36,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
     """
 }
-use class Web:Server {
+import class Web:Server {
   
   emit(jv) {
   """
@@ -215,7 +215,7 @@ use class Web:Server {
 
 //script request should eventually inherit from a Request which doesn't have the json stuff
 
-use class Web:ScriptRequest {
+import class Web:ScriptRequest {
 
   emit(cs) {
   """
@@ -737,10 +737,10 @@ use class Web:ScriptRequest {
     }
 }
 
-use Net:Socket:Listener;
-use Net:Socket;
-use Net:Socket:Reader as SocketReader;
-use Net:Socket:Writer as SocketWriter;
+import Net:Socket:Listener;
+import Net:Socket;
+import Net:Socket:Reader as SocketReader;
+import Net:Socket:Writer as SocketWriter;
 
 class Net:PortForward {
    
@@ -774,9 +774,9 @@ class Net:PortForward {
    
 }
 
-use System:ThinThread;
+import System:ThinThread;
 
-use Net:PortForward:DataCopy;
+import Net:PortForward:DataCopy;
 
 class DataCopy {
 

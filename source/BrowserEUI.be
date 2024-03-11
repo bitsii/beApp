@@ -8,14 +8,14 @@
  *
  */
 
-use System:Exception as Exc;
-use IO:File:Path;
-use IO:File;
-use System:Random;
+import System:Exception as Exc;
+import IO:File:Path;
+import IO:File;
+import System:Random;
 
-use UI:HtmlDom:Document as HD;
-use UI:HtmlDom:Element as HE;
-use UI:HtmlDom:Call as HC;
+import UI:HtmlDom:Document as HD;
+import UI:HtmlDom:Element as HE;
+import UI:HtmlDom:Call as HC;
 
 emit(js) {
 """

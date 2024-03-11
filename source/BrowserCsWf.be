@@ -3,7 +3,7 @@
  *
  * SPDX-License-Identifier: BSD-2-Clause
  *
- * Licensed under the BSD 2-Clause License (the "License").
+ * Licensed under the BSD 2-Claimport License (the "License").
  * See the LICENSE file in the project root for more information.
  *
  */
@@ -36,7 +36,7 @@ public class BeWebBrowser : Form
 """
 }
 
-use UI:WinForm:WebBrowser as WfBr;
+import UI:WinForm:WebBrowser as WfBr;
 class WfBr(WebImp) {
 
    //wf specific
@@ -182,5 +182,5 @@ class WfBr(WebImp) {
 
 }
 
-use UI:WebBrowserImpl as WebImp;
-use UI:BrowserScriptRequest;
+import UI:WebBrowserImpl as WebImp;
+import UI:BrowserScriptRequest;

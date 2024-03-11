@@ -8,16 +8,16 @@
  *
  */
 
-use IO:File:Path;
-use IO:File;
-use Test:Assertions as Assert;
-use System:Thread:Lock;
-use System:Parameters;
-use Container:LinkedList;
-use Container:LinkedList:Node;
+import IO:File:Path;
+import IO:File;
+import Test:Assertions as Assert;
+import System:Thread:Lock;
+import System:Parameters;
+import Container:LinkedList;
+import Container:LinkedList:Node;
 
-use System:Thread:ContainerLocker as CLocker;
-use Db:KeyValue as KvDb;
+import System:Thread:ContainerLocker as CLocker;
+import Db:KeyValue as KvDb;
 class KvDb(CLocker) {
   
   sdbNew(dyn _sdb) {
@@ -38,7 +38,7 @@ class KvDb(CLocker) {
   
 }
 
-use Db:KeyValueDbs as KvDbs;
+import Db:KeyValueDbs as KvDbs;
 
 class KvDbs {
 

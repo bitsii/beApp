@@ -8,36 +8,36 @@
  *
  */
 
-use IO:File:Path;
-use IO:File;
-use System:Random;
-use UI:WebBrowser as WeBr;
-use Test:Assertions as Assert;
-use Db:KeyValue as KvDb;
-use System:Thread:Lock;
-use System:Thread:ContainerLocker as CLocker;
-use System:Command as Com;
-use Time:Sleep;
-use Container:Pair;
+import IO:File:Path;
+import IO:File;
+import System:Random;
+import UI:WebBrowser as WeBr;
+import Test:Assertions as Assert;
+import Db:KeyValue as KvDb;
+import System:Thread:Lock;
+import System:Thread:ContainerLocker as CLocker;
+import System:Command as Com;
+import Time:Sleep;
+import Container:Pair;
 
-use App:Alert;
+import App:Alert;
 
-use System:Exceptions as E;
+import System:Exceptions as E;
 
-use App:LocalWebApp;
-use App:RemoteWebApp;
-use App:WebApp;
-use Text:String;
-use App:CallBackUI;
+import App:LocalWebApp;
+import App:RemoteWebApp;
+import App:WebApp;
+import Text:String;
+import App:CallBackUI;
 
-use App:Account;
+import App:Account;
 
-use System:Thread:Lock;
-use System:Thread:ObjectLocker as OLocker;
+import System:Thread:Lock;
+import System:Thread:ObjectLocker as OLocker;
 
-use System:Parameters;
+import System:Parameters;
 
-use Bitsii:SyncPlugin(App:AjaxPlugin) {
+import Bitsii:SyncPlugin(App:AjaxPlugin) {
 
   new() self {
    fields {

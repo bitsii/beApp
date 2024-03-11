@@ -8,9 +8,9 @@
  *
  */
 
-use IO:File:Path;
-use Db:SqlKeyValue as SqKvDb;
-use Db:CCSqlKeyValue as CCSqKvDb;
+import IO:File:Path;
+import Db:SqlKeyValue as SqKvDb;
+import Db:CCSqlKeyValue as CCSqKvDb;
 class CCSqKvDb(SqKvDb) {
   
 emit(cc_classHead) {
