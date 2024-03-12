@@ -275,7 +275,7 @@ import class Net:Interface {
         if (TS.notEmpty(iip)) {
           String cp = TS.commonPrefix(iip, netip);
           if (def(cp)) {
-            Int cps = cp.size;
+            Int cps = cp.length;
             if (cps > maxSoFar) {
               maxSoFar = cps;
               bestMatch = iip;
@@ -595,7 +595,7 @@ class Upnp {
         Int rf = res.find("ExternalIPAddress = ");
         if (def(rf)) {
           rf += 20;
-          res = res.substring(rf, res.size);
+          res = res.substring(rf, res.length);
           //log.log("res2 " + res);
           rf = res.find("\n");
           Int rf2 = res.find("\r");
@@ -727,8 +727,8 @@ class IP {
     }
             
     var llip = ipback.split(".");
-    log.log("llip sz " + llip.size);
-    if (llip.size != 4) {
+    log.log("llip sz " + llip.length);
+    if (llip.length != 4) {
       isIp = false;
     } else {
       for (String llipp in llip) {
@@ -1144,7 +1144,7 @@ class Crypt {
   encrypt(String iv, String key, String val) String {
     iv = iv.substring(0, ivLength);
     key = key.substring(0, keyLength);//jv limit
-    val = val.substring(0, val.size);
+    val = val.substring(0, val.length);
     String res;
     emit(cs) {
     """
@@ -1188,7 +1188,7 @@ class Crypt {
   decrypt(String iv, String key, String val) String {
     iv = iv.substring(0, ivLength);
     key = key.substring(0, keyLength);//jv limit
-    val = val.substring(0, val.size);
+    val = val.substring(0, val.length);
     String res;
     emit(cs) {
     """
@@ -2331,7 +2331,7 @@ import class App:WebReverseProxyPlugin {
             log.log("got a location header");
             String loc = kv.value;
             if (loc.contains(destUrl)) {
-              loc = loc.substring(destUrl.size);
+              loc = loc.substring(destUrl.length);
             }
             log.log("final loc, will send " + loc)
             //request.setOutputHeader(kv.key, loc);
@@ -2761,11 +2761,11 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
         }
         for (dyn kv in app.configManager.getMap("fileManager.sharedDirs.")) {
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(kv.value) += "');return false;\">" += kv.key.substring(23, kv.key.size) += "</a></td></tr>";
+          += hex.encode(kv.value) += "');return false;\">" += kv.key.substring(23, kv.key.length) += "</a></td></tr>";
         }
         for (kv in app.configManager.getMap("fileManager.accountDirs." + accountName + ".")) {
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
-          += hex.encode(kv.value) += "');return false;\">" += kv.key.substring(25 + accountName.size, kv.key.size) += "</a></td></tr>";
+          += hex.encode(kv.value) += "');return false;\">" += kv.key.substring(25 + accountName.length, kv.key.length) += "</a></td></tr>";
         }
         if (dirFile.isDir) {
           var dit = dirFile.iterator;
@@ -2798,7 +2798,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
                 targ = "";
               }
               dirListHtml += "<tr>";
-              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + targ + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.size += "</td>";
+              dirListHtml += "<td>FILE</td><td><a href=" += TS.quote += "../../" += urle.encode(p.toString()) += "?pageToken=" += request.getSession("pageToken") += TS.quote + jscall + targ + ">" += htmle.encode(p.name) += "</a></td><td>" += entry.length += "</td>";
               dirListHtml += "<td><input type=\"checkbox\" id=\"FCB"
               += hex.encode(p.toString()) += "\" onclick=\"fileChecked(this);\"\"></td>";
               dirListHtml += "</tr>";
@@ -2907,7 +2907,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
       }
       String dirListHtml = String.new();
       for (dyn kv in app.configManager.getMap("fileManager.sharedDirs.")) {
-        dirListHtml += "<p>" += kv.value += " shared to ALL as " += kv.key.substring(23, kv.key.size) += "</p>";  
+        dirListHtml += "<p>" += kv.value += " shared to ALL as " += kv.key.substring(23, kv.key.length) += "</p>";
       }
       for (kv in app.configManager.getMap("fileManager.accountDirs.")) {
         var steps = kv.key.split(".");
@@ -3170,13 +3170,13 @@ import class App:LocalWebApp(WebApp) {
       
       ifEmit(ccIsIos) {
         String wfl = self.plugin.homePage;
-        wfl = wfl.substring(1, wfl.size);
+        wfl = wfl.substring(1, wfl.length);
         webr.location = wfl;
       }
       
       ifEmit(apwk) {
         String wfl = self.plugin.homePage;
-        wfl = wfl.substring(1, wfl.size);
+        wfl = wfl.substring(1, wfl.length);
         webr.location = wfl;
       }
       

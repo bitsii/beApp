@@ -88,7 +88,7 @@ class KvDbs {
         kvDbNxt[name] = nv;
       } else {
         nv++=;
-        if (nv >= kdbl.size) {
+        if (nv >= kdbl.length) {
           nv.setValue(0);
         }
       }

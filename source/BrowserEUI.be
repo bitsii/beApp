@@ -523,17 +523,17 @@ class HC {
      if (undef(argjs)) {
        comba += "N:"
      } else {
-       comba += argjs.size += ":";
+       comba += argjs.length += ":";
      } 
      if (undef(url)) {
        comba += "N:"
      } else {
-       comba += url.size += ":";
+       comba += url.length += ":";
      }
      if (undef(ctype)) {
        comba += "N:";
      } else {
-       comba += ctype.size += ":";
+       comba += ctype.length += ":";
      }
      if (def(argjs)) {
       comba += argjs;
@@ -655,7 +655,7 @@ class HC {
       if (def(name) && name.ends("Response")) {
         List rargs = List.new(1);
         rargs[0] = res;
-        String show = rargs.size.toString();
+        String show = rargs.length.toString();
         for (dyn callback in callbacks) {
           if (callback.can(name, rargs.length)) {
             callback.invoke(name, rargs);
@@ -674,7 +674,7 @@ class HC {
           List rargs = List.new(1);
           rargs[0] = resm;
         }
-        String show = rargs.size.toString();
+        String show = rargs.length.toString();
         for (dyn callback in callbacks) {
           if (callback.can(mname, rargs.length)) {
             callback.invoke(mname, rargs);

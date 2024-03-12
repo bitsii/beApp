@@ -93,7 +93,7 @@ public OutputStream outputStream;
   }
   
   write(String line) self {
-    Int len = line.size;
+    Int len = line.length;
     emit(jv) {
     """
     if (outputStream == null) {
@@ -109,7 +109,7 @@ public OutputStream outputStream;
     Int chari = Int.new();
     String chars = String.new(1);
     chars.setCodeUnchecked(0, 32);
-    chars.size.setValue(1);
+    chars.length.setValue(1);
     Int zero = 0;
     emit(jv) {
     """      
@@ -132,7 +132,7 @@ public OutputStream outputStream;
             //payload.print();
             return(payload);
           }
-          if (def(maxsz) && payload.size >= maxsz) {
+          if (def(maxsz) && payload.length >= maxsz) {
             //"got endmark".print();
             //payload.print();
             return(payload);

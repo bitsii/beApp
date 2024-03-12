@@ -70,8 +70,8 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
      }
      hl = hl.sort();
      
-     if (hl.size > keep) {
-       Int todel = hl.size - keep;
+     if (hl.length > keep) {
+       Int todel = hl.length - keep;
        for (Int j = 0; j < todel;j++=) {
          String delt = auh + "!" + "EntryActive" + "!" + snh + "!" + hl.get(j).toString();
          sechis.delete(delt);
@@ -255,7 +255,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
           log.log("!!! got res from getblobs  " + res);
           //?put in db? think so, one entry per name
           Map blobs = resMap.get("blobs");
-          if (def(blobs) && blobs.size > 0) {
+          if (def(blobs) && blobs.length > 0) {
             return(CallBackUI.syncRtrResponse(blobs));
           }
           //for (var kv in blobs) {
@@ -307,7 +307,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
         ifEmit(bnbr) {
           if (TS.notEmpty(auser) && TS.isEmpty(dir)) {
             String au = Encode:Hex.decode(auser);
-            Path sd = Path.apNew("Home").addStep(au.substring(5, au.size)).addStep(appId);
+            Path sd = Path.apNew("Home").addStep(au.substring(5, au.length)).addStep(appId);
             dir = sd.toString();
             log.log("generated dir for sync " + dir);
           }
@@ -715,7 +715,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
       }
       if (TS.notEmpty(addr) && TS.notEmpty(user) && TS.notEmpty(pass)) {
         var ll = addr.split("/");
-        //log.log("splits " + ll.size);
+        //log.log("splits " + ll.length);
         Int si = 0;
         String na = "";
         for (var s in ll) {

@@ -291,7 +291,7 @@ import class Web:ScriptRequest {
      }
      ifEmit(cs) {
        if (TS.notEmpty(qs)) {
-         qs = qs.substring(1, qs.size);
+         qs = qs.substring(1, qs.length);
        }
      }
      return(qs);
