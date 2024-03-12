@@ -72,7 +72,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
      
      if (hl.length > keep) {
        Int todel = hl.length - keep;
-       for (Int j = 0; j < todel;j++=) {
+       for (Int j = 0; j < todel;j++) {
          String delt = auh + "!" + "EntryActive" + "!" + snh + "!" + hl.get(j).toString();
          sechis.delete(delt);
          log.log("deleted " + delt);
@@ -726,7 +726,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
               na += "/";
             }
           }
-          si++=;
+          si++;
         }
         //log.log("na " + na);
         //return(null);

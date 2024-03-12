@@ -18,7 +18,7 @@ class AppTest:Tests {
    main() {
      try {
        Int howManyTimes = 1;
-       for (Int i = 0;i < howManyTimes;i++=) {
+       for (Int i = 0;i < howManyTimes;i++) {
         innerMain();
       }
      } catch (dyn e) {

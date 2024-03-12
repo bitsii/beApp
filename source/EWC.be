@@ -79,7 +79,7 @@ import class EWC:NetMaker {
      passFromCode(String code) Map {
      
        String dcode = code;
-       for (Int i = 0;i < 2;i++=) {
+       for (Int i = 0;i < 2;i++) {
          dcode = Digest:SHA256.digest(dcode);
        }
        dcode = Encode:Hex.encode(dcode);

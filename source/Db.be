@@ -74,7 +74,7 @@ class KvDbs {
         if (TS.isEmpty(sdbClass)) {
           sdbClass = "Db:MemFileStoreKeyValue";
         }
-        for (Int i = 0;i < appKvPoolSize;i++=) {
+        for (Int i = 0;i < appKvPoolSize;i++) {
           dyn cckdb = System:Objects.createInstance(sdbClass);
           KvDb kdb = KvDb.sdbNew(cckdb.pathParamsNew(dataPath.copy(), params, name).open());
           kdb.create();
@@ -87,7 +87,7 @@ class KvDbs {
         nv = 0;
         kvDbNxt[name] = nv;
       } else {
-        nv++=;
+        nv++;
         if (nv >= kdbl.length) {
           nv.setValue(0);
         }

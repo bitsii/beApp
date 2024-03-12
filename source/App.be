@@ -242,16 +242,16 @@ import class Net:Interface {
     score(Interface i) Int {
       Int s = 0;
       if (def(i.status) && i.status == "Up") {
-       s++=;
+       s++;
       }
       if (def(i.address)) {
-       s++=;
+       s++;
        if (i.address != "127.0.0.1") {
-         s++=;
+         s++;
        }
       }
       if (def(i.macAddress)) {
-        s++=;
+        s++;
       }
       return(s);
     }
@@ -486,7 +486,7 @@ class Upnp {
       } else {
         bcast = null;
       }
-      count++=;
+      count++;
       try {
       emit(cs) {
       """
@@ -1014,7 +1014,7 @@ import class App:Account {
     }
     pass = salt + pass;
     Digest:SHA256 ds = Digest:SHA256.new();
-    for (Int i = 0;i < 5000;i++=) {
+    for (Int i = 0;i < 5000;i++) {
       pass = ds.digest(pass);
     }
     pass = Encode:Hex.encode(pass);
@@ -1135,7 +1135,7 @@ class Crypt {
 
   encryptPass(String iv, String pass, String val) String {
     Digest:SHA256 ds = Digest:SHA256.new();
-    for (Int i = 0;i < 5000;i++=) {
+    for (Int i = 0;i < 5000;i++) {
       pass = ds.digest(pass);
     }
     return(encrypt(iv, pass, val));
@@ -1179,7 +1179,7 @@ class Crypt {
   
   decryptPass(String iv, String pass, String val) String {
     Digest:SHA256 ds = Digest:SHA256.new();
-    for (Int i = 0;i < 5000;i++=) {
+    for (Int i = 0;i < 5000;i++) {
       pass = ds.digest(pass);
     }
     return(decrypt(iv, pass, val));
@@ -1819,7 +1819,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
     if (def(request.context.get("unknownSession"))) {
       request.context.delete("unknownSession");
       log.log("upping bad in check");
-      badcount++=;
+      badcount++;
       self.trackingManager.put("IP." + ip, badcount.toString());
       self.trackingManager.put("LB." + ip, ns.toString());
     }
@@ -1848,7 +1848,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
       } else {
         badcount = 0;
       }
-      badcount++=;
+      badcount++;
       self.trackingManager.put("IP." + ip, badcount.toString());
       self.trackingManager.put("LB." + ip, ns.toString());
     }
