@@ -354,8 +354,8 @@ bevi_db = nullptr;
     Bool result = false;
     return(result);
   }
-  
-  delete(String name) {
+
+  remove(String name) {
     
       String qsd = "DELETE FROM " + tableName + " WHERE KVKEY=?";
       

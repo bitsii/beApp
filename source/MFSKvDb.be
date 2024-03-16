@@ -161,7 +161,7 @@ class MFSKvDb {
     return(result);
   }
   
-  delete(String name) {
+  remove(String name) {
     Path np = tbp.copy().addStep(Hex.encode(name));
     if (np.file.exists) { np.file.delete(); }
   }
@@ -169,7 +169,7 @@ class MFSKvDb {
   clear() {
     //iterate/delete all keys, rmdir
     for (String k in getSet()) {
-      delete(k);
+      remove(k);
     }
   }
 

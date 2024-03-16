@@ -952,7 +952,7 @@ import class App:AccountManager {
   }
   
   deleteAccount(Account a) {
-    kvDbs.get("ACCOUNTS").delete(a.user);
+    kvDbs.get("ACCOUNTS").remove(a.user);
   }
   
   putAccount(Account a) {
@@ -1356,7 +1356,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
           String skey = kp.first;
           if (del.contains(skey)) {
             //delete it
-            sess.delete(kv.key);
+            sess.remove(kv.key);
           }
           unless (seen.contains(skey)) {
             seen.put(skey);
@@ -1376,13 +1376,13 @@ import class App:AuthPlugin(App:AjaxPlugin) {
                   //log.log("YES delete session " + skey);
                   del.put(skey);
                   //delete it
-                  sess.delete(kv.key);
+                  sess.remove(kv.key);
                 }
               } else {
                 //log.log("YES delete session " + skey);
                 del.put(skey);
                 //delete it
-                sess.delete(kv.key);
+                sess.remove(kv.key);
               }
             }
           }
@@ -1517,7 +1517,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
       if (isAdmin) {
         a.perms.put("admin");
       } else {
-        a.perms.delete("admin");
+        a.perms.remove("admin");
       }
       self.accountManager.putAccount(a);
   
@@ -1595,7 +1595,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
       if (arg["admin"]) {
         a.perms.put("admin");
       } else {
-        a.perms.delete("admin");
+        a.perms.remove("admin");
       }
       self.accountManager.putAccount(a);
       return(null);
@@ -1633,7 +1633,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
         res["action"] = "loggedInResponse";
         res["name"] = accountName;
         res = loggedIn(a, res, arg, request);
-        res.delete("loginUri");
+        res.remove("loginUri");
         return(res);
       } else {
         log.output("No such account " + accountName);
@@ -1755,7 +1755,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
     request.putSession("account.name", "");
     
     if (request.embedded) {
-      app.configManager.delete("auth.embeddedLogin");
+      app.configManager.remove("auth.embeddedLogin");
     }
     Map res = Map.new();
     res["action"] = "logoutResponse";
@@ -1804,8 +1804,8 @@ import class App:AuthPlugin(App:AjaxPlugin) {
           if (ns - ltmi > clearSecs) {
             log.log("clear bad " + ip);
             badcount = 0;
-            self.trackingManager.delete("IP." + ip);
-            self.trackingManager.delete("LB." + ip);
+            self.trackingManager.remove("IP." + ip);
+            self.trackingManager.remove("LB." + ip);
           } else {
             badcount = Int.new(ct);
           }
@@ -1817,7 +1817,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
       }
     }
     if (def(request.context.get("unknownSession"))) {
-      request.context.delete("unknownSession");
+      request.context.remove("unknownSession");
       log.log("upping bad in check");
       badcount++;
       self.trackingManager.put("IP." + ip, badcount.toString());
@@ -2177,7 +2177,7 @@ import class App:LocalAccessPlugin {
            String clat = app.configManager.get("localAccess.token");
            if (TS.notEmpty(clat) && clat == lat) {
              //log.log("clat eq lattok, set cookie");
-             app.configManager.delete("localAccess.token");
+             app.configManager.remove("localAccess.token");
              request.setOutputCookie("lattok", lattok, "/", true, false);
              request.outputContent = "<html><head><script>location=\"" + app.plugin.homePage + "\"</script></html>";
              return(self);
@@ -2937,7 +2937,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
         } 
       }
       for (dyn delKey in delKeys) {
-        app.configManager.delete(delKey);
+        app.configManager.remove(delKey);
       }
       return(showSharesRequest(request));
     }
@@ -3012,7 +3012,7 @@ import class App:ConfigPlugin(App:AjaxPlugin) {
       if (mode == "deleteConfig") {
         key = params.getFirst("key");
         //log.log("Deleting config " + key);
-        app.kvdbs.get(kvdb).delete(key);
+        app.kvdbs.get(kvdb).remove(key);
       }
       if (mode == "getConfig") {
         key = params.getFirst("key");
@@ -3120,7 +3120,7 @@ import class App:ConfigPlugin(App:AjaxPlugin) {
    deleteConfigRequest(Map arg, request) Map {
      if (def(request.context.get("account")) && request.context.get("account").isAdmin) {
       //log.log("delete for " + arg["configKey"]);
-      app.kvdbs.get(kvdb).delete(arg["configKey"]);
+      app.kvdbs.get(kvdb).remove(arg["configKey"]);
       return(showConfigRequest(arg, request));
       }
       return(null);
@@ -3200,9 +3200,9 @@ class App:AppStart {
   
   invokePlugin(List args) {
     String pln = args.get(0);
-    args.delete(0);
+    args.remove(0);
     String plmtd = args.get(0);
-    args.delete(0);
+    args.remove(0);
     Parameters params = Parameters.new(args);
     dyn app = setup(params);
     dyn plugin = app.pluginsByName.get(pln);

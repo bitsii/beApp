@@ -74,7 +74,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
        Int todel = hl.length - keep;
        for (Int j = 0; j < todel;j++) {
          String delt = auh + "!" + "EntryActive" + "!" + snh + "!" + hl.get(j).toString();
-         sechis.delete(delt);
+         sechis.remove(delt);
          log.log("deleted " + delt);
        }
      }
@@ -277,9 +277,9 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
     unsetBridgeSyncRequest(request) {
       String auser = getUser(request);
       log.log("disabling bridge sync");
-      app.configManager.delete("sync." + appId + "." + auser + ".bridgeSession");
-      app.configManager.delete("sync." + appId + "." + auser + ".bridgeLastUrl");
-      app.configManager.delete("sync." + appId + "." + auser + ".bridgeBlob");
+      app.configManager.remove("sync." + appId + "." + auser + ".bridgeSession");
+      app.configManager.remove("sync." + appId + "." + auser + ".bridgeLastUrl");
+      app.configManager.remove("sync." + appId + "." + auser + ".bridgeBlob");
     }
     
     setSyncDirRequest(String dir, request) {
@@ -411,7 +411,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
      }
      for (String ktd in todel) {
        log.log("deleting " + ktd);
-       seckv.delete(ktd);
+       seckv.remove(ktd);
      }
    }
     

@@ -821,7 +821,7 @@ import class Web:SessionManager {
       Map toDel = sessions.get("SESSIONS").getMap(key + ".");
       for (dyn x in toDel) {
         //("deleting session key " + x.key).print(); 
-        sessions.get("SESSIONS").delete(x.key);
+        sessions.get("SESSIONS").remove(x.key);
       }
     }
   }

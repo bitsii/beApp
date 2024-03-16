@@ -48,7 +48,7 @@ class IoBr(WebImp) {
    }
    
    endRequest(InFlight inf) {
-     inflight.delete(inf);
+     inflight.remove(inf);
    }
    
    initWeb() self {

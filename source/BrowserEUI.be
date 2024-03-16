@@ -235,7 +235,7 @@ class HD {
   
   call(List args) dyn {
      String aname = args[0];
-     args.delete(0);
+     args.remove(0);
      if (self.can(aname, args.length)) {
        return(self.invoke(aname, args));
      }         
@@ -463,14 +463,14 @@ class HC {
   callApp(List args) {
      Map arg = Map.new();
      arg["action"] = args[0];
-     args.delete(0);
+     args.remove(0);
      arg["args"] = args;
      call(arg);
    }
    
    callUI(List args) dyn {
      String aname = args[0];
-     args.delete(0);
+     args.remove(0);
      for (dyn callback in callbacks) {
        if (callback.can(aname, args.length)) {
          return(callback.invoke(aname, args));

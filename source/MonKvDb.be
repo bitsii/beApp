@@ -292,7 +292,7 @@ emit(jv) {
     return(result);
   }
   
-  delete(String name) {
+  remove(String name) {
   emit(jv) {
   """
   try {
@@ -310,7 +310,7 @@ emit(jv) {
   
   clear() {
     for (String k in getSet()) {
-      delete(k);
+      remove(k);
     }
   }
 
