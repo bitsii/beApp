@@ -8,9 +8,9 @@
  *
  */
 
-import IO:File:Path;
-import Db:SqlKeyValue as SqKvDb;
-import Db:CCSqlKeyValue as CCSqKvDb;
+use IO:File:Path;
+use Db:SqlKeyValue as SqKvDb;
+use Db:CCSqlKeyValue as CCSqKvDb;
 class CCSqKvDb(SqKvDb) {
   
 emit(cc_classHead) {
@@ -40,7 +40,7 @@ emit(cc_classHead) {
   }
   
   dbFailed() {
-    dyn e;
+    any e;
     try {
       close();
     } catch (e) {

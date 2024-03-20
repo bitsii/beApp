@@ -36,7 +36,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
     """
 }
-import class Web:Server {
+use class Web:Server {
   
   emit(jv) {
   """
@@ -81,10 +81,10 @@ import class Web:Server {
     fields {
       Int port = 8080;
       String appBindAddress;
-      dyn app;
+      any app;
       Bool ssl = false;
       String sslPath;
-      dyn sessionManager;
+      any sessionManager;
       IO:Log log = IO:Logs.get(self);
       Bool gzipOutput = false;
     }
@@ -116,7 +116,7 @@ import class Web:Server {
   }
   
   handleWeb(request) {
-    dyn e;
+    any e;
     try {
       request.gzipOutput = gzipOutput;
       request.sessionManager = sessionManager;
@@ -146,7 +146,7 @@ import class Web:Server {
 
   start() {
     
-    dyn ussl;
+    any ussl;
     if (ssl) {
       ussl = "notnull";
     }
@@ -215,7 +215,7 @@ import class Web:Server {
 
 //script request should eventually inherit from a Request which doesn't have the json stuff
 
-import class Web:ScriptRequest {
+use class Web:ScriptRequest {
 
   emit(cs) {
   """
@@ -586,7 +586,7 @@ import class Web:ScriptRequest {
    
    getSession(String name) String {
      fields {
-       dyn sessionManager;
+       any sessionManager;
        String serviceSessionKey;
      }
      if (def(sessionManager)) {
@@ -737,10 +737,10 @@ import class Web:ScriptRequest {
     }
 }
 
-import Net:Socket:Listener;
-import Net:Socket;
-import Net:Socket:Reader as SocketReader;
-import Net:Socket:Writer as SocketWriter;
+use Net:Socket:Listener;
+use Net:Socket;
+use Net:Socket:Reader as SocketReader;
+use Net:Socket:Writer as SocketWriter;
 
 class Net:PortForward {
    
@@ -774,9 +774,9 @@ class Net:PortForward {
    
 }
 
-import System:ThinThread;
+use System:ThinThread;
 
-import Net:PortForward:DataCopy;
+use Net:PortForward:DataCopy;
 
 class DataCopy {
 

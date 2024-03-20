@@ -8,11 +8,11 @@
  *
  */
 
-import IO:File:Path;
-import IO:File;
-import System:Parameters;
-import Db:MongoKeyValue as MonKvDb;
-import Encode:Hex as Hex;
+use IO:File:Path;
+use IO:File;
+use System:Parameters;
+use Db:MongoKeyValue as MonKvDb;
+use Encode:Hex as Hex;
 
 emit(jv) {
 """
@@ -56,7 +56,7 @@ emit(jv) {
   }
   
   dbFailed() {
-    dyn e;
+    any e;
     try {
       close();
     } catch (e) {

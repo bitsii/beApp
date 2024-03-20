@@ -8,7 +8,7 @@
  *
  */
 
-import System:Parameters;
+use System:Parameters;
 
 emit(cs) {
     """
@@ -32,13 +32,13 @@ using System.Diagnostics;
     """
 }
 
-import UI:WebBrowserImpl as WebImp;
+use UI:WebBrowserImpl as WebImp;
 class WebImp {
   
   setup() {
     fields {
-      dyn setupHandler;
-      dyn webHandler;
+      any setupHandler;
+      any webHandler;
     }
   }
   
@@ -85,7 +85,7 @@ class WebImp {
 
 }
 
-import UI:WebBrowser as WeBr;
+use UI:WebBrowser as WeBr;
 class UI:WebBrowser {
 
   new() self {
@@ -97,7 +97,7 @@ class UI:WebBrowser {
       String content;
       String location;
       String browserType;
-      dyn webHandler;
+      any webHandler;
       WebImp webImp;
     }
     ifEmit(cs) {
@@ -131,7 +131,7 @@ class UI:WebBrowser {
       }
       if (browserType == "ccio") {
         webImp = System:Objects.createInstance("UI:CcIo:WebBrowser");
-        dyn wi = webImp;
+        any wi = webImp;
         webImp = wi.getMe();
       }
       if (browserType == "apwk") {
@@ -198,7 +198,7 @@ import java.util.Map;
 """
 }
 
-import Web:Client:CertificateManager as CM;
+use Web:Client:CertificateManager as CM;
 
 class CM {
 
@@ -331,7 +331,7 @@ class CM {
   }
 }
 
-import class Web:Client {
+use class Web:Client {
 
    emit(cs) {
    """
@@ -378,7 +378,7 @@ import class Web:Client {
         """
         }
         if (url.begins("https")) {
-          dyn ssl = "yup";//null or not null
+          any ssl = "yup";//null or not null
         }
         emit(cs) {
         """
@@ -443,7 +443,7 @@ import class Web:Client {
       open();
       certificateThumbprint = null;
       if (url.begins("https")) {
-        dyn ssl = "yup";//null or not null
+        any ssl = "yup";//null or not null
       }
       outputWriter = IO:Writer.new();
       emit(cs) {
@@ -588,7 +588,7 @@ import class Web:Client {
         inputReader = IO:Reader.new();
         certificateThumbprint = null;
         if (url.begins("https")) {
-          dyn ssl = "yup";//null or not null
+          any ssl = "yup";//null or not null
         }
         emit(cs) {
         """
@@ -676,7 +676,7 @@ import class Web:Client {
 
 }
 
-import class UI:BrowserScriptRequest {
+use class UI:BrowserScriptRequest {
 
     new(Map _session) self {
         fields {
@@ -754,9 +754,9 @@ import class UI:BrowserScriptRequest {
     
 }
 
-import System:Thread:ContainerLocker as CLocker;
+use System:Thread:ContainerLocker as CLocker;
 
-import class Web:SessionManager {
+use class Web:SessionManager {
 
   new() self {
     new(CLocker.new(Map.new()));
@@ -768,7 +768,7 @@ import class Web:SessionManager {
   
   new(_sessions, String _keyName) self {
     fields {
-      dyn sessions = _sessions;
+      any sessions = _sessions;
       String keyName = _keyName;
       Int keyLen = 64;
     }
@@ -819,7 +819,7 @@ import class Web:SessionManager {
   deleteSessionByKey(String key) {
     if (TS.notEmpty(key)) {
       Map toDel = sessions.get("SESSIONS").getMap(key + ".");
-      for (dyn x in toDel) {
+      for (any x in toDel) {
         //("deleting session key " + x.key).print(); 
         sessions.get("SESSIONS").remove(x.key);
       }
@@ -841,7 +841,7 @@ import class Web:SessionManager {
 
 }
 
-import class UI:ExternalBrowser {
+use class UI:ExternalBrowser {
 
   openToUrl(String url) {
   

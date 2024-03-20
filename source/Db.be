@@ -8,19 +8,19 @@
  *
  */
 
-import IO:File:Path;
-import IO:File;
-import Test:Assertions as Assert;
-import System:Thread:Lock;
-import System:Parameters;
-import Container:LinkedList;
-import Container:LinkedList:Node;
+use IO:File:Path;
+use IO:File;
+use Test:Assertions as Assert;
+use System:Thread:Lock;
+use System:Parameters;
+use Container:LinkedList;
+use Container:LinkedList:Node;
 
-import System:Thread:ContainerLocker as CLocker;
-import Db:KeyValue as KvDb;
+use System:Thread:ContainerLocker as CLocker;
+use Db:KeyValue as KvDb;
 class KvDb(CLocker) {
   
-  sdbNew(dyn _sdb) {
+  sdbNew(any _sdb) {
     super.new(_sdb);
   }
   
@@ -38,7 +38,7 @@ class KvDb(CLocker) {
   
 }
 
-import Db:KeyValueDbs as KvDbs;
+use Db:KeyValueDbs as KvDbs;
 
 class KvDbs {
 
@@ -75,7 +75,7 @@ class KvDbs {
           sdbClass = "Db:MemFileStoreKeyValue";
         }
         for (Int i = 0;i < appKvPoolSize;i++) {
-          dyn cckdb = System:Objects.createInstance(sdbClass);
+          any cckdb = System:Objects.createInstance(sdbClass);
           KvDb kdb = KvDb.sdbNew(cckdb.pathParamsNew(dataPath.copy(), params, name).open());
           kdb.create();
           kdbl[i] = kdb;
@@ -94,7 +94,7 @@ class KvDbs {
       }
       kdb = kdbl[nv];
       lock.unlock();
-    } catch (dyn e) {
+    } catch (any e) {
       lock.unlock();
       log.error("exception during getKvDb");
       if (def(e)) { log.error("ex " + e); }
@@ -106,14 +106,14 @@ class KvDbs {
     log.log("closing kvdbs");
     try {
       lock.lock();
-      for (dyn kvle in kvDbs) {
-        for (dyn kv in kvle.value) {
+      for (any kvle in kvDbs) {
+        for (any kv in kvle.value) {
           kv.close();
         }
       }
       kvDbs = Map.new();
       lock.unlock();
-    } catch (dyn e) {
+    } catch (any e) {
       lock.unlock();
       log.error("exception during closeKvDbs");
       if (def(e)) { log.error("ex " + e); }

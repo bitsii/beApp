@@ -8,14 +8,14 @@
  *
  */
 
-import System:Exception as Exc;
-import IO:File:Path;
-import IO:File;
-import System:Random;
+use System:Exception as Exc;
+use IO:File:Path;
+use IO:File;
+use System:Random;
 
-import UI:HtmlDom:Document as HD;
-import UI:HtmlDom:Element as HE;
-import UI:HtmlDom:Call as HC;
+use UI:HtmlDom:Document as HD;
+use UI:HtmlDom:Element as HE;
+use UI:HtmlDom:Call as HC;
 
 emit(js) {
 """
@@ -233,7 +233,7 @@ class HD {
     }
   }
   
-  call(List args) dyn {
+  call(List args) any {
      String aname = args[0];
      args.remove(0);
      if (self.can(aname, args.length)) {
@@ -440,7 +440,7 @@ class HC {
   default() self {
     fields {
       IO:Log log = IO:Logs.get(self);
-      dyn apwkHandler;
+      any apwkHandler;
     }
   }
 
@@ -468,10 +468,10 @@ class HC {
      call(arg);
    }
    
-   callUI(List args) dyn {
+   callUI(List args) any {
      String aname = args[0];
      args.remove(0);
-     for (dyn callback in callbacks) {
+     for (any callback in callbacks) {
        if (callback.can(aname, args.length)) {
          return(callback.invoke(aname, args));
        }
@@ -656,7 +656,7 @@ class HC {
         List rargs = List.new(1);
         rargs[0] = res;
         String show = rargs.length.toString();
-        for (dyn callback in callbacks) {
+        for (any callback in callbacks) {
           if (callback.can(name, rargs.length)) {
             callback.invoke(name, rargs);
             break;
@@ -675,7 +675,7 @@ class HC {
           rargs[0] = resm;
         }
         String show = rargs.length.toString();
-        for (dyn callback in callbacks) {
+        for (any callback in callbacks) {
           if (callback.can(mname, rargs.length)) {
             callback.invoke(mname, rargs);
             break;
@@ -704,7 +704,7 @@ class HC {
    }
    
    setElementsValuesResponse(Map idvals) {
-     for (dyn kv in idvals) {
+     for (any kv in idvals) {
       HD.getElementById(kv.key).value = kv.value;
      }
    }
@@ -714,7 +714,7 @@ class HC {
    }
    
    setElementsDisplaysResponse(Map idvals) {
-     for (dyn kv in idvals) {
+     for (any kv in idvals) {
        HD.getElementById(kv.key).display = kv.value;
      }
    }
@@ -724,7 +724,7 @@ class HC {
    }
    
    setElementsInnerHTMLResponse(Map idvals) {
-     for (dyn kv in idvals) {
+     for (any kv in idvals) {
       HD.getElementById(kv.key).innerHTML = kv.value;
      }
    }

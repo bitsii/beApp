@@ -8,11 +8,11 @@
  *
  */
 
-import IO:File:Path;
-import IO:File;
-import System:Parameters;
-import Db:MemFileStoreKeyValue as MFSKvDb;
-import Encode:Hex as Hex;
+use IO:File:Path;
+use IO:File;
+use System:Parameters;
+use Db:MemFileStoreKeyValue as MFSKvDb;
+use Encode:Hex as Hex;
 class MFSKvDb {
 
   pathParamsNew(Path _dbp, Parameters _params, String _tableName) self {
@@ -35,7 +35,7 @@ class MFSKvDb {
   }
   
   dbFailed() {
-    dyn e;
+    any e;
     try {
       close();
     } catch (e) {

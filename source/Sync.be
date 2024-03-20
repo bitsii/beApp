@@ -8,41 +8,41 @@
  *
  */
 
-import IO:File:Path;
-import IO:File;
-import System:Random;
-import UI:WebBrowser as WeBr;
-import Test:Assertions as Assert;
-import Db:KeyValue as KvDb;
-import System:Thread:Lock;
-import System:Thread:ContainerLocker as CLocker;
-import System:Command as Com;
-import Time:Sleep;
-import Container:Pair;
+use IO:File:Path;
+use IO:File;
+use System:Random;
+use UI:WebBrowser as WeBr;
+use Test:Assertions as Assert;
+use Db:KeyValue as KvDb;
+use System:Thread:Lock;
+use System:Thread:ContainerLocker as CLocker;
+use System:Command as Com;
+use Time:Sleep;
+use Container:Pair;
 
-import App:Alert;
+use App:Alert;
 
-import System:Exceptions as E;
+use System:Exceptions as E;
 
-import App:LocalWebApp;
-import App:RemoteWebApp;
-import App:WebApp;
-import Text:String;
-import App:CallBackUI;
+use App:LocalWebApp;
+use App:RemoteWebApp;
+use App:WebApp;
+use Text:String;
+use App:CallBackUI;
 
-import App:Account;
+use App:Account;
 
-import System:Thread:Lock;
-import System:Thread:ObjectLocker as OLocker;
+use System:Thread:Lock;
+use System:Thread:ObjectLocker as OLocker;
 
-import System:Parameters;
+use System:Parameters;
 
-import Bitsii:SyncPlugin(App:AjaxPlugin) {
+use Bitsii:SyncPlugin(App:AjaxPlugin) {
 
   new() self {
    fields {
       Lock syncLock = Lock.new();
-      dyn app;
+      any app;
       App:Background yesSync = App:Background.new();
       String appId;
       String dbName;
@@ -267,7 +267,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
         }
       }
       //resetCertMan(ds["certificatePrint"]);
-    } catch(dyn e) {
+    } catch(any e) {
       //resetCertMan(ds["certificatePrint"]);
       throw(e);
     }
@@ -333,7 +333,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
         }
         
         syncLock.unlock();
-      } catch (dyn e) {
+      } catch (any e) {
         syncLock.unlock();
         log.log(E.tS(e));
       }
@@ -462,7 +462,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
               app.configManager.put("sync." + appId + "." + auser + ".lastStatus", "OK");
               break;
             }
-         } catch (dyn e) {
+         } catch (any e) {
            log.log("list failed");
            app.configManager.put("sync." + appId + "." + auser + ".lastStatus", "Failed");
            if (def(e)) { log.log(e.toString()); }
@@ -612,7 +612,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
               }
             }
           }
-        } catch (dyn ee) {
+        } catch (any ee) {
           log.elog("except in sync for item", ee);
         }
       }
@@ -636,7 +636,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
           } else {
             //log.log("not outputting for " + outer["subject"]);
           }
-        } catch (dyn ee) {
+        } catch (any ee) {
           log.elog("except in sync for item", ee);
         }
       }
@@ -688,7 +688,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
                 Map resMap = Json:Unmarshaller.unmarshall(res);
                 //log.log("!!! got res from getSip  " + res);
               }
-           } catch (dyn e) {
+           } catch (any e) {
              log.log("put failed");
              if (def(e)) { log.log(e.toString()); }
            }
@@ -806,7 +806,7 @@ import Bitsii:SyncPlugin(App:AjaxPlugin) {
                 }
                 //break;
               }
-            } catch(dyn e) {
+            } catch(any e) {
               log.error("Failure during set bridge sync will try others");
               if (def(e)) {
                 log.error("error " + e);

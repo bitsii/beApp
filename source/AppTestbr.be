@@ -8,10 +8,10 @@
  *
  */
 
-import System:Parameters;
+use System:Parameters;
 
-import Test:Assertions;
-import Test:Failure;
+use Test:Assertions;
+use Test:Failure;
 
 class AppTestbr:Tests {
    
@@ -21,7 +21,7 @@ class AppTestbr:Tests {
        for (Int i = 0;i < howManyTimes;i++) {
         innerMain();
       }
-     } catch (dyn e) {
+     } catch (any e) {
        if (def(e)) {
         e.print();
         throw(e);

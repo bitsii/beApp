@@ -23,7 +23,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker.State;
 """
 }
-import UI:JvFx:WebBrowser as FxBr;
+use UI:JvFx:WebBrowser as FxBr;
 class FxBr(WebImp) {
 
  emit(jv) {
@@ -190,7 +190,7 @@ class FxBr(WebImp) {
       if (def(ret)) {
         log.log("in handleWeb, ret " + ret);
       }
-    } catch (dyn e) {
+    } catch (any e) {
       log.log(System:Exceptions.toString(e));
     }
     return(ret);
@@ -198,5 +198,5 @@ class FxBr(WebImp) {
 
 }
 
-import UI:WebBrowserImpl as WebImp;
-import UI:BrowserScriptRequest;
+use UI:WebBrowserImpl as WebImp;
+use UI:BrowserScriptRequest;

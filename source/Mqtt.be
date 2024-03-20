@@ -45,7 +45,7 @@ class App:Mqtt {
       Int keepAlive = 10;
       Int qos = 1;
       IO:Log log = IO:Logs.get(self);
-      dyn messageHandler;
+      any messageHandler;
       String lastError;
     }
   }
@@ -55,7 +55,7 @@ class App:Mqtt {
     if (def(messageHandler)) {
       try {
         messageHandler.handleMessage(topic, payload);
-      } catch (dyn e) {
+      } catch (any e) {
         log.elog("exception in messageHandler.handleMessage", e);
       }
     }
@@ -64,7 +64,7 @@ class App:Mqtt {
   open() self {
     try {
       openInner();
-    } catch (dyn e) {
+    } catch (any e) {
       log.elog("mqtt error", e);
       if (def(e)) { lastError = e.description; }
     }
@@ -118,7 +118,7 @@ class App:Mqtt {
   publish(String topic, String message) {
     try {
       publishInner(topic, message);
-    } catch (dyn e) {
+    } catch (any e) {
       log.elog("mqtt error", e);
       if (def(e)) { lastError = e.description; }
     }
@@ -139,7 +139,7 @@ class App:Mqtt {
   subscribe(String topic) {
     try {
       subscribeInner(topic);
-    } catch (dyn e) {
+    } catch (any e) {
       log.elog("mqtt error", e);
       if (def(e)) { lastError = e.description; }
     }
@@ -158,7 +158,7 @@ class App:Mqtt {
   unsubscribe(String topic) {
     try {
       unsubscribeInner(topic);
-    } catch (dyn e) {
+    } catch (any e) {
       log.elog("mqtt error", e);
       if (def(e)) { lastError = e.description; }
     }
@@ -177,7 +177,7 @@ class App:Mqtt {
   isOpenGet() Bool {
     try {
       return(isOpenGetInner());
-    } catch (dyn e) {
+    } catch (any e) {
       log.elog("mqtt error", e);
       if (def(e)) { lastError = e.description; }
     }
@@ -205,7 +205,7 @@ class App:Mqtt {
     try {
       messageHandler = null;
       closeInner();
-    } catch (dyn e) {
+    } catch (any e) {
       log.elog("mqtt error", e);
       if (def(e)) { lastError = e.description; }
     }

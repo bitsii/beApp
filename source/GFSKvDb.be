@@ -8,11 +8,11 @@
  *
  */
 
-import IO:File:Path;
-import IO:File;
-import System:Parameters;
-import Db:FireStoreKeyValue as GFSKvDb;
-import Encode:Hex as Hex;
+use IO:File:Path;
+use IO:File;
+use System:Parameters;
+use Db:FireStoreKeyValue as GFSKvDb;
+use Encode:Hex as Hex;
 
 //FIRESTORE IS SLOW, DO NOT RECOMMEND
 
@@ -69,7 +69,7 @@ emit(jv) {
   }
   
   dbFailed() {
-    dyn e;
+    any e;
     try {
       close();
     } catch (e) {

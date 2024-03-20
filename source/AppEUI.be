@@ -31,7 +31,7 @@ class App:RunClassMethod {
   runit(String clmtd) {
     "in runit".print();
     var ll = clmtd.split(".");
-    dyn inst = System:Objects.createInstance(ll[0]);
+    any inst = System:Objects.createInstance(ll[0]);
     inst.invoke(ll[1], List.new());
     "runit done".print();
   }

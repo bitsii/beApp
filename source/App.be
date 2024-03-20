@@ -8,19 +8,19 @@
  *
  */
 
-import IO:File:Path;
-import IO:File;
-import System:Random;
-import UI:WebBrowser as WeBr;
-import Test:Assertions as Assert;
-import Db:KeyValue as KvDb;
-import Time:Interval;
-import System:Parameters;
-import Container:LinkedList;
-import Container:LinkedList:Node;
-import Db:KeyValueDbs as KvDbs;
+use IO:File:Path;
+use IO:File;
+use System:Random;
+use UI:WebBrowser as WeBr;
+use Test:Assertions as Assert;
+use Db:KeyValue as KvDb;
+use Time:Interval;
+use System:Parameters;
+use Container:LinkedList;
+use Container:LinkedList:Node;
+use Db:KeyValueDbs as KvDbs;
 
-import class App:Alert(Exception) { }
+use class App:Alert(Exception) { }
 
 emit(jv) {
 """
@@ -37,7 +37,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 """
 }
-import class Net:Interface {
+use class Net:Interface {
  
  new(String _description, String _macAddress, String _name, 
      String _status, 
@@ -318,7 +318,7 @@ import class Net:Interface {
  
 }
 
-import Net:Wol;
+use Net:Wol;
 
 class Wol {
 
@@ -420,7 +420,7 @@ private static void wakeOnLan(String hex) throws Exception
 
 }
 
-import Net:UPnP as Upnp;
+use Net:UPnP as Upnp;
 
 class Upnp {
 
@@ -443,7 +443,7 @@ class Upnp {
     if (def(deviceURL)) {
       return(deviceURL);
     }
-    dyn e;
+    any e;
     String discover = "M-SEARCH * HTTP/1.1\r\n" +
             "HOST: 239.255.255.250:1900\r\n" +
             "ST:upnp:rootdevice\r\n" +
@@ -482,7 +482,7 @@ class Upnp {
     while (nowSec < endSec) {
       received = null;
       if (count % 7 == 0) {
-        dyn bcast = true;
+        any bcast = true;
       } else {
         bcast = null;
       }
@@ -549,7 +549,7 @@ class Upnp {
     }
     
     controlURLGet() String {
-      dyn e;
+      any e;
       fields {
         String controlURL;
       }
@@ -678,7 +678,7 @@ class Upnp {
       
     forwardPortOld(Int duration, Int external, Int internal, String internalIP) Bool {
       if (true) { return(true); }
-      dyn e;
+      any e;
       String cu = self.controlURL;
       Web:Client client = Web:Client.new();
       client.url = cu;
@@ -710,7 +710,7 @@ class Upnp {
 
 }
 
-import Net:IP;
+use Net:IP;
 
 class IP {
 
@@ -795,11 +795,11 @@ class IP {
 
 }
 
-import class App:Paths {
+use class App:Paths {
 
   new(_app) self {
     fields {
-      dyn app = _app;
+      any app = _app;
       String name = app.plugin.name;
       String dataName = name;
       IO:Log log = IO:Logs.get(self);
@@ -812,7 +812,7 @@ import class App:Paths {
   dataPathGet() Path {
     Path dbp;
     ifEmit(platDroid) {
-      dyn app = System:Objects.createInstance("UI:JvAd:WebBrowser");
+      any app = System:Objects.createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.secDataDir).addStep("BeData").addStep(dataName);
     }
     ifEmit(ccIsIos) {
@@ -858,7 +858,7 @@ bevl_idd = (new BEC_2_4_6_TextString())->bems_ccsnew(ccdd);
   appPathGet() Path {
     Path dbp;
     ifEmit(platDroid) {
-      dyn app = System:Objects.createInstance("UI:JvAd:WebBrowser");
+      any app = System:Objects.createInstance("UI:JvAd:WebBrowser");
       dbp = Path.apNew(app.appDataDir).addStep("BeData").addStep(name);
     }
     ifNotEmit(platDroid) {
@@ -869,7 +869,7 @@ bevl_idd = (new BEC_2_4_6_TextString())->bems_ccsnew(ccdd);
 
 }
 
-import Net:Gateway as Gw;
+use Net:Gateway as Gw;
 
 class Gw {
 
@@ -919,11 +919,11 @@ class Gw {
 }
 
 //logic
-import class App:AccountManager {
+use class App:AccountManager {
 
   new() self {
     fields {
-      dyn kvDbs;
+      any kvDbs;
     }
   }
   
@@ -934,7 +934,7 @@ import class App:AccountManager {
   
   getLogins() List {
     List logins = List.new();
-    for (dyn kv in kvDbs.get("ACCOUNTS").getMap()) {
+    for (any kv in kvDbs.get("ACCOUNTS").getMap()) {
       logins.addValue(kv.key);
     }
     return(logins);
@@ -967,7 +967,7 @@ import class App:AccountManager {
 
 }
 
-import class App:Account {
+use class App:Account {
 
   new() self {
     fields {
@@ -1061,7 +1061,7 @@ import class App:Account {
   
 }
 
-import App:EventHandlers as AppEv;
+use App:EventHandlers as AppEv;
 class AppEv {
 
   emit(jv) {
@@ -1080,7 +1080,7 @@ class AppEv {
   """
   }
 
-  put(String label, dyn handler) {
+  put(String label, any handler) {
     registry.put(label, handler);
   }
   
@@ -1095,7 +1095,7 @@ class AppEv {
   }
   
   handleEvent(String event) {
-    dyn rc = registry.get(event);
+    any rc = registry.get(event);
     if (def(rc)) {
       List args = List.new(0);
       rc.invoke(event, args);
@@ -1119,7 +1119,7 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 """
 }
-import Crypto:Symmetric as Crypt;
+use Crypto:Symmetric as Crypt;
 class Crypt {
 
   new() self {
@@ -1218,12 +1218,12 @@ class Crypt {
   }
 }
 
-import class App:AuthPlugin(App:AjaxPlugin) {
+use class App:AuthPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
           log = IO:Logs.get(self);
-          dyn app;
+          any app;
           String name = "Auth";
           Set nonAuthedRequests = Set.new();
           OLocker lastLoginBad = OLocker.new(false);
@@ -1314,10 +1314,10 @@ import class App:AuthPlugin(App:AjaxPlugin) {
         String res = String.new();
         String accountName = a.user;
         Map all = app.sessionManager.sessions.get("SESSIONS").getMap();
-        for (dyn kv in all) {
+        for (any kv in all) {
           if (kv.key.ends("account.name") && kv.value == accountName) {
             //log.log("Found session " + kv.key);
-            dyn kp = kv.key.split(".");
+            any kp = kv.key.split(".");
             String sessLabel = String.new();
             String name = app.sessionManager.sessions.get("SESSIONS").get(kp.first + ".session.name");
             if (def(name)) {
@@ -1345,14 +1345,14 @@ import class App:AuthPlugin(App:AjaxPlugin) {
       
       clearExpired() {
         log.log("in clearExpired");
-        dyn sess = app.sessionManager.sessions.get("SESSIONS");
+        any sess = app.sessionManager.sessions.get("SESSIONS");
         Map all = sess.getMap();
         Set seen = Set.new();
         Set del = Set.new();
         Int ns = Time:Interval.now().seconds;
         log.log("ns is " + ns);
-        for (dyn kv in all) {
-          dyn kp = kv.key.split(".");
+        for (any kv in all) {
+          any kp = kv.key.split(".");
           String skey = kp.first;
           if (del.contains(skey)) {
             //delete it
@@ -1824,7 +1824,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
       self.trackingManager.put("LB." + ip, ns.toString());
     }
     if (badcount > maxBad) {
-      log.log("toomdyn bad " + ip);
+      log.log("toomany bad " + ip);
       if (def(ltmi) && ns - ltmi > updateSecs) {
         log.log("lp update");
         self.trackingManager.put("LB." + ip, ns.toString());
@@ -2074,7 +2074,7 @@ import class App:AuthPlugin(App:AjaxPlugin) {
           }
           //log.log("auth done continueHandling is " + request.continueHandling);
           return(self);
-        } catch (dyn e) {
+        } catch (any e) {
            log.error("Caught exception during handleWeb B");
            if (def(e)) {
             log.error("Exception was " + e);
@@ -2085,11 +2085,11 @@ import class App:AuthPlugin(App:AjaxPlugin) {
    
 }
 
-import class App:PublicReadPlugin {
+use class App:PublicReadPlugin {
 
      new() self {
        fields {
-          dyn app;
+          any app;
           String name = "Public";
           IO:Log log = IO:Logs.get(self);
         }
@@ -2112,7 +2112,7 @@ import class App:PublicReadPlugin {
          File imgfile = File.apNew(Encode:Url.decode(uri.substring(1)));
          Path pa = imgfile.absPath;
          Bool readOk = false;
-         for (dyn pl in app.plugins) {
+         for (any pl in app.plugins) {
           if (pl.can("checkPublicReadPath", 2)) {
             if (pl.checkPublicReadPath(pa, request)) {
               readOk = true;
@@ -2140,11 +2140,11 @@ import class App:PublicReadPlugin {
      }
 }
 
-import class App:LocalAccessPlugin {
+use class App:LocalAccessPlugin {
 
      new() self {
        fields {
-          dyn app;
+          any app;
           String name = "LocalAccess";
           IO:Log log = IO:Logs.get(self);
           String lattok = System:Random.getString(64);
@@ -2205,11 +2205,11 @@ import class App:LocalAccessPlugin {
      }
 }
 
-import class App:WebReverseProxyPlugin {
+use class App:WebReverseProxyPlugin {
 
      new() self {
        fields {
-          dyn app;
+          any app;
           String name = "WRProxy";
           String dataName = "BBridge";
           IO:Log log = IO:Logs.get(self);
@@ -2351,7 +2351,7 @@ import class App:WebReverseProxyPlugin {
      }
 }
 
-import App:MimeTypes as Mimes;
+use App:MimeTypes as Mimes;
 
 class Mimes {
   
@@ -2392,11 +2392,11 @@ class Mimes {
   
 }
 
-import class App:FileManagerPlugin(App:AjaxPlugin) {
+use class App:FileManagerPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
-          dyn app;
+          any app;
           String name = "Files";
         }
         super.new();
@@ -2409,7 +2409,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
         return(true);
       }
       String accountName = request.getSession("account.name");
-      dyn e;
+      any e;
       Bool isOk = false;
       if (undef(accountName)) { accountName = ""; }
       try {
@@ -2437,7 +2437,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
       return(true);
     }
     String accountName = request.getSession("account.name");
-    dyn e;
+    any e;
     Bool isOk = false;
     if (undef(accountName)) { accountName = ""; }
     try {
@@ -2451,7 +2451,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
       if (def(s) && pas.begins(s.toString())) {
         isOk = true;
       }
-      for (dyn kv in app.configManager.getMap("fileManager.sharedDirs.")) {
+      for (any kv in app.configManager.getMap("fileManager.sharedDirs.")) {
         Path fms = Path.apNew(kv.value).file.absPath;
         if (def(fms) && pas.begins(fms.toString())) {
           isOk = true;
@@ -2639,7 +2639,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
      if (TS.notEmpty(path)) {
        File dirFile = File.apNew(Encode:Hex.new().decode(path));
        if (TS.notEmpty(arg["toName"]) && dirFile.exists && checkWritePath(dirFile.path, arg, request)) {
-         dyn dpath = Path.apNew(arg["toName"]);
+         any dpath = Path.apNew(arg["toName"]);
          dpath = dirFile.path.parent.copy() + dpath;
          log.log("precheck write " + dpath);
          if (checkWritePath(dpath, arg, request)) {
@@ -2759,7 +2759,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
         dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(parent.toString()) += "');return false;\">.. (UP)</a></td></tr>";
         }
-        for (dyn kv in app.configManager.getMap("fileManager.sharedDirs.")) {
+        for (any kv in app.configManager.getMap("fileManager.sharedDirs.")) {
           dirListHtml += "<tr><td>DIR</td><td><a href=\"#\" onclick=\"localBrowseRequest('"
           += hex.encode(kv.value) += "');return false;\">" += kv.key.substring(23, kv.key.length) += "</a></td></tr>";
         }
@@ -2906,7 +2906,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
         throw(Alert.new("Must be administrator"));
       }
       String dirListHtml = String.new();
-      for (dyn kv in app.configManager.getMap("fileManager.sharedDirs.")) {
+      for (any kv in app.configManager.getMap("fileManager.sharedDirs.")) {
         dirListHtml += "<p>" += kv.value += " shared to ALL as " += kv.key.substring(23, kv.key.length) += "</p>";
       }
       for (kv in app.configManager.getMap("fileManager.accountDirs.")) {
@@ -2926,7 +2926,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
       String path = Encode:Hex.decode(args["path"]);
       log.log("path for unshare " + path);
       Set delKeys = Set.new();
-      for (dyn kv in app.configManager.getMap("fileManager.sharedDirs.")) {
+      for (any kv in app.configManager.getMap("fileManager.sharedDirs.")) {
         if (kv.value == path) {
           delKeys += kv.key;
         }  
@@ -2936,7 +2936,7 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
           delKeys += kv.key;
         } 
       }
-      for (dyn delKey in delKeys) {
+      for (any delKey in delKeys) {
         app.configManager.remove(delKey);
       }
       return(showSharesRequest(request));
@@ -2970,11 +2970,11 @@ import class App:FileManagerPlugin(App:AjaxPlugin) {
     
 }
 
-import class App:ConfigPlugin(App:AjaxPlugin) {
+use class App:ConfigPlugin(App:AjaxPlugin) {
 
      new() self {
        fields {
-          dyn app;
+          any app;
           String name = "Conf";
           String kvdb = "CONFIG";
         }
@@ -2998,7 +2998,7 @@ import class App:ConfigPlugin(App:AjaxPlugin) {
             log.output("Config name " + kv.key + " value " + kv.value);
           }
         } else {
-          for (dyn kv in app.kvdbs.get(kvdb).getMap()) {
+          for (any kv in app.kvdbs.get(kvdb).getMap()) {
             log.output("Config name " + kv.key + " value " + kv.value);
           }
         }
@@ -3061,7 +3061,7 @@ import class App:ConfigPlugin(App:AjaxPlugin) {
        Map ecm = app.kvdbs.get(kvdb).getMap();
        if (ecm.isEmpty!) {
          conf += "<table>";
-         for (dyn kv in ecm) {
+         for (any kv in ecm) {
            unless(kv.value.contains("\"") || noshow.contains(kv.key)) {
               String ckey = "configKey" + kv.key;
               conf += "<tr><td>" + kv.key + "</td><td><input type=\"text\" id=\"" + ckey + "\" value=\"" + kv.value + "\"></td><td><a href=\"#\" onclick=\"callUI('deleteConfig', '" + kv.key + "');return false;\">Delete</a></td><td><a href=\"#\" onclick=\"updateConfig('" + kv.key + "', '" + ckey + "');return false;\">Save</a></td></tr>";
@@ -3133,7 +3133,7 @@ import class App:ConfigPlugin(App:AjaxPlugin) {
     
 }
 
-import class App:LocalWebApp(WebApp) {
+use class App:LocalWebApp(WebApp) {
 
   new() self {
         fields {
@@ -3204,8 +3204,8 @@ class App:AppStart {
     String plmtd = args.get(0);
     args.remove(0);
     Parameters params = Parameters.new(args);
-    dyn app = setup(params);
-    dyn plugin = app.pluginsByName.get(pln);
+    any app = setup(params);
+    any plugin = app.pluginsByName.get(pln);
     log.log("params invokePlugin " + params.toJson());
     if (params.contains("plma")) {
       iar = params.params.get("plma").toList();
@@ -3230,18 +3230,18 @@ class App:AppStart {
           IO:Logs.turnOnAll();
         }
         start(params);
-      } catch (dyn e) {
+      } catch (any e) {
         log.elog("fail in appstart main", e);
       }
     }
   
   start(Parameters params) {
-    dyn app = setup(params);
+    any app = setup(params);
     app.main();
   }
   
   start() {
-    dyn app = setup();
+    any app = setup();
     app.main();
   }
     
@@ -3249,7 +3249,7 @@ class App:AppStart {
     var pluginClasses = params.get("plugin");
     List plugins = List.new();
     for (String pluginClass in pluginClasses) {
-      dyn plugin = System:Objects.createInstance(pluginClass);
+      any plugin = System:Objects.createInstance(pluginClass);
       plugins += plugin;
     }
     app.plugins = plugins;
@@ -3301,19 +3301,19 @@ class App:AppStart {
     }
     var appTypes = Sets.fromList(params.get("appType").toList());
     if (appTypes.contains("cmd")) {
-      dyn cuiapp = WebApp.new();
+      any cuiapp = WebApp.new();
       cuiapp.params = params;
       setupPlugins(cuiapp);
       setupPlugin(cuiapp);
       return(cuiapp);
     } elseIf (appTypes.contains("browser")) {
-      dyn luiapp = System:Objects.createInstance("App:LocalWebApp");
+      any luiapp = System:Objects.createInstance("App:LocalWebApp");
       luiapp.params = params;
       setupPlugins(luiapp);
       setupPlugin(luiapp);
       return(luiapp);
     } elseIf (appTypes.contains("server")) {
-      dyn wuiapp = System:Objects.createInstance("App:RemoteWebApp");
+      any wuiapp = System:Objects.createInstance("App:RemoteWebApp");
       wuiapp.params = params;
       setupPlugins(wuiapp);
       setupPlugin(wuiapp);
@@ -3324,7 +3324,7 @@ class App:AppStart {
   }
 }
 
-import App:WebApp;
+use App:WebApp;
 class WebApp {
 
   new() self {
@@ -3423,12 +3423,12 @@ class WebApp {
       fields {
         List plugins = _plugins;
         if (undef(plugin)) {
-          dyn plugin = plugins.first;
+          any plugin = plugins.first;
         }
         Map pluginsByName = Map.new();
       }
       
-      for (dyn pl in plugins) {
+      for (any pl in plugins) {
         pl.app = self;
         if (pl.can("nameGet", 0)) {
           pluginsByName.put(pl.name, pl);
@@ -3450,7 +3450,7 @@ class WebApp {
   start() {
     self.configManagerGet();
     self.sessionManagerGet();
-    for (dyn pl in plugins) {
+    for (any pl in plugins) {
       if (pl.can("start", 0)) {
         pl.start();
       }
@@ -3458,7 +3458,7 @@ class WebApp {
   }
   
   stop() {
-    for (dyn pl in plugins) {
+    for (any pl in plugins) {
       if (pl.can("stop", 0)) {
         pl.stop();
       }
@@ -3544,7 +3544,7 @@ class WebApp {
   }
     
     handleWeb(request) this {
-     for (dyn pl in plugins) {
+     for (any pl in plugins) {
        request.continueHandling = false;
        pl.handleWeb(request);
        unless (request.continueHandling) {
@@ -3554,7 +3554,7 @@ class WebApp {
     }
     
     handleCmd() this {
-     for (dyn pl in plugins) {
+     for (any pl in plugins) {
        if (pl.can("handleCmd", 1)) {
         if (pl.handleCmd(params)) {
           break;
@@ -3576,7 +3576,7 @@ class WebApp {
       List appargs = params.initialArgs;
       List pnp = Lists.from(plugName, plugMtd);
       List pnaa = pnp + appargs;
-      for (dyn plma in plmargs) {
+      for (any plma in plmargs) {
         pnaa += "--plma";
         pnaa += plma;
       }
@@ -3587,7 +3587,7 @@ class WebApp {
     
 }
 
-import class System:RunAsync {
+use class System:RunAsync {
 
   new(String _klass, String _toInvoke, List _args) self {
     fields {
@@ -3643,9 +3643,9 @@ import class System:RunAsync {
   }
   
   main() {
-    dyn e;
+    any e;
     try {
-      dyn inst = System:Objects.createInstance(klass);
+      any inst = System:Objects.createInstance(klass);
       inst.invoke(toInvoke, args);
     } catch (e) {
       log.error("Caught exception running tasks " + e);
@@ -3654,7 +3654,7 @@ import class System:RunAsync {
 
 }
 
-import class App:Background {
+use class App:Background {
 
   new() self {
     fields {
@@ -3664,7 +3664,7 @@ import class App:Background {
       Interval minimumDelay = Interval.new(5, 0);
       Interval lastRepeat = Interval.new(0, 0);
       System:Invocation toInvoke;
-      dyn lastError = null;
+      any lastError = null;
       Bool lastWasError = false;
     }
   }
@@ -3677,7 +3677,7 @@ import class App:Background {
         lastRepeat = now;
         toInvoke.invoke();
       }
-    } catch (dyn e) {
+    } catch (any e) {
       lastWasError = true;
       lastError = e;
       try {
@@ -3685,12 +3685,12 @@ import class App:Background {
         if (def(e)) {
           log.error("runMyTasks exception was " + e);
         }
-      } catch (dyn ee) { }
+      } catch (any ee) { }
     }
   }
   
   main() {
-    dyn e;
+    any e;
     Time:Sleep.sleep(startDelay);
     while (true) {
       try {
@@ -3733,7 +3733,7 @@ class App:AjaxPlugin {
 
    new() self {
     fields {
-      dyn plugin = self;
+      any plugin = self;
       IO:Log log = IO:Logs.get(self);
     }
    }
@@ -3778,7 +3778,7 @@ class App:AjaxPlugin {
        if (def(arg) && def(args)) {
          String aname = arg.get("action");
           if (plugin.can(aname, args.length) && aname.ends("Request")) {
-            dyn res = plugin.invoke(aname, args);
+            any res = plugin.invoke(aname, args);
             request.scriptReturn = res;
           } else {
             request.continueHandling = true;
@@ -3786,7 +3786,7 @@ class App:AjaxPlugin {
         } else {
           request.continueHandling = true;
         }
-      } catch (dyn e) {
+      } catch (any e) {
         log.error("Caught exception handling request");
         if (undef(e)) { log.error("undefined exception") } else { log.error(e.toString()); }
         //if (TS.isEmpty(aname)) { aname = "Unknown Action"; }
@@ -3806,12 +3806,12 @@ class App:AjaxPlugin {
     }
 }
 
-import System:Thread:Lock;
-import System:Thread:ContainerLocker as CLocker;
-import System:Command as Com;
-import Time:Sleep;
-import System:Thread:ObjectLocker as OLocker;
-import Db:HSQLDb:Database as HsDb;
-import Db:Firebird:Database as FbDb;
+use System:Thread:Lock;
+use System:Thread:ContainerLocker as CLocker;
+use System:Command as Com;
+use Time:Sleep;
+use System:Thread:ObjectLocker as OLocker;
+use Db:HSQLDb:Database as HsDb;
+use Db:Firebird:Database as FbDb;
 
-import App:CallBackUI;
+use App:CallBackUI;

@@ -8,9 +8,9 @@
  *
  */
 
-import System:Thread:ContainerLocker as CLocker;
+use System:Thread:ContainerLocker as CLocker;
 
-import UI:CcIo:InFlight as InFlight;
+use UI:CcIo:InFlight as InFlight;
 
 class InFlight {
 
@@ -23,7 +23,7 @@ class InFlight {
    
 }
 
-import UI:CcIo:WebBrowser as IoBr;
+use UI:CcIo:WebBrowser as IoBr;
 class IoBr(WebImp) {
 
   getMe() self {
@@ -109,7 +109,7 @@ class IoBr(WebImp) {
       if (def(ret)) {
         log.log("in handleWeb, ret " + ret);
       }
-    } catch (dyn e) {
+    } catch (any e) {
       log.log(System:Exceptions.toString(e));
     }
     return(ret);
@@ -117,8 +117,8 @@ class IoBr(WebImp) {
   
 }
 
-import UI:WebBrowserImpl as WebImp;
-import UI:BrowserScriptRequest;
+use UI:WebBrowserImpl as WebImp;
+use UI:BrowserScriptRequest;
 
 
 

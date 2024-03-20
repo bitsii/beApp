@@ -8,22 +8,22 @@
  *
  */
 
-import Container:Queue;
-import IO:File:Path;
-import IO:File;
-import System:Random;
-import UI:WebBrowser as WeBr;
-import Test:Assertions as Assert;
-import Db:Relational:Database as DbDb;
-import Db:Relational:Statement as DbSt;
-import Db:Firebird:Database as FbDb;
-import Db:Derby:Database as Derby;
-import Db:KeyValue as KvDb;
+use Container:Queue;
+use IO:File:Path;
+use IO:File;
+use System:Random;
+use UI:WebBrowser as WeBr;
+use Test:Assertions as Assert;
+use Db:Relational:Database as DbDb;
+use Db:Relational:Statement as DbSt;
+use Db:Firebird:Database as FbDb;
+use Db:Derby:Database as Derby;
+use Db:KeyValue as KvDb;
 
-import App:WebApp;
-import App:Account;
+use App:WebApp;
+use App:Account;
 
-import class App:RemoteWebApp(WebApp) {
+use class App:RemoteWebApp(WebApp) {
 
   new() self {
         fields {
@@ -32,7 +32,7 @@ import class App:RemoteWebApp(WebApp) {
     }
     
     startWeb() {
-      dyn e;
+      any e;
       String ports = self.appPort;
       Int port = Int.new(ports);
       //portL.o = port;
@@ -85,9 +85,9 @@ import class App:RemoteWebApp(WebApp) {
 
 }
 
-import System:Thread:Lock;
-import System:Thread:ContainerLocker as CLocker;
-import System:Command as Com;
-import Time:Sleep;
-import System:Thread:ObjectLocker as OLocker;
-import Db:HSQLDb:Database as HsDb;
+use System:Thread:Lock;
+use System:Thread:ContainerLocker as CLocker;
+use System:Command as Com;
+use Time:Sleep;
+use System:Thread:ObjectLocker as OLocker;
+use Db:HSQLDb:Database as HsDb;
