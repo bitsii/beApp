@@ -470,11 +470,11 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
         }
       }
       
-      if (resMap.contains("path")) {
+      if (resMap.has("path")) {
         String path = resMap["path"];
         app.configManager.put("sync." + appId + "." + auser + ".bridgeSyncPath", path);
         app.configManager.put("sync." + appId + "." + auser + ".bridgeLastUrl", destUrl);
-        if (resMap.contains("list")) {
+        if (resMap.has("list")) {
           List list = resMap["list"];
           List sublist = List.new();
           for (String le in list) {
@@ -519,7 +519,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
                 
                 if (TS.notEmpty(res)) {
                   Map resm = unmar.unmarshall(res);
-                  if (resm.contains("content")) {
+                  if (resm.has("content")) {
                     String outers = resm["content"];
                     String pk = auh + "!" + subp + "!" + snh + "!" + updateSecs;
                     seckv.put(pk, outers);
@@ -630,7 +630,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
           Map outer = unmar.unmarshall(outers);
           String fn = eh.encode(outer["subject"]) + ".json";
           Path fp = dirp.copy().addStep(fn);
-          unless (decids.contains(outer["subject"])) {
+          unless (decids.has(outer["subject"])) {
             log.log("outputting for " + outer["subject"]);
             fp.file.writer.open().writeStringClose(outers);
           } else {
@@ -659,7 +659,7 @@ use Bitsii:SyncPlugin(App:AjaxPlugin) {
         Map outer = unmar.unmarshall(outers);
         String fn = eh.encode(outer["subject"]) + ".json";
         Path fp = dirp.copy().addStep(fn);
-        unless (decids.contains(outer["subject"])) {
+        unless (decids.has(outer["subject"])) {
           log.log("outputting for " + outer["subject"]);
           //fp.file.writer.open().writeStringClose(outers);
       

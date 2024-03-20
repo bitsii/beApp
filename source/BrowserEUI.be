@@ -668,7 +668,7 @@ class HC {
   handleCallbackMap(Map resm) {
       String mname = resm["action"];
       if (def(mname) && mname.ends("Response")) {
-        if (resm.contains("args")) {
+        if (resm.has("args")) {
           rargs = resm["args"];
         } else {
           List rargs = List.new(1);

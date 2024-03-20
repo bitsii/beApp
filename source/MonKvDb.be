@@ -251,7 +251,7 @@ emit(jv) {
   }
   }
   
-  contains(String name) Bool {
+  has(String name) Bool {
   Bool res = false;
   Bool t = true;
   emit(jv) {

@@ -245,8 +245,8 @@ emit(jv) {
   """
   }
   }
-  
-  contains(String name) Bool {
+
+  has(String name) Bool {
     Bool resb = false;
     Bool t = true;
     emit(jv) {

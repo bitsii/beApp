@@ -349,7 +349,7 @@ use class Web:ScriptRequest {
           addr = getInputHeader("X-Forwarded-For");
       }
       if (TS.notEmpty(addr)) {
-        if (addr.contains(",")) {
+        if (addr.has(",")) {
           var addrl = addr.split(",");
           addr = addrl[0];
         }
@@ -659,7 +659,7 @@ use class Web:ScriptRequest {
     
     canGzipOutputGet() Bool {
       String ac = getInputHeader("accept-encoding");
-      if (def(ac) && ac.contains("gzip")) {
+      if (def(ac) && ac.has("gzip")) {
         return(true);
       }
       return(false);
