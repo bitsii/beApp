@@ -10,17 +10,17 @@
 
 emit(jv) {
 """
-use android.os.Bundle;
-//use android.support.v7.app.AppCompatActivity;
-use androidx.appcompat.app.AppCompatActivity;
-use android.webkit.WebSettings;
-use android.webkit.WebView;
-use android.webkit.WebViewClient;
-use android.webkit.JavascriptInterface;
+import android.os.Bundle;
+//import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.webkit.JavascriptInterface;
 
-use android.content.Intent;
-use android.net.Uri;
-use android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.content.Context;
 """
 }
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. ../beBase/scripts/bld5ext.sh
+
 export APPBLDNM=${PWD##*/}
 
 mkdir -p ../apprun
@@ -18,8 +20,7 @@ if [ ! -z "$BERCME" -a "$BERCME" != " " ]; then
   fi
 fi
 
-export CLASSPATH=../beBase/target5/*
-java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base -jsInclude=../beApp/system/js/APWK_head.js ../beBase/source/base/Uses.be $BRBLDARGS --buildFile ../beApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --emitFlag apwk --ownProcess false --buildFile build/build.txt $BEBLDARGS --buildFile build/buildbr.txt ../beBase/source/extended/Log.be ../beBase/source/extended/LogSink.be ../beApp/source/BrowserEUI.be ../beApp/source/App.be ../beApp/source/BrowserUI.be ../beApp/source/BrowserApWk.be ../beApp/source/Db.be $BEBLDARGS
+$BEBLDR -jsInclude=../beApp/system/js/APWK_head.js ../beBase/source/base/Uses.be $BRBLDARGS --buildFile ../beApp/build/shared.txt --deployPath ../apprun/App/$APPBLDNM/d --buildPath ../apprun/App/$APPBLDNM --emitLang js --emitFlag apwk --ownProcess false --buildFile build/build.txt $BEBLDARGS --buildFile build/buildbr.txt ../beBase/source/extended/Log.be ../beBase/source/extended/LogSink.be ../beApp/source/BrowserEUI.be ../beApp/source/App.be ../beApp/source/BrowserUI.be ../beApp/source/BrowserApWk.be ../beApp/source/Db.be $BEBLDARGS
 
 #--emitFlag ccIsIos
 
