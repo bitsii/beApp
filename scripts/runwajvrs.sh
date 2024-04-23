@@ -33,7 +33,7 @@ export MYUSER=`whoami`
 mkdir -p Data/$APPBLDNM
 
 while :; do
-  java $BEJVRUNARGS -classpath "$CLASSPATH" be.BEL_${APPBLDNM} --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
+  java $BEJVRUNARGS -classpath "$CLASSPATH" be.BEL_Base --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
     echo "Exited code $?.  Will restart.." >&2
     sleep 2
 done

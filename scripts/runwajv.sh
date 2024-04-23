@@ -32,5 +32,5 @@ export MYUSER=`whoami`
 
 mkdir -p Data/$APPBLDNM
 
-java $BEJVRUNARGS -classpath "$CLASSPATH" be.BEL_${APPBLDNM} --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
+java $BEJVRUNARGS -classpath "$CLASSPATH" be.BEL_Base --runParams App/$APPBLDNM/runParamsWa.txt $BERUNARGS $*
 
