@@ -1,5 +1,5 @@
 
-Get Bennt App (an application framework for the Bennt programming language) -
+Get Bennt (App) (an application framework for the Bennt programming language) -
 
 First you have to have already setup the Bennt language environment, see
 https://gitlab.com/bitsii/beBase (Getting Started in Readme.md) for that  (the Bennt
