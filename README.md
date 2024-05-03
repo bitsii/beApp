@@ -16,7 +16,9 @@ cd beApp
 that's it - beApp as such is just a source and dependencies library project
 to actually use it checkout and build a project that uses it (here's a couple):
 
-https://gitlab.com/edgii/BBridge
+https://gitlab.com/bitsii/BBridge
+
+https://gitlab.com/bitsii/CasCon
 
 as you build these apps all of the artifacts and the runtime environment
 are in a directory called apprun in the same parent as beApp and the 
