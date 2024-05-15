@@ -122,6 +122,16 @@ var callHD = function() {
   return hd.bem_call_1(alist);
 }
 
+var callHC = function() {
+  var alist = convertArgs(arguments);
+  return hd.bem_callSelf_1(alist);
+}
+
+var callEle = function() {
+  var alist = convertArgs(arguments);
+  return hd.bem_callEle_1(alist);
+}
+
 var downloadJson = function(jsonData, fileName) {
   var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonData);
   var downloadJsonElem = document.getElementById('downloadJsonElem');
@@ -212,6 +222,18 @@ class HD {
   getEle(String id) {
     return(HE.new(id));
   }
+
+  callEle(List args) any {
+     String eid = args[0];
+     args.remove(0);
+     String aname = args[0];
+     args.remove(0);
+     any ce = getEle(eid);
+     if (def(ce) && ce.exists && ce.can(aname, args.length)) {
+      return(ce.invoke(aname, args));
+     }
+     return(null);
+   }
   
   setDis(String id, String dis) {
     HE.new(id).display = dis;
@@ -637,6 +659,15 @@ class HC {
     String argjs = Json:Marshaller.marshall(arg);
     send(argjs, "/", "application/json", null);
   }
+
+  callSelf(List args) any {
+     String aname = args[0];
+     args.remove(0);
+     if (self.can(aname, args.length)) {
+       return(self.invoke(aname, args));
+     }
+     return(null);
+   }
   
   handleCallback(String resjs) {
     //if (def(resjs)) {
@@ -688,11 +719,13 @@ class HC {
      //returns true if was opened by this action, false else
      Bool didOpen = false;
      HE he = HD.getElementById(id);
-     if (he.display != "none") {
-      he.display = "none";
-     } else {
-      he.display = "block";
-      didOpen = true;
+     if (def(he) && he.exists) {
+      if (he.display != "none") {
+        he.display = "none";
+      } else {
+        he.display = "block";
+        didOpen = true;
+      }
      }
      return(didOpen);
    }
