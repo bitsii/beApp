@@ -1,9 +1,5 @@
 
-<<<<<<< HEAD
-Get Bennt (App) (an application framework for the Bennt programming language) -
-=======
 First - quick Getting Started for Development! (more about Beysant App below...)
->>>>>>> parent of 79c9c83 (lil rebrand bennt)
 
 First you have to have already setup the Beysant language environment, see
 https://gitlab.com/bitsii/beBase (Getting Started in Readme.md) for that  (the Beysant
