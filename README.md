@@ -18,14 +18,14 @@ cd beApp
 that's it - beApp as such is just a source and dependencies library project
 to actually use it checkout and build a project that uses it (here's a couple):
 
-https://gitlab.com/bitsii/BBridge
+https://gitlab.com/bitsii/CasInt
 
 https://gitlab.com/bitsii/CasCon
 
 as you build these apps all of the artifacts and the runtime environment
 are in a directory called apprun in the same parent as beApp and the 
 BNote/BBRidge/etc areas.   Inside apprun is an App dir, inside App are the app
-specific executable code (BBridge, etc) and the artifacts (html, etc).
+specific executable code (CasInt, etc) and the artifacts (html, etc).
 Under data are the key value db's and their data, as well as other
 configuration and data.  Under Home are the account home directories.  
 
