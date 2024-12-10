@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. ../beBase/scripts/bld5ext.sh
+
 export APPBLDNM=${PWD##*/}
 
 export OSTYPE=`uname`
@@ -25,19 +27,20 @@ una=`uname -a`
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
-export CLASSPATH=../beBase/target5/*
-java -XX:-UsePerfData -XX:TieredStopAtLevel=1 -XX:+UseSerialGC be.BEL_Base ../beBase/source/base/Uses.be --buildFile ../beApp/build/base.txt --buildFile ../beApp/build/extended.txt --buildFile build/njv.txt --deployPath njv --buildPath njv --emitLang jv ../beBase/source/extended/Log.be $*
+$BEBLDR ../beBase/source/base/Uses.be --buildFile ../beApp/build/base.txt --buildFile ../beApp/build/extended.txt --buildFile build/njv.txt --deployPath njv --buildPath njv --emitLang jv ../beBase/source/extended/Log.be $*
 
 lae=$?;if [[ $lae -ne 0 ]]; then exit $lae; fi
 
 case "$una" in
   *Msys*)
-    export CLASSPATH="../beApp/lib/wa/jv/*;../beBase/lib/ex/jv/*;extlibs/jv/*;../beApp/extlibs/wa/jv/*"
+    export CLASSPATH="../beBase/target5/*;extlibs/jv/*;../beApp/extlibs/wa/jv/*"
     ;;
   *)
-    export CLASSPATH="../beApp/lib/wa/jv/*:../beBase/lib/ex/jv/*:extlibs/jv/*:../beApp/extlibs/wa/jv/*"
+    export CLASSPATH="../beBase/target5/*:extlibs/jv/*:../beApp/extlibs/wa/jv/*"
     ;;
 esac
+
+cp ../beBase/system/jv/be/*.java ./njv/Base/target/jv/be
 
 javac $BEJVARGS ./njv/Base/target/jv/be/*.java
 
@@ -47,9 +50,9 @@ cd ./njv/Base/target/jv
 jar -cf ../../../BEL_${APPBLDNM}_jv.jar .
 cd ../../../../
 
-cd ../beBase/system/jv
-jar -cf ../../../${APPBLDNM}/njv/BEL_system_be_jv.jar .
-cd ../../../${APPBLDNM}
+#cd ../beBase/system/jv
+#jar -cf ../../../${APPBLDNM}/njv/BEL_system_be_jv.jar .
+#cd ../../../${APPBLDNM}
 
 #cp ../beBase/lib/ex/jv/*.jar ./njv
 #cp ../beApp/lib/wa/jv/*.jar ./njv
