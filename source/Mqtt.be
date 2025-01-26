@@ -11,7 +11,7 @@
 //https://repo.eclipse.org/index.html#nexus-search;gav~org.eclipse.paho~org.eclipse.paho.client.mqttv3~~~~kw,versionexpand
 //https://repo.eclipse.org/service/local/repositories/maven_central/content/org/eclipse/paho/org.eclipse.paho.client.mqttv3/1.2.5/org.eclipse.paho.client.mqttv3-1.2.5.jar
 
-ifEmit(wajv) {
+ifEmit(jv) {
 emit(jv) {
 """
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -27,7 +27,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 class App:Mqtt {
 
-  ifEmit(wajv) {
+  ifEmit(jv) {
    emit(jv) {
    """
    MqttClient client;
@@ -74,7 +74,7 @@ class App:Mqtt {
     if (TS.isEmpty(clientId)) {
       clientId = System:Random.getString(12); //reusing same id on reconnect is fine, oldest is kicked out
     }
-    ifEmit(wajv) {
+    ifEmit(jv) {
     emit(jv) {
     """
       client = new MqttClient(bevp_broker.bems_toJvString(), bevp_clientId.bems_toJvString(), new MemoryPersistence());
@@ -125,7 +125,7 @@ class App:Mqtt {
   }
 
   publishInner(String topic, String message) {
-    ifEmit(wajv) {
+    ifEmit(jv) {
       emit(jv) {
         """
         MqttMessage message = new MqttMessage(beva_message.bems_toJvString().getBytes());
@@ -146,7 +146,7 @@ class App:Mqtt {
   }
 
   subscribeInner(String topic) {
-    ifEmit(wajv) {
+    ifEmit(jv) {
       emit(jv) {
         """
         client.subscribe(beva_topic.bems_toJvString(), bevp_qos.bevi_int);
@@ -165,7 +165,7 @@ class App:Mqtt {
   }
 
   unsubscribeInner(String topic) {
-    ifEmit(wajv) {
+    ifEmit(jv) {
       emit(jv) {
         """
         client.unsubscribe(beva_topic.bems_toJvString());
@@ -185,7 +185,7 @@ class App:Mqtt {
   }
 
   isOpenGetInner() Bool {
-    ifEmit(wajv) {
+    ifEmit(jv) {
       emit(jv) {
         """
         if (client != null && client.isConnected()) {
@@ -212,7 +212,7 @@ class App:Mqtt {
   }
 
   closeInner() {
-    ifEmit(wajv) {
+    ifEmit(jv) {
       emit(jv) {
         """
         client.disconnectForcibly(10);
