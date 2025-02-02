@@ -113,6 +113,67 @@ class App:Mqtt {
     """
     }
     }
+    ifEmit(apwk) {
+      String jsmqres;
+      emit(js) {
+      """
+      //prompt(bevl_jspw.bems_toJsString());
+
+      try {
+        //client = new Paho.MQTT.Client("iot.eclipse.org", Number(80), "/ws", "clientId");
+        client = new Paho.MQTT.Client("test.mosquitto.org", Number(8081), "clientId");
+        //client = new Paho.MQTT.Client("", Number(8084), "clientId");
+
+
+       // set callback handlers
+        client.onConnectionLost = function (responseObject) {
+            console.log("Connection Lost: "+responseObject.errorMessage);
+        }
+
+        client.onMessageArrived = function (message) {
+          console.log("Message Arrived: "+message.payloadString);
+        }
+
+        // Called when the connection is made
+        function onConnect(){
+            console.log("Connected");
+            client.subscribe("yo");
+            var message = new Paho.MQTT.Message("adrian");
+            message.destinationName = "yo";
+            message.qos = 0;
+            client.send(message);
+        }
+
+        // Called when the connection is made
+        function onFailConnect(){
+            console.log("Fail Connected");
+        }
+
+        bevl_jsmqres = new be_$class/Text:String$().bems_new("going to connect");
+        this.bevp_log.bem_log_1(bevl_jsmqres);
+        // Connect the client, providing an onConnect callback
+        client.connect({
+            onSuccess: onConnect,
+            onFailure: onFailConnect,
+            //userName : "user",
+	        //password : "pass",
+            useSSL: true
+        });
+        let lmsgv = new be_$class/Text:String$().bems_new("past connect");
+        this.bevp_log.bem_log_1(lmsgv);
+
+      } catch (e) {
+        bevl_jsmqres = new be_$class/Text:String$().bems_new("got exception in mqtt");
+        this.bevp_log.bem_log_1(bevl_jsmqres);
+        bevl_jsmqres = new be_$class/Text:String$().bems_new(e.toString());
+        this.bevp_log.bem_log_1(bevl_jsmqres);
+      }
+      """
+      }
+      if (TS.notEmpty(jsmqres)) {
+        log.log("mqtt js final " + jsmqres);
+      }
+    }
   }
 
   publish(String topic, String message) {
