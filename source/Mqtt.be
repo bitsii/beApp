@@ -37,7 +37,7 @@ class App:Mqtt {
   
   new() self {
     fields {
-      String broker; //String broker = "tcp://broker.emqx.io:1883"; tcp://127.0.0.1:1883
+      String broker; //String broker = "tcp://broker.emqx.io:1883"; tcp://127.0.0.1:1883 wss://broker.emqx.io:8084
       String user;
       String pass;
       String clientId;
@@ -47,6 +47,10 @@ class App:Mqtt {
       IO:Log log = IO:Logs.get(self);
       any messageHandler;
       String lastError;
+      List waitingSubs;
+    }
+    ifEmit(apwk) {
+      waitingSubs = List.new();
     }
   }
 
@@ -114,6 +118,25 @@ class App:Mqtt {
     }
     }
     ifEmit(apwk) {
+      var sparts = broker.split("/");
+      //for (var spart in sparts) {
+      //  log.log("spart " + spart);
+      //}
+      var brkp = sparts[2];
+      //log.log("brkp " + brkp);
+      var cparts = brkp.split(":");
+      //for (var cpart in cparts) {
+      //  log.log("cpart " + cpart);
+      //}
+      var brk = cparts[0];
+      var pt = cparts[1];
+      var cid = clientId;
+      var u = user;
+      var p = pass;
+      var ka = keepAlive;
+      log.log("brk " + brk);
+      log.log("pt " + pt);
+      Int pti = Int.new(pt);
       String jsmqres;
       emit(js) {
       """
@@ -121,32 +144,46 @@ class App:Mqtt {
 
       try {
         //client = new Paho.MQTT.Client("iot.eclipse.org", Number(80), "/ws", "clientId");
-        client = new Paho.MQTT.Client("test.mosquitto.org", Number(8081), "clientId");
-        //client = new Paho.MQTT.Client("", Number(8084), "clientId");
+        //client = new Paho.MQTT.Client("test.mosquitto.org", Number(8081), "clientId");
+        //client = new Paho.MQTT.Client("broker.emqxsl.com", Number(8084), "clientId");
+        client = new Paho.MQTT.Client(bevl_brk.bems_toJsString(), Number(bevl_pti.bevi_int), bevl_cid.bems_toJsString());
+        this.bevi_connected = false;
+        this.bevi_client = client;
+        var bevs_mqtt = this;
 
 
        // set callback handlers
         client.onConnectionLost = function (responseObject) {
             console.log("Connection Lost: "+responseObject.errorMessage);
+            bevs_mqtt.bevi_connected = false;
         }
 
         client.onMessageArrived = function (message) {
           console.log("Message Arrived: "+message.payloadString);
+          console.log("from topic: " + message.destinationName);
+          var bestop = new be_$class/Text:String$().bems_new(message.destinationName);
+          var bespay = new be_$class/Text:String$().bems_new(message.payloadString);
+          bevs_mqtt.bem_handleMessage_2(bestop, bespay);
         }
 
         // Called when the connection is made
         function onConnect(){
             console.log("Connected");
-            client.subscribe("yo");
-            var message = new Paho.MQTT.Message("adrian");
-            message.destinationName = "yo";
-            message.qos = 0;
-            client.send(message);
+            //client.subscribe("yo");
+            //var message = new Paho.MQTT.Message("adrian");
+            //message.destinationName = "yo";
+            //message.qos = 0;
+            //client.send(message);
+            let lmsgv = new be_$class/Text:String$().bems_new("a log message from the connect callback");
+            bevs_mqtt.bevp_log.bem_log_1(lmsgv);
+            bevs_mqtt.bevi_connected = true;
+            bevs_mqtt.bem_doWaitingSubs_0();
         }
 
         // Called when the connection is made
         function onFailConnect(){
             console.log("Fail Connected");
+            bevs_mqtt.bevi_connected = false;
         }
 
         bevl_jsmqres = new be_$class/Text:String$().bems_new("going to connect");
@@ -155,8 +192,9 @@ class App:Mqtt {
         client.connect({
             onSuccess: onConnect,
             onFailure: onFailConnect,
-            //userName : "user",
-	        //password : "pass",
+            userName : bevl_u.bems_toJsString(),
+	        password : bevl_p.bems_toJsString(),
+            keepAliveInterval : Number(bevl_ka.bevi_int),
             useSSL: true
         });
         let lmsgv = new be_$class/Text:String$().bems_new("past connect");
@@ -195,6 +233,44 @@ class App:Mqtt {
         """
       }
     }
+    ifEmit(apwk) {
+       emit(js) {
+       """
+       console.log("mqtt sending");
+       try {
+         var message = new Paho.MQTT.Message(beva_message.bems_toJsString());
+         message.destinationName = beva_topic.bems_toJsString();
+         message.qos = 0;
+         this.bevi_client.send(message);
+         //this.bevi_client.subscribe(beva_topic.bems_toJsString());
+       } catch (e) {
+         console.log("send failed");
+         console.log(e.toString());
+         throw e;
+       }
+       console.log("mqtt sent");
+       """
+      }
+    }
+  }
+
+  doWaitingSubs() {
+    for (String top in waitingSubs) {
+       emit(js) {
+       """
+       console.log("mqtt late subscribing");
+       try {
+         this.bevi_client.subscribe(bevl_top.bems_toJsString());
+       } catch (e) {
+         console.log("subscribe failed");
+         console.log(e.toString());
+         throw e;
+       }
+       console.log("mqtt late subscribed");
+       """
+      }
+    }
+    waitingSubs = List.new();
   }
 
   subscribe(String topic) {
@@ -212,6 +288,25 @@ class App:Mqtt {
         """
         client.subscribe(beva_topic.bems_toJvString(), bevp_qos.bevi_int);
         """
+      }
+    }
+    ifEmit(apwk) {
+      if (self.isOpen) {
+      emit(js) {
+       """
+       console.log("mqtt subscribing");
+       try {
+         this.bevi_client.subscribe(beva_topic.bems_toJsString());
+       } catch (e) {
+         console.log("subscribe failed");
+         console.log(e.toString());
+         throw e;
+       }
+       console.log("mqtt subscribed");
+       """
+      }
+      } else {
+       waitingSubs += topic;
       }
     }
   }
@@ -259,7 +354,27 @@ class App:Mqtt {
         """
       }
     }
+    ifEmit(apwk) {
+      emit(js) {
+        """
+        if (this.bevi_connected !== null && this.bevi_connected) {
+        """
+      }
+      return(true);
+      emit(js) {
+        """
+        }
+        """
+      }
+    }
     return(false);
+  }
+
+  canSubscribeGet() Bool {
+    ifEmit(apwk) {
+      return(true);
+    }
+    return(self.isOpen);
   }
 
   close() {
