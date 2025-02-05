@@ -42,7 +42,7 @@ class App:Mqtt {
       String pass;
       String clientId;
       Int connectTimeout = 15;
-      Int keepAlive = 10;
+      Int keepAlive = 60;
       Int qos = 1;
       IO:Log log = IO:Logs.get(self);
       any messageHandler;
