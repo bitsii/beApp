@@ -328,6 +328,21 @@ class App:Mqtt {
         """
       }
     }
+    ifEmit(apwk) {
+      emit(js) {
+       """
+       console.log("mqtt unsubscribing");
+       try {
+         this.bevi_client.unsubscribe(beva_topic.bems_toJsString());
+       } catch (e) {
+         console.log("unsubscribe failed");
+         console.log(e.toString());
+         throw e;
+       }
+       console.log("mqtt unsubscribed");
+       """
+      }
+    }
   }
 
   isOpenGet() Bool {
@@ -394,6 +409,20 @@ class App:Mqtt {
         client.disconnectForcibly(10);
         client = null;
         """
+      }
+    }
+    ifEmit(apwk) {
+      emit(js) {
+       """
+       this.bevi_connected = false;
+       try {
+         this.bevi_client.disconnect();
+       } catch (e) {
+         console.log("disconnect failed");
+         console.log(e.toString());
+         throw e;
+       }
+       """
       }
     }
   }
