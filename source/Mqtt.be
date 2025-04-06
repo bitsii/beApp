@@ -41,7 +41,7 @@ class App:Mqtt {
       String user;
       String pass;
       String clientId;
-      Int connectTimeout = 15;
+      Int connectTimeout = 3; //was 15, very long
       Int keepAlive = 60;
       Int qos = 1;
       IO:Log log = IO:Logs.get(self);
@@ -85,8 +85,9 @@ class App:Mqtt {
       MqttConnectOptions options = new MqttConnectOptions();
       options.setUserName(bevp_user.bems_toJvString());
       options.setPassword(bevp_pass.bems_toJvString().toCharArray());
-      options.setConnectionTimeout(bevp_connectTimeout.bevi_int);
-      options.setKeepAliveInterval(bevp_keepAlive.bevi_int);
+      options.setConnectionTimeout(bevp_connectTimeout.bevi_int); //default 30sec
+      options.setKeepAliveInterval(bevp_keepAlive.bevi_int); //default 60sec
+      options.setAutomaticReconnect(false);
 
       client.setCallback(new MqttCallback() {
 
