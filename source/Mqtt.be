@@ -37,7 +37,7 @@ class App:Mqtt {
   
   new() self {
     fields {
-      String broker; //String broker = "tcp://broker.emqx.io:1883"; tcp://127.0.0.1:1883 wss://broker.emqx.io:8084
+      String broker; //String broker = "tcp://broker.emqx.io:1883"; tcp://127.0.0.1:1883 wss://broker.emqx.io:8084 ssl://broker.emqx.io:8883
       String user;
       String pass;
       String clientId;

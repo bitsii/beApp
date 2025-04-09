@@ -3793,12 +3793,14 @@ class App:AjaxPlugin {
         if (System:Classes.sameClass(e, Alert.new())) {
           arg = CallBackUI.informResponse(e.description);
         } else {
-          /*String xtrainfo = aname;
-          if (def(e)) {
-            xtrainfo += e.toString();
-          }
-          arg = CallBackUI.informResponse(xtrainfo + " Sorry, unable to handle request");*/
-          arg = CallBackUI.informResponse("Sorry, unable to handle request");
+          log.error("exception is not an alert");
+          //arg = CallBackUI.informResponse("Sorry, unable to handle request");
+
+          //String xtrainfo = aname;
+          //if (def(e)) {
+          //  xtrainfo += e.toString();
+          //}
+          //arg = CallBackUI.informResponse(xtrainfo + " Sorry, unable to handle request");
           //arg = CallBackUI.reloadResponse();
         }
         request.scriptReturn = arg;
