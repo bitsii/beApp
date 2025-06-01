@@ -1,10 +1,10 @@
 
-Beysant App is a framework written in the [Beysant](https://gitlab.com/bitsii/beBase) programming language licensed under the [BSD-2-Clause](https://opensource.org/licenses/BSD-2-Clause) open source license which enables the authoring of web and hybrid applications that target a wide range of environments - Linux, Windows, or Mac desktop applications using the built-in browser, Android and IOS mobile applications using the built-in webviews, and a hosted application as a website.  Includes web user interface infrastructure and key/value database support, web service / http(s) client support, as well as cross platform support for io, file, and process management.  See the [Bitsii](https://gitlab.com/bitsii/Bitsii/-/wikis/home) project for some examples.
+Brace App is a framework written in the [Brace](https://gitlab.com/bitsii/beBase) programming language licensed under the [BSD-2-Clause](https://opensource.org/licenses/BSD-2-Clause) open source license which enables the authoring of web and hybrid applications that target a wide range of environments - Linux, Windows, or Mac desktop applications using the built-in browser, Android and IOS mobile applications using the built-in webviews, and a hosted application as a website.  Includes web user interface infrastructure and key/value database support, web service / http(s) client support, as well as cross platform support for io, file, and process management.  See the [Bitsii](https://gitlab.com/bitsii/Bitsii/-/wikis/home) project for some examples.
 
 Quick Getting Started for Development!
 
-First you have to have already setup the Beysant language environment, see
-https://gitlab.com/bitsii/beBase (Getting Started in Readme.md) for that  (the Beysant
+First you have to have already setup the Brace language environment, see
+https://gitlab.com/bitsii/beBase (Getting Started in Readme.md) for that  (the Brace
   java environment should be enough)
 
 then, from the directory containing "beBase" (where you cloned it, not the beBase 
@@ -31,6 +31,6 @@ configuration and data.  Under Home are the account home directories.
 
 End of Getting Started for Development!
 
-The official list of Beysant App Authors:
+The official list of Brace App Authors:
 
 Craig Welch <bitsiiway@gmail.com>

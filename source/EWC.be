@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, the Beysant App Authors.
+ * Copyright (c) 2015-2023, the Brace App Authors.
  *
  * SPDX-License-Identifier: BSD-2-Clause
  *
