@@ -138,6 +138,12 @@ class App:Mqtt {
       log.log("brk " + brk);
       log.log("pt " + pt);
       Int pti = Int.new(pt);
+      if (broker.begins("wss:")) {
+        Bool apssl = true;
+      } else {
+        apssl = false;
+      }
+      log.log("apssl " + apssl);
       String jsmqres;
       emit(js) {
       """
@@ -196,7 +202,7 @@ class App:Mqtt {
             userName : bevl_u.bems_toJsString(),
 	        password : bevl_p.bems_toJsString(),
             keepAliveInterval : Number(bevl_ka.bevi_int),
-            useSSL: true
+            useSSL: bevl_apssl.bevi_bool
         });
         let lmsgv = new be_$class/Text:String$().bems_new("past connect");
         this.bevp_log.bem_log_1(lmsgv);
