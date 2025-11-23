@@ -26,6 +26,8 @@ class App:TCPServer {
   new(Int _port) self {
     fields {
       Int port = _port; //light 55443
+      Int streamTimeout = 0;
+      Int connectTimeout = 0;
     }
   }
   
@@ -33,6 +35,7 @@ class App:TCPServer {
     emit(jv) {
     """
     server = new ServerSocket(bevp_port.bevi_int);
+    server.setSoTimeout(bevp_connectTimeout.bevi_int);
     """
     }
   }
@@ -42,10 +45,12 @@ class App:TCPServer {
     emit(jv) {
     """
     Socket client = server.accept();
+    client.setSoTimeout(bevp_streamTimeout.bevi_int);
     """
     }
     res = App:TCPClient.new();
     res.opened = true;
+    res.streamTimeout = streamTimeout;
     emit(jv) {
     """
     bevl_res.client = client;
@@ -73,6 +78,7 @@ public OutputStream outputStream;
       String host;
       Int port;
       Bool opened;
+      Int streamTimeout = 0;
     }
   }
   
@@ -80,12 +86,14 @@ public OutputStream outputStream;
     host = _host;
     port = _port;
     opened = false;
+    streamTimeout = 0;
   }
   
   open() self {
     emit(jv) {
     """
     client = new Socket(bevp_host.bems_toJvString(), bevp_port.bevi_int);
+    client.setSoTimeout(bevp_streamTimeout.bevi_int);
     """
     }
     opened = true;
