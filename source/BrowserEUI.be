@@ -481,6 +481,15 @@ class HC {
     """
     }
   }
+
+  forwardCall(String name, List args) any {
+    //could check of name ends with Request and do UI if not.
+    var arg = Map.new();
+    arg["action"] = name;
+    arg["args"] = args;
+    call(arg);
+    return(null);
+   }
   
   callApp(List args) {
      Map arg = Map.new();
